@@ -3,22 +3,16 @@
 These are some example programs to evaluate the performance of the compiler.
 
 ## Benchmark
-The files in the benchmark directory show how well the compiler fares against
-hand-written assembly routines.  See the README.md file in that directory to
-learn more about them. 
+The files in the benchmark directory show how well the compiler fares against hand-written assembly routines.  See the README.md file in that directory to learn more about them. 
 
 ## Jim Gerrie's Programs
-The files in the native and bytecode directories were taken from talented and dedicated
-programmer Jim Gerrie's GitHub repository at https://github.com/jggames/trs80mc10.
+The files in the native and bytecode directories were taken from talented and dedicated programmer Jim Gerrie.
 
-Jim Gerrie has perhaps a hundred or so programs for the MC-10 and is a mix of original
-and ported programs accumulated over the years.
+Jim's repository (at https://github.com/jggames/trs80mc10) has perhaps a hundred or so programs for the MC-10 and is a mix of original and ported programs accumulated over the years.
 
-Files in the native directory are small enough to be compiled with the "-native" option.
-Files in the bytecode directory were compiled without any options.  
+Files in the native directory are small enough to be compiled with the "-native" option.  Files in the bytecode directory were compiled without any options.  
 
-Most programs don't need much work to convert.  Some speed gains can be had by
-casting the results of INPUT, VAL, and RND to INT before assignment.
+Most programs don't need much work to convert.  Some speed gains can be had by casting the results of INPUT, VAL, and RND to INT before assignment.
 
 ### Here are some that are either identical or very close to Jim's current source.
 
