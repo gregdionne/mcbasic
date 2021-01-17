@@ -82,7 +82,7 @@ void StatementConstFolder::operate(For &s) {
   }
 }
 
-void StatementConstFolder::operate(GoIf &s) { cfe.fold(s.predicate); }
+void StatementConstFolder::operate(When &s) { cfe.fold(s.predicate); }
 
 void StatementConstFolder::operate(If &s) {
   cfe.fold(s.predicate);

@@ -225,7 +225,7 @@ void StatementLister::operate(Go &s) {
   result = (s.isSub ? "GOSUB " : "GOTO ") + std::to_string(s.lineNumber);
 }
 
-void StatementLister::operate(GoIf &s) {
+void StatementLister::operate(When &s) {
   result = "WHEN " + list(s.predicate) + (s.isSub ? " GOSUB " : " GOTO ") +
            std::to_string(s.lineNumber);
 }

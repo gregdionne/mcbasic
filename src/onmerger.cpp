@@ -18,7 +18,7 @@ void OnMerger::operate(Line &l) {
   while (it != l.statements.end()) {
     (*it)->operate(&oms);
     if (oms.needsReplacement) {
-      fprintf(stderr, "ON..GO%s ", oms.isSub ? "SUB" : "TO");
+      fprintf(stderr, "%s ", (*it)->statementName().c_str());
       if (oms.replLine == -1) {
         l.statements.erase(it);
         fprintf(stderr, "deleted ");
@@ -27,7 +27,7 @@ void OnMerger::operate(Line &l) {
         go->isSub = oms.isSub;
         go->lineNumber = oms.replLine;
         *it = std::move(go);
-        fprintf(stderr, "replaced with GO%s %i ", oms.isSub ? "SUB" : "TO",
+        fprintf(stderr, "replaced with %s %i ", (*it)->statementName().c_str(),
                 oms.replLine);
         ++it;
       }
@@ -43,7 +43,7 @@ void OnStatementMerger::operate(If &s) {
     needsReplacement = false;
     (*it)->operate(this);
     if (needsReplacement) {
-      fprintf(stderr, "ON..GO%s replaced ", isSub ? "SUB" : "TO");
+      fprintf(stderr, "%s replaced ", (*it)->statementName().c_str());
       if (replLine == -1) {
         s.consequent.erase(it);
       } else {
@@ -51,7 +51,8 @@ void OnStatementMerger::operate(If &s) {
         go->isSub = isSub;
         go->lineNumber = replLine;
         *it = std::move(go);
-        fprintf(stderr, "with GO%s %i ", isSub ? "SUB" : "TO", replLine);
+        fprintf(stderr, "with %s %i ", (*it)->statementName().c_str(),
+                replLine);
       }
       fprintf(stderr, "in line %i\n", (*itCurrentLine)->lineNumber);
     }

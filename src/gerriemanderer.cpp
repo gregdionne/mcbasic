@@ -12,7 +12,7 @@ static void gerriemander(std::unique_ptr<Statement> &statement,
                          std::vector<std::unique_ptr<Statement>> &statements,
                          StatementGerriemanderer &gms) {
   if (statement.get() != std::prev(statements.end())->get()) {
-    auto goif = std::make_unique<GoIf>();
+    auto goif = std::make_unique<When>();
     goif->isSub = gms.isSub;
     goif->predicate = std::move(gms.predicate);
     goif->lineNumber = gms.lineNumber;

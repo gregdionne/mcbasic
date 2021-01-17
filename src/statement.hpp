@@ -15,7 +15,7 @@ class Statement;
 class Rem;
 class For;
 class Go;
-class GoIf;
+class When;
 class If;
 class Data;
 class Print;
@@ -44,7 +44,7 @@ public:
   virtual void operate(Rem & /*statement*/) {}
   virtual void operate(For & /*statement*/) {}
   virtual void operate(Go & /*statement*/) {}
-  virtual void operate(GoIf & /*statement*/) {}
+  virtual void operate(When & /*statement*/) {}
   virtual void operate(If & /*statement*/) {}
   virtual void operate(Data & /*statement*/) {}
   virtual void operate(Print & /*statement*/) {}
@@ -108,13 +108,13 @@ public:
   std::string statementName() override { return "REM"; }
 };
 
-class GoIf : public Statement {
+class When : public Statement {
 public:
   bool isSub;
   std::unique_ptr<NumericExpr> predicate;
   int lineNumber;
   void operate(StatementOp *op) override { op->operate(*this); }
-  std::string statementName() override { return isSub ? "GOSUBIF" : "GOTOIF"; }
+  std::string statementName() override { return isSub ? "WHEN..GOSUB" : "WHEN..GOTO"; }
 };
 
 class If : public Statement {

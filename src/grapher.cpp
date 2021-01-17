@@ -225,7 +225,7 @@ void StatementGrapher::operate(Go &s) {
   printtab(n, "GO%s %i", s.isSub ? "SUB" : "TO", s.lineNumber);
 }
 
-void StatementGrapher::operate(GoIf &s) {
+void StatementGrapher::operate(When &s) {
   printtab(n, "GO%sIF %i", s.isSub ? "SUB" : "TO", s.lineNumber);
   indentOp(s.predicate, that);
 }

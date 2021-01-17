@@ -191,7 +191,7 @@ void StatementMerger::operate(For &s) {
   }
 }
 
-void StatementMerger::operate(GoIf &s) { merger.merge(s.predicate); }
+void StatementMerger::operate(When &s) { merger.merge(s.predicate); }
 
 void StatementMerger::operate(If &s) {
   merger.merge(s.predicate);

@@ -141,7 +141,7 @@ void StatementCompiler::operate(Go &s) {
   }
 }
 
-void StatementCompiler::operate(GoIf &s) {
+void StatementCompiler::operate(When &s) {
   queue.append(std::make_unique<InstComment>(list(s)));
   queue.clearRegisters();
 

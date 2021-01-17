@@ -63,7 +63,7 @@ public:
   void operate(Rem &s) override;
   void operate(For &s) override;
   void operate(Go &s) override;
-  void operate(GoIf &s) override;
+  void operate(When &s) override;
   void operate(If &s) override;
   void operate(Data &s) override;
   void operate(Print &s) override;

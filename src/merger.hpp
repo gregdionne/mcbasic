@@ -94,7 +94,7 @@ class StatementMerger : public StatementOp {
 public:
   explicit StatementMerger(SymbolTable &st) : merger(st) {}
   void operate(For &s) override;
-  void operate(GoIf &s) override;
+  void operate(When &s) override;
   void operate(If &s) override;
   void operate(Print &s) override;
   void operate(On &s) override;
