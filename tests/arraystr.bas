@@ -1,0 +1,23 @@
+0 DIM C$(6):CLS
+5 C$(0) = " "
+10 C$(1) = "A"
+20 C$(2) = "B"
+30 C$(3) = "C"
+40 C$(4) = "D"
+50 C$(5) = "E"
+60 C$(6) = "F" 
+100 D$=C$(1):E$=C$(2):F$=C$(3)
+111 IF INKEY$=""GOTO 111
+112 D$=D$+C$(1)
+113 IF INKEY$=""GOTO 113
+114 E$=E$+C$(2)
+115 IF INKEY$=""GOTO 115
+116 F$=F$+C$(3)
+117 IF INKEY$=""GOTO 117
+122 D$=D$+C$(1)
+123 IF INKEY$=""GOTO 123
+124 E$=E$+C$(2)
+125 IF INKEY$=""GOTO 125
+126 F$=F$+C$(3)
+127 IF INKEY$=""GOTO 127
+

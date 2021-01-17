@@ -1,0 +1,16 @@
+
+Items to do:
+
+* add ?OM error checking to string allocation
+* bundle tasm compiler and invoke it automatically
+* add a -verbose compilation flag
+* const propagation
+* replace DP registers with a "stack" based implementation
+* Add gerrieatric forms:
+    ON 1-bool GOSUB F,T  -> IF bool THEN GOSUB true ELSE GOSUB false <ENDIF>
+       1 -  0 = 1
+       1 - -1 = 2
+    ON 2+bool GOSUB T,F  -> IF bool THEN GOSUB true ELSE GOSUB false <ENDIF>
+       2 +  0 = 2
+       2 + -1 = 1
+* Add support for COCO COLORBASIC.  (e.g. ELSE)

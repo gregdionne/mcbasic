@@ -1,0 +1,3 @@
+10 INPUT A,B,C
+20 ? A;B;C
+

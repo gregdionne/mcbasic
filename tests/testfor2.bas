@@ -1,0 +1,7 @@
+10 DIM X(3,4)
+20 FOR I=0 TO 3
+30 FOR J=0 TO 4
+40 X(I,J) = J
+50 NEXT
+60 NEXT
+

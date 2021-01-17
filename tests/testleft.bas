@@ -1,0 +1,5 @@
+0 X=3
+10 ? LEFT$("FRED",X)
+20 ? LEFT$("FRED",X-1)
+30 ? LEFT$("FRED",X-2)
+40 ? LEFT$("FRED",X-3)
