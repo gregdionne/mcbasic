@@ -1,5 +1,5 @@
 ; Assembly for mcmine.bas
-; compiled with mcbasic
+; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
@@ -56,8 +56,6 @@ r2	.block	5
 r3	.block	5
 rend
 rvseed	.block	2
-curinst	.block	2
-nxtinst	.block	2
 tmp1	.block	2
 tmp2	.block	2
 tmp3	.block	2
@@ -65,98 +63,84 @@ tmp4	.block	2
 tmp5	.block	2
 argv	.block	10
 
+
+; main program
 	.org	M_CODE
 
-	.module	mdmain
-	ldx	#program
-	stx	nxtinst
-mainloop
-	ldx	nxtinst
-	stx	curinst
-	ldab	,x
-	ldx	#catalog
-	abx
-	abx
-	ldx	,x
-	jsr	0,x
-	bra	mainloop
+	jsr	progbegin
 
-program
-
-	.byte	bytecode_progbegin
-
-	.byte	bytecode_clear
+	jsr	clear
 
 LINE_0
 
 	; CLS
 
-	.byte	bytecode_cls
+	jsr	cls
 
 	; POKE 49151,64
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	64
+	ldab	#64
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_poke_pw_ir1
-	.word	49151
+	ldd	#49151
+	jsr	poke_pw_ir1
 
 	; PRINT "PLEASE WAIT..."
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	15, "PLEASE WAIT...\r"
 
 LINE_1
 
 	; DIM M(31,20),N(31,20),TT(4),SX(101),SY(101),MX,MY,ST,MC,V,H,X,Y,Z,OH,OV,B,C,R
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	31
+	ldab	#31
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_ld_ir2_pb
-	.byte	20
+	ldab	#20
+	jsr	ld_ir2_pb
 
-	.byte	bytecode_arrdim2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrdim2_ir1_ix
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	31
+	ldab	#31
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_ld_ir2_pb
-	.byte	20
+	ldab	#20
+	jsr	ld_ir2_pb
 
-	.byte	bytecode_arrdim2_ir1_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrdim2_ir1_ix
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	4
+	ldab	#4
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_TT
+	ldx	#INTARR_TT
+	jsr	arrdim1_ir1_ix
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	101
+	ldab	#101
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_arrdim1_ir1_fx
-	.byte	bytecode_FLTARR_SX
+	ldx	#FLTARR_SX
+	jsr	arrdim1_ir1_fx
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	101
+	ldab	#101
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_arrdim1_ir1_fx
-	.byte	bytecode_FLTARR_SY
+	ldx	#FLTARR_SY
+	jsr	arrdim1_ir1_fx
 
 LINE_5
 
 	; CLS
 
-	.byte	bytecode_cls
+	jsr	cls
 
 	; MC=16384
 
-	.byte	bytecode_ld_ix_pw
-	.byte	bytecode_INTVAR_MC
-	.word	16384
+	ldx	#INTVAR_MC
+	ldd	#16384
+	jsr	ld_ix_pw
 
 	; REM CHANGE MC=1024 FOR COCO
 
@@ -164,173 +148,173 @@ LINE_10
 
 	; PRINT @11, "minefield";
 
-	.byte	bytecode_prat_pb
-	.byte	11
+	ldab	#11
+	jsr	prat_pb
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	9, "minefield"
 
 	; POKE MC+20,33
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_MC
+	ldx	#INTVAR_MC
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_add_ir1_ir1_pb
-	.byte	20
+	ldab	#20
+	jsr	add_ir1_ir1_pb
 
-	.byte	bytecode_poke_ir1_pb
-	.byte	33
+	ldab	#33
+	jsr	poke_ir1_pb
 
 LINE_20
 
 	; PRINT @100, "BY KENNETH REIGHARD, JR."
 
-	.byte	bytecode_prat_pb
-	.byte	100
+	ldab	#100
+	jsr	prat_pb
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	25, "BY KENNETH REIGHARD, JR.\r"
 
 LINE_30
 
 	; PRINT @130, "MC-10 VERSION BY JIM GERRIE"
 
-	.byte	bytecode_prat_pb
-	.byte	130
+	ldab	#130
+	jsr	prat_pb
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	28, "MC-10 VERSION BY JIM GERRIE\r"
 
 LINE_40
 
 	; PRINT @268, "1. EASY"
 
-	.byte	bytecode_prat_pw
-	.word	268
+	ldd	#268
+	jsr	prat_pw
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	8, "1. EASY\r"
 
 	; PRINT @300, "2. MEDIUM"
 
-	.byte	bytecode_prat_pw
-	.word	300
+	ldd	#300
+	jsr	prat_pw
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	10, "2. MEDIUM\r"
 
 	; PRINT @332, "3. HARD"
 
-	.byte	bytecode_prat_pw
-	.word	332
+	ldd	#332
+	jsr	prat_pw
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	8, "3. HARD\r"
 
 LINE_50
 
 	; QQ$=INKEY$
 
-	.byte	bytecode_inkey_sr1
+	jsr	inkey_sr1
 
-	.byte	bytecode_ld_sx_sr1
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sx_sr1
 
 	; H=RND(10)
 
-	.byte	bytecode_irnd_ir1_pb
-	.byte	10
+	ldab	#10
+	jsr	irnd_ir1_pb
 
-	.byte	bytecode_ld_fx_ir1
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fx_ir1
 
-	; IF QQ$="" THEN
+	; WHEN QQ$="" GOTO 50
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sr1_ss
 	.text	0, ""
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_50
+	ldx	#LINE_50
+	jsr	jmpne_ir1_ix
 
 LINE_55
 
-	; IF (QQ$<>"1") AND (QQ$<>"2") AND (QQ$<>"3") THEN
+	; WHEN (QQ$<>"1") AND (QQ$<>"2") AND (QQ$<>"3") GOTO 50
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldne_ir1_sr1_ss
+	jsr	ldne_ir1_sr1_ss
 	.text	1, "1"
 
-	.byte	bytecode_ld_sr2_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr2_sx
 
-	.byte	bytecode_ldne_ir2_sr2_ss
+	jsr	ldne_ir2_sr2_ss
 	.text	1, "2"
 
-	.byte	bytecode_and_ir1_ir1_ir2
+	jsr	and_ir1_ir1_ir2
 
-	.byte	bytecode_ld_sr2_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr2_sx
 
-	.byte	bytecode_ldne_ir2_sr2_ss
+	jsr	ldne_ir2_sr2_ss
 	.text	1, "3"
 
-	.byte	bytecode_and_ir1_ir1_ir2
+	jsr	and_ir1_ir1_ir2
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_50
+	ldx	#LINE_50
+	jsr	jmpne_ir1_ix
 
 LINE_56
 
 	; SK=VAL(QQ$)
 
-	.byte	bytecode_val_fr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	val_fr1_sx
 
-	.byte	bytecode_ld_fx_fr1
-	.byte	bytecode_FLTVAR_SK
+	ldx	#FLTVAR_SK
+	jsr	ld_fx_fr1
 
-	; IF (SK<1) OR (SK>3) THEN
+	; WHEN (SK<1) OR (SK>3) GOTO 50
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_SK
+	ldx	#FLTVAR_SK
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ldlt_ir1_fr1_pb
-	.byte	1
+	ldab	#1
+	jsr	ldlt_ir1_fr1_pb
 
-	.byte	bytecode_ld_ir2_pb
-	.byte	3
+	ldab	#3
+	jsr	ld_ir2_pb
 
-	.byte	bytecode_ldlt_ir2_ir2_fx
-	.byte	bytecode_FLTVAR_SK
+	ldx	#FLTVAR_SK
+	jsr	ldlt_ir2_ir2_fx
 
-	.byte	bytecode_or_ir1_ir1_ir2
+	jsr	or_ir1_ir1_ir2
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_50
+	ldx	#LINE_50
+	jsr	jmpne_ir1_ix
 
 LINE_58
 
 	; PRINT @454, "ONE MOMENT PLEASE...";
 
-	.byte	bytecode_prat_pw
-	.word	454
+	ldd	#454
+	jsr	prat_pw
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	20, "ONE MOMENT PLEASE..."
 
 LINE_60
 
 	; ON SK GOTO 65,70,75
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_SK
+	ldx	#FLTVAR_SK
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ongoto_ir1_is
+	jsr	ongoto_ir1_is
 	.byte	3
 	.word	LINE_65, LINE_70, LINE_75
 
@@ -338,2151 +322,1922 @@ LINE_65
 
 	; MX=9
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_MX
-	.byte	9
+	ldx	#INTVAR_MX
+	ldab	#9
+	jsr	ld_ix_pb
 
 	; MY=9
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_MY
-	.byte	9
+	ldx	#INTVAR_MY
+	ldab	#9
+	jsr	ld_ix_pb
 
 	; B=10
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_B
-	.byte	10
+	ldx	#INTVAR_B
+	ldab	#10
+	jsr	ld_ix_pb
 
 	; GOTO 80
 
-	.byte	bytecode_goto_ix
-	.word	LINE_80
+	ldx	#LINE_80
+	jsr	goto_ix
 
 LINE_70
 
 	; MX=19
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_MX
-	.byte	19
+	ldx	#INTVAR_MX
+	ldab	#19
+	jsr	ld_ix_pb
 
 	; MY=12
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_MY
-	.byte	12
+	ldx	#INTVAR_MY
+	ldab	#12
+	jsr	ld_ix_pb
 
 	; B=40
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_B
-	.byte	40
+	ldx	#INTVAR_B
+	ldab	#40
+	jsr	ld_ix_pb
 
 	; GOTO 80
 
-	.byte	bytecode_goto_ix
-	.word	LINE_80
+	ldx	#LINE_80
+	jsr	goto_ix
 
 LINE_75
 
 	; MX=31
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_MX
-	.byte	31
+	ldx	#INTVAR_MX
+	ldab	#31
+	jsr	ld_ix_pb
 
 	; MY=14
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_MY
-	.byte	14
+	ldx	#INTVAR_MY
+	ldab	#14
+	jsr	ld_ix_pb
 
 	; B=70
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_B
-	.byte	70
+	ldx	#INTVAR_B
+	ldab	#70
+	jsr	ld_ix_pb
 
 LINE_80
 
 	; L=B
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_B
+	ldx	#INTVAR_B
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_ld_ix_ir1
-	.byte	bytecode_INTVAR_L
+	ldx	#INTVAR_L
+	jsr	ld_ix_ir1
 
 	; R=((MX+1)*(MY+1))-B
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_MX
+	ldx	#INTVAR_MX
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_add_ir1_ir1_pb
-	.byte	1
+	ldab	#1
+	jsr	add_ir1_ir1_pb
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_MY
+	ldx	#INTVAR_MY
+	jsr	ld_ir2_ix
 
-	.byte	bytecode_add_ir2_ir2_pb
-	.byte	1
+	ldab	#1
+	jsr	add_ir2_ir2_pb
 
-	.byte	bytecode_mul_ir1_ir1_ir2
+	jsr	mul_ir1_ir1_ir2
 
-	.byte	bytecode_sub_ir1_ir1_ix
-	.byte	bytecode_INTVAR_B
+	ldx	#INTVAR_B
+	jsr	sub_ir1_ir1_ix
 
-	.byte	bytecode_ld_ix_ir1
-	.byte	bytecode_INTVAR_R
+	ldx	#INTVAR_R
+	jsr	ld_ix_ir1
 
 LINE_100
 
 	; FOR Z=1 TO B
 
-	.byte	bytecode_for_ix_pb
-	.byte	bytecode_INTVAR_Z
-	.byte	1
+	ldx	#INTVAR_Z
+	ldab	#1
+	jsr	for_ix_pb
 
-	.byte	bytecode_to_ip_ix
-	.byte	bytecode_INTVAR_B
+	ldx	#INTVAR_B
+	jsr	to_ip_ix
 
 LINE_105
 
 	; H=RND(MX)
 
-	.byte	bytecode_rnd_fr1_ix
-	.byte	bytecode_INTVAR_MX
+	ldx	#INTVAR_MX
+	jsr	rnd_fr1_ix
 
-	.byte	bytecode_ld_fx_fr1
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fx_fr1
 
 	; V=RND(MY)
 
-	.byte	bytecode_rnd_fr1_ix
-	.byte	bytecode_INTVAR_MY
+	ldx	#INTVAR_MY
+	jsr	rnd_fr1_ix
 
-	.byte	bytecode_ld_fx_fr1
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fx_fr1
 
-	; IF M(H,V)=-1 THEN
+	; WHEN M(H,V)=-1 GOTO 105
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_ldeq_ir1_ir1_nb
-	.byte	-1
+	ldab	#-1
+	jsr	ldeq_ir1_ir1_nb
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_105
+	ldx	#LINE_105
+	jsr	jmpne_ir1_ix
 
 LINE_112
 
 	; M(H,V)=-1
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrref2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrref2_ir1_ix
 
-	.byte	bytecode_ld_ip_nb
-	.byte	-1
+	ldab	#-1
+	jsr	ld_ip_nb
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 LINE_120
 
 	; FOR V=0 TO MY
 
-	.byte	bytecode_for_fx_pb
-	.byte	bytecode_FLTVAR_V
-	.byte	0
+	ldx	#FLTVAR_V
+	ldab	#0
+	jsr	for_fx_pb
 
-	.byte	bytecode_to_fp_ix
-	.byte	bytecode_INTVAR_MY
+	ldx	#INTVAR_MY
+	jsr	to_fp_ix
 
 	; FOR H=0 TO MX
 
-	.byte	bytecode_for_fx_pb
-	.byte	bytecode_FLTVAR_H
-	.byte	0
+	ldx	#FLTVAR_H
+	ldab	#0
+	jsr	for_fx_pb
 
-	.byte	bytecode_to_fp_ix
-	.byte	bytecode_INTVAR_MX
+	ldx	#INTVAR_MX
+	jsr	to_fp_ix
 
-	; IF M(H,V)<>-1 THEN
+	; WHEN M(H,V)<>-1 GOTO 155
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_ldne_ir1_ir1_nb
-	.byte	-1
+	ldab	#-1
+	jsr	ldne_ir1_ir1_nb
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_155
+	ldx	#LINE_155
+	jsr	jmpne_ir1_ix
 
 LINE_130
 
 	; FOR Y=-1 TO 1
 
-	.byte	bytecode_for_fx_nb
-	.byte	bytecode_FLTVAR_Y
-	.byte	-1
+	ldx	#FLTVAR_Y
+	ldab	#-1
+	jsr	for_fx_nb
 
-	.byte	bytecode_to_fp_pb
-	.byte	1
+	ldab	#1
+	jsr	to_fp_pb
 
 	; FOR X=-1 TO 1
 
-	.byte	bytecode_for_fx_nb
-	.byte	bytecode_FLTVAR_X
-	.byte	-1
+	ldx	#FLTVAR_X
+	ldab	#-1
+	jsr	for_fx_nb
 
-	.byte	bytecode_to_fp_pb
-	.byte	1
+	ldab	#1
+	jsr	to_fp_pb
 
-	; IF (X=0) AND (Y=0) THEN
+	; WHEN (X=0) AND (Y=0) GOTO 150
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_X
+	ldx	#FLTVAR_X
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ldeq_ir1_fr1_pb
-	.byte	0
+	ldab	#0
+	jsr	ldeq_ir1_fr1_pb
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_Y
+	ldx	#FLTVAR_Y
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_ldeq_ir2_fr2_pb
-	.byte	0
+	ldab	#0
+	jsr	ldeq_ir2_fr2_pb
 
-	.byte	bytecode_and_ir1_ir1_ir2
+	jsr	and_ir1_ir1_ir2
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_150
+	ldx	#LINE_150
+	jsr	jmpne_ir1_ix
 
 LINE_140
 
-	; IF ((H+X)<0) OR ((H+X)>MX) OR ((V+Y)<0) OR ((V+Y)>MY) THEN
+	; WHEN ((H+X)<0) OR ((H+X)>MX) OR ((V+Y)<0) OR ((V+Y)>MY) GOTO 150
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_X
+	ldx	#FLTVAR_X
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_ldlt_ir1_fr1_pb
-	.byte	0
+	ldab	#0
+	jsr	ldlt_ir1_fr1_pb
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_MX
+	ldx	#INTVAR_MX
+	jsr	ld_ir2_ix
 
-	.byte	bytecode_ld_fr3_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr3_fx
 
-	.byte	bytecode_add_fr3_fr3_fx
-	.byte	bytecode_FLTVAR_X
+	ldx	#FLTVAR_X
+	jsr	add_fr3_fr3_fx
 
-	.byte	bytecode_ldlt_ir2_ir2_fr3
+	jsr	ldlt_ir2_ir2_fr3
 
-	.byte	bytecode_or_ir1_ir1_ir2
+	jsr	or_ir1_ir1_ir2
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_add_fr2_fr2_fx
-	.byte	bytecode_FLTVAR_Y
+	ldx	#FLTVAR_Y
+	jsr	add_fr2_fr2_fx
 
-	.byte	bytecode_ldlt_ir2_fr2_pb
-	.byte	0
+	ldab	#0
+	jsr	ldlt_ir2_fr2_pb
 
-	.byte	bytecode_or_ir1_ir1_ir2
+	jsr	or_ir1_ir1_ir2
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_MY
+	ldx	#INTVAR_MY
+	jsr	ld_ir2_ix
 
-	.byte	bytecode_ld_fr3_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr3_fx
 
-	.byte	bytecode_add_fr3_fr3_fx
-	.byte	bytecode_FLTVAR_Y
+	ldx	#FLTVAR_Y
+	jsr	add_fr3_fr3_fx
 
-	.byte	bytecode_ldlt_ir2_ir2_fr3
+	jsr	ldlt_ir2_ir2_fr3
 
-	.byte	bytecode_or_ir1_ir1_ir2
+	jsr	or_ir1_ir1_ir2
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_150
+	ldx	#LINE_150
+	jsr	jmpne_ir1_ix
 
 LINE_145
 
 	; IF M(H+X,V+Y)<>-1 THEN
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_X
+	ldx	#FLTVAR_X
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_add_fr2_fr2_fx
-	.byte	bytecode_FLTVAR_Y
+	ldx	#FLTVAR_Y
+	jsr	add_fr2_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_ldne_ir1_ir1_nb
-	.byte	-1
+	ldab	#-1
+	jsr	ldne_ir1_ir1_nb
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_150
+	ldx	#LINE_150
+	jsr	jmpeq_ir1_ix
 
 	; M(H+X,V+Y)=M(H+X,V+Y)+1
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_X
+	ldx	#FLTVAR_X
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_add_fr2_fr2_fx
-	.byte	bytecode_FLTVAR_Y
+	ldx	#FLTVAR_Y
+	jsr	add_fr2_fr2_fx
 
-	.byte	bytecode_arrref2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrref2_ir1_ix
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_X
+	ldx	#FLTVAR_X
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_add_fr2_fr2_fx
-	.byte	bytecode_FLTVAR_Y
+	ldx	#FLTVAR_Y
+	jsr	add_fr2_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_add_ir1_ir1_pb
-	.byte	1
+	ldab	#1
+	jsr	add_ir1_ir1_pb
 
-	.byte	bytecode_ld_ip_ir1
+	jsr	ld_ip_ir1
 
 LINE_150
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 LINE_155
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 LINE_160
 
 	; CLS 0
 
-	.byte	bytecode_clsn_pb
-	.byte	0
+	ldab	#0
+	jsr	clsn_pb
 
 	; FOR X=0 TO MX
 
-	.byte	bytecode_for_fx_pb
-	.byte	bytecode_FLTVAR_X
-	.byte	0
+	ldx	#FLTVAR_X
+	ldab	#0
+	jsr	for_fx_pb
 
-	.byte	bytecode_to_fp_ix
-	.byte	bytecode_INTVAR_MX
+	ldx	#INTVAR_MX
+	jsr	to_fp_ix
 
 	; FOR Y=0 TO MY
 
-	.byte	bytecode_for_fx_pb
-	.byte	bytecode_FLTVAR_Y
-	.byte	0
+	ldx	#FLTVAR_Y
+	ldab	#0
+	jsr	for_fx_pb
 
-	.byte	bytecode_to_fp_ix
-	.byte	bytecode_INTVAR_MY
+	ldx	#INTVAR_MY
+	jsr	to_fp_ix
 
 	; PRINT @(Y*32)+X, ".";
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_Y
+	ldx	#FLTVAR_Y
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_mul_fr1_fr1_pb
-	.byte	32
+	ldab	#32
+	jsr	mul_fr1_fr1_pb
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_X
+	ldx	#FLTVAR_X
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_prat_ir1
+	jsr	prat_ir1
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	1, "."
 
 LINE_205
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 LINE_210
 
 	; H=0
 
-	.byte	bytecode_ld_fx_pb
-	.byte	bytecode_FLTVAR_H
-	.byte	0
+	ldx	#FLTVAR_H
+	ldab	#0
+	jsr	ld_fx_pb
 
 	; V=0
 
-	.byte	bytecode_ld_fx_pb
-	.byte	bytecode_FLTVAR_V
-	.byte	0
+	ldx	#FLTVAR_V
+	ldab	#0
+	jsr	ld_fx_pb
 
 	; T=0
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_T
-	.byte	0
+	ldx	#INTVAR_T
+	ldab	#0
+	jsr	ld_ix_pb
 
 LINE_220
 
-	; IF (PEEK((32*V)+H+MC)-64)>0 THEN
+	; WHEN (PEEK((32*V)+H+MC)-64)>0 GOSUB 600
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	0
+	ldab	#0
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_ld_ir2_pb
-	.byte	32
+	ldab	#32
+	jsr	ld_ir2_pb
 
-	.byte	bytecode_mul_fr2_ir2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	mul_fr2_ir2_fx
 
-	.byte	bytecode_add_fr2_fr2_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr2_fr2_fx
 
-	.byte	bytecode_add_fr2_fr2_ix
-	.byte	bytecode_INTVAR_MC
+	ldx	#INTVAR_MC
+	jsr	add_fr2_fr2_ix
 
-	.byte	bytecode_peek_ir2_ir2
+	jsr	peek_ir2_ir2
 
-	.byte	bytecode_sub_ir2_ir2_pb
-	.byte	64
+	ldab	#64
+	jsr	sub_ir2_ir2_pb
 
-	.byte	bytecode_ldlt_ir1_ir1_ir2
+	jsr	ldlt_ir1_ir1_ir2
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_230
-
-	; GOSUB 600
-
-	.byte	bytecode_gosub_ix
-	.word	LINE_600
+	ldx	#LINE_600
+	jsr	jsrne_ir1_ix
 
 LINE_230
 
 	; PRINT @495, STR$(L);" €";
 
-	.byte	bytecode_prat_pw
-	.word	495
+	ldd	#495
+	jsr	prat_pw
 
-	.byte	bytecode_str_sr1_ix
-	.byte	bytecode_INTVAR_L
+	ldx	#INTVAR_L
+	jsr	str_sr1_ix
 
-	.byte	bytecode_pr_sr1
+	jsr	pr_sr1
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	2, " \x80"
 
 	; IF R=0 THEN
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_R
+	ldx	#INTVAR_R
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_ldeq_ir1_ir1_pb
-	.byte	0
+	ldab	#0
+	jsr	ldeq_ir1_ir1_pb
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_240
+	ldx	#LINE_240
+	jsr	jmpeq_ir1_ix
 
 	; PRINT @480, "YOU WIN!            ";
 
-	.byte	bytecode_prat_pw
-	.word	480
+	ldd	#480
+	jsr	prat_pw
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	20, "YOU WIN!            "
 
 	; GOTO 450
 
-	.byte	bytecode_goto_ix
-	.word	LINE_450
+	ldx	#LINE_450
+	jsr	goto_ix
 
 LINE_240
 
 	; Q=PEEK(17023) AND PEEK(2)
 
-	.byte	bytecode_peek_ir1_pw
-	.word	17023
+	ldd	#17023
+	jsr	peek_ir1_pw
 
-	.byte	bytecode_peek_ir2_pb
-	.byte	2
+	ldab	#2
+	jsr	peek_ir2_pb
 
-	.byte	bytecode_and_ir1_ir1_ir2
+	jsr	and_ir1_ir1_ir2
 
-	.byte	bytecode_ld_ix_ir1
-	.byte	bytecode_INTVAR_Q
+	ldx	#INTVAR_Q
+	jsr	ld_ix_ir1
 
-	; IF Q THEN
+	; WHEN Q GOTO 250
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_Q
+	ldx	#INTVAR_Q
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_250
+	ldx	#LINE_250
+	jsr	jmpne_ir1_ix
 
 LINE_245
 
 	; GOTO 240
 
-	.byte	bytecode_goto_ix
-	.word	LINE_240
+	ldx	#LINE_240
+	jsr	goto_ix
 
 LINE_250
 
 	; QQ$=CHR$(Q)
 
-	.byte	bytecode_chr_sr1_ix
-	.byte	bytecode_INTVAR_Q
+	ldx	#INTVAR_Q
+	jsr	chr_sr1_ix
 
-	.byte	bytecode_ld_sx_sr1
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sx_sr1
 
 	; IF QQ$="A" THEN
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sr1_ss
 	.text	1, "A"
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_255
+	ldx	#LINE_255
+	jsr	jmpeq_ir1_ix
 
 	; GOSUB 620
 
-	.byte	bytecode_gosub_ix
-	.word	LINE_620
+	ldx	#LINE_620
+	jsr	gosub_ix
 
 	; H-=1
 
-	.byte	bytecode_sub_fx_fx_pb
-	.byte	bytecode_FLTVAR_H
-	.byte	1
+	ldx	#FLTVAR_H
+	ldab	#1
+	jsr	sub_fx_fx_pb
 
 	; IF H<0 THEN
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ldlt_ir1_fr1_pb
-	.byte	0
+	ldab	#0
+	jsr	ldlt_ir1_fr1_pb
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_255
+	ldx	#LINE_255
+	jsr	jmpeq_ir1_ix
 
 	; H=MX
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_MX
+	ldx	#INTVAR_MX
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_ld_fx_ir1
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fx_ir1
 
 	; GOTO 220
 
-	.byte	bytecode_goto_ix
-	.word	LINE_220
+	ldx	#LINE_220
+	jsr	goto_ix
 
 LINE_255
 
 	; IF QQ$="S" THEN
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sr1_ss
 	.text	1, "S"
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_260
+	ldx	#LINE_260
+	jsr	jmpeq_ir1_ix
 
 	; GOSUB 620
 
-	.byte	bytecode_gosub_ix
-	.word	LINE_620
+	ldx	#LINE_620
+	jsr	gosub_ix
 
 	; H+=1
 
-	.byte	bytecode_add_fx_fx_pb
-	.byte	bytecode_FLTVAR_H
-	.byte	1
+	ldx	#FLTVAR_H
+	ldab	#1
+	jsr	add_fx_fx_pb
 
 	; IF H>MX THEN
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_MX
+	ldx	#INTVAR_MX
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_ldlt_ir1_ir1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ldlt_ir1_ir1_fx
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_260
+	ldx	#LINE_260
+	jsr	jmpeq_ir1_ix
 
 	; H=0
 
-	.byte	bytecode_ld_fx_pb
-	.byte	bytecode_FLTVAR_H
-	.byte	0
+	ldx	#FLTVAR_H
+	ldab	#0
+	jsr	ld_fx_pb
 
 	; GOTO 220
 
-	.byte	bytecode_goto_ix
-	.word	LINE_220
+	ldx	#LINE_220
+	jsr	goto_ix
 
 LINE_260
 
 	; IF QQ$="Z" THEN
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sr1_ss
 	.text	1, "Z"
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_265
+	ldx	#LINE_265
+	jsr	jmpeq_ir1_ix
 
 	; GOSUB 620
 
-	.byte	bytecode_gosub_ix
-	.word	LINE_620
+	ldx	#LINE_620
+	jsr	gosub_ix
 
 	; V+=1
 
-	.byte	bytecode_add_fx_fx_pb
-	.byte	bytecode_FLTVAR_V
-	.byte	1
+	ldx	#FLTVAR_V
+	ldab	#1
+	jsr	add_fx_fx_pb
 
 	; IF V>MY THEN
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_MY
+	ldx	#INTVAR_MY
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_ldlt_ir1_ir1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ldlt_ir1_ir1_fx
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_265
+	ldx	#LINE_265
+	jsr	jmpeq_ir1_ix
 
 	; V=0
 
-	.byte	bytecode_ld_fx_pb
-	.byte	bytecode_FLTVAR_V
-	.byte	0
+	ldx	#FLTVAR_V
+	ldab	#0
+	jsr	ld_fx_pb
 
 	; GOTO 220
 
-	.byte	bytecode_goto_ix
-	.word	LINE_220
+	ldx	#LINE_220
+	jsr	goto_ix
 
 LINE_265
 
 	; IF QQ$="W" THEN
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sr1_ss
 	.text	1, "W"
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_270
+	ldx	#LINE_270
+	jsr	jmpeq_ir1_ix
 
 	; GOSUB 620
 
-	.byte	bytecode_gosub_ix
-	.word	LINE_620
+	ldx	#LINE_620
+	jsr	gosub_ix
 
 	; V-=1
 
-	.byte	bytecode_sub_fx_fx_pb
-	.byte	bytecode_FLTVAR_V
-	.byte	1
+	ldx	#FLTVAR_V
+	ldab	#1
+	jsr	sub_fx_fx_pb
 
 	; IF V<0 THEN
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ldlt_ir1_fr1_pb
-	.byte	0
+	ldab	#0
+	jsr	ldlt_ir1_fr1_pb
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_270
+	ldx	#LINE_270
+	jsr	jmpeq_ir1_ix
 
 	; V=MY
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_MY
+	ldx	#INTVAR_MY
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_ld_fx_ir1
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fx_ir1
 
 	; GOTO 220
 
-	.byte	bytecode_goto_ix
-	.word	LINE_220
+	ldx	#LINE_220
+	jsr	goto_ix
 
 LINE_270
 
 	; IF (QQ$="") AND (N(H,V)=0) AND (L>0) THEN
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sr1_ss
 	.text	1, "\r"
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_ld_fr3_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr3_fx
 
-	.byte	bytecode_arrval2_ir2_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrval2_ir2_ix
 
-	.byte	bytecode_ldeq_ir2_ir2_pb
-	.byte	0
+	ldab	#0
+	jsr	ldeq_ir2_ir2_pb
 
-	.byte	bytecode_and_ir1_ir1_ir2
+	jsr	and_ir1_ir1_ir2
 
-	.byte	bytecode_ld_ir2_pb
-	.byte	0
+	ldab	#0
+	jsr	ld_ir2_pb
 
-	.byte	bytecode_ldlt_ir2_ir2_ix
-	.byte	bytecode_INTVAR_L
+	ldx	#INTVAR_L
+	jsr	ldlt_ir2_ir2_ix
 
-	.byte	bytecode_and_ir1_ir1_ir2
+	jsr	and_ir1_ir1_ir2
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_272
+	ldx	#LINE_272
+	jsr	jmpeq_ir1_ix
 
 	; PRINT @(V*32)+H, "?";
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_mul_fr1_fr1_pb
-	.byte	32
+	ldab	#32
+	jsr	mul_fr1_fr1_pb
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_prat_ir1
+	jsr	prat_ir1
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	1, "?"
 
 	; N(H,V)=1
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrref2_ir1_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrref2_ir1_ix
 
-	.byte	bytecode_ld_ip_pb
-	.byte	1
+	ldab	#1
+	jsr	ld_ip_pb
 
 	; L-=1
 
-	.byte	bytecode_sub_ix_ix_pb
-	.byte	bytecode_INTVAR_L
-	.byte	1
+	ldx	#INTVAR_L
+	ldab	#1
+	jsr	sub_ix_ix_pb
 
 	; FOR Z=1 TO 35
 
-	.byte	bytecode_for_ix_pb
-	.byte	bytecode_INTVAR_Z
-	.byte	1
+	ldx	#INTVAR_Z
+	ldab	#1
+	jsr	for_ix_pb
 
-	.byte	bytecode_to_ip_pb
-	.byte	35
+	ldab	#35
+	jsr	to_ip_pb
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 	; GOTO 220
 
-	.byte	bytecode_goto_ix
-	.word	LINE_220
+	ldx	#LINE_220
+	jsr	goto_ix
 
 LINE_272
 
 	; IF (QQ$="") AND (N(H,V)=1) THEN
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sr1_ss
 	.text	1, "\r"
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_ld_fr3_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr3_fx
 
-	.byte	bytecode_arrval2_ir2_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrval2_ir2_ix
 
-	.byte	bytecode_ldeq_ir2_ir2_pb
-	.byte	1
+	ldab	#1
+	jsr	ldeq_ir2_ir2_pb
 
-	.byte	bytecode_and_ir1_ir1_ir2
+	jsr	and_ir1_ir1_ir2
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_275
+	ldx	#LINE_275
+	jsr	jmpeq_ir1_ix
 
 	; PRINT @(V*32)+H, ".";
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_mul_fr1_fr1_pb
-	.byte	32
+	ldab	#32
+	jsr	mul_fr1_fr1_pb
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_prat_ir1
+	jsr	prat_ir1
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	1, "."
 
 	; N(H,V)=0
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrref2_ir1_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrref2_ir1_ix
 
-	.byte	bytecode_ld_ip_pb
-	.byte	0
+	ldab	#0
+	jsr	ld_ip_pb
 
 	; L+=1
 
-	.byte	bytecode_add_ix_ix_pb
-	.byte	bytecode_INTVAR_L
-	.byte	1
+	ldx	#INTVAR_L
+	ldab	#1
+	jsr	add_ix_ix_pb
 
 	; FOR Z=1 TO 35
 
-	.byte	bytecode_for_ix_pb
-	.byte	bytecode_INTVAR_Z
-	.byte	1
+	ldx	#INTVAR_Z
+	ldab	#1
+	jsr	for_ix_pb
 
-	.byte	bytecode_to_ip_pb
-	.byte	35
+	ldab	#35
+	jsr	to_ip_pb
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 	; GOTO 220
 
-	.byte	bytecode_goto_ix
-	.word	LINE_220
+	ldx	#LINE_220
+	jsr	goto_ix
 
 LINE_275
 
-	; IF QQ$<>" " THEN
+	; WHEN QQ$<>" " GOTO 220
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldne_ir1_sr1_ss
+	jsr	ldne_ir1_sr1_ss
 	.text	1, " "
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_220
+	ldx	#LINE_220
+	jsr	jmpne_ir1_ix
 
 LINE_280
 
-	; IF N(H,V)<>0 THEN
+	; WHEN N(H,V)<>0 GOTO 220
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_ldne_ir1_ir1_pb
-	.byte	0
+	ldab	#0
+	jsr	ldne_ir1_ir1_pb
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_220
+	ldx	#LINE_220
+	jsr	jmpne_ir1_ix
 
 LINE_285
 
 	; POKE (V*32)+H+MC,96
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_mul_fr1_fr1_pb
-	.byte	32
+	ldab	#32
+	jsr	mul_fr1_fr1_pb
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_ix
-	.byte	bytecode_INTVAR_MC
+	ldx	#INTVAR_MC
+	jsr	add_fr1_fr1_ix
 
-	.byte	bytecode_poke_ir1_pb
-	.byte	96
+	ldab	#96
+	jsr	poke_ir1_pb
 
 	; C=M(H,V)
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_ld_ix_ir1
-	.byte	bytecode_INTVAR_C
+	ldx	#INTVAR_C
+	jsr	ld_ix_ir1
 
-	; IF C=-1 THEN
+	; WHEN C=-1 GOTO 400
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_C
+	ldx	#INTVAR_C
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_ldeq_ir1_ir1_nb
-	.byte	-1
+	ldab	#-1
+	jsr	ldeq_ir1_ir1_nb
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_400
+	ldx	#LINE_400
+	jsr	jmpne_ir1_ix
 
 LINE_300
 
 	; R-=1
 
-	.byte	bytecode_sub_ix_ix_pb
-	.byte	bytecode_INTVAR_R
-	.byte	1
+	ldx	#INTVAR_R
+	ldab	#1
+	jsr	sub_ix_ix_pb
 
 LINE_305
 
 	; IF C=0 THEN
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_C
+	ldx	#INTVAR_C
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_ldeq_ir1_ir1_pb
-	.byte	0
+	ldab	#0
+	jsr	ldeq_ir1_ir1_pb
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_310
+	ldx	#LINE_310
+	jsr	jmpeq_ir1_ix
 
 	; N(H,V)=3
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrref2_ir1_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrref2_ir1_ix
 
-	.byte	bytecode_ld_ip_pb
-	.byte	3
+	ldab	#3
+	jsr	ld_ip_pb
 
 	; GOTO 325
 
-	.byte	bytecode_goto_ix
-	.word	LINE_325
+	ldx	#LINE_325
+	jsr	goto_ix
 
 LINE_310
 
 	; PRINT @(V*32)+H, CHR$(C+48);
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_mul_fr1_fr1_pb
-	.byte	32
+	ldab	#32
+	jsr	mul_fr1_fr1_pb
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_prat_ir1
+	jsr	prat_ir1
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_C
+	ldx	#INTVAR_C
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_add_ir1_ir1_pb
-	.byte	48
+	ldab	#48
+	jsr	add_ir1_ir1_pb
 
-	.byte	bytecode_chr_sr1_ir1
+	jsr	chr_sr1_ir1
 
-	.byte	bytecode_pr_sr1
+	jsr	pr_sr1
 
 	; N(H,V)=2
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrref2_ir1_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrref2_ir1_ix
 
-	.byte	bytecode_ld_ip_pb
-	.byte	2
+	ldab	#2
+	jsr	ld_ip_pb
 
 	; GOTO 220
 
-	.byte	bytecode_goto_ix
-	.word	LINE_220
+	ldx	#LINE_220
+	jsr	goto_ix
 
 LINE_325
 
 	; OH=H
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fx_fr1
-	.byte	bytecode_FLTVAR_OH
+	ldx	#FLTVAR_OH
+	jsr	ld_fx_fr1
 
 	; OV=V
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fx_fr1
-	.byte	bytecode_FLTVAR_OV
+	ldx	#FLTVAR_OV
+	jsr	ld_fx_fr1
 
 	; ST=1
 
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_ST
-	.byte	1
+	ldx	#INTVAR_ST
+	ldab	#1
+	jsr	ld_ix_pb
 
 	; SX(ST)=H
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_ST
+	ldx	#INTVAR_ST
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_arrref1_ir1_fx
-	.byte	bytecode_FLTARR_SX
+	ldx	#FLTARR_SX
+	jsr	arrref1_ir1_fx
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fp_fr1
+	jsr	ld_fp_fr1
 
 	; SY(ST)=V
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_ST
+	ldx	#INTVAR_ST
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_arrref1_ir1_fx
-	.byte	bytecode_FLTARR_SY
+	ldx	#FLTARR_SY
+	jsr	arrref1_ir1_fx
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fp_fr1
+	jsr	ld_fp_fr1
 
 LINE_335
 
 	; IF ST=0 THEN
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_ST
+	ldx	#INTVAR_ST
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_ldeq_ir1_ir1_pb
-	.byte	0
+	ldab	#0
+	jsr	ldeq_ir1_ir1_pb
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_340
+	ldx	#LINE_340
+	jsr	jmpeq_ir1_ix
 
 	; H=OH
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_OH
+	ldx	#FLTVAR_OH
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fx_fr1
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fx_fr1
 
 	; V=OV
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_OV
+	ldx	#FLTVAR_OV
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fx_fr1
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fx_fr1
 
 	; GOTO 220
 
-	.byte	bytecode_goto_ix
-	.word	LINE_220
+	ldx	#LINE_220
+	jsr	goto_ix
 
 LINE_340
 
 	; X=SX(ST)
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_ST
+	ldx	#INTVAR_ST
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_arrval1_ir1_fx
-	.byte	bytecode_FLTARR_SX
+	ldx	#FLTARR_SX
+	jsr	arrval1_ir1_fx
 
-	.byte	bytecode_ld_fx_fr1
-	.byte	bytecode_FLTVAR_X
+	ldx	#FLTVAR_X
+	jsr	ld_fx_fr1
 
 	; Y=SY(ST)
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_ST
+	ldx	#INTVAR_ST
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_arrval1_ir1_fx
-	.byte	bytecode_FLTARR_SY
+	ldx	#FLTARR_SY
+	jsr	arrval1_ir1_fx
 
-	.byte	bytecode_ld_fx_fr1
-	.byte	bytecode_FLTVAR_Y
+	ldx	#FLTVAR_Y
+	jsr	ld_fx_fr1
 
 	; FOR H=X-1 TO X+1
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_X
+	ldx	#FLTVAR_X
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_sub_fr1_fr1_pb
-	.byte	1
+	ldab	#1
+	jsr	sub_fr1_fr1_pb
 
-	.byte	bytecode_for_fx_fr1
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	for_fx_fr1
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_X
+	ldx	#FLTVAR_X
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_pb
-	.byte	1
+	ldab	#1
+	jsr	add_fr1_fr1_pb
 
-	.byte	bytecode_to_fp_fr1
+	jsr	to_fp_fr1
 
 	; FOR V=Y-1 TO Y+1
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_Y
+	ldx	#FLTVAR_Y
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_sub_fr1_fr1_pb
-	.byte	1
+	ldab	#1
+	jsr	sub_fr1_fr1_pb
 
-	.byte	bytecode_for_fx_fr1
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	for_fx_fr1
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_Y
+	ldx	#FLTVAR_Y
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_pb
-	.byte	1
+	ldab	#1
+	jsr	add_fr1_fr1_pb
 
-	.byte	bytecode_to_fp_fr1
+	jsr	to_fp_fr1
 
 LINE_350
 
-	; IF (H<0) OR (H>MX) OR (V<0) OR (V>MY) THEN
+	; WHEN (H<0) OR (H>MX) OR (V<0) OR (V>MY) GOTO 390
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ldlt_ir1_fr1_pb
-	.byte	0
+	ldab	#0
+	jsr	ldlt_ir1_fr1_pb
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_MX
+	ldx	#INTVAR_MX
+	jsr	ld_ir2_ix
 
-	.byte	bytecode_ldlt_ir2_ir2_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ldlt_ir2_ir2_fx
 
-	.byte	bytecode_or_ir1_ir1_ir2
+	jsr	or_ir1_ir1_ir2
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_ldlt_ir2_fr2_pb
-	.byte	0
+	ldab	#0
+	jsr	ldlt_ir2_fr2_pb
 
-	.byte	bytecode_or_ir1_ir1_ir2
+	jsr	or_ir1_ir1_ir2
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_MY
+	ldx	#INTVAR_MY
+	jsr	ld_ir2_ix
 
-	.byte	bytecode_ldlt_ir2_ir2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ldlt_ir2_ir2_fx
 
-	.byte	bytecode_or_ir1_ir1_ir2
+	jsr	or_ir1_ir1_ir2
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_390
+	ldx	#LINE_390
+	jsr	jmpne_ir1_ix
 
 LINE_355
 
-	; IF N(H,V)<>0 THEN
+	; WHEN N(H,V)<>0 GOTO 390
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_ldne_ir1_ir1_pb
-	.byte	0
+	ldab	#0
+	jsr	ldne_ir1_ir1_pb
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_390
+	ldx	#LINE_390
+	jsr	jmpne_ir1_ix
 
 LINE_360
 
 	; IF M(H,V)>0 THEN
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	0
+	ldab	#0
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_ld_fr3_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr3_fx
 
-	.byte	bytecode_arrval2_ir2_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir2_ix
 
-	.byte	bytecode_ldlt_ir1_ir1_ir2
+	jsr	ldlt_ir1_ir1_ir2
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_365
+	ldx	#LINE_365
+	jsr	jmpeq_ir1_ix
 
 	; N(H,V)=2
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrref2_ir1_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrref2_ir1_ix
 
-	.byte	bytecode_ld_ip_pb
-	.byte	2
+	ldab	#2
+	jsr	ld_ip_pb
 
 	; R-=1
 
-	.byte	bytecode_sub_ix_ix_pb
-	.byte	bytecode_INTVAR_R
-	.byte	1
+	ldx	#INTVAR_R
+	ldab	#1
+	jsr	sub_ix_ix_pb
 
 	; PRINT @(V*32)+H, CHR$(M(H,V)+48);
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_mul_fr1_fr1_pb
-	.byte	32
+	ldab	#32
+	jsr	mul_fr1_fr1_pb
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_prat_ir1
+	jsr	prat_ir1
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_add_ir1_ir1_pb
-	.byte	48
+	ldab	#48
+	jsr	add_ir1_ir1_pb
 
-	.byte	bytecode_chr_sr1_ir1
+	jsr	chr_sr1_ir1
 
-	.byte	bytecode_pr_sr1
+	jsr	pr_sr1
 
 	; GOTO 390
 
-	.byte	bytecode_goto_ix
-	.word	LINE_390
+	ldx	#LINE_390
+	jsr	goto_ix
 
 LINE_365
 
-	; IF M(H,V)=-1 THEN
+	; WHEN M(H,V)=-1 GOTO 390
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_ldeq_ir1_ir1_nb
-	.byte	-1
+	ldab	#-1
+	jsr	ldeq_ir1_ir1_nb
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_390
+	ldx	#LINE_390
+	jsr	jmpne_ir1_ix
 
 LINE_370
 
 	; POKE (V*32)+H+MC,96
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_mul_fr1_fr1_pb
-	.byte	32
+	ldab	#32
+	jsr	mul_fr1_fr1_pb
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_ix
-	.byte	bytecode_INTVAR_MC
+	ldx	#INTVAR_MC
+	jsr	add_fr1_fr1_ix
 
-	.byte	bytecode_poke_ir1_pb
-	.byte	96
+	ldab	#96
+	jsr	poke_ir1_pb
 
 	; N(H,V)=3
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrref2_ir1_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrref2_ir1_ix
 
-	.byte	bytecode_ld_ip_pb
-	.byte	3
+	ldab	#3
+	jsr	ld_ip_pb
 
 LINE_380
 
 	; R-=1
 
-	.byte	bytecode_sub_ix_ix_pb
-	.byte	bytecode_INTVAR_R
-	.byte	1
+	ldx	#INTVAR_R
+	ldab	#1
+	jsr	sub_ix_ix_pb
 
 	; ST+=1
 
-	.byte	bytecode_add_ix_ix_pb
-	.byte	bytecode_INTVAR_ST
-	.byte	1
+	ldx	#INTVAR_ST
+	ldab	#1
+	jsr	add_ix_ix_pb
 
 	; SX(ST)=H
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_ST
+	ldx	#INTVAR_ST
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_arrref1_ir1_fx
-	.byte	bytecode_FLTARR_SX
+	ldx	#FLTARR_SX
+	jsr	arrref1_ir1_fx
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fp_fr1
+	jsr	ld_fp_fr1
 
 	; SY(ST)=V
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_ST
+	ldx	#INTVAR_ST
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_arrref1_ir1_fx
-	.byte	bytecode_FLTARR_SY
+	ldx	#FLTARR_SY
+	jsr	arrref1_ir1_fx
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fp_fr1
+	jsr	ld_fp_fr1
 
 	; GOTO 340
 
-	.byte	bytecode_goto_ix
-	.word	LINE_340
+	ldx	#LINE_340
+	jsr	goto_ix
 
 LINE_390
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 LINE_395
 
 	; ST-=1
 
-	.byte	bytecode_sub_ix_ix_pb
-	.byte	bytecode_INTVAR_ST
-	.byte	1
+	ldx	#INTVAR_ST
+	ldab	#1
+	jsr	sub_ix_ix_pb
 
 	; GOTO 335
 
-	.byte	bytecode_goto_ix
-	.word	LINE_335
+	ldx	#LINE_335
+	jsr	goto_ix
 
 LINE_400
 
 	; POKE (V*32)+H+MC,42
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_mul_fr1_fr1_pb
-	.byte	32
+	ldab	#32
+	jsr	mul_fr1_fr1_pb
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_ix
-	.byte	bytecode_INTVAR_MC
+	ldx	#INTVAR_MC
+	jsr	add_fr1_fr1_ix
 
-	.byte	bytecode_poke_ir1_pb
-	.byte	42
+	ldab	#42
+	jsr	poke_ir1_pb
 
 	; GOSUB 8000
 
-	.byte	bytecode_gosub_ix
-	.word	LINE_8000
+	ldx	#LINE_8000
+	jsr	gosub_ix
 
 	; PRINT @480, "YOU LOSE.          ";
 
-	.byte	bytecode_prat_pw
-	.word	480
+	ldd	#480
+	jsr	prat_pw
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	19, "YOU LOSE.          "
 
 LINE_405
 
 	; FOR V=0 TO MY
 
-	.byte	bytecode_for_fx_pb
-	.byte	bytecode_FLTVAR_V
-	.byte	0
+	ldx	#FLTVAR_V
+	ldab	#0
+	jsr	for_fx_pb
 
-	.byte	bytecode_to_fp_ix
-	.byte	bytecode_INTVAR_MY
+	ldx	#INTVAR_MY
+	jsr	to_fp_ix
 
 	; FOR H=0 TO MX
 
-	.byte	bytecode_for_fx_pb
-	.byte	bytecode_FLTVAR_H
-	.byte	0
+	ldx	#FLTVAR_H
+	ldab	#0
+	jsr	for_fx_pb
 
-	.byte	bytecode_to_fp_ix
-	.byte	bytecode_INTVAR_MX
+	ldx	#INTVAR_MX
+	jsr	to_fp_ix
 
 LINE_410
 
 	; IF M(H,V)=-1 THEN
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_ldeq_ir1_ir1_nb
-	.byte	-1
+	ldab	#-1
+	jsr	ldeq_ir1_ir1_nb
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_415
+	ldx	#LINE_415
+	jsr	jmpeq_ir1_ix
 
 	; PRINT @(V*32)+H, "*";
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_mul_fr1_fr1_pb
-	.byte	32
+	ldab	#32
+	jsr	mul_fr1_fr1_pb
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_prat_ir1
+	jsr	prat_ir1
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	1, "*"
 
 LINE_415
 
 	; IF (N(H,V)=1) AND (M(H,V)<>-1) THEN
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_ldeq_ir1_ir1_pb
-	.byte	1
+	ldab	#1
+	jsr	ldeq_ir1_ir1_pb
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_ld_fr3_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr3_fx
 
-	.byte	bytecode_arrval2_ir2_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir2_ix
 
-	.byte	bytecode_ldne_ir2_ir2_nb
-	.byte	-1
+	ldab	#-1
+	jsr	ldne_ir2_ir2_nb
 
-	.byte	bytecode_and_ir1_ir1_ir2
+	jsr	and_ir1_ir1_ir2
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_420
+	ldx	#LINE_420
+	jsr	jmpeq_ir1_ix
 
 	; PRINT @(32*V)+H, "X";
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	32
+	ldab	#32
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_mul_fr1_ir1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	mul_fr1_ir1_fx
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_prat_ir1
+	jsr	prat_ir1
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	1, "X"
 
 LINE_420
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 LINE_450
 
 	; FOR V=0 TO MY
 
-	.byte	bytecode_for_fx_pb
-	.byte	bytecode_FLTVAR_V
-	.byte	0
+	ldx	#FLTVAR_V
+	ldab	#0
+	jsr	for_fx_pb
 
-	.byte	bytecode_to_fp_ix
-	.byte	bytecode_INTVAR_MY
+	ldx	#INTVAR_MY
+	jsr	to_fp_ix
 
 	; FOR H=0 TO MX
 
-	.byte	bytecode_for_fx_pb
-	.byte	bytecode_FLTVAR_H
-	.byte	0
+	ldx	#FLTVAR_H
+	ldab	#0
+	jsr	for_fx_pb
 
-	.byte	bytecode_to_fp_ix
-	.byte	bytecode_INTVAR_MX
+	ldx	#INTVAR_MX
+	jsr	to_fp_ix
 
 	; IF (M(H,V)=-1) AND (N(H,V)<>1) THEN
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_arrval2_ir1_ix
-	.byte	bytecode_INTARR_M
+	ldx	#INTARR_M
+	jsr	arrval2_ir1_ix
 
-	.byte	bytecode_ldeq_ir1_ir1_nb
-	.byte	-1
+	ldab	#-1
+	jsr	ldeq_ir1_ir1_nb
 
-	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	ld_fr2_fx
 
-	.byte	bytecode_ld_fr3_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr3_fx
 
-	.byte	bytecode_arrval2_ir2_ix
-	.byte	bytecode_INTARR_N
+	ldx	#INTARR_N
+	jsr	arrval2_ir2_ix
 
-	.byte	bytecode_ldne_ir2_ir2_pb
-	.byte	1
+	ldab	#1
+	jsr	ldne_ir2_ir2_pb
 
-	.byte	bytecode_and_ir1_ir1_ir2
+	jsr	and_ir1_ir1_ir2
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_460
+	ldx	#LINE_460
+	jsr	jmpeq_ir1_ix
 
 	; PRINT @(V*32)+H, "*";
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	ld_fr1_fx
 
-	.byte	bytecode_mul_fr1_fr1_pb
-	.byte	32
+	ldab	#32
+	jsr	mul_fr1_fr1_pb
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_prat_ir1
+	jsr	prat_ir1
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	1, "*"
 
 LINE_460
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
 
 LINE_480
 
 	; PRINT @495, "PLAY AGAIN (Y/N)";
 
-	.byte	bytecode_prat_pw
-	.word	495
+	ldd	#495
+	jsr	prat_pw
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	16, "PLAY AGAIN (Y/N)"
 
 	; POKE MC+511,127
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_MC
+	ldx	#INTVAR_MC
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_add_ir1_ir1_pw
-	.word	511
+	ldd	#511
+	jsr	add_ir1_ir1_pw
 
-	.byte	bytecode_poke_ir1_pb
-	.byte	127
+	ldab	#127
+	jsr	poke_ir1_pb
 
 LINE_560
 
 	; QQ$=INKEY$
 
-	.byte	bytecode_inkey_sr1
+	jsr	inkey_sr1
 
-	.byte	bytecode_ld_sx_sr1
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sx_sr1
 
 	; IF (QQ$="Y") OR (QQ$="Y") THEN
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sr1_ss
 	.text	1, "Y"
 
-	.byte	bytecode_ld_sr2_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr2_sx
 
-	.byte	bytecode_ldeq_ir2_sr2_ss
+	jsr	ldeq_ir2_sr2_ss
 	.text	1, "Y"
 
-	.byte	bytecode_or_ir1_ir1_ir2
+	jsr	or_ir1_ir1_ir2
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_570
+	ldx	#LINE_570
+	jsr	jmpeq_ir1_ix
 
 	; RUN
 
-	.byte	bytecode_clear
+	jsr	clear
 
-	.byte	bytecode_goto_ix
-	.word	LINE_0
+	ldx	#LINE_0
+	jsr	goto_ix
 
 LINE_570
 
-	; IF (QQ$<>"N") AND (QQ$<>"N") THEN
+	; WHEN (QQ$<>"N") AND (QQ$<>"N") GOTO 560
 
-	.byte	bytecode_ld_sr1_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr1_sx
 
-	.byte	bytecode_ldne_ir1_sr1_ss
+	jsr	ldne_ir1_sr1_ss
 	.text	1, "N"
 
-	.byte	bytecode_ld_sr2_sx
-	.byte	bytecode_STRVAR_QQ
+	ldx	#STRVAR_QQ
+	jsr	ld_sr2_sx
 
-	.byte	bytecode_ldne_ir2_sr2_ss
+	jsr	ldne_ir2_sr2_ss
 	.text	1, "N"
 
-	.byte	bytecode_and_ir1_ir1_ir2
+	jsr	and_ir1_ir1_ir2
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_560
+	ldx	#LINE_560
+	jsr	jmpne_ir1_ix
 
 LINE_580
 
 	; SOUND 100,1
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	100
+	ldab	#100
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_ld_ir2_pb
-	.byte	1
+	ldab	#1
+	jsr	ld_ir2_pb
 
-	.byte	bytecode_sound_ir1_ir2
+	jsr	sound_ir1_ir2
 
 	; END
 
-	.byte	bytecode_progend
+	jsr	progend
 
 LINE_600
 
 	; POKE (32*V)+H+MC,PEEK((32*V)+H+MC)-64
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	32
+	ldab	#32
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_mul_fr1_ir1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	mul_fr1_ir1_fx
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_ix
-	.byte	bytecode_INTVAR_MC
+	ldx	#INTVAR_MC
+	jsr	add_fr1_fr1_ix
 
-	.byte	bytecode_ld_ir2_pb
-	.byte	32
+	ldab	#32
+	jsr	ld_ir2_pb
 
-	.byte	bytecode_mul_fr2_ir2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	mul_fr2_ir2_fx
 
-	.byte	bytecode_add_fr2_fr2_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr2_fr2_fx
 
-	.byte	bytecode_add_fr2_fr2_ix
-	.byte	bytecode_INTVAR_MC
+	ldx	#INTVAR_MC
+	jsr	add_fr2_fr2_ix
 
-	.byte	bytecode_peek_ir2_ir2
+	jsr	peek_ir2_ir2
 
-	.byte	bytecode_sub_ir2_ir2_pb
-	.byte	64
+	ldab	#64
+	jsr	sub_ir2_ir2_pb
 
-	.byte	bytecode_poke_ir1_ir2
+	jsr	poke_ir1_ir2
 
 	; RETURN
 
-	.byte	bytecode_return
+	jsr	return
 
 LINE_620
 
 	; POKE (32*V)+H+MC,PEEK((32*V)+H+MC)+64
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	32
+	ldab	#32
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_mul_fr1_ir1_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	mul_fr1_ir1_fx
 
-	.byte	bytecode_add_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr1_fr1_fx
 
-	.byte	bytecode_add_fr1_fr1_ix
-	.byte	bytecode_INTVAR_MC
+	ldx	#INTVAR_MC
+	jsr	add_fr1_fr1_ix
 
-	.byte	bytecode_ld_ir2_pb
-	.byte	32
+	ldab	#32
+	jsr	ld_ir2_pb
 
-	.byte	bytecode_mul_fr2_ir2_fx
-	.byte	bytecode_FLTVAR_V
+	ldx	#FLTVAR_V
+	jsr	mul_fr2_ir2_fx
 
-	.byte	bytecode_add_fr2_fr2_fx
-	.byte	bytecode_FLTVAR_H
+	ldx	#FLTVAR_H
+	jsr	add_fr2_fr2_fx
 
-	.byte	bytecode_add_fr2_fr2_ix
-	.byte	bytecode_INTVAR_MC
+	ldx	#INTVAR_MC
+	jsr	add_fr2_fr2_ix
 
-	.byte	bytecode_peek_ir2_ir2
+	jsr	peek_ir2_ir2
 
-	.byte	bytecode_add_ir2_ir2_pb
-	.byte	64
+	ldab	#64
+	jsr	add_ir2_ir2_pb
 
-	.byte	bytecode_poke_ir1_ir2
+	jsr	poke_ir1_ir2
 
 	; RETURN
 
-	.byte	bytecode_return
+	jsr	return
 
 LINE_8000
 
 	; FOR X=1 TO 10
 
-	.byte	bytecode_for_fx_pb
-	.byte	bytecode_FLTVAR_X
-	.byte	1
+	ldx	#FLTVAR_X
+	ldab	#1
+	jsr	for_fx_pb
 
-	.byte	bytecode_to_fp_pb
-	.byte	10
+	ldab	#10
+	jsr	to_fp_pb
 
 	; SOUND 1,1
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	1
+	ldab	#1
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_ld_ir2_pb
-	.byte	1
+	ldab	#1
+	jsr	ld_ir2_pb
 
-	.byte	bytecode_sound_ir1_ir2
+	jsr	sound_ir1_ir2
 
 	; POKE 49151,64
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	64
+	ldab	#64
+	jsr	ld_ir1_pb
 
-	.byte	bytecode_poke_pw_ir1
-	.word	49151
+	ldd	#49151
+	jsr	poke_pw_ir1
 
 	; FOR Z=1 TO 35
 
-	.byte	bytecode_for_ix_pb
-	.byte	bytecode_INTVAR_Z
-	.byte	1
+	ldx	#INTVAR_Z
+	ldab	#1
+	jsr	for_ix_pb
 
-	.byte	bytecode_to_ip_pb
-	.byte	35
-
-	; NEXT
-
-	.byte	bytecode_next
+	ldab	#35
+	jsr	to_ip_pb
 
 	; NEXT
 
-	.byte	bytecode_next
+	jsr	next
+
+	; NEXT
+
+	jsr	next
 
 	; RETURN
 
-	.byte	bytecode_return
+	jsr	return
 
 LLAST
 
 	; END
 
-	.byte	bytecode_progend
-
-; Library Catalog
-bytecode_add_fr1_fr1_fx	.equ	0
-bytecode_add_fr1_fr1_ix	.equ	1
-bytecode_add_fr1_fr1_pb	.equ	2
-bytecode_add_fr2_fr2_fx	.equ	3
-bytecode_add_fr2_fr2_ix	.equ	4
-bytecode_add_fr3_fr3_fx	.equ	5
-bytecode_add_fx_fx_pb	.equ	6
-bytecode_add_ir1_ir1_pb	.equ	7
-bytecode_add_ir1_ir1_pw	.equ	8
-bytecode_add_ir2_ir2_pb	.equ	9
-bytecode_add_ix_ix_pb	.equ	10
-bytecode_and_ir1_ir1_ir2	.equ	11
-bytecode_arrdim1_ir1_fx	.equ	12
-bytecode_arrdim1_ir1_ix	.equ	13
-bytecode_arrdim2_ir1_ix	.equ	14
-bytecode_arrref1_ir1_fx	.equ	15
-bytecode_arrref2_ir1_ix	.equ	16
-bytecode_arrval1_ir1_fx	.equ	17
-bytecode_arrval2_ir1_ix	.equ	18
-bytecode_arrval2_ir2_ix	.equ	19
-bytecode_chr_sr1_ir1	.equ	20
-bytecode_chr_sr1_ix	.equ	21
-bytecode_clear	.equ	22
-bytecode_cls	.equ	23
-bytecode_clsn_pb	.equ	24
-bytecode_for_fx_fr1	.equ	25
-bytecode_for_fx_nb	.equ	26
-bytecode_for_fx_pb	.equ	27
-bytecode_for_ix_pb	.equ	28
-bytecode_gosub_ix	.equ	29
-bytecode_goto_ix	.equ	30
-bytecode_inkey_sr1	.equ	31
-bytecode_irnd_ir1_pb	.equ	32
-bytecode_jmpeq_ir1_ix	.equ	33
-bytecode_jmpne_ir1_ix	.equ	34
-bytecode_ld_fp_fr1	.equ	35
-bytecode_ld_fr1_fx	.equ	36
-bytecode_ld_fr2_fx	.equ	37
-bytecode_ld_fr3_fx	.equ	38
-bytecode_ld_fx_fr1	.equ	39
-bytecode_ld_fx_ir1	.equ	40
-bytecode_ld_fx_pb	.equ	41
-bytecode_ld_ip_ir1	.equ	42
-bytecode_ld_ip_nb	.equ	43
-bytecode_ld_ip_pb	.equ	44
-bytecode_ld_ir1_ix	.equ	45
-bytecode_ld_ir1_pb	.equ	46
-bytecode_ld_ir2_ix	.equ	47
-bytecode_ld_ir2_pb	.equ	48
-bytecode_ld_ix_ir1	.equ	49
-bytecode_ld_ix_pb	.equ	50
-bytecode_ld_ix_pw	.equ	51
-bytecode_ld_sr1_sx	.equ	52
-bytecode_ld_sr2_sx	.equ	53
-bytecode_ld_sx_sr1	.equ	54
-bytecode_ldeq_ir1_fr1_pb	.equ	55
-bytecode_ldeq_ir1_ir1_nb	.equ	56
-bytecode_ldeq_ir1_ir1_pb	.equ	57
-bytecode_ldeq_ir1_sr1_ss	.equ	58
-bytecode_ldeq_ir2_fr2_pb	.equ	59
-bytecode_ldeq_ir2_ir2_pb	.equ	60
-bytecode_ldeq_ir2_sr2_ss	.equ	61
-bytecode_ldlt_ir1_fr1_pb	.equ	62
-bytecode_ldlt_ir1_ir1_fx	.equ	63
-bytecode_ldlt_ir1_ir1_ir2	.equ	64
-bytecode_ldlt_ir2_fr2_pb	.equ	65
-bytecode_ldlt_ir2_ir2_fr3	.equ	66
-bytecode_ldlt_ir2_ir2_fx	.equ	67
-bytecode_ldlt_ir2_ir2_ix	.equ	68
-bytecode_ldne_ir1_ir1_nb	.equ	69
-bytecode_ldne_ir1_ir1_pb	.equ	70
-bytecode_ldne_ir1_sr1_ss	.equ	71
-bytecode_ldne_ir2_ir2_nb	.equ	72
-bytecode_ldne_ir2_ir2_pb	.equ	73
-bytecode_ldne_ir2_sr2_ss	.equ	74
-bytecode_mul_fr1_fr1_pb	.equ	75
-bytecode_mul_fr1_ir1_fx	.equ	76
-bytecode_mul_fr2_ir2_fx	.equ	77
-bytecode_mul_ir1_ir1_ir2	.equ	78
-bytecode_next	.equ	79
-bytecode_ongoto_ir1_is	.equ	80
-bytecode_or_ir1_ir1_ir2	.equ	81
-bytecode_peek_ir1_pw	.equ	82
-bytecode_peek_ir2_ir2	.equ	83
-bytecode_peek_ir2_pb	.equ	84
-bytecode_poke_ir1_ir2	.equ	85
-bytecode_poke_ir1_pb	.equ	86
-bytecode_poke_pw_ir1	.equ	87
-bytecode_pr_sr1	.equ	88
-bytecode_pr_ss	.equ	89
-bytecode_prat_ir1	.equ	90
-bytecode_prat_pb	.equ	91
-bytecode_prat_pw	.equ	92
-bytecode_progbegin	.equ	93
-bytecode_progend	.equ	94
-bytecode_return	.equ	95
-bytecode_rnd_fr1_ix	.equ	96
-bytecode_sound_ir1_ir2	.equ	97
-bytecode_str_sr1_ix	.equ	98
-bytecode_sub_fr1_fr1_pb	.equ	99
-bytecode_sub_fx_fx_pb	.equ	100
-bytecode_sub_ir1_ir1_ix	.equ	101
-bytecode_sub_ir2_ir2_pb	.equ	102
-bytecode_sub_ix_ix_pb	.equ	103
-bytecode_to_fp_fr1	.equ	104
-bytecode_to_fp_ix	.equ	105
-bytecode_to_fp_pb	.equ	106
-bytecode_to_ip_ix	.equ	107
-bytecode_to_ip_pb	.equ	108
-bytecode_val_fr1_sx	.equ	109
-
-catalog
-	.word	add_fr1_fr1_fx
-	.word	add_fr1_fr1_ix
-	.word	add_fr1_fr1_pb
-	.word	add_fr2_fr2_fx
-	.word	add_fr2_fr2_ix
-	.word	add_fr3_fr3_fx
-	.word	add_fx_fx_pb
-	.word	add_ir1_ir1_pb
-	.word	add_ir1_ir1_pw
-	.word	add_ir2_ir2_pb
-	.word	add_ix_ix_pb
-	.word	and_ir1_ir1_ir2
-	.word	arrdim1_ir1_fx
-	.word	arrdim1_ir1_ix
-	.word	arrdim2_ir1_ix
-	.word	arrref1_ir1_fx
-	.word	arrref2_ir1_ix
-	.word	arrval1_ir1_fx
-	.word	arrval2_ir1_ix
-	.word	arrval2_ir2_ix
-	.word	chr_sr1_ir1
-	.word	chr_sr1_ix
-	.word	clear
-	.word	cls
-	.word	clsn_pb
-	.word	for_fx_fr1
-	.word	for_fx_nb
-	.word	for_fx_pb
-	.word	for_ix_pb
-	.word	gosub_ix
-	.word	goto_ix
-	.word	inkey_sr1
-	.word	irnd_ir1_pb
-	.word	jmpeq_ir1_ix
-	.word	jmpne_ir1_ix
-	.word	ld_fp_fr1
-	.word	ld_fr1_fx
-	.word	ld_fr2_fx
-	.word	ld_fr3_fx
-	.word	ld_fx_fr1
-	.word	ld_fx_ir1
-	.word	ld_fx_pb
-	.word	ld_ip_ir1
-	.word	ld_ip_nb
-	.word	ld_ip_pb
-	.word	ld_ir1_ix
-	.word	ld_ir1_pb
-	.word	ld_ir2_ix
-	.word	ld_ir2_pb
-	.word	ld_ix_ir1
-	.word	ld_ix_pb
-	.word	ld_ix_pw
-	.word	ld_sr1_sx
-	.word	ld_sr2_sx
-	.word	ld_sx_sr1
-	.word	ldeq_ir1_fr1_pb
-	.word	ldeq_ir1_ir1_nb
-	.word	ldeq_ir1_ir1_pb
-	.word	ldeq_ir1_sr1_ss
-	.word	ldeq_ir2_fr2_pb
-	.word	ldeq_ir2_ir2_pb
-	.word	ldeq_ir2_sr2_ss
-	.word	ldlt_ir1_fr1_pb
-	.word	ldlt_ir1_ir1_fx
-	.word	ldlt_ir1_ir1_ir2
-	.word	ldlt_ir2_fr2_pb
-	.word	ldlt_ir2_ir2_fr3
-	.word	ldlt_ir2_ir2_fx
-	.word	ldlt_ir2_ir2_ix
-	.word	ldne_ir1_ir1_nb
-	.word	ldne_ir1_ir1_pb
-	.word	ldne_ir1_sr1_ss
-	.word	ldne_ir2_ir2_nb
-	.word	ldne_ir2_ir2_pb
-	.word	ldne_ir2_sr2_ss
-	.word	mul_fr1_fr1_pb
-	.word	mul_fr1_ir1_fx
-	.word	mul_fr2_ir2_fx
-	.word	mul_ir1_ir1_ir2
-	.word	next
-	.word	ongoto_ir1_is
-	.word	or_ir1_ir1_ir2
-	.word	peek_ir1_pw
-	.word	peek_ir2_ir2
-	.word	peek_ir2_pb
-	.word	poke_ir1_ir2
-	.word	poke_ir1_pb
-	.word	poke_pw_ir1
-	.word	pr_sr1
-	.word	pr_ss
-	.word	prat_ir1
-	.word	prat_pb
-	.word	prat_pw
-	.word	progbegin
-	.word	progend
-	.word	return
-	.word	rnd_fr1_ix
-	.word	sound_ir1_ir2
-	.word	str_sr1_ix
-	.word	sub_fr1_fr1_pb
-	.word	sub_fx_fx_pb
-	.word	sub_ir1_ir1_ix
-	.word	sub_ir2_ir2_pb
-	.word	sub_ix_ix_pb
-	.word	to_fp_fr1
-	.word	to_fp_ix
-	.word	to_fp_pb
-	.word	to_ip_ix
-	.word	to_ip_pb
-	.word	val_fr1_sx
+	jsr	progend
 
 	.module	mdalloc
 ; alloc D bytes in array memory.
@@ -2539,102 +2294,6 @@ strlink
 	abx
 	bra	strlink
 _rts
-	rts
-
-	.module	mdbcode
-noargs
-	ldx	curinst
-	inx
-	stx	nxtinst
-	rts
-extend
-	ldx	curinst
-	inx
-	ldab	,x
-	inx
-	stx	nxtinst
-	ldx	#symstart
-	abx
-	rts
-getaddr
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldx	1,x
-	rts
-getbyte
-	ldx	curinst
-	inx
-	ldab	,x
-	inx
-	stx	nxtinst
-	rts
-getword
-	ldx	curinst
-	inx
-	ldd	,x
-	inx
-	inx
-	stx	nxtinst
-	rts
-extbyte
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldab	2,x
-	pshb
-	ldab	1,x
-	ldx	#symstart
-	abx
-	pulb
-	rts
-extword
-	ldd	curinst
-	addd	#4
-	std	nxtinst
-	ldx	curinst
-	ldd	2,x
-	pshb
-	ldab	1,x
-	ldx	#symstart
-	abx
-	pulb
-	rts
-byteext
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldab	1,x
-	pshb
-	ldab	2,x
-	ldx	#symstart
-	abx
-	pulb
-	rts
-wordext
-	ldd	curinst
-	addd	#4
-	std	nxtinst
-	ldx	curinst
-	ldd	1,x
-	pshb
-	ldab	3,x
-	ldx	#symstart
-	abx
-	pulb
-	rts
-immstr
-	ldx	curinst
-	inx
-	ldab	,x
-	inx
-	pshx
-	abx
-	stx	nxtinst
-	pulx
 	rts
 
 	.module	mddivflt
@@ -3213,17 +2872,24 @@ _nxtwrd
 _rts
 	rts
 
-	.module	mdstreqbs
-; compare string against bytecode "stack"
-; ENTRY: tmp1+1 holds length, tmp2 holds compare
-; EXIT:  we return correct Z flag for caller
-streqbs
-	jsr	immstr
+	.module	mdstreqs
+; compare string against stack
+; ENTRY: top of stack is return to caller (ld<ne/eq>_ir1_sr1_ss)
+;        next two bytes address of string length+payload
+; EXIT:  we modify those two bytes to point to code beyond payload so caller can just RTS
+;        we return correct Z flag for caller
+streqs
 	sts	tmp3
+	tsx
+	ldx	2,x
+	ldab	,x
 	cmpb	tmp1+1
 	bne	_ne
 	tstb
 	beq	_eq
+	tsx
+	ldx	2,x
+	inx
 	txs
 	ldx	tmp2
 _nxtchr
@@ -3235,10 +2901,22 @@ _nxtchr
 	bne	_nxtchr
 _eq
 	lds	tmp3
+	bsr	_fudge
 	clra
 	rts
 _ne
 	lds	tmp3
+	bsr	_fudge
+	rts
+_fudge
+	tsx
+	ldd	4,x
+	ldx	4,x
+	sec
+	adcb	,x
+	adca	#0
+	tsx
+	std	4,x
 	rts
 
 	.module	mdstrflt
@@ -3705,7 +3383,7 @@ _tblten
 	.byte	$00,$86,$80
 	.byte	$0F,$42,$40
 
-	.module	mdtobc
+	.module	mdtonat
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable and is always float.
@@ -3736,7 +3414,7 @@ _nxtfor
 	ldd	letptr
 	std	1,x
 _oldfor
-	ldd	nxtinst
+	ldd	tmp1
 	std	3,x
 	ldab	r1
 	stab	5,x
@@ -3762,7 +3440,6 @@ _done
 
 add_fr1_fr1_fx			; numCalls = 17
 	.module	modadd_fr1_fr1_fx
-	jsr	extend
 	ldd	r1+3
 	addd	3,x
 	std	r1+3
@@ -3777,7 +3454,6 @@ add_fr1_fr1_fx			; numCalls = 17
 
 add_fr1_fr1_ix			; numCalls = 5
 	.module	modadd_fr1_fr1_ix
-	jsr	extend
 	ldd	r1+1
 	addd	1,x
 	std	r1+1
@@ -3788,7 +3464,6 @@ add_fr1_fr1_ix			; numCalls = 5
 
 add_fr1_fr1_pb			; numCalls = 2
 	.module	modadd_fr1_fr1_pb
-	jsr	getbyte
 	clra
 	addd	r1+1
 	std	r1+1
@@ -3799,7 +3474,6 @@ add_fr1_fr1_pb			; numCalls = 2
 
 add_fr2_fr2_fx			; numCalls = 7
 	.module	modadd_fr2_fr2_fx
-	jsr	extend
 	ldd	r2+3
 	addd	3,x
 	std	r2+3
@@ -3814,7 +3488,6 @@ add_fr2_fr2_fx			; numCalls = 7
 
 add_fr2_fr2_ix			; numCalls = 3
 	.module	modadd_fr2_fr2_ix
-	jsr	extend
 	ldd	r2+1
 	addd	1,x
 	std	r2+1
@@ -3825,7 +3498,6 @@ add_fr2_fr2_ix			; numCalls = 3
 
 add_fr3_fr3_fx			; numCalls = 2
 	.module	modadd_fr3_fr3_fx
-	jsr	extend
 	ldd	r3+3
 	addd	3,x
 	std	r3+3
@@ -3840,7 +3512,6 @@ add_fr3_fr3_fx			; numCalls = 2
 
 add_fx_fx_pb			; numCalls = 2
 	.module	modadd_fx_fx_pb
-	jsr	extbyte
 	clra
 	addd	1,x
 	std	1,x
@@ -3851,7 +3522,6 @@ add_fx_fx_pb			; numCalls = 2
 
 add_ir1_ir1_pb			; numCalls = 5
 	.module	modadd_ir1_ir1_pb
-	jsr	getbyte
 	clra
 	addd	r1+1
 	std	r1+1
@@ -3862,7 +3532,6 @@ add_ir1_ir1_pb			; numCalls = 5
 
 add_ir1_ir1_pw			; numCalls = 1
 	.module	modadd_ir1_ir1_pw
-	jsr	getword
 	addd	r1+1
 	std	r1+1
 	ldab	#0
@@ -3872,7 +3541,6 @@ add_ir1_ir1_pw			; numCalls = 1
 
 add_ir2_ir2_pb			; numCalls = 2
 	.module	modadd_ir2_ir2_pb
-	jsr	getbyte
 	clra
 	addd	r2+1
 	std	r2+1
@@ -3883,7 +3551,6 @@ add_ir2_ir2_pb			; numCalls = 2
 
 add_ix_ix_pb			; numCalls = 2
 	.module	modadd_ix_ix_pb
-	jsr	extbyte
 	clra
 	addd	1,x
 	std	1,x
@@ -3894,7 +3561,6 @@ add_ix_ix_pb			; numCalls = 2
 
 and_ir1_ir1_ir2			; numCalls = 10
 	.module	modand_ir1_ir1_ir2
-	jsr	noargs
 	ldd	r2+1
 	andb	r1+2
 	anda	r1+1
@@ -3906,7 +3572,6 @@ and_ir1_ir1_ir2			; numCalls = 10
 
 arrdim1_ir1_fx			; numCalls = 2
 	.module	modarrdim1_ir1_fx
-	jsr	extend
 	ldd	,x
 	beq	_ok
 	ldab	#DD_ERROR
@@ -3924,7 +3589,6 @@ _ok
 
 arrdim1_ir1_ix			; numCalls = 1
 	.module	modarrdim1_ir1_ix
-	jsr	extend
 	ldd	,x
 	beq	_ok
 	ldab	#DD_ERROR
@@ -3941,7 +3605,6 @@ _ok
 
 arrdim2_ir1_ix			; numCalls = 2
 	.module	modarrdim2_ir1_ix
-	jsr	extend
 	ldd	,x
 	beq	_ok
 	ldab	#DD_ERROR
@@ -3965,7 +3628,6 @@ _ok
 
 arrref1_ir1_fx			; numCalls = 4
 	.module	modarrref1_ir1_fx
-	jsr	extend
 	ldd	r1+1
 	std	0+argv
 	ldd	#55
@@ -3976,7 +3638,6 @@ arrref1_ir1_fx			; numCalls = 4
 
 arrref2_ir1_ix			; numCalls = 8
 	.module	modarrref2_ir1_ix
-	jsr	extend
 	ldd	r1+1
 	std	0+argv
 	ldd	r1+1+5
@@ -3988,7 +3649,6 @@ arrref2_ir1_ix			; numCalls = 8
 
 arrval1_ir1_fx			; numCalls = 2
 	.module	modarrval1_ir1_fx
-	jsr	extend
 	ldd	r1+1
 	std	0+argv
 	ldd	#55
@@ -4005,7 +3665,6 @@ arrval1_ir1_fx			; numCalls = 2
 
 arrval2_ir1_ix			; numCalls = 12
 	.module	modarrval2_ir1_ix
-	jsr	extend
 	ldd	r1+1
 	std	0+argv
 	ldd	r1+1+5
@@ -4021,7 +3680,6 @@ arrval2_ir1_ix			; numCalls = 12
 
 arrval2_ir2_ix			; numCalls = 5
 	.module	modarrval2_ir2_ix
-	jsr	extend
 	ldd	r2+1
 	std	0+argv
 	ldd	r2+1+5
@@ -4037,14 +3695,12 @@ arrval2_ir2_ix			; numCalls = 5
 
 chr_sr1_ir1			; numCalls = 2
 	.module	modchr_sr1_ir1
-	jsr	noargs
 	ldd	#$0101
 	std	r1
 	rts
 
 chr_sr1_ix			; numCalls = 1
 	.module	modchr_sr1_ix
-	jsr	extend
 	ldab	2,x
 	stab	r1+2
 	ldd	#$0101
@@ -4053,7 +3709,6 @@ chr_sr1_ix			; numCalls = 1
 
 clear			; numCalls = 2
 	.module	modclear
-	jsr	noargs
 	clra
 	ldx	#bss
 	bra	_start
@@ -4076,17 +3731,14 @@ _start
 
 cls			; numCalls = 2
 	.module	modcls
-	jsr	noargs
 	jmp	R_CLS
 
 clsn_pb			; numCalls = 1
 	.module	modclsn_pb
-	jsr	getbyte
 	jmp	R_CLSN
 
 for_fx_fr1			; numCalls = 2
 	.module	modfor_fx_fr1
-	jsr	extend
 	stx	letptr
 	ldd	r1+1
 	std	1,x
@@ -4098,7 +3750,6 @@ for_fx_fr1			; numCalls = 2
 
 for_fx_nb			; numCalls = 2
 	.module	modfor_fx_nb
-	jsr	extbyte
 	stx	letptr
 	ldaa	#-1
 	staa	0,x
@@ -4109,7 +3760,6 @@ for_fx_nb			; numCalls = 2
 
 for_fx_pb			; numCalls = 9
 	.module	modfor_fx_pb
-	jsr	extbyte
 	stx	letptr
 	clra
 	staa	0,x
@@ -4120,34 +3770,26 @@ for_fx_pb			; numCalls = 9
 
 for_ix_pb			; numCalls = 4
 	.module	modfor_ix_pb
-	jsr	extbyte
 	stx	letptr
 	clra
 	staa	0,x
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 6
+gosub_ix			; numCalls = 5
 	.module	modgosub_ix
-	pulx
-	jsr	getaddr
-	ldd	nxtinst
-	pshb
-	psha
 	ldab	#3
 	pshb
-	stx	nxtinst
-	jmp	mainloop
+	jmp	,x
 
 goto_ix			; numCalls = 17
 	.module	modgoto_ix
-	jsr	getaddr
-	stx	nxtinst
-	rts
+	ins
+	ins
+	jmp	,x
 
 inkey_sr1			; numCalls = 2
 	.module	modinkey_sr1
-	jsr	noargs
 	ldd	#$0101
 	std	r1
 	ldaa	M_IKEY
@@ -4163,7 +3805,6 @@ _rts
 
 irnd_ir1_pb			; numCalls = 1
 	.module	modirnd_ir1_pb
-	jsr	getbyte
 	clra
 	staa	tmp1+1
 	std	tmp2
@@ -4173,32 +3814,44 @@ irnd_ir1_pb			; numCalls = 1
 	stab	r1
 	rts
 
-jmpeq_ir1_ix			; numCalls = 20
+jmpeq_ir1_ix			; numCalls = 19
 	.module	modjmpeq_ir1_ix
-	jsr	getaddr
 	ldd	r1+1
 	bne	_rts
 	ldaa	r1
 	bne	_rts
-	stx	nxtinst
+	ins
+	ins
+	jmp	,x
 _rts
 	rts
 
 jmpne_ir1_ix			; numCalls = 15
 	.module	modjmpne_ir1_ix
-	jsr	getaddr
 	ldd	r1+1
 	bne	_go
 	ldaa	r1
-	beq	_rts
-_go
-	stx	nxtinst
-_rts
+	bne	_go
 	rts
+_go
+	ins
+	ins
+	jmp	,x
+
+jsrne_ir1_ix			; numCalls = 1
+	.module	modjsrne_ir1_ix
+	ldd	r1+1
+	bne	_go
+	ldaa	r1
+	bne	_go
+	rts
+_go
+	ldab	#3
+	pshb
+	jmp	,x
 
 ld_fp_fr1			; numCalls = 4
 	.module	modld_fp_fr1
-	jsr	noargs
 	ldx	letptr
 	ldd	r1+3
 	std	3,x
@@ -4210,7 +3863,6 @@ ld_fp_fr1			; numCalls = 4
 
 ld_fr1_fx			; numCalls = 49
 	.module	modld_fr1_fx
-	jsr	extend
 	ldd	3,x
 	std	r1+3
 	ldd	1,x
@@ -4221,7 +3873,6 @@ ld_fr1_fx			; numCalls = 49
 
 ld_fr2_fx			; numCalls = 28
 	.module	modld_fr2_fx
-	jsr	extend
 	ldd	3,x
 	std	r2+3
 	ldd	1,x
@@ -4232,7 +3883,6 @@ ld_fr2_fx			; numCalls = 28
 
 ld_fr3_fx			; numCalls = 7
 	.module	modld_fr3_fx
-	jsr	extend
 	ldd	3,x
 	std	r3+3
 	ldd	1,x
@@ -4243,7 +3893,6 @@ ld_fr3_fx			; numCalls = 7
 
 ld_fx_fr1			; numCalls = 9
 	.module	modld_fx_fr1
-	jsr	extend
 	ldd	r1+3
 	std	3,x
 	ldd	r1+1
@@ -4254,7 +3903,6 @@ ld_fx_fr1			; numCalls = 9
 
 ld_fx_ir1			; numCalls = 3
 	.module	modld_fx_ir1
-	jsr	extend
 	ldd	#0
 	std	3,x
 	ldd	r1+1
@@ -4265,7 +3913,6 @@ ld_fx_ir1			; numCalls = 3
 
 ld_fx_pb			; numCalls = 4
 	.module	modld_fx_pb
-	jsr	extbyte
 	stab	2,x
 	ldd	#0
 	std	3,x
@@ -4274,7 +3921,6 @@ ld_fx_pb			; numCalls = 4
 
 ld_ip_ir1			; numCalls = 1
 	.module	modld_ip_ir1
-	jsr	noargs
 	ldx	letptr
 	ldd	r1+1
 	std	1,x
@@ -4284,7 +3930,6 @@ ld_ip_ir1			; numCalls = 1
 
 ld_ip_nb			; numCalls = 1
 	.module	modld_ip_nb
-	jsr	getbyte
 	ldx	letptr
 	stab	2,x
 	ldd	#-1
@@ -4293,7 +3938,6 @@ ld_ip_nb			; numCalls = 1
 
 ld_ip_pb			; numCalls = 6
 	.module	modld_ip_pb
-	jsr	getbyte
 	ldx	letptr
 	stab	2,x
 	ldd	#0
@@ -4302,7 +3946,6 @@ ld_ip_pb			; numCalls = 6
 
 ld_ir1_ix			; numCalls = 20
 	.module	modld_ir1_ix
-	jsr	extend
 	ldd	1,x
 	std	r1+1
 	ldab	0,x
@@ -4311,7 +3954,6 @@ ld_ir1_ix			; numCalls = 20
 
 ld_ir1_pb			; numCalls = 14
 	.module	modld_ir1_pb
-	jsr	getbyte
 	stab	r1+2
 	ldd	#0
 	std	r1
@@ -4319,7 +3961,6 @@ ld_ir1_pb			; numCalls = 14
 
 ld_ir2_ix			; numCalls = 5
 	.module	modld_ir2_ix
-	jsr	extend
 	ldd	1,x
 	std	r2+1
 	ldab	0,x
@@ -4328,7 +3969,6 @@ ld_ir2_ix			; numCalls = 5
 
 ld_ir2_pb			; numCalls = 9
 	.module	modld_ir2_pb
-	jsr	getbyte
 	stab	r2+2
 	ldd	#0
 	std	r2
@@ -4336,7 +3976,6 @@ ld_ir2_pb			; numCalls = 9
 
 ld_ix_ir1			; numCalls = 4
 	.module	modld_ix_ir1
-	jsr	extend
 	ldd	r1+1
 	std	1,x
 	ldab	r1
@@ -4345,7 +3984,6 @@ ld_ix_ir1			; numCalls = 4
 
 ld_ix_pb			; numCalls = 11
 	.module	modld_ix_pb
-	jsr	extbyte
 	stab	2,x
 	ldd	#0
 	std	0,x
@@ -4353,7 +3991,6 @@ ld_ix_pb			; numCalls = 11
 
 ld_ix_pw			; numCalls = 1
 	.module	modld_ix_pw
-	jsr	extword
 	std	1,x
 	ldab	#0
 	stab	0,x
@@ -4361,7 +3998,6 @@ ld_ix_pw			; numCalls = 1
 
 ld_sr1_sx			; numCalls = 11
 	.module	modld_sr1_sx
-	jsr	extend
 	ldd	1,x
 	std	r1+1
 	ldab	0,x
@@ -4370,7 +4006,6 @@ ld_sr1_sx			; numCalls = 11
 
 ld_sr2_sx			; numCalls = 4
 	.module	modld_sr2_sx
-	jsr	extend
 	ldd	1,x
 	std	r2+1
 	ldab	0,x
@@ -4379,7 +4014,6 @@ ld_sr2_sx			; numCalls = 4
 
 ld_sx_sr1			; numCalls = 3
 	.module	modld_sx_sr1
-	jsr	extend
 	ldab	r1
 	stab	0+argv
 	ldd	r1+1
@@ -4388,7 +4022,6 @@ ld_sx_sr1			; numCalls = 3
 
 ldeq_ir1_fr1_pb			; numCalls = 1
 	.module	modldeq_ir1_fr1_pb
-	jsr	getbyte
 	cmpb	r1+2
 	bne	_done
 	ldd	r1+3
@@ -4403,7 +4036,6 @@ _done
 
 ldeq_ir1_ir1_nb			; numCalls = 5
 	.module	modldeq_ir1_ir1_nb
-	jsr	getbyte
 	cmpb	r1+2
 	bne	_done
 	ldd	r1
@@ -4416,7 +4048,6 @@ _done
 
 ldeq_ir1_ir1_pb			; numCalls = 4
 	.module	modldeq_ir1_ir1_pb
-	jsr	getbyte
 	cmpb	r1+2
 	bne	_done
 	ldd	r1
@@ -4432,7 +4063,7 @@ ldeq_ir1_sr1_ss			; numCalls = 8
 	stab	tmp1+1
 	ldd	r1+1
 	std	tmp2
-	jsr	streqbs
+	jsr	streqs
 	jsr	geteq
 	std	r1+1
 	stab	r1
@@ -4440,7 +4071,6 @@ ldeq_ir1_sr1_ss			; numCalls = 8
 
 ldeq_ir2_fr2_pb			; numCalls = 1
 	.module	modldeq_ir2_fr2_pb
-	jsr	getbyte
 	cmpb	r2+2
 	bne	_done
 	ldd	r2+3
@@ -4455,7 +4085,6 @@ _done
 
 ldeq_ir2_ir2_pb			; numCalls = 2
 	.module	modldeq_ir2_ir2_pb
-	jsr	getbyte
 	cmpb	r2+2
 	bne	_done
 	ldd	r2
@@ -4471,7 +4100,7 @@ ldeq_ir2_sr2_ss			; numCalls = 1
 	stab	tmp1+1
 	ldd	r2+1
 	std	tmp2
-	jsr	streqbs
+	jsr	streqs
 	jsr	geteq
 	std	r2+1
 	stab	r2
@@ -4479,7 +4108,6 @@ ldeq_ir2_sr2_ss			; numCalls = 1
 
 ldlt_ir1_fr1_pb			; numCalls = 5
 	.module	modldlt_ir1_fr1_pb
-	jsr	getbyte
 	clra
 	std	tmp1
 	ldd	r1+1
@@ -4493,7 +4121,6 @@ ldlt_ir1_fr1_pb			; numCalls = 5
 
 ldlt_ir1_ir1_fx			; numCalls = 2
 	.module	modldlt_ir1_ir1_fx
-	jsr	extend
 	ldd	#0
 	subd	3,x
 	ldd	r1+1
@@ -4508,7 +4135,6 @@ ldlt_ir1_ir1_fx			; numCalls = 2
 
 ldlt_ir1_ir1_ir2			; numCalls = 2
 	.module	modldlt_ir1_ir1_ir2
-	jsr	noargs
 	ldd	r1+1
 	subd	r2+1
 	ldab	r1
@@ -4520,7 +4146,6 @@ ldlt_ir1_ir1_ir2			; numCalls = 2
 
 ldlt_ir2_fr2_pb			; numCalls = 2
 	.module	modldlt_ir2_fr2_pb
-	jsr	getbyte
 	clra
 	std	tmp1
 	ldd	r2+1
@@ -4534,7 +4159,6 @@ ldlt_ir2_fr2_pb			; numCalls = 2
 
 ldlt_ir2_ir2_fr3			; numCalls = 2
 	.module	modldlt_ir2_ir2_fr3
-	jsr	noargs
 	ldd	#0
 	subd	r3+3
 	ldd	r2+1
@@ -4549,7 +4173,6 @@ ldlt_ir2_ir2_fr3			; numCalls = 2
 
 ldlt_ir2_ir2_fx			; numCalls = 3
 	.module	modldlt_ir2_ir2_fx
-	jsr	extend
 	ldd	#0
 	subd	3,x
 	ldd	r2+1
@@ -4564,7 +4187,6 @@ ldlt_ir2_ir2_fx			; numCalls = 3
 
 ldlt_ir2_ir2_ix			; numCalls = 1
 	.module	modldlt_ir2_ir2_ix
-	jsr	extend
 	ldd	r2+1
 	subd	1,x
 	ldab	r2
@@ -4576,7 +4198,6 @@ ldlt_ir2_ir2_ix			; numCalls = 1
 
 ldne_ir1_ir1_nb			; numCalls = 2
 	.module	modldne_ir1_ir1_nb
-	jsr	getbyte
 	cmpb	r1+2
 	bne	_done
 	ldd	r1
@@ -4589,7 +4210,6 @@ _done
 
 ldne_ir1_ir1_pb			; numCalls = 2
 	.module	modldne_ir1_ir1_pb
-	jsr	getbyte
 	cmpb	r1+2
 	bne	_done
 	ldd	r1
@@ -4605,7 +4225,7 @@ ldne_ir1_sr1_ss			; numCalls = 3
 	stab	tmp1+1
 	ldd	r1+1
 	std	tmp2
-	jsr	streqbs
+	jsr	streqs
 	jsr	getne
 	std	r1+1
 	stab	r1
@@ -4613,7 +4233,6 @@ ldne_ir1_sr1_ss			; numCalls = 3
 
 ldne_ir2_ir2_nb			; numCalls = 1
 	.module	modldne_ir2_ir2_nb
-	jsr	getbyte
 	cmpb	r2+2
 	bne	_done
 	ldd	r2
@@ -4626,7 +4245,6 @@ _done
 
 ldne_ir2_ir2_pb			; numCalls = 1
 	.module	modldne_ir2_ir2_pb
-	jsr	getbyte
 	cmpb	r2+2
 	bne	_done
 	ldd	r2
@@ -4642,7 +4260,7 @@ ldne_ir2_sr2_ss			; numCalls = 3
 	stab	tmp1+1
 	ldd	r2+1
 	std	tmp2
-	jsr	streqbs
+	jsr	streqs
 	jsr	getne
 	std	r2+1
 	stab	r2
@@ -4650,7 +4268,6 @@ ldne_ir2_sr2_ss			; numCalls = 3
 
 mul_fr1_fr1_pb			; numCalls = 10
 	.module	modmul_fr1_fr1_pb
-	jsr	getbyte
 	stab	2+argv
 	ldd	#0
 	std	0+argv
@@ -4660,7 +4277,6 @@ mul_fr1_fr1_pb			; numCalls = 10
 
 mul_fr1_ir1_fx			; numCalls = 3
 	.module	modmul_fr1_ir1_fx
-	jsr	extend
 	ldab	0,x
 	stab	0+argv
 	ldd	1,x
@@ -4674,7 +4290,6 @@ mul_fr1_ir1_fx			; numCalls = 3
 
 mul_fr2_ir2_fx			; numCalls = 3
 	.module	modmul_fr2_ir2_fx
-	jsr	extend
 	ldab	0,x
 	stab	0+argv
 	ldd	1,x
@@ -4688,7 +4303,6 @@ mul_fr2_ir2_fx			; numCalls = 3
 
 mul_ir1_ir1_ir2			; numCalls = 1
 	.module	modmul_ir1_ir1_ir2
-	jsr	noargs
 	ldab	r2
 	stab	0+argv
 	ldd	r2+1
@@ -4698,8 +4312,8 @@ mul_ir1_ir1_ir2			; numCalls = 1
 
 next			; numCalls = 17
 	.module	modnext
-	jsr	noargs
 	pulx
+	stx	tmp1
 	tsx
 	ldab	,x
 	cmpb	#3
@@ -4731,8 +4345,7 @@ _ok
 	sbcb	5,x
 	blt	_idone
 	ldx	3,x
-	stx	nxtinst
-	jmp	mainloop
+	jmp	,x
 _iopp
 	ldd	6,x
 	subd	r1+1
@@ -4740,8 +4353,7 @@ _iopp
 	sbcb	r1
 	blt	_idone
 	ldx	3,x
-	stx	nxtinst
-	jmp	mainloop
+	jmp	,x
 _idone
 	ldab	#11
 	bra	_done
@@ -4778,8 +4390,7 @@ _flt
 	sbcb	5,x
 	blt	_fdone
 	ldx	3,x
-	stx	nxtinst
-	jmp	mainloop
+	jmp	,x
 _fopp
 	ldd	8,x
 	subd	r1+3
@@ -4790,19 +4401,18 @@ _fopp
 	sbcb	r1
 	blt	_fdone
 	ldx	3,x
-	stx	nxtinst
-	jmp	mainloop
+	jmp	,x
 _fdone
 	ldab	#15
 _done
 	abx
 	txs
-	jmp	mainloop
+	ldx	tmp1
+	jmp	,x
 
 ongoto_ir1_is			; numCalls = 1
 	.module	modongoto_ir1_is
-	ldx	curinst
-	inx
+	pulx
 	ldd	r1
 	bne	_fail
 	ldab	r1+2
@@ -4812,19 +4422,15 @@ ongoto_ir1_is			; numCalls = 1
 	abx
 	abx
 	ldx	1,x
-	stx	nxtinst
-	rts
+	jmp	,x
 _fail
 	ldab	,x
 	abx
 	abx
-	inx
-	stx	nxtinst
-	rts
+	jmp	1,x
 
 or_ir1_ir1_ir2			; numCalls = 8
 	.module	modor_ir1_ir1_ir2
-	jsr	noargs
 	ldd	r2+1
 	orab	r1+2
 	oraa	r1+1
@@ -4836,7 +4442,6 @@ or_ir1_ir1_ir2			; numCalls = 8
 
 peek_ir1_pw			; numCalls = 1
 	.module	modpeek_ir1_pw
-	jsr	getword
 	std	tmp1
 	ldx	tmp1
 	cpx	#M_IKEY
@@ -4853,7 +4458,6 @@ _nostore
 
 peek_ir2_ir2			; numCalls = 3
 	.module	modpeek_ir2_ir2
-	jsr	noargs
 	ldx	r2+1
 	cpx	#M_IKEY
 	bne	_nostore
@@ -4869,7 +4473,6 @@ _nostore
 
 peek_ir2_pb			; numCalls = 1
 	.module	modpeek_ir2_pb
-	jsr	getbyte
 	clra
 	std	tmp1
 	ldx	tmp1
@@ -4881,7 +4484,6 @@ peek_ir2_pb			; numCalls = 1
 
 poke_ir1_ir2			; numCalls = 2
 	.module	modpoke_ir1_ir2
-	jsr	noargs
 	ldab	r2+2
 	ldx	r1+1
 	stab	,x
@@ -4889,14 +4491,12 @@ poke_ir1_ir2			; numCalls = 2
 
 poke_ir1_pb			; numCalls = 5
 	.module	modpoke_ir1_pb
-	jsr	getbyte
 	ldx	r1+1
 	stab	,x
 	rts
 
 poke_pw_ir1			; numCalls = 2
 	.module	modpoke_pw_ir1
-	jsr	getword
 	std	tmp1
 	ldab	r1+2
 	ldx	tmp1
@@ -4905,7 +4505,6 @@ poke_pw_ir1			; numCalls = 2
 
 pr_sr1			; numCalls = 3
 	.module	modpr_sr1
-	jsr	noargs
 	ldab	r1
 	beq	_rts
 	ldx	r1+1
@@ -4917,22 +4516,17 @@ _rts
 
 pr_ss			; numCalls = 18
 	.module	modpr_ss
-	ldx	curinst
-	inx
+	pulx
 	ldab	,x
 	beq	_null
 	inx
 	jsr	print
-	stx	nxtinst
-	rts
+	jmp	,x
 _null
-	inx
-	stx	nxtinst
-	rts
+	jmp	1,x
 
 prat_ir1			; numCalls = 8
 	.module	modprat_ir1
-	jsr	noargs
 	ldaa	r1
 	bne	_fcerror
 	ldd	r1+1
@@ -4943,19 +4537,16 @@ _fcerror
 
 prat_pb			; numCalls = 3
 	.module	modprat_pb
-	jsr	getbyte
 	ldaa	#$40
 	std	M_CRSR
 	rts
 
 prat_pw			; numCalls = 8
 	.module	modprat_pw
-	jsr	getword
 	jmp	prat
 
 progbegin			; numCalls = 1
 	.module	modprogbegin
-	jsr	noargs
 	ldx	R_MCXID
 	cpx	#'h'*256+'C'
 	bne	_mcbasic
@@ -4975,7 +4566,6 @@ _mcbasic
 
 progend			; numCalls = 2
 	.module	modprogend
-	jsr	noargs
 	pulx
 	pula
 	pula
@@ -5008,13 +4598,10 @@ _ok
 	bne	_nxt
 	inx
 	txs
-	pulx
-	stx	nxtinst
-	jmp	mainloop
+	rts
 
 rnd_fr1_ix			; numCalls = 2
 	.module	modrnd_fr1_ix
-	jsr	extend
 	ldab	0,x
 	stab	tmp1+1
 	bmi	_neg
@@ -5041,14 +4628,12 @@ _flt
 
 sound_ir1_ir2			; numCalls = 2
 	.module	modsound_ir1_ir2
-	jsr	noargs
 	ldaa	r1+2
 	ldab	r2+2
 	jmp	R_SOUND
 
 str_sr1_ix			; numCalls = 1
 	.module	modstr_sr1_ix
-	jsr	extend
 	ldd	1,x
 	std	tmp2
 	ldab	0,x
@@ -5063,7 +4648,6 @@ str_sr1_ix			; numCalls = 1
 
 sub_fr1_fr1_pb			; numCalls = 2
 	.module	modsub_fr1_fr1_pb
-	jsr	getbyte
 	stab	tmp1
 	ldd	r1+1
 	subb	tmp1
@@ -5076,7 +4660,6 @@ sub_fr1_fr1_pb			; numCalls = 2
 
 sub_fx_fx_pb			; numCalls = 2
 	.module	modsub_fx_fx_pb
-	jsr	extbyte
 	stab	tmp1
 	ldd	1,x
 	subb	tmp1
@@ -5089,7 +4672,6 @@ sub_fx_fx_pb			; numCalls = 2
 
 sub_ir1_ir1_ix			; numCalls = 1
 	.module	modsub_ir1_ir1_ix
-	jsr	extend
 	ldd	r1+1
 	subd	1,x
 	std	r1+1
@@ -5100,7 +4682,6 @@ sub_ir1_ir1_ix			; numCalls = 1
 
 sub_ir2_ir2_pb			; numCalls = 2
 	.module	modsub_ir2_ir2_pb
-	jsr	getbyte
 	stab	tmp1
 	ldd	r2+1
 	subb	tmp1
@@ -5113,7 +4694,6 @@ sub_ir2_ir2_pb			; numCalls = 2
 
 sub_ix_ix_pb			; numCalls = 5
 	.module	modsub_ix_ix_pb
-	jsr	extbyte
 	stab	tmp1
 	ldd	1,x
 	subb	tmp1
@@ -5126,13 +4706,11 @@ sub_ix_ix_pb			; numCalls = 5
 
 to_fp_fr1			; numCalls = 2
 	.module	modto_fp_fr1
-	jsr	noargs
 	ldab	#15
 	jmp	to
 
 to_fp_ix			; numCalls = 8
 	.module	modto_fp_ix
-	jsr	extend
 	ldab	0,x
 	stab	r1
 	ldd	1,x
@@ -5144,7 +4722,6 @@ to_fp_ix			; numCalls = 8
 
 to_fp_pb			; numCalls = 3
 	.module	modto_fp_pb
-	jsr	getbyte
 	stab	r1+2
 	ldd	#0
 	std	r1
@@ -5154,7 +4731,6 @@ to_fp_pb			; numCalls = 3
 
 to_ip_ix			; numCalls = 1
 	.module	modto_ip_ix
-	jsr	extend
 	ldab	0,x
 	stab	r1
 	ldd	1,x
@@ -5166,7 +4742,6 @@ to_ip_ix			; numCalls = 1
 
 to_ip_pb			; numCalls = 3
 	.module	modto_ip_pb
-	jsr	getbyte
 	stab	r1+2
 	ldd	#0
 	std	r1
@@ -5176,7 +4751,6 @@ to_ip_pb			; numCalls = 3
 
 val_fr1_sx			; numCalls = 1
 	.module	modval_fr1_sx
-	jsr	extend
 	jsr	strval
 	ldab	tmp1+1
 	stab	r1
@@ -5189,34 +4763,6 @@ val_fr1_sx			; numCalls = 1
 ; data table
 startdata
 enddata
-
-; Bytecode equates
-
-
-bytecode_INTVAR_B	.equ	INTVAR_B-symstart
-bytecode_INTVAR_C	.equ	INTVAR_C-symstart
-bytecode_INTVAR_L	.equ	INTVAR_L-symstart
-bytecode_INTVAR_MC	.equ	INTVAR_MC-symstart
-bytecode_INTVAR_MX	.equ	INTVAR_MX-symstart
-bytecode_INTVAR_MY	.equ	INTVAR_MY-symstart
-bytecode_INTVAR_Q	.equ	INTVAR_Q-symstart
-bytecode_INTVAR_R	.equ	INTVAR_R-symstart
-bytecode_INTVAR_ST	.equ	INTVAR_ST-symstart
-bytecode_INTVAR_T	.equ	INTVAR_T-symstart
-bytecode_INTVAR_Z	.equ	INTVAR_Z-symstart
-bytecode_FLTVAR_H	.equ	FLTVAR_H-symstart
-bytecode_FLTVAR_OH	.equ	FLTVAR_OH-symstart
-bytecode_FLTVAR_OV	.equ	FLTVAR_OV-symstart
-bytecode_FLTVAR_SK	.equ	FLTVAR_SK-symstart
-bytecode_FLTVAR_V	.equ	FLTVAR_V-symstart
-bytecode_FLTVAR_X	.equ	FLTVAR_X-symstart
-bytecode_FLTVAR_Y	.equ	FLTVAR_Y-symstart
-bytecode_STRVAR_QQ	.equ	STRVAR_QQ-symstart
-bytecode_INTARR_M	.equ	INTARR_M-symstart
-bytecode_INTARR_N	.equ	INTARR_N-symstart
-bytecode_INTARR_TT	.equ	INTARR_TT-symstart
-bytecode_FLTARR_SX	.equ	FLTARR_SX-symstart
-bytecode_FLTARR_SY	.equ	FLTARR_SY-symstart
 
 symstart
 

@@ -2836,7 +2836,7 @@ LINE_940
 
 LINE_948
 
-	; IF E=<0 THEN
+	; WHEN E=<0 GOTO 938
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -2849,7 +2849,7 @@ LINE_948
 
 LINE_949
 
-	; IF E=>9 THEN
+	; WHEN E=>9 GOTO 938
 
 	ldx	#FLTVAR_E
 	jsr	ld_fr1_fx
@@ -2862,7 +2862,7 @@ LINE_949
 
 LINE_950
 
-	; IF E=1 THEN
+	; WHEN E=1 GOTO 1500
 
 	ldx	#FLTVAR_E
 	jsr	ld_fr1_fx
@@ -2875,7 +2875,7 @@ LINE_950
 
 LINE_951
 
-	; IF E=2 THEN
+	; WHEN E=2 GOTO 2000
 
 	ldx	#FLTVAR_E
 	jsr	ld_fr1_fx
@@ -2888,7 +2888,7 @@ LINE_951
 
 LINE_952
 
-	; IF E=3 THEN
+	; WHEN E=3 GOTO 2500
 
 	ldx	#FLTVAR_E
 	jsr	ld_fr1_fx
@@ -2901,7 +2901,7 @@ LINE_952
 
 LINE_953
 
-	; IF E=4 THEN
+	; WHEN E=4 GOTO 3000
 
 	ldx	#FLTVAR_E
 	jsr	ld_fr1_fx
@@ -2914,7 +2914,7 @@ LINE_953
 
 LINE_954
 
-	; IF E=5 THEN
+	; WHEN E=5 GOTO 3500
 
 	ldx	#FLTVAR_E
 	jsr	ld_fr1_fx
@@ -2927,7 +2927,7 @@ LINE_954
 
 LINE_955
 
-	; IF E=6 THEN
+	; WHEN E=6 GOTO 4000
 
 	ldx	#FLTVAR_E
 	jsr	ld_fr1_fx
@@ -2940,7 +2940,7 @@ LINE_955
 
 LINE_956
 
-	; IF E=7 THEN
+	; WHEN E=7 GOTO 4500
 
 	ldx	#FLTVAR_E
 	jsr	ld_fr1_fx
@@ -2953,7 +2953,7 @@ LINE_956
 
 LINE_957
 
-	; IF E=8 THEN
+	; WHEN E=8 GOTO 5000
 
 	ldx	#FLTVAR_E
 	jsr	ld_fr1_fx
@@ -2995,7 +2995,7 @@ LINE_1501
 
 LINE_1504
 
-	; IF (D=1) AND (SC=>P) THEN
+	; WHEN (D=1) AND (SC=>P) GOTO 6500
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3016,7 +3016,7 @@ LINE_1504
 
 LINE_1505
 
-	; IF D=1 THEN
+	; WHEN D=1 GOTO 6000
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3462,7 +3462,7 @@ LINE_2010
 
 LINE_2015
 
-	; IF (D=2) AND (SC=>P) THEN
+	; WHEN (D=2) AND (SC=>P) GOTO 6500
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3483,7 +3483,7 @@ LINE_2015
 
 LINE_2016
 
-	; IF D=2 THEN
+	; WHEN D=2 GOTO 6000
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3525,7 +3525,7 @@ LINE_2510
 
 LINE_2520
 
-	; IF (D=3) AND (SC=>P) THEN
+	; WHEN (D=3) AND (SC=>P) GOTO 6500
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3546,7 +3546,7 @@ LINE_2520
 
 LINE_2530
 
-	; IF D=3 THEN
+	; WHEN D=3 GOTO 6000
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3588,7 +3588,7 @@ LINE_3010
 
 LINE_3020
 
-	; IF (D=4) AND (SC=>P) THEN
+	; WHEN (D=4) AND (SC=>P) GOTO 6500
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3609,7 +3609,7 @@ LINE_3020
 
 LINE_3030
 
-	; IF D=4 THEN
+	; WHEN D=4 GOTO 6000
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3651,7 +3651,7 @@ LINE_3510
 
 LINE_3520
 
-	; IF (D=5) AND (SC=>P) THEN
+	; WHEN (D=5) AND (SC=>P) GOTO 6500
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3672,7 +3672,7 @@ LINE_3520
 
 LINE_3530
 
-	; IF D=5 THEN
+	; WHEN D=5 GOTO 6000
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3714,7 +3714,7 @@ LINE_4010
 
 LINE_4020
 
-	; IF (D=6) AND (SC=>P) THEN
+	; WHEN (D=6) AND (SC=>P) GOTO 6500
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3735,7 +3735,7 @@ LINE_4020
 
 LINE_4030
 
-	; IF D=6 THEN
+	; WHEN D=6 GOTO 6000
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3777,7 +3777,7 @@ LINE_4510
 
 LINE_4520
 
-	; IF (D=7) AND (SC=>P) THEN
+	; WHEN (D=7) AND (SC=>P) GOTO 6500
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3798,7 +3798,7 @@ LINE_4520
 
 LINE_4530
 
-	; IF D=7 THEN
+	; WHEN D=7 GOTO 6000
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3840,7 +3840,7 @@ LINE_5010
 
 LINE_5020
 
-	; IF (D=8) AND (SC=>P) THEN
+	; WHEN (D=8) AND (SC=>P) GOTO 6500
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -3861,7 +3861,7 @@ LINE_5020
 
 LINE_5030
 
-	; IF D=8 THEN
+	; WHEN D=8 GOTO 6000
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -4363,7 +4363,7 @@ LINE_6570
 	ldx	#STRVAR_Q
 	jsr	ld_sx_sr1
 
-	; IF Q$="" THEN
+	; WHEN Q$="" GOTO 6570
 
 	ldx	#STRVAR_Q
 	jsr	ld_sr1_sx
@@ -4568,7 +4568,7 @@ LINE_7060
 
 LINE_7070
 
-	; IF L=>6 THEN
+	; WHEN L=>6 GOTO 7006
 
 	ldx	#FLTVAR_L
 	jsr	ld_fr1_fx
@@ -4581,7 +4581,7 @@ LINE_7070
 
 LINE_7075
 
-	; IF L=0 THEN
+	; WHEN L=0 GOTO 7006
 
 	ldx	#FLTVAR_L
 	jsr	ld_fr1_fx

@@ -301,7 +301,7 @@ LINE_120
 
 	jsr	ignxtra
 
-	; IF (S<1) OR (S>4) THEN
+	; WHEN (S<1) OR (S>4) GOTO 120
 
 	ldx	#FLTVAR_S
 	jsr	ld_fr1_fx
@@ -500,7 +500,7 @@ LINE_255
 	ldx	#LINE_260
 	jsr	jmpeq_ir1_ix
 
-	; IF (X=1) OR (X=(WX-1)) OR (Y=1) OR (Y=1) OR (Y=(WY-1)) THEN
+	; WHEN (X=1) OR (X=(WX-1)) OR (Y=1) OR (Y=1) OR (Y=(WY-1)) GOTO 280
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -555,7 +555,7 @@ LINE_255
 
 LINE_260
 
-	; IF (X=0) OR (X=WX) OR (Y=0) OR (Y=WY) THEN
+	; WHEN (X=0) OR (X=WX) OR (Y=0) OR (Y=WY) GOTO 280
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -609,7 +609,7 @@ LINE_280
 	ldab	#1
 	jsr	add_ix_ix_pb
 
-	; IF F<S THEN
+	; WHEN F<S GOTO 220
 
 	ldx	#INTVAR_F
 	jsr	ld_ir1_ix
@@ -1018,7 +1018,7 @@ LINE_2051
 
 LINE_2052
 
-	; IF A(X1,Y1)=0 THEN
+	; WHEN A(X1,Y1)=0 GOTO 2065
 
 	ldx	#INTVAR_X1
 	jsr	ld_ir1_ix
@@ -1138,7 +1138,7 @@ LINE_2085
 
 LINE_2090
 
-	; IF A$="W" THEN
+	; WHEN A$="W" GOTO 2100
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -1186,7 +1186,7 @@ LINE_2100
 	ldx	#INTVAR_Y1
 	jsr	ld_ix_ir1
 
-	; IF (X1<0) OR (X1>WX) OR (Y1<0) OR (Y1>WY) THEN
+	; WHEN (X1<0) OR (X1>WX) OR (Y1<0) OR (Y1>WY) GOTO 6000
 
 	ldx	#INTVAR_X1
 	jsr	ld_ir1_ix
@@ -1223,7 +1223,7 @@ LINE_2100
 
 LINE_2110
 
-	; IF A(X1,Y1)=0 THEN
+	; WHEN A(X1,Y1)=0 GOTO 2070
 
 	ldx	#INTVAR_X1
 	jsr	ld_ir1_ix
@@ -1497,7 +1497,7 @@ LINE_3015
 	ldx	#INTVAR_YT
 	jsr	ld_ix_ir1
 
-	; IF (XT<0) OR (XT>WX) OR (YT<0) OR (YT>WY) THEN
+	; WHEN (XT<0) OR (XT>WX) OR (YT<0) OR (YT>WY) GOTO 3040
 
 	ldx	#INTVAR_XT
 	jsr	ld_ir1_ix
@@ -1534,7 +1534,7 @@ LINE_3015
 
 LINE_3020
 
-	; IF A(XT,YT)=1 THEN
+	; WHEN A(XT,YT)=1 GOTO 3040
 
 	ldx	#INTVAR_XT
 	jsr	ld_ir1_ix
@@ -1758,7 +1758,7 @@ LINE_3090
 	ldx	#INTVAR_YT
 	jsr	ld_ix_ir1
 
-	; IF (XT<0) OR (XT>WX) OR (YT<0) OR (YT>WY) THEN
+	; WHEN (XT<0) OR (XT>WX) OR (YT<0) OR (YT>WY) GOTO 3140
 
 	ldx	#INTVAR_XT
 	jsr	ld_ir1_ix
@@ -1795,7 +1795,7 @@ LINE_3090
 
 LINE_3100
 
-	; IF A(XT,YT)=1 THEN
+	; WHEN A(XT,YT)=1 GOTO 3140
 
 	ldx	#INTVAR_XT
 	jsr	ld_ir1_ix
@@ -2221,7 +2221,7 @@ LINE_5005
 
 LINE_5010
 
-	; IF A(Q,Z)=0 THEN
+	; WHEN A(Q,Z)=0 GOTO 5040
 
 	ldx	#FLTVAR_Q
 	jsr	ld_fr1_fx
@@ -2311,16 +2311,16 @@ LINE_5050
 
 	jsr	next
 
-	; WHEN Z<16 GOTO 5051
+	; WHEN Z>=16 GOTO 5051
 
 	ldx	#INTVAR_Z
 	jsr	ld_ir1_ix
 
 	ldab	#16
-	jsr	ldlt_ir1_ir1_pb
+	jsr	ldge_ir1_ir1_pb
 
 	ldx	#LINE_5051
-	jsr	jmpeq_ir1_ix
+	jsr	jmpne_ir1_ix
 
 	; PRINT
 
@@ -3205,6 +3205,15 @@ _add1
 	.module	mdgeteq
 geteq
 	beq	_1
+	ldd	#0
+	rts
+_1
+	ldd	#-1
+	rts
+
+	.module	mdgetge
+getge
+	bge	_1
 	ldd	#0
 	rts
 _1
@@ -4509,7 +4518,7 @@ irnd_ir2_pb			; numCalls = 1
 	stab	r2
 	rts
 
-jmpeq_ir1_ix			; numCalls = 20
+jmpeq_ir1_ix			; numCalls = 19
 	.module	modjmpeq_ir1_ix
 	ldd	r1+1
 	bne	_rts
@@ -4521,7 +4530,7 @@ jmpeq_ir1_ix			; numCalls = 20
 _rts
 	rts
 
-jmpne_ir1_ix			; numCalls = 13
+jmpne_ir1_ix			; numCalls = 14
 	.module	modjmpne_ir1_ix
 	ldd	r1+1
 	bne	_go
@@ -4772,6 +4781,19 @@ _done
 	stab	r2
 	rts
 
+ldge_ir1_ir1_pb			; numCalls = 1
+	.module	modldge_ir1_ir1_pb
+	clra
+	std	tmp1
+	ldd	r1+1
+	subd	tmp1
+	ldab	r1
+	sbcb	#0
+	jsr	getge
+	std	r1+1
+	stab	r1
+	rts
+
 ldlt_ir1_fr1_ir2			; numCalls = 1
 	.module	modldlt_ir1_fr1_ir2
 	ldd	r1+1
@@ -4821,7 +4843,7 @@ ldlt_ir1_ir1_ix			; numCalls = 2
 	stab	r1
 	rts
 
-ldlt_ir1_ir1_pb			; numCalls = 6
+ldlt_ir1_ir1_pb			; numCalls = 5
 	.module	modldlt_ir1_ir1_pb
 	clra
 	std	tmp1

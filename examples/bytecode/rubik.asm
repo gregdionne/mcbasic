@@ -1484,7 +1484,7 @@ LINE_1050
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_B
 
-	; IF B$="" THEN
+	; WHEN B$="" GOTO 1050
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_B
@@ -1497,7 +1497,7 @@ LINE_1050
 
 LINE_1060
 
-	; IF B$="" THEN
+	; WHEN B$="" GOTO 1040
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_B
@@ -1737,7 +1737,7 @@ LINE_1140
 
 LINE_1160
 
-	; IF B$="X" THEN
+	; WHEN B$="X" GOTO 1440
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_B
@@ -1750,7 +1750,7 @@ LINE_1160
 
 LINE_1170
 
-	; IF J=0 THEN
+	; WHEN J=0 GOTO 1050
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_J
@@ -1777,7 +1777,7 @@ LINE_1190
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_B
 
-	; IF B$="" THEN
+	; WHEN B$="" GOTO 1190
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_B
@@ -1790,7 +1790,7 @@ LINE_1190
 
 LINE_1200
 
-	; IF B$="" THEN
+	; WHEN B$="" GOTO 1040
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_B
@@ -1811,7 +1811,7 @@ LINE_1210
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_K
 
-	; IF (K=1) OR (K=2) OR (K=3) THEN
+	; WHEN (K=1) OR (K=2) OR (K=3) GOTO 1230
 
 	.byte	bytecode_ld_fr1_fx
 	.byte	bytecode_FLTVAR_K
@@ -1986,7 +1986,7 @@ LINE_1300
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_A
 
-	; IF A$="" THEN
+	; WHEN A$="" GOTO 1300
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2052,7 +2052,7 @@ LINE_1340
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_A
 
-	; IF A$="" THEN
+	; WHEN A$="" GOTO 1340
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2073,7 +2073,7 @@ LINE_1341
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
 
-	; IF A$="N" THEN
+	; WHEN A$="N" GOTO 1430
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2255,7 +2255,7 @@ LINE_1390
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_A
 
-	; IF A$="" THEN
+	; WHEN A$="" GOTO 1390
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2276,7 +2276,7 @@ LINE_1391
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
 
-	; IF A$="Y" THEN
+	; WHEN A$="Y" GOTO 1270
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2303,7 +2303,7 @@ LINE_1410
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_A
 
-	; IF A$="" THEN
+	; WHEN A$="" GOTO 1410
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2324,7 +2324,7 @@ LINE_1411
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
 
-	; IF A$="Y" THEN
+	; WHEN A$="Y" GOTO 1470
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2438,7 +2438,7 @@ LINE_1450
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_A
 
-	; IF A$="" THEN
+	; WHEN A$="" GOTO 1450
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2464,7 +2464,7 @@ LINE_1451
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
 
-	; IF A$="Y" THEN
+	; WHEN A$="Y" GOTO 500
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2694,7 +2694,7 @@ LINE_1520
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_A
 
-	; IF A$="" THEN
+	; WHEN A$="" GOTO 1510
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2741,7 +2741,7 @@ LINE_1522
 
 LINE_1523
 
-	; IF A$<>"" THEN
+	; WHEN A$<>"" GOTO 1510
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2848,7 +2848,7 @@ LINE_1560
 	.byte	bytecode_to_ip_ix
 	.byte	bytecode_INTVAR_M4
 
-	; IF A1$(M1,M2,M3)=A2$(M5) THEN
+	; WHEN A1$(M1,M2,M3)=A2$(M5) GOTO 1565
 
 	.byte	bytecode_ld_fr1_fx
 	.byte	bytecode_FLTVAR_M1
@@ -2893,7 +2893,7 @@ LINE_1565
 	.byte	bytecode_add_ip_ip_pb
 	.byte	1
 
-	; IF M(M5)>9 THEN
+	; WHEN M(M5)>9 GOTO 1590
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	9
@@ -2931,7 +2931,7 @@ LINE_1570
 	.byte	bytecode_INTVAR_M4
 	.byte	1
 
-	; IF M4>6 THEN
+	; WHEN M4>6 GOTO 1590
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	6
@@ -3063,7 +3063,7 @@ LINE_1610
 
 LINE_1620
 
-	; IF M1=0 THEN
+	; WHEN M1=0 GOTO 1540
 
 	.byte	bytecode_ld_fr1_fx
 	.byte	bytecode_FLTVAR_M1
@@ -7108,7 +7108,7 @@ LINE_2420
 	.byte	bytecode_INTVAR_NA
 	.word	552
 
-	; C=-(C)
+	; C=-C
 
 	.byte	bytecode_neg_ir1_ix
 	.byte	bytecode_INTVAR_C
@@ -7154,7 +7154,7 @@ LINE_2440
 	.byte	bytecode_INTVAR_NA
 	.byte	109
 
-	; B=-(B)
+	; B=-B
 
 	.byte	bytecode_neg_ir1_ix
 	.byte	bytecode_INTVAR_B
@@ -7181,7 +7181,7 @@ LINE_2450
 	.byte	bytecode_INTVAR_NA
 	.word	517
 
-	; C=-(C)
+	; C=-C
 
 	.byte	bytecode_neg_ir1_ix
 	.byte	bytecode_INTVAR_C
@@ -7552,7 +7552,7 @@ LINE_3910
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_3911
 
-	; IF Q1(X+1)<>1 THEN
+	; WHEN Q1(X+1)<>1 GOTO 3915
 
 	.byte	bytecode_ld_fr1_fx
 	.byte	bytecode_FLTVAR_X
@@ -8099,7 +8099,7 @@ LINE_5090
 
 LINE_5100
 
-	; IF Q1(35)=C THEN
+	; WHEN Q1(35)=C GOTO 5110
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	35
@@ -8293,7 +8293,7 @@ LINE_5132
 	.byte	bytecode_add_ix_ix_ir1
 	.byte	bytecode_INTVAR_J2
 
-	; IF J3=6 THEN
+	; WHEN J3=6 GOTO 5210
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_J3
@@ -8705,7 +8705,7 @@ LINE_5232
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_CC
 
-	; IF CC$="" THEN
+	; WHEN CC$="" GOTO 5232
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_CC
@@ -8718,7 +8718,7 @@ LINE_5232
 
 LINE_5233
 
-	; IF CC$="C" THEN
+	; WHEN CC$="C" GOTO 5230
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_CC
@@ -8731,7 +8731,7 @@ LINE_5233
 
 LINE_5234
 
-	; IF CC$=" " THEN
+	; WHEN CC$=" " GOTO 5210
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_CC
@@ -9136,7 +9136,7 @@ LINE_5350
 
 LINE_5360
 
-	; IF (Q1(14)=1) AND ((Q1(13)=1) OR (Q1(13)=3) OR (Q1(13)=5) OR (Q1(13)=7)) THEN
+	; WHEN (Q1(14)=1) AND ((Q1(13)=1) OR (Q1(13)=3) OR (Q1(13)=5) OR (Q1(13)=7)) GOTO 5365
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	14
@@ -9642,7 +9642,7 @@ LINE_5530
 	.byte	bytecode_to_ip_pb
 	.byte	4
 
-	; IF C1(F)=0 THEN
+	; WHEN C1(F)=0 GOTO 5540
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_F
@@ -9680,7 +9680,7 @@ LINE_5540
 	.byte	bytecode_to_ip_pb
 	.byte	4
 
-	; IF (Q1(37)=27) AND (Q1(38)=2) THEN
+	; WHEN (Q1(37)=27) AND (Q1(38)=2) GOTO 5545
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	37
@@ -9857,7 +9857,7 @@ LINE_5550
 
 LINE_5560
 
-	; IF (Q1(39)=29) AND (Q1(40)=1) THEN
+	; WHEN (Q1(39)=29) AND (Q1(40)=1) GOTO 5565
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	39
@@ -10034,7 +10034,7 @@ LINE_5570
 
 LINE_5580
 
-	; IF (Q1(33)=31) AND (Q1(34)=2) THEN
+	; WHEN (Q1(33)=31) AND (Q1(34)=2) GOTO 5585
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	33
@@ -10211,7 +10211,7 @@ LINE_5590
 
 LINE_5600
 
-	; IF (Q1(35)=25) AND (Q1(36)=1) THEN
+	; WHEN (Q1(35)=25) AND (Q1(36)=1) GOTO 5605
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	35
@@ -10417,7 +10417,7 @@ LINE_5630
 	.byte	bytecode_to_ip_pb
 	.byte	4
 
-	; IF C1(F)=0 THEN
+	; WHEN C1(F)=0 GOTO 5650
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_F
@@ -10469,7 +10469,7 @@ LINE_5670
 	.byte	bytecode_to_ip_pb
 	.byte	4
 
-	; IF ((Q1(13)-2)=Q1(15)) OR ((Q1(13)+6)=Q1(15)) THEN
+	; WHEN ((Q1(13)-2)=Q1(15)) OR ((Q1(13)+6)=Q1(15)) GOTO 5675
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	13
@@ -10660,7 +10660,7 @@ LINE_5700
 
 	.byte	bytecode_step_ip_ir1
 
-	; IF Q1(F)<>1 THEN
+	; WHEN Q1(F)<>1 GOTO 5710
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_F
@@ -10698,7 +10698,7 @@ LINE_5710
 	.byte	bytecode_to_ip_pb
 	.byte	3
 
-	; IF ((Q1(10)=F)+(Q1(12)=F)+(Q1(14)=F)+(Q1(16)=F))=-3 THEN
+	; WHEN ((Q1(10)=F)+(Q1(12)=F)+(Q1(14)=F)+(Q1(16)=F))=-3 GOTO 5800
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	10
@@ -10768,7 +10768,7 @@ LINE_5720
 	.byte	bytecode_to_ip_pb
 	.byte	4
 
-	; IF ((Q1(10)=2)+(Q1(12)=2)+(Q1(14)=1)+(Q1(16)=2))=-1 THEN
+	; WHEN ((Q1(10)=2)+(Q1(12)=2)+(Q1(14)=1)+(Q1(16)=2))=-1 GOTO 5725
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	10
@@ -10931,7 +10931,7 @@ LINE_5730
 
 LINE_5740
 
-	; IF (Q1(40)=2) AND (Q1(36)=2) AND (Q1(38)=1) THEN
+	; WHEN (Q1(40)=2) AND (Q1(36)=2) AND (Q1(38)=1) GOTO 6190
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	40
@@ -11038,7 +11038,7 @@ LINE_5800
 	.byte	bytecode_to_ip_pb
 	.byte	4
 
-	; IF (Q1(12)=2) AND (Q1(14)=1) THEN
+	; WHEN (Q1(12)=2) AND (Q1(14)=1) GOTO 5805
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	12
@@ -11155,7 +11155,7 @@ LINE_5805
 
 LINE_5810
 
-	; IF (Q1(12)=3) AND (Q1(10)=1) THEN
+	; WHEN (Q1(12)=3) AND (Q1(10)=1) GOTO 5815
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	12
@@ -11307,7 +11307,7 @@ LINE_5830
 	.byte	bytecode_to_ip_pb
 	.byte	4
 
-	; IF (Q1(34)=2) AND (Q1(40)=2) THEN
+	; WHEN (Q1(34)=2) AND (Q1(40)=2) GOTO 6100
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	34
@@ -11354,7 +11354,7 @@ LINE_5831
 
 LINE_5840
 
-	; IF ((Q1(35)-Q1(15))=24) AND ((Q1(39)-Q1(11))=24) THEN
+	; WHEN ((Q1(35)-Q1(15))=24) AND ((Q1(39)-Q1(11))=24) GOTO 5845
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	35
@@ -11542,7 +11542,7 @@ LINE_5850
 	.byte	bytecode_to_ip_pb
 	.byte	2
 
-	; IF ((Q1(37)-Q1(15))=24) AND ((Q1(39)-Q1(13))=24) THEN
+	; WHEN ((Q1(37)-Q1(15))=24) AND ((Q1(39)-Q1(13))=24) GOTO 5855
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	37
@@ -11761,7 +11761,7 @@ LINE_5870
 	.byte	bytecode_to_ip_pb
 	.byte	4
 
-	; IF ((Q1(39)-Q1(15))=24) AND ((Q1(37)-Q1(13))<>24) THEN
+	; WHEN ((Q1(39)-Q1(15))=24) AND ((Q1(37)-Q1(13))<>24) GOTO 6190
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	39
@@ -12162,7 +12162,7 @@ LINE_6040
 
 LINE_6100
 
-	; IF ((Q1(39)-Q1(9))=24) OR ((Q1(33)-Q1(11))=24) OR (((Q1(35)-Q1(15))=24) AND (Q1(36)=1)) THEN
+	; WHEN ((Q1(39)-Q1(9))=24) OR ((Q1(33)-Q1(11))=24) OR (((Q1(35)-Q1(15))=24) AND (Q1(36)=1)) GOTO 6105
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	39

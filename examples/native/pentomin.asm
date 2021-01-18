@@ -340,7 +340,7 @@ LINE_1010
 	ldx	#INTVAR_N
 	jsr	read_ix
 
-	; IF N=0 THEN
+	; WHEN N=0 GOTO 1070
 
 	ldx	#INTVAR_N
 	jsr	ld_ir1_ix
@@ -554,7 +554,7 @@ LINE_1090
 
 LINE_1100
 
-	; IF (W1<3) OR (W1>6) OR (W1<>INT(W1)) THEN
+	; WHEN (W1<3) OR (W1>6) OR (W1<>INT(W1)) GOTO 1070
 
 	ldx	#FLTVAR_W1
 	jsr	ld_fr1_fx
@@ -669,7 +669,7 @@ LINE_2010
 	ldx	#LINE_3200
 	jsr	gosub_ix
 
-	; IF X1>W2 THEN
+	; WHEN X1>W2 GOTO 2170
 
 	ldx	#FLTVAR_W2
 	jsr	ld_fr1_fx
@@ -848,7 +848,7 @@ LINE_2070
 
 LINE_2080
 
-	; IF (X<1) OR (Y<1) OR (X>W2) OR (Y>W1) THEN
+	; WHEN (X<1) OR (Y<1) OR (X>W2) OR (Y>W1) GOTO 2260
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -885,7 +885,7 @@ LINE_2080
 
 LINE_2090
 
-	; IF B(Y,X) THEN
+	; WHEN B(Y,X) GOTO 2260
 
 	ldx	#INTVAR_Y
 	jsr	ld_ir1_ix
@@ -1270,7 +1270,7 @@ LINE_2260
 	ldab	#1
 	jsr	add_ip_ip_pb
 
-	; IF P(T(P))=P THEN
+	; WHEN P(T(P))=P GOTO 2060
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -1316,7 +1316,7 @@ LINE_2300
 	ldab	#1
 	jsr	add_ix_ix_pb
 
-	; IF P>12 THEN
+	; WHEN P>12 GOTO 2190
 
 	ldab	#12
 	jsr	ld_ir1_pb
@@ -1329,7 +1329,7 @@ LINE_2300
 
 LINE_2310
 
-	; IF T(P) THEN
+	; WHEN T(P) GOTO 2300
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -1402,7 +1402,7 @@ LINE_3200
 	ldx	#FLTVAR_W1
 	jsr	to_ip_ix
 
-	; IF B(Y1,X1)=0 THEN
+	; WHEN B(Y1,X1)=0 GOTO 3230
 
 	ldx	#INTVAR_Y1
 	jsr	ld_ir1_ix

@@ -6,6 +6,7 @@
 #include "expression.hpp"
 
 // search for "gerrieatric expressions" of the form:
+//   -<boolean>
 //   1-<boolean>
 
 class ExprIsGerrieatric : public ExprOp {

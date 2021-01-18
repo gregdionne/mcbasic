@@ -148,7 +148,7 @@ LINE_60
 
 LINE_90
 
-	; IF (Z=0) OR (RND(7)=3) THEN
+	; WHEN (Z=0) OR (RND(7)=3) GOTO 150
 
 	ldx	#INTVAR_Z
 	jsr	ld_ir1_ix

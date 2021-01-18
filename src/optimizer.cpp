@@ -14,6 +14,7 @@
 #include "onmerger.hpp"
 #include "reachchecker.hpp"
 #include "symboltabulator.hpp"
+#include "whenifier.hpp"
 
 // for debug
 // #include "grapher.hpp"
@@ -21,6 +22,9 @@
 void Optimizer::optimize(Program &p) {
   Gerriemanderer gm;
   gm.operate(p);
+
+  Whenifier w;
+  w.operate(p);
 
   ConstFolder cf;
   cf.operate(p);

@@ -331,7 +331,7 @@ LINE_30
 	ldx	#STRVAR_A
 	jsr	ld_sx_sr1
 
-	; IF A$="N" THEN
+	; WHEN A$="N" GOTO 42
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -344,7 +344,7 @@ LINE_30
 
 LINE_32
 
-	; IF A$="Y" THEN
+	; WHEN A$="Y" GOTO 36
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -421,7 +421,7 @@ LINE_40
 	ldx	#STRVAR_A
 	jsr	ld_sx_sr1
 
-	; IF A$="" THEN
+	; WHEN A$="" GOTO 40
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -561,7 +561,7 @@ LINE_44
 
 LINE_46
 
-	; IF A$<>"Y" THEN
+	; WHEN A$<>"Y" GOTO 44
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -717,7 +717,7 @@ LINE_56
 	ldx	#STRVAR_M
 	jsr	ld_sx_sr1
 
-	; IF M$="" THEN
+	; WHEN M$="" GOTO 56
 
 	ldx	#STRVAR_M
 	jsr	ld_sr1_sx
@@ -947,7 +947,7 @@ LINE_62
 
 LINE_63
 
-	; IF S(Z)<4 THEN
+	; WHEN S(Z)<4 GOTO 66
 
 	ldx	#INTVAR_Z
 	jsr	ld_ir1_ix
@@ -1037,7 +1037,7 @@ LINE_66
 	ldx	#INTVAR_L
 	jsr	ld_ix_ir1
 
-	; IF L>8 THEN
+	; WHEN L>8 GOTO 98
 
 	ldab	#8
 	jsr	ld_ir1_pb
@@ -1132,7 +1132,7 @@ LINE_70
 	ldx	#INTVAR_S
 	jsr	ld_ix_ir1
 
-	; IF (S-W)>3 THEN
+	; WHEN (S-W)>3 GOTO 104
 
 	ldab	#3
 	jsr	ld_ir1_pb
@@ -1164,7 +1164,7 @@ LINE_72
 	ldx	#INTVAR_T
 	jsr	ld_ix_ir1
 
-	; IF T<4 THEN
+	; WHEN T<4 GOTO 76
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -1226,7 +1226,7 @@ LINE_76
 	ldx	#INTVAR_N
 	jsr	ld_ix_ir1
 
-	; IF N=-1 THEN
+	; WHEN N=-1 GOTO 80
 
 	ldx	#INTVAR_N
 	jsr	ld_ir1_ix
@@ -1298,7 +1298,7 @@ LINE_80
 
 	jsr	next
 
-	; IF W=1 THEN
+	; WHEN W=1 GOTO 84
 
 	ldx	#INTVAR_W
 	jsr	ld_ir1_ix
@@ -1338,7 +1338,7 @@ LINE_84
 	ldab	#1
 	jsr	add_ix_ix_pb
 
-	; IF L>8 THEN
+	; WHEN L>8 GOTO 90
 
 	ldab	#8
 	jsr	ld_ir1_pb
@@ -1398,7 +1398,7 @@ LINE_88
 
 LINE_90
 
-	; IF V<V1 THEN
+	; WHEN V<V1 GOTO 98
 
 	ldx	#INTVAR_V
 	jsr	ld_ir1_ix
@@ -1468,7 +1468,7 @@ LINE_98
 
 	jsr	next
 
-	; IF M<>0 THEN
+	; WHEN M<>0 GOTO 102
 
 	ldx	#FLTVAR_M
 	jsr	ld_fr1_fx
@@ -1590,7 +1590,7 @@ LINE_104
 	ldab	#4
 	jsr	to_ip_pb
 
-	; IF S(Z)<4 THEN
+	; WHEN S(Z)<4 GOTO 108
 
 	ldx	#INTVAR_Z
 	jsr	ld_ir1_ix
@@ -1813,7 +1813,7 @@ LINE_116
 	ldx	#INTVAR_L1
 	jsr	ld_ix_ir1
 
-	; IF (M5<1) OR (L1<1) OR (M5>8) OR (L1>8) THEN
+	; WHEN (M5<1) OR (L1<1) OR (M5>8) OR (L1>8) GOTO 128
 
 	ldx	#FLTVAR_M5
 	jsr	ld_fr1_fx
@@ -1864,7 +1864,7 @@ LINE_118
 	ldx	#STRVAR_B
 	jsr	ld_sx_sr1
 
-	; IF C=0 THEN
+	; WHEN C=0 GOTO 124
 
 	ldx	#INTVAR_C
 	jsr	ld_ir1_ix
@@ -1958,7 +1958,7 @@ LINE_128
 
 	jsr	next
 
-	; IF D=0 THEN
+	; WHEN D=0 GOTO 132
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
@@ -1977,7 +1977,7 @@ LINE_130
 	ldab	#0
 	jsr	ld_ix_pb
 
-	; D1=-(D1)
+	; D1=-D1
 
 	ldx	#INTVAR_D1
 	jsr	neg_ir1_ix
@@ -1985,7 +1985,7 @@ LINE_130
 	ldx	#INTVAR_D1
 	jsr	ld_ix_ir1
 
-	; D2=-(D2)
+	; D2=-D2
 
 	ldx	#INTVAR_D2
 	jsr	neg_ir1_ix

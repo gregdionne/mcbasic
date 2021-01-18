@@ -248,7 +248,7 @@ void StatementLister::operate(Data &s) {
   result = "DATA";
   bool continuing = false;
   for (auto &record : s.records) {
-    result += (continuing ? " " : ",") + list(record);
+    result += (continuing ? "," : " ") + list(record);
     continuing = true;
   }
 }

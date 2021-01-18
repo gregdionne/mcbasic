@@ -23,6 +23,8 @@ void StatementConstTabulator::operate(For &s) {
   }
 }
 
+void StatementConstTabulator::operate(When &s) { s.predicate->operate(that); }
+
 void StatementConstTabulator::operate(If &s) {
   s.predicate->operate(that);
   for (auto &statement : s.consequent) {
@@ -53,6 +55,10 @@ void StatementConstTabulator::operate(Dim &s) {
     variable->operate(that);
   }
 }
+
+void StatementConstTabulator::operate(Inc &s) { s.rhs->operate(that); }
+
+void StatementConstTabulator::operate(Dec &s) { s.rhs->operate(that); }
 
 void StatementConstTabulator::operate(Let &s) { s.rhs->operate(that); }
 

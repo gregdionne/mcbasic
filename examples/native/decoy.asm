@@ -232,7 +232,7 @@ LINE_2
 
 	jsr	step_ip_ir1
 
-	; IF PEEK(T)<V THEN
+	; WHEN PEEK(T)<V GOTO 4
 
 	ldx	#INTVAR_T
 	jsr	peek_ir1_ix
@@ -572,7 +572,7 @@ LINE_8
 	ldx	#INTVAR_S
 	jsr	ld_ix_ir1
 
-	; A=-(V)
+	; A=-V
 
 	ldx	#INTVAR_V
 	jsr	neg_ir1_ix
@@ -725,7 +725,7 @@ LINE_20
 
 	jsr	pr_sr1
 
-	; IF S<(M+R) THEN
+	; WHEN S<(M+R) GOTO 9
 
 	ldx	#INTVAR_S
 	jsr	ld_ir1_ix
@@ -778,7 +778,7 @@ LINE_21
 	ldx	#INTVAR_T
 	jsr	ld_ix_ir1
 
-	; IF (PEEK(T)>G) OR (PEEK(T+1)>U) OR (PEEK(T+66)>U) THEN
+	; WHEN (PEEK(T)>G) OR (PEEK(T+1)>U) OR (PEEK(T+66)>U) GOTO 90
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -836,7 +836,7 @@ LINE_22
 	ldx	#INTVAR_K
 	jsr	ld_ix_ir1
 
-	; IF K THEN
+	; WHEN K GOTO 1
 
 	ldx	#INTVAR_K
 	jsr	ld_ir1_ix
@@ -950,7 +950,7 @@ LINE_23
 
 	jsr	pr_sr1
 
-	; IF RND(99)<D THEN
+	; WHEN RND(99)<D GOTO 8
 
 	ldab	#99
 	jsr	irnd_ir1_pb
@@ -1657,7 +1657,7 @@ LINE_210
 	ldx	#STRVAR_M
 	jsr	ld_sx_sr1
 
-	; IF M$="" THEN
+	; WHEN M$="" GOTO 210
 
 	ldx	#STRVAR_M
 	jsr	ld_sr1_sx
@@ -1670,7 +1670,7 @@ LINE_210
 
 LINE_220
 
-	; IF M$="Y" THEN
+	; WHEN M$="Y" GOTO 300
 
 	ldx	#STRVAR_M
 	jsr	ld_sr1_sx
@@ -2452,7 +2452,7 @@ LINE_3110
 
 LINE_3120
 
-	; IF INKEY$<>"B" THEN
+	; WHEN INKEY$<>"B" GOTO 3120
 
 	jsr	inkey_sr1
 

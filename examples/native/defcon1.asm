@@ -1220,7 +1220,7 @@ LINE_86
 
 LINE_88
 
-	; IF (UD>=3) OR (RD>=3) THEN
+	; WHEN (UD>=3) OR (RD>=3) GOTO 150
 
 	ldx	#INTVAR_UD
 	jsr	ld_ir1_ix
@@ -1251,7 +1251,7 @@ LINE_100
 
 LINE_110
 
-	; IF INKEY$="" THEN
+	; WHEN INKEY$="" GOTO 110
 
 	jsr	inkey_sr1
 
@@ -1409,7 +1409,7 @@ LINE_180
 	ldx	#STRVAR_I
 	jsr	ld_sx_sr1
 
-	; IF I$="" THEN
+	; WHEN I$="" GOTO 180
 
 	ldx	#STRVAR_I
 	jsr	ld_sr1_sx
@@ -1556,7 +1556,7 @@ LINE_310
 
 	jsr	ignxtra
 
-	; IF (X<1) OR (X>31) OR (Y<1) OR (Y>12) THEN
+	; WHEN (X<1) OR (X>31) OR (Y<1) OR (Y>12) GOTO 310
 
 	ldx	#FLTVAR_X
 	jsr	ld_fr1_fx
@@ -1625,7 +1625,7 @@ LINE_320
 
 	jsr	ld_fp_fr1
 
-	; IF POINT(S(P),T(P))<>6 THEN
+	; WHEN POINT(S(P),T(P))<>6 GOTO 310
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -1658,7 +1658,7 @@ LINE_325
 	ldab	#3
 	jsr	to_fp_pb
 
-	; IF (T<>P) AND (S(T)=S(P)) AND (T(T)=T(P)) THEN
+	; WHEN (T<>P) AND (S(T)=S(P)) AND (T(T)=T(P)) GOTO 310
 
 	ldx	#FLTVAR_T
 	jsr	ld_fr1_fx
@@ -1771,7 +1771,7 @@ LINE_350
 	ldab	#3
 	jsr	to_ip_pb
 
-	; IF C(P)=0 THEN
+	; WHEN C(P)=0 GOTO 380
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -1856,7 +1856,7 @@ LINE_360
 
 LINE_365
 
-	; IF (X<16) OR (X>31) OR (Y<1) OR (Y>12) THEN
+	; WHEN (X<16) OR (X>31) OR (Y<1) OR (Y>12) GOTO 360
 
 	ldx	#FLTVAR_X
 	jsr	ld_fr1_fx
@@ -2033,7 +2033,7 @@ LINE_410
 
 	jsr	ignxtra
 
-	; IF (X<1) OR (X>31) OR (Y<1) OR (Y>12) THEN
+	; WHEN (X<1) OR (X>31) OR (Y<1) OR (Y>12) GOTO 410
 
 	ldx	#FLTVAR_X
 	jsr	ld_fr1_fx
@@ -2102,7 +2102,7 @@ LINE_420
 
 	jsr	ld_fp_fr1
 
-	; IF POINT(S(P),T(P))<>4 THEN
+	; WHEN POINT(S(P),T(P))<>4 GOTO 410
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -2135,7 +2135,7 @@ LINE_425
 	ldab	#7
 	jsr	to_fp_pb
 
-	; IF (T<>P) AND (S(T)=S(P)) AND (T(T)=T(P)) THEN
+	; WHEN (T<>P) AND (S(T)=S(P)) AND (T(T)=T(P)) GOTO 410
 
 	ldx	#FLTVAR_T
 	jsr	ld_fr1_fx
@@ -2248,7 +2248,7 @@ LINE_450
 	ldab	#6
 	jsr	to_ip_pb
 
-	; IF C(P)=0 THEN
+	; WHEN C(P)=0 GOTO 480
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -2341,7 +2341,7 @@ LINE_460
 
 LINE_465
 
-	; IF (X<1) OR (X>16) OR (Y<1) OR (Y>12) THEN
+	; WHEN (X<1) OR (X>16) OR (Y<1) OR (Y>12) GOTO 460
 
 	ldx	#FLTVAR_X
 	jsr	ld_fr1_fx
@@ -2494,7 +2494,7 @@ LINE_510
 
 	jsr	ignxtra
 
-	; IF (X<1) OR (X>31) OR (Y<1) OR (Y>12) THEN
+	; WHEN (X<1) OR (X>31) OR (Y<1) OR (Y>12) GOTO 510
 
 	ldx	#FLTVAR_X
 	jsr	ld_fr1_fx
@@ -2563,7 +2563,7 @@ LINE_520
 
 	jsr	ld_fp_fr1
 
-	; IF POINT(S(P),T(P))<>6 THEN
+	; WHEN POINT(S(P),T(P))<>6 GOTO 510
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -2621,7 +2621,7 @@ LINE_610
 
 	jsr	ignxtra
 
-	; IF (X<1) OR (X>31) OR (Y<1) OR (Y>12) THEN
+	; WHEN (X<1) OR (X>31) OR (Y<1) OR (Y>12) GOTO 610
 
 	ldx	#FLTVAR_X
 	jsr	ld_fr1_fx
@@ -2690,7 +2690,7 @@ LINE_620
 
 	jsr	ld_fp_fr1
 
-	; IF POINT(S(P),T(P))<>4 THEN
+	; WHEN POINT(S(P),T(P))<>4 GOTO 610
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -3518,7 +3518,7 @@ LINE_3210
 	ldx	#STRVAR_I
 	jsr	ld_sx_sr1
 
-	; IF I$="" THEN
+	; WHEN I$="" GOTO 3210
 
 	ldx	#STRVAR_I
 	jsr	ld_sr1_sx

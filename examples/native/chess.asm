@@ -240,7 +240,7 @@ LINE_30
 	ldx	#STRVAR_IN
 	jsr	ld_sx_sr1
 
-	; IF IN$="Y" THEN
+	; WHEN IN$="Y" GOSUB 2220
 
 	ldx	#STRVAR_IN
 	jsr	ld_sr1_sx
@@ -248,13 +248,8 @@ LINE_30
 	jsr	ldeq_ir1_sr1_ss
 	.text	1, "Y"
 
-	ldx	#LINE_50
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 2220
-
 	ldx	#LINE_2220
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_50
 
@@ -596,7 +591,7 @@ LINE_120
 	ldx	#LINE_270
 	jsr	gosub_ix
 
-	; IF F>=B7 THEN
+	; WHEN F>=B7 GOTO 150
 
 	ldx	#FLTVAR_F
 	jsr	ld_fr1_fx
@@ -617,7 +612,7 @@ LINE_130
 
 	jsr	next
 
-	; IF F>=-9 THEN
+	; WHEN F>=-9 GOTO 150
 
 	ldx	#FLTVAR_F
 	jsr	ld_fr1_fx
@@ -1055,7 +1050,7 @@ LINE_192
 
 LINE_200
 
-	; IF (X$="K") OR (X$="Q") THEN
+	; WHEN (X$="K") OR (X$="Q") GOTO 100
 
 	ldx	#STRVAR_X
 	jsr	ld_sr1_sx
@@ -1450,7 +1445,7 @@ LINE_265
 
 LINE_270
 
-	; ON -(A(X,Y)) GOTO 3000,530,3000,380,330,3000,280,3000,330
+	; ON -A(X,Y) GOTO 3000,530,3000,380,330,3000,280,3000,330
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -1872,7 +1867,7 @@ LINE_360
 
 LINE_370
 
-	; IF ABS(A(X,Y))=9 THEN
+	; WHEN ABS(A(X,Y))=9 GOTO 280
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -1925,7 +1920,7 @@ LINE_380
 	ldx	#INTVAR_B
 	jsr	ld_ix_ir1
 
-	; IF (A<9) AND (B<9) THEN
+	; WHEN (A<9) AND (B<9) GOSUB 650
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix
@@ -1941,13 +1936,8 @@ LINE_380
 
 	jsr	and_ir1_ir1_ir2
 
-	ldx	#LINE_390
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 650
-
 	ldx	#LINE_650
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_390
 
@@ -1957,7 +1947,7 @@ LINE_390
 	ldab	#2
 	jsr	sub_ix_ix_pb
 
-	; IF (B>0) AND (A<9) THEN
+	; WHEN (B>0) AND (A<9) GOSUB 650
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -1973,13 +1963,8 @@ LINE_390
 
 	jsr	and_ir1_ir1_ir2
 
-	ldx	#LINE_400
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 650
-
 	ldx	#LINE_650
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_400
 
@@ -1989,7 +1974,7 @@ LINE_400
 	ldab	#4
 	jsr	sub_ix_ix_pb
 
-	; IF (A>0) AND (B>0) THEN
+	; WHEN (A>0) AND (B>0) GOSUB 650
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -2005,13 +1990,8 @@ LINE_400
 
 	jsr	and_ir1_ir1_ir2
 
-	ldx	#LINE_410
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 650
-
 	ldx	#LINE_650
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_410
 
@@ -2021,7 +2001,7 @@ LINE_410
 	ldab	#2
 	jsr	add_ix_ix_pb
 
-	; IF (B<9) AND (A>0) THEN
+	; WHEN (B<9) AND (A>0) GOSUB 650
 
 	ldx	#INTVAR_B
 	jsr	ld_ir1_ix
@@ -2037,13 +2017,8 @@ LINE_410
 
 	jsr	and_ir1_ir1_ir2
 
-	ldx	#LINE_420
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 650
-
 	ldx	#LINE_650
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_420
 
@@ -2059,7 +2034,7 @@ LINE_420
 	ldab	#1
 	jsr	add_ix_ix_pb
 
-	; IF (A>0) AND (A<9) AND (B<9) THEN
+	; WHEN (A>0) AND (A<9) AND (B<9) GOSUB 650
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -2083,13 +2058,8 @@ LINE_420
 
 	jsr	and_ir1_ir1_ir2
 
-	ldx	#LINE_430
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 650
-
 	ldx	#LINE_650
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_430
 
@@ -2099,7 +2069,7 @@ LINE_430
 	ldab	#4
 	jsr	sub_ix_ix_pb
 
-	; IF (B>0) AND (A>0) AND (A<9) THEN
+	; WHEN (B>0) AND (A>0) AND (A<9) GOSUB 650
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -2123,13 +2093,8 @@ LINE_430
 
 	jsr	and_ir1_ir1_ir2
 
-	ldx	#LINE_440
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 650
-
 	ldx	#LINE_650
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_440
 
@@ -2139,7 +2104,7 @@ LINE_440
 	ldab	#2
 	jsr	add_ix_ix_pb
 
-	; IF (A>0) AND (A<9) AND (B>0) THEN
+	; WHEN (A>0) AND (A<9) AND (B>0) GOSUB 650
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -2163,13 +2128,8 @@ LINE_440
 
 	jsr	and_ir1_ir1_ir2
 
-	ldx	#LINE_450
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 650
-
 	ldx	#LINE_650
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_450
 
@@ -2235,7 +2195,7 @@ LINE_480
 	ldx	#INTVAR_A
 	jsr	ld_ix_ir1
 
-	; IF Y>2 THEN
+	; WHEN Y>2 GOTO 500
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -2334,7 +2294,7 @@ LINE_500
 	ldx	#INTVAR_B
 	jsr	ld_ix_ir1
 
-	; IF A(A,B)=1 THEN
+	; WHEN A(A,B)=1 GOSUB 660
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix
@@ -2348,13 +2308,8 @@ LINE_500
 	ldab	#1
 	jsr	ldeq_ir1_ir1_pb
 
-	ldx	#LINE_510
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 660
-
 	ldx	#LINE_660
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_510
 
@@ -2380,7 +2335,7 @@ LINE_510
 	ldx	#INTVAR_B
 	jsr	ld_ix_ir1
 
-	; IF A(A,B)<0 THEN
+	; WHEN A(A,B)<0 GOSUB 660
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix
@@ -2394,13 +2349,8 @@ LINE_510
 	ldab	#0
 	jsr	ldlt_ir1_ir1_pb
 
-	ldx	#LINE_520
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 660
-
 	ldx	#LINE_660
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_520
 
@@ -2456,7 +2406,7 @@ LINE_530
 	ldx	#INTVAR_A
 	jsr	ld_ix_ir1
 
-	; IF Y<7 THEN
+	; WHEN Y<7 GOTO 550
 
 	ldx	#INTVAR_Y
 	jsr	ld_ir1_ix
@@ -2555,7 +2505,7 @@ LINE_550
 	ldx	#INTVAR_B
 	jsr	ld_ix_ir1
 
-	; IF A(A,B)=1 THEN
+	; WHEN A(A,B)=1 GOSUB 660
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix
@@ -2569,13 +2519,8 @@ LINE_550
 	ldab	#1
 	jsr	ldeq_ir1_ir1_pb
 
-	ldx	#LINE_560
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 660
-
 	ldx	#LINE_660
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_560
 
@@ -2601,7 +2546,7 @@ LINE_560
 	ldx	#INTVAR_B
 	jsr	ld_ix_ir1
 
-	; IF A(A,B)>1 THEN
+	; WHEN A(A,B)>1 GOSUB 660
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -2617,13 +2562,8 @@ LINE_560
 
 	jsr	ldlt_ir1_ir1_ir2
 
-	ldx	#LINE_570
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 660
-
 	ldx	#LINE_660
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_570
 
@@ -2915,7 +2855,7 @@ LINE_610
 	ldx	#LINE_270
 	jsr	gosub_ix
 
-	; IF T=0 THEN
+	; WHEN T=0 GOTO 630
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -3031,7 +2971,7 @@ LINE_640
 	ldab	#0
 	jsr	ld_ix_pb
 
-	; IF A(A,B)=1 THEN
+	; WHEN A(A,B)=1 GOTO 660
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix
@@ -3385,7 +3325,7 @@ LINE_701
 
 LINE_710
 
-	; IF A(A,B)<0 THEN
+	; WHEN A(A,B)<0 GOTO 580
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix
@@ -3536,7 +3476,7 @@ LINE_730
 	ldab	#8
 	jsr	to_ip_pb
 
-	; IF A(X,Y)>1 THEN
+	; WHEN A(X,Y)>1 GOSUB 250
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -3552,13 +3492,8 @@ LINE_730
 
 	jsr	ldlt_ir1_ir1_ir2
 
-	ldx	#LINE_740
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 250
-
 	ldx	#LINE_250
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_740
 
@@ -4202,7 +4137,7 @@ LINE_885
 
 LINE_890
 
-	; I=-(I)
+	; I=-I
 
 	ldx	#INTVAR_I
 	jsr	neg_ir1_ix
@@ -4335,7 +4270,7 @@ LINE_910
 	ldx	#INTVAR_L
 	jsr	ld_ix_ir1
 
-	; IF (X+Y-(INT((X+Y)/2)*2))=0 THEN
+	; WHEN (X+Y-(INT((X+Y)/2)*2))=0 GOTO 940
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -4976,7 +4911,7 @@ LINE_1591
 	ldx	#STRVAR_X
 	jsr	ld_sx_sr1
 
-	; IF (X$>="A") AND (X$<="H") THEN
+	; WHEN (X$>="A") AND (X$<="H") GOTO 1730
 
 	ldx	#STRVAR_X
 	jsr	ld_sr1_sx
@@ -5599,7 +5534,7 @@ LINE_1680
 
 LINE_1690
 
-	; IF X$="M" THEN
+	; WHEN X$="M" GOTO 1840
 
 	ldx	#STRVAR_X
 	jsr	ld_sr1_sx
@@ -5788,7 +5723,7 @@ LINE_1731
 
 LINE_1740
 
-	; IF (Y<1) OR (Y>8) OR (A<1) OR (A>8) OR (B<1) OR (B>8) THEN
+	; WHEN (Y<1) OR (Y>8) OR (A<1) OR (A>8) OR (B<1) OR (B>8) GOTO 1580
 
 	ldx	#INTVAR_Y
 	jsr	ld_ir1_ix
@@ -5841,7 +5776,7 @@ LINE_1740
 
 LINE_1741
 
-	; IF (A(X,Y)<2) OR (A(A,B)>1) THEN
+	; WHEN (A(X,Y)<2) OR (A(A,B)>1) GOTO 1580
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -6081,7 +6016,7 @@ LINE_1840
 
 LINE_1850
 
-	; IF LEN(IN$)<>4 THEN
+	; WHEN LEN(IN$)<>4 GOTO 1835
 
 	ldx	#STRVAR_IN
 	jsr	len_ir1_sx
@@ -6132,7 +6067,7 @@ LINE_1851
 	ldx	#INTVAR_Y
 	jsr	ld_ix_ir1
 
-	; IF (X<1) OR (X>8) OR (Y<1) OR (Y>8) THEN
+	; WHEN (X<1) OR (X>8) OR (Y<1) OR (Y>8) GOTO 1835
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -6183,7 +6118,7 @@ LINE_1890
 	ldx	#STRVAR_M
 	jsr	ld_sx_sr1
 
-	; IF (M$="C") OR (M$="P") OR (M$="E") THEN
+	; WHEN (M$="C") OR (M$="P") OR (M$="E") GOTO 1900
 
 	ldx	#STRVAR_M
 	jsr	ld_sr1_sx
@@ -6233,7 +6168,7 @@ LINE_1900
 	ldx	#STRVAR_V
 	jsr	ld_sx_sr1
 
-	; IF (V$="S") OR (V$="P") OR (V$="N") OR (V$="B") OR (V$="R") OR (V$="Q") OR (V$="K") THEN
+	; WHEN (V$="S") OR (V$="P") OR (V$="N") OR (V$="B") OR (V$="R") OR (V$="Q") OR (V$="K") GOTO 1905
 
 	ldx	#STRVAR_V
 	jsr	ld_sr1_sx
@@ -6301,7 +6236,7 @@ LINE_1901
 
 LINE_1905
 
-	; IF ABS(A(X,Y))=99 THEN
+	; WHEN ABS(A(X,Y))=99 GOTO 1835
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -6562,7 +6497,7 @@ LINE_1980
 	ldx	#LINE_1990
 	jsr	jmpeq_ir1_ix
 
-	; A(X,Y)=-(A(X,Y))
+	; A(X,Y)=-A(X,Y)
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -6593,7 +6528,7 @@ LINE_1990
 	ldx	#LINE_910
 	jsr	gosub_ix
 
-	; IF V$<>"K" THEN
+	; WHEN V$<>"K" GOTO 1840
 
 	ldx	#STRVAR_V
 	jsr	ld_sr1_sx
@@ -6782,7 +6717,7 @@ LINE_2040
 
 	jsr	ignxtra
 
-	; IF LEN(IN$)=0 THEN
+	; WHEN LEN(IN$)=0 GOTO 2040
 
 	ldx	#STRVAR_IN
 	jsr	len_ir1_sx
@@ -6815,7 +6750,7 @@ LINE_2041
 
 LINE_2042
 
-	; IF LEFT$(IN$,1)="Y" THEN
+	; WHEN LEFT$(IN$,1)="Y" GOTO 2040
 
 	ldx	#STRVAR_IN
 	jsr	ld_sr1_sx
@@ -6839,7 +6774,7 @@ LINE_2043
 	ldx	#FLTVAR_B8
 	jsr	ld_fx_fr1
 
-	; IF (B8<1) OR (B8>24) THEN
+	; WHEN (B8<1) OR (B8>24) GOTO 2040
 
 	ldx	#FLTVAR_B8
 	jsr	ld_fr1_fx
@@ -7499,7 +7434,7 @@ LINE_2291
 
 LINE_2300
 
-	; IF INKEY$="" THEN
+	; WHEN INKEY$="" GOTO 2300
 
 	jsr	inkey_sr1
 
@@ -7524,7 +7459,7 @@ LINE_2310
 
 LINE_2320
 
-	; IF INKEY$="" THEN
+	; WHEN INKEY$="" GOTO 2320
 
 	jsr	inkey_sr1
 
@@ -7570,7 +7505,7 @@ LINE_2470
 
 LINE_2480
 
-	; I=-(I)
+	; I=-I
 
 	ldx	#INTVAR_I
 	jsr	neg_ir1_ix
@@ -7654,7 +7589,7 @@ LINE_2480
 
 LINE_2481
 
-	; A(J,K)=-(A(9-J,9-K))
+	; A(J,K)=-A(9-J,9-K)
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -7724,7 +7659,7 @@ LINE_2490
 
 LINE_2491
 
-	; A(9-J,9-K)=-(L)
+	; A(9-J,9-K)=-L
 
 	ldab	#9
 	jsr	ld_ir1_pb
@@ -9562,7 +9497,7 @@ for_ix_pb			; numCalls = 25
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 75
+gosub_ix			; numCalls = 62
 	.module	modgosub_ix
 	ldab	#3
 	pshb
@@ -9608,7 +9543,7 @@ input			; numCalls = 8
 	std	redoptr
 	jmp	inputqs
 
-jmpeq_ir1_ix			; numCalls = 95
+jmpeq_ir1_ix			; numCalls = 82
 	.module	modjmpeq_ir1_ix
 	ldd	r1+1
 	bne	_rts
@@ -9630,6 +9565,18 @@ jmpne_ir1_ix			; numCalls = 25
 _go
 	ins
 	ins
+	jmp	,x
+
+jsrne_ir1_ix			; numCalls = 13
+	.module	modjsrne_ir1_ix
+	ldd	r1+1
+	bne	_go
+	ldaa	r1
+	bne	_go
+	rts
+_go
+	ldab	#3
+	pshb
 	jmp	,x
 
 ld_fr1_fx			; numCalls = 7

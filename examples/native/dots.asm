@@ -202,7 +202,7 @@ LINE_110
 
 	jsr	ignxtra
 
-	; IF (SK<0) OR (SK>10) THEN
+	; WHEN (SK<0) OR (SK>10) GOTO 110
 
 	ldx	#FLTVAR_SK
 	jsr	ld_fr1_fx
@@ -495,7 +495,7 @@ LINE_210
 
 LINE_220
 
-	; IF PC=99 THEN
+	; WHEN PC=99 GOTO 250
 
 	ldx	#INTVAR_PC
 	jsr	ld_ir1_ix
@@ -604,7 +604,7 @@ LINE_250
 
 LINE_260
 
-	; IF ((CC=96)+L)=-3 THEN
+	; WHEN ((CC=96)+L)=-3 GOTO 280
 
 	ldx	#INTVAR_CC
 	jsr	ld_ir1_ix
@@ -673,7 +673,7 @@ LINE_280
 	ldx	#LINE_17
 	jsr	gosub_ix
 
-	; IF NOT C1 THEN
+	; WHEN NOT C1 GOTO 330
 
 	ldx	#INTVAR_C1
 	jsr	com_ir1_ix
@@ -800,7 +800,7 @@ LINE_300
 
 LINE_310
 
-	; IF F THEN
+	; WHEN F GOTO 180
 
 	ldx	#INTVAR_F
 	jsr	ld_ir1_ix
@@ -934,7 +934,7 @@ LINE_340
 
 LINE_350
 
-	; IF F THEN
+	; WHEN F GOTO 180
 
 	ldx	#INTVAR_F
 	jsr	ld_ir1_ix
@@ -962,7 +962,7 @@ LINE_360
 	ldab	#0
 	jsr	ld_ix_pb
 
-	; IF RND(0)<SK THEN
+	; WHEN RND(0)<SK GOTO 440
 
 	ldab	#0
 	jsr	rnd_fr1_pb
@@ -1032,7 +1032,7 @@ LINE_380
 	ldx	#LINE_16
 	jsr	gosub_ix
 
-	; IF (PEEK(K)=96) AND (C1=-3) THEN
+	; WHEN (PEEK(K)=96) AND (C1=-3) GOTO 400
 
 	ldx	#INTVAR_K
 	jsr	peek_ir1_ix
@@ -1224,7 +1224,7 @@ LINE_440
 	ldab	#1
 	jsr	add_ix_ix_pb
 
-	; IF PEEK(I)<>96 THEN
+	; WHEN PEEK(I)<>96 GOTO 440
 
 	ldx	#INTVAR_I
 	jsr	peek_ir1_ix
@@ -1237,7 +1237,7 @@ LINE_440
 
 LINE_450
 
-	; IF NOT (((PEEK(I+1)=79) AND (PEEK(I-1)=79)) OR ((PEEK(I+32)=79) AND (PEEK(I-32)=79))) THEN
+	; WHEN NOT (((PEEK(I+1)=79) AND (PEEK(I-1)=79)) OR ((PEEK(I+32)=79) AND (PEEK(I-32)=79))) GOTO 440
 
 	ldx	#INTVAR_I
 	jsr	ld_ir1_ix
@@ -1296,7 +1296,7 @@ LINE_450
 
 LINE_460
 
-	; IF (SK>0.6) OR (CN>TS) THEN
+	; WHEN (SK>0.6) OR (CN>TS) GOTO 520
 
 	ldx	#FLT_0p60000
 	jsr	ld_fr1_fx
@@ -1330,7 +1330,7 @@ LINE_470
 	ldx	#LINE_17
 	jsr	gosub_ix
 
-	; IF C1 THEN
+	; WHEN C1 GOTO 500
 
 	ldx	#INTVAR_C1
 	jsr	ld_ir1_ix
@@ -1356,7 +1356,7 @@ LINE_480
 	ldx	#LINE_16
 	jsr	gosub_ix
 
-	; IF C1=-2 THEN
+	; WHEN C1=-2 GOTO 440
 
 	ldx	#INTVAR_C1
 	jsr	ld_ir1_ix
@@ -1385,7 +1385,7 @@ LINE_481
 	ldx	#LINE_16
 	jsr	gosub_ix
 
-	; IF C1=-2 THEN
+	; WHEN C1=-2 GOTO 440
 
 	ldx	#INTVAR_C1
 	jsr	ld_ir1_ix
@@ -1421,7 +1421,7 @@ LINE_500
 	ldx	#LINE_16
 	jsr	gosub_ix
 
-	; IF C1=-2 THEN
+	; WHEN C1=-2 GOTO 440
 
 	ldx	#INTVAR_C1
 	jsr	ld_ir1_ix
@@ -1450,7 +1450,7 @@ LINE_501
 	ldx	#LINE_16
 	jsr	gosub_ix
 
-	; IF C1=-2 THEN
+	; WHEN C1=-2 GOTO 440
 
 	ldx	#INTVAR_C1
 	jsr	ld_ir1_ix
@@ -1483,7 +1483,7 @@ LINE_520
 	ldx	#LINE_17
 	jsr	gosub_ix
 
-	; IF C1 THEN
+	; WHEN C1 GOTO 560
 
 	ldx	#INTVAR_C1
 	jsr	ld_ir1_ix
@@ -1493,7 +1493,7 @@ LINE_520
 
 LINE_530
 
-	; IF (SK>0.6) OR (CN>DT) THEN
+	; WHEN (SK>0.6) OR (CN>DT) GOTO 590
 
 	ldx	#FLT_0p60000
 	jsr	ld_fr1_fx
@@ -1552,7 +1552,7 @@ LINE_540
 	ldx	#INTVAR_LC
 	jsr	ld_ix_ir1
 
-	; IF C1=-2 THEN
+	; WHEN C1=-2 GOTO 440
 
 	ldx	#INTVAR_C1
 	jsr	ld_ir1_ix
@@ -1572,7 +1572,7 @@ LINE_550
 
 LINE_560
 
-	; IF (SK>0.6) OR (CN>DT) THEN
+	; WHEN (SK>0.6) OR (CN>DT) GOTO 650
 
 	ldx	#FLT_0p60000
 	jsr	ld_fr1_fx
@@ -1631,7 +1631,7 @@ LINE_570
 	ldx	#INTVAR_LC
 	jsr	ld_ix_ir1
 
-	; IF C1=-2 THEN
+	; WHEN C1=-2 GOTO 440
 
 	ldx	#INTVAR_C1
 	jsr	ld_ir1_ix
@@ -1767,7 +1767,7 @@ LINE_610
 
 LINE_620
 
-	; IF F THEN
+	; WHEN F GOTO 360
 
 	ldx	#INTVAR_F
 	jsr	ld_ir1_ix
@@ -1784,7 +1784,7 @@ LINE_630
 
 LINE_640
 
-	; IF NOT ((PEEK(I-32)=79) AND (PEEK(I+32)=79)) THEN
+	; WHEN NOT ((PEEK(I-32)=79) AND (PEEK(I+32)=79)) GOTO 440
 
 	ldx	#INTVAR_I
 	jsr	ld_ir1_ix
@@ -1933,7 +1933,7 @@ LINE_670
 
 LINE_680
 
-	; IF F THEN
+	; WHEN F GOTO 360
 
 	ldx	#INTVAR_F
 	jsr	ld_ir1_ix
@@ -2270,7 +2270,7 @@ LINE_810
 
 LINE_820
 
-	; IF YS>CS THEN
+	; WHEN YS>CS GOTO 850
 
 	ldx	#INTVAR_CS
 	jsr	ld_ir1_ix
@@ -2378,7 +2378,7 @@ LINE_880
 	ldx	#STRVAR_A
 	jsr	ld_sx_sr1
 
-	; IF A$="" THEN
+	; WHEN A$="" GOTO 880
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -2391,7 +2391,7 @@ LINE_880
 
 LINE_890
 
-	; IF LEFT$(A$,1)="Y" THEN
+	; WHEN LEFT$(A$,1)="Y" GOTO 100
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -2440,7 +2440,7 @@ LINE_920
 	ldx	#STRVAR_A
 	jsr	ld_sx_sr1
 
-	; IF A$="" THEN
+	; WHEN A$="" GOTO 920
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx

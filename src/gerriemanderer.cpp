@@ -1,6 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "gerriemanderer.hpp"
+#include "complementer.hpp"
 
 void Gerriemanderer::operate(Program &p) {
   for (auto &line : p.lines) {
@@ -9,29 +10,21 @@ void Gerriemanderer::operate(Program &p) {
 }
 
 static void gerriemander(std::unique_ptr<Statement> &statement,
-                         std::vector<std::unique_ptr<Statement>> &statements,
                          StatementGerriemanderer &gms) {
-  if (statement.get() != std::prev(statements.end())->get()) {
-    auto when = std::make_unique<When>();
-    when->isSub = gms.isSub;
-    when->predicate = std::move(gms.predicate);
-    when->lineNumber = gms.lineNumber;
-    statement = std::move(when);
-  } else {
-    auto localIf = std::make_unique<If>();
-    auto localGo = std::make_unique<Go>();
-    localGo->isSub = gms.isSub;
-    localGo->lineNumber = gms.lineNumber;
-    localIf->predicate = std::move(gms.predicate);
-    localIf->consequent.emplace_back(std::move(localGo));
-    statement = std::move(localIf);
-  }
+
+  auto when = std::make_unique<When>();
+
+  when->isSub = gms.isSub;
+  when->predicate = std::move(gms.predicate);
+  when->lineNumber = gms.lineNumber;
+
+  statement = std::move(when);
 }
 
 void Gerriemanderer::operate(Line &l) {
   for (auto &statement : l.statements) {
     if (boperate(statement, gms)) {
-      gerriemander(statement, l.statements, gms);
+      gerriemander(statement, gms);
     }
   }
 }
@@ -39,7 +32,7 @@ void Gerriemanderer::operate(Line &l) {
 void StatementGerriemanderer::operate(If &s) {
   for (auto &statement : s.consequent) {
     if (boperate(statement, *this)) {
-      gerriemander(statement, s.consequent, *this);
+      gerriemander(statement, *this);
       result = false;
     }
   }
@@ -56,66 +49,24 @@ void StatementGerriemanderer::operate(On &s) {
   }
 }
 
-void ExprGerriemanderer::operate(NegatedExpr &e) { e.expr->operate(this); }
-
-void ExprGerriemanderer::operate(AdditiveExpr &e) {
-  double val;
-  if (e.operands.size() == 1 && e.operands[0]->isConst(val) && val == 1 &&
-      e.invoperands.size() == 1 && e.invoperands[0]->isBoolean()) {
-    predicate = std::move(e.invoperands[0]);
-  } else if (e.operands.size() == 1 && e.operands[0]->isBoolean() &&
-             e.invoperands.size() == 1 && e.invoperands[0]->isConst(val) &&
-             val == -1) {
-    predicate = std::move(e.operands[0]);
+void ExprGerriemanderer::operate(NegatedExpr &e) {
+  if (e.expr->isBoolean()) {
+    predicate = std::move(e.expr);
   } else {
     fprintf(stderr, "Got caught gerriemandering\n");
     exit(1);
   }
 }
 
-void ExprGerriemanderer::operate(AndExpr &e) {
-  std::unique_ptr<OrExpr> orExpr;
-
-  for (auto &operand : e.operands) {
-    operand->operate(this);
-    if (!orExpr) {
-      orExpr = std::make_unique<OrExpr>(std::move(predicate));
-    } else {
-      orExpr->append(std::move(predicate));
-    }
+void ExprGerriemanderer::operate(AdditiveExpr &e) {
+  double val;
+  if (e.operands.size() == 1 && e.operands[0]->isConst(val) && val == 1 &&
+      e.invoperands.size() == 1 && e.invoperands[0]->isBoolean()) {
+    Complementer comp;
+    e.invoperands[0]->operate(&comp);
+    predicate = std::move(comp.complement);
+  } else {
+    fprintf(stderr, "Got caught gerriemandering\n");
+    exit(1);
   }
-  predicate = std::move(orExpr);
-}
-
-void ExprGerriemanderer::operate(OrExpr &e) {
-  std::unique_ptr<AndExpr> andExpr;
-
-  for (auto &operand : e.operands) {
-    operand->operate(this);
-    if (!andExpr) {
-      andExpr = std::make_unique<AndExpr>(std::move(predicate));
-    } else {
-      andExpr->append(std::move(predicate));
-    }
-  }
-  predicate = std::move(andExpr);
-}
-
-void ExprGerriemanderer::operate(ComplementedExpr &e) {
-  predicate = std::move(e.expr);
-}
-
-void ExprGerriemanderer::operate(RelationalExpr &e) {
-  e.comparator = e.comparator == "<"                            ? ">="
-                 : e.comparator == "<=" || e.comparator == "=<" ? ">"
-                 : e.comparator == "="                          ? "<>"
-                 : e.comparator == ">=" || e.comparator == "=>" ? "<"
-                 : e.comparator == ">"                          ? "<="
-                                                                : "=";
-  predicate = std::make_unique<RelationalExpr>(e.comparator, e.lhs.release(),
-                                               e.rhs.release());
-}
-
-void ExprGerriemanderer::operate(NumericConstantExpr &e) {
-  predicate = std::make_unique<NumericConstantExpr>(1 - e.value);
 }

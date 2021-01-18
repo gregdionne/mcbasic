@@ -293,7 +293,7 @@ LINE_190
 
 LINE_200
 
-	; IF A<=PEEK(LP) THEN
+	; WHEN A<=PEEK(LP) GOTO 220
 
 	.byte	bytecode_peek_ir1_ix
 	.byte	bytecode_INTVAR_LP
@@ -319,7 +319,7 @@ LINE_210
 
 LINE_220
 
-	; IF LP=HP THEN
+	; WHEN LP=HP GOTO 270
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_LP
@@ -332,7 +332,7 @@ LINE_220
 
 LINE_230
 
-	; IF A>PEEK(HP) THEN
+	; WHEN A>PEEK(HP) GOTO 250
 
 	.byte	bytecode_peek_ir1_ix
 	.byte	bytecode_INTVAR_HP
@@ -358,7 +358,7 @@ LINE_240
 
 LINE_250
 
-	; IF LP=HP THEN
+	; WHEN LP=HP GOTO 270
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_LP
@@ -402,7 +402,7 @@ LINE_260
 
 LINE_270
 
-	; IF (A<>PEEK(L)) OR (L=H) THEN
+	; WHEN (A<>PEEK(L)) OR (L=H) GOTO 290
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_A

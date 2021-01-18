@@ -716,8 +716,8 @@ Statement *Parser::getLet() {
 Statement *Parser::getRun() {
   Run *run = new Run;
   in.skipWhitespace();
-  if (!in.iseol() && !in.isChar(':')) {
-    run->hasLineNumber = true;
+  run->hasLineNumber = !in.iseol() && !in.isChar(':');
+  if (run->hasLineNumber) {
     run->lineNumber = getLineNumber();
   }
   return run;

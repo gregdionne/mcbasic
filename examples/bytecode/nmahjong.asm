@@ -774,7 +774,7 @@ LINE_30
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_I
 
-	; IF L(X(I),Y(I),Z(I))>2 THEN
+	; WHEN L(X(I),Y(I),Z(I))>2 GOTO 30
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
@@ -1108,7 +1108,7 @@ LINE_71
 
 	.byte	bytecode_ld_ip_ir1
 
-	; IF L(X,Y,Z)<0 THEN
+	; WHEN L(X,Y,Z)<0 GOSUB 1
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -1125,12 +1125,7 @@ LINE_71
 	.byte	bytecode_ldlt_ir1_ir1_pb
 	.byte	0
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_72
-
-	; GOSUB 1
-
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_jsrne_ir1_ix
 	.word	LINE_1
 
 LINE_72
@@ -1354,7 +1349,7 @@ LINE_73
 
 	.byte	bytecode_ld_ip_ir1
 
-	; IF L(X,Y,Z)<0 THEN
+	; WHEN L(X,Y,Z)<0 GOSUB 1
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -1371,12 +1366,7 @@ LINE_73
 	.byte	bytecode_ldlt_ir1_ir1_pb
 	.byte	0
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_74
-
-	; GOSUB 1
-
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_jsrne_ir1_ix
 	.word	LINE_1
 
 LINE_74
@@ -1640,7 +1630,7 @@ LINE_90
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_A
 
-	; IF Z=L(X,Y,0) THEN
+	; WHEN Z=L(X,Y,0) GOSUB 6
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_Z
@@ -1659,12 +1649,7 @@ LINE_90
 
 	.byte	bytecode_ldeq_ir1_ir1_ir2
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_95
-
-	; GOSUB 6
-
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_jsrne_ir1_ix
 	.word	LINE_6
 
 LINE_95
@@ -1733,7 +1718,7 @@ LINE_95
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_A
 
-	; IF L(X,Y,0)=5 THEN
+	; WHEN L(X,Y,0)=5 GOSUB 6
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -1750,12 +1735,7 @@ LINE_95
 	.byte	bytecode_ldeq_ir1_ir1_pb
 	.byte	5
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_96
-
-	; GOSUB 6
-
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_jsrne_ir1_ix
 	.word	LINE_6
 
 LINE_96
@@ -2097,7 +2077,7 @@ LINE_140
 	.byte	bytecode_pr_ss
 	.text	2, "\xBF\xBF"
 
-	; IF K THEN
+	; WHEN K GOTO 160
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_K
@@ -2149,7 +2129,7 @@ LINE_151
 
 	.byte	bytecode_next
 
-	; IF NOT K THEN
+	; WHEN NOT K GOTO 135
 
 	.byte	bytecode_com_ir1_ix
 	.byte	bytecode_INTVAR_K
@@ -2223,7 +2203,7 @@ LINE_162
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_163
 
-	; WHEN L(X,Y,0)<>5 GOSUB 178
+	; WHEN L(X,Y,0)=5 GOSUB 178
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -2237,10 +2217,10 @@ LINE_162
 	.byte	bytecode_arrval3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_ldne_ir1_ir1_pb
+	.byte	bytecode_ldeq_ir1_ir1_pb
 	.byte	5
 
-	.byte	bytecode_jsreq_ir1_ix
+	.byte	bytecode_jsrne_ir1_ix
 	.word	LINE_178
 
 	; X+=1
@@ -2313,7 +2293,7 @@ LINE_164
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_165
 
-	; WHEN L(X,Y,0)<>5 GOSUB 179
+	; WHEN L(X,Y,0)=5 GOSUB 179
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -2327,10 +2307,10 @@ LINE_164
 	.byte	bytecode_arrval3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_ldne_ir1_ir1_pb
+	.byte	bytecode_ldeq_ir1_ir1_pb
 	.byte	5
 
-	.byte	bytecode_jsreq_ir1_ix
+	.byte	bytecode_jsrne_ir1_ix
 	.word	LINE_179
 
 	; Y+=1
@@ -2346,7 +2326,7 @@ LINE_164
 
 LINE_165
 
-	; IF K=32 THEN
+	; WHEN K=32 GOTO 180
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_K
@@ -2359,7 +2339,7 @@ LINE_165
 
 LINE_170
 
-	; IF K=85 THEN
+	; WHEN K=85 GOSUB 400
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_K
@@ -2367,12 +2347,7 @@ LINE_170
 	.byte	bytecode_ldeq_ir1_ir1_pb
 	.byte	85
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_171
-
-	; GOSUB 400
-
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_jsrne_ir1_ix
 	.word	LINE_400
 
 LINE_171
@@ -2393,15 +2368,15 @@ LINE_171
 	.byte	bytecode_gosub_ix
 	.word	LINE_500
 
-	; WHEN K=0 GOTO 130
+	; WHEN K<>0 GOTO 130
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_K
 
-	.byte	bytecode_ldeq_ir1_ir1_pb
+	.byte	bytecode_ldne_ir1_ir1_pb
 	.byte	0
 
-	.byte	bytecode_jmpeq_ir1_ix
+	.byte	bytecode_jmpne_ir1_ix
 	.word	LINE_130
 
 	; GOSUB 585
@@ -2491,7 +2466,7 @@ LINE_179
 
 LINE_180
 
-	; IF I THEN
+	; WHEN I GOTO 190
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_I
@@ -2501,7 +2476,7 @@ LINE_180
 
 LINE_181
 
-	; IF Z=0 THEN
+	; WHEN Z=0 GOTO 192
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_Z
@@ -2575,7 +2550,7 @@ LINE_183
 
 LINE_190
 
-	; IF Z=0 THEN
+	; WHEN Z=0 GOTO 192
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_Z
@@ -2619,7 +2594,7 @@ LINE_191
 	.byte	bytecode_gosub_ix
 	.word	LINE_6
 
-	; IF L(X,Y,6)=L(I,J,6) THEN
+	; WHEN L(X,Y,6)=L(I,J,6) GOTO 200
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -2791,7 +2766,7 @@ LINE_210
 	.byte	bytecode_gosub_ix
 	.word	LINE_880
 
-	; IF L(0,7,2)>0 THEN
+	; WHEN L(0,7,2)>0 GOTO 130
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	0
@@ -2827,7 +2802,7 @@ LINE_230
 	.byte	bytecode_gosub_ix
 	.word	LINE_710
 
-	; IF I$="Y" THEN
+	; WHEN I$="Y" GOTO 2100
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_I
@@ -3115,7 +3090,7 @@ LINE_271
 
 	.byte	bytecode_ld_ip_ir1
 
-	; IF L(X,Y,Z)<0 THEN
+	; WHEN L(X,Y,Z)<0 GOSUB 1
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -3132,12 +3107,7 @@ LINE_271
 	.byte	bytecode_ldlt_ir1_ir1_pb
 	.byte	0
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_272
-
-	; GOSUB 1
-
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_jsrne_ir1_ix
 	.word	LINE_1
 
 LINE_272
@@ -3472,7 +3442,7 @@ LINE_282
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_283
 
-	; IF Z=4 THEN
+	; WHEN Z=4 GOTO 289
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_Z
@@ -3668,7 +3638,7 @@ LINE_400
 	.byte	bytecode_gosub_ix
 	.word	LINE_10
 
-	; IF L(0,0,5)=0 THEN
+	; WHEN L(0,0,5)=0 GOTO 9
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	0
@@ -3828,7 +3798,7 @@ LINE_405
 
 	.byte	bytecode_ld_ip_ir1
 
-	; IF L(X,Y,Z)<0 THEN
+	; WHEN L(X,Y,Z)<0 GOSUB 1
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -3845,12 +3815,7 @@ LINE_405
 	.byte	bytecode_ldlt_ir1_ir1_pb
 	.byte	0
 
-	.byte	bytecode_jmpeq_ir1_ix
-	.word	LINE_410
-
-	; GOSUB 1
-
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_jsrne_ir1_ix
 	.word	LINE_1
 
 LINE_410
@@ -4531,7 +4496,7 @@ LINE_565
 	.byte	bytecode_gosub_ix
 	.word	LINE_6
 
-	; IF I$="Y" THEN
+	; WHEN I$="Y" GOTO 567
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_I
@@ -4886,7 +4851,7 @@ LINE_600
 	.byte	bytecode_add_ip_ip_pb
 	.byte	1
 
-	; IF L(0,6,2)>2 THEN
+	; WHEN L(0,6,2)>2 GOTO 610
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
@@ -7258,7 +7223,7 @@ bytecode_goto_ix	.equ	38
 bytecode_inkey_sr1	.equ	39
 bytecode_jmpeq_ir1_ix	.equ	40
 bytecode_jmpne_ir1_ix	.equ	41
-bytecode_jsreq_ir1_ix	.equ	42
+bytecode_jsrne_ir1_ix	.equ	42
 bytecode_ld_fx_fr1	.equ	43
 bytecode_ld_ip_ir1	.equ	44
 bytecode_ld_ip_nb	.equ	45
@@ -7378,7 +7343,7 @@ catalog
 	.word	inkey_sr1
 	.word	jmpeq_ir1_ix
 	.word	jmpne_ir1_ix
-	.word	jsreq_ir1_ix
+	.word	jsrne_ir1_ix
 	.word	ld_fx_fr1
 	.word	ld_ip_ir1
 	.word	ld_ip_nb
@@ -9091,7 +9056,7 @@ for_ix_pb			; numCalls = 28
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 49
+gosub_ix			; numCalls = 42
 	.module	modgosub_ix
 	pulx
 	jsr	getaddr
@@ -9125,7 +9090,7 @@ _gotkey
 _rts
 	rts
 
-jmpeq_ir1_ix			; numCalls = 53
+jmpeq_ir1_ix			; numCalls = 45
 	.module	modjmpeq_ir1_ix
 	jsr	getaddr
 	ldd	r1+1
@@ -9136,7 +9101,7 @@ jmpeq_ir1_ix			; numCalls = 53
 _rts
 	rts
 
-jmpne_ir1_ix			; numCalls = 14
+jmpne_ir1_ix			; numCalls = 15
 	.module	modjmpne_ir1_ix
 	jsr	getaddr
 	ldd	r1+1
@@ -9148,14 +9113,15 @@ _go
 _rts
 	rts
 
-jsreq_ir1_ix			; numCalls = 2
-	.module	modjsreq_ir1_ix
+jsrne_ir1_ix			; numCalls = 9
+	.module	modjsrne_ir1_ix
 	pulx
 	jsr	getaddr
 	ldd	r1+1
-	bne	_rts
+	bne	_go
 	ldaa	r1
-	bne	_rts
+	beq	_rts
+_go
 	ldd	nxtinst
 	pshb
 	psha
@@ -9382,7 +9348,7 @@ _done
 	stab	r1
 	rts
 
-ldeq_ir1_ir1_pb			; numCalls = 23
+ldeq_ir1_ir1_pb			; numCalls = 24
 	.module	modldeq_ir1_ir1_pb
 	jsr	getbyte
 	cmpb	r1+2
@@ -9508,7 +9474,7 @@ _done
 	stab	r1
 	rts
 
-ldne_ir1_ir1_pb			; numCalls = 3
+ldne_ir1_ir1_pb			; numCalls = 2
 	.module	modldne_ir1_ir1_pb
 	jsr	getbyte
 	cmpb	r1+2

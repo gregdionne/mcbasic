@@ -105,40 +105,13 @@ void StatementCompiler::operate(For &s) {
 }
 
 void StatementCompiler::operate(Go &s) {
+  queue.append(std::make_unique<InstComment>(list(s)));
+
   auto lineNumber = std::make_unique<AddressModeLbl>(s.lineNumber);
-  bool replace = false;
 
-  // see if we can optimize lines of the form IF <condition> THEN GOTO <lbl>
-  // that will translate to: [eval condition]  jmpeq <nxt line> : jmp <lbl>
-
-  // are we a GOTO?
-  if (!s.isSub) {
-    // did we previously have a jmpeq (i.e. were we an "IF..THEN")?
-    auto *lastInst = dynamic_cast<InstJmpIfEqual *>(queue.queue.back().get());
-    if (lastInst != nullptr) {
-      // success if it jumps to the next instruction
-      auto *lastLbl = dynamic_cast<AddressModeLbl *>(lastInst->arg2.get());
-      replace = lastLbl->lineNumber == (*std::next(itCurrentLine))->lineNumber;
-    }
-  }
-
-  if (replace) {
-    // replace jmpeq <nxtline> : jmp <lbl>
-    // with    jmpne <lbl>     : [fallthrough]
-
-    // grab conditional argument from the jmpeq
-    auto am1 = std::move(queue.queue.back()->arg1);
-
-    // stick it in conditional argument of a jmpne
-    queue.queue.back() = std::make_unique<InstJmpIfNotEqual>(
-        std::move(am1), std::move(lineNumber));
-  } else {
-    // generate an instruction (as usual)
-    queue.append(std::make_unique<InstComment>(list(s)));
-    queue.append(s.isSub
-                     ? makeInst<InstGoSub>(std::move(lineNumber), generateLines)
-                     : makeInst<InstGoTo>(std::move(lineNumber)));
-  }
+  queue.append(s.isSub
+                   ? makeInst<InstGoSub>(std::move(lineNumber), generateLines)
+                   : makeInst<InstGoTo>(std::move(lineNumber)));
 }
 
 void StatementCompiler::operate(When &s) {
@@ -154,10 +127,10 @@ void StatementCompiler::operate(When &s) {
     cond.result = queue.load(std::move(cond.result));
   }
 
-  queue.append(s.isSub ? makeInst<InstJsrIfEqual>(std::move(cond.result),
-                                                  std::move(lineNumber))
-                       : makeInst<InstJmpIfEqual>(std::move(cond.result),
-                                                  std::move(lineNumber)));
+  queue.append(s.isSub ? makeInst<InstJsrIfNotEqual>(std::move(cond.result),
+                                                     std::move(lineNumber))
+                       : makeInst<InstJmpIfNotEqual>(std::move(cond.result),
+                                                     std::move(lineNumber)));
 }
 
 void StatementCompiler::operate(If &s) {

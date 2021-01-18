@@ -277,7 +277,7 @@ LINE_190
 
 LINE_200
 
-	; IF A<=PEEK(LP) THEN
+	; WHEN A<=PEEK(LP) GOTO 220
 
 	ldx	#INTVAR_LP
 	jsr	peek_ir1_ix
@@ -303,7 +303,7 @@ LINE_210
 
 LINE_220
 
-	; IF LP=HP THEN
+	; WHEN LP=HP GOTO 270
 
 	ldx	#INTVAR_LP
 	jsr	ld_ir1_ix
@@ -316,7 +316,7 @@ LINE_220
 
 LINE_230
 
-	; IF A>PEEK(HP) THEN
+	; WHEN A>PEEK(HP) GOTO 250
 
 	ldx	#INTVAR_HP
 	jsr	peek_ir1_ix
@@ -342,7 +342,7 @@ LINE_240
 
 LINE_250
 
-	; IF LP=HP THEN
+	; WHEN LP=HP GOTO 270
 
 	ldx	#INTVAR_LP
 	jsr	ld_ir1_ix
@@ -386,7 +386,7 @@ LINE_260
 
 LINE_270
 
-	; IF (A<>PEEK(L)) OR (L=H) THEN
+	; WHEN (A<>PEEK(L)) OR (L=H) GOTO 290
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix

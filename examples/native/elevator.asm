@@ -91,16 +91,16 @@ LINE_1
 
 LINE_2
 
-	; WHEN D=2 GOTO 5
+	; WHEN D<>2 GOTO 5
 
 	ldx	#INTVAR_D
 	jsr	ld_ir1_ix
 
 	ldab	#2
-	jsr	ldeq_ir1_ir1_pb
+	jsr	ldne_ir1_ir1_pb
 
 	ldx	#LINE_5
-	jsr	jmpeq_ir1_ix
+	jsr	jmpne_ir1_ix
 
 	; ON K(PEEK(P+M-3)) GOTO 30,50,90,82
 
@@ -135,16 +135,16 @@ LINE_2
 
 LINE_3
 
-	; WHEN D<=0 GOTO 5
+	; WHEN D>0 GOTO 5
 
 	ldab	#0
 	jsr	ld_ir1_pb
 
 	ldx	#INTVAR_D
-	jsr	ldge_ir1_ir1_ix
+	jsr	ldlt_ir1_ir1_ix
 
 	ldx	#LINE_5
-	jsr	jmpeq_ir1_ix
+	jsr	jmpne_ir1_ix
 
 	; ON K(PEEK(P+3+M)) GOTO 30,50,93,82
 
@@ -1647,7 +1647,7 @@ LINE_55
 	ldx	#LINE_56
 	jsr	jmpeq_ir1_ix
 
-	; IF (U-S)=0 THEN
+	; WHEN (U-S)=0 GOTO 250
 
 	ldx	#INTVAR_U
 	jsr	ld_ir1_ix
@@ -2782,7 +2782,7 @@ LINE_88
 	ldx	#FLTVAR_X
 	jsr	ld_fx_fr1
 
-	; IF Y=0 THEN
+	; WHEN Y=0 GOTO 30
 
 	ldx	#INTVAR_Y
 	jsr	ld_ir1_ix
@@ -3089,7 +3089,7 @@ LINE_97
 	ldx	#LINE_98
 	jsr	jmpeq_ir1_ix
 
-	; IF RND(2)=1 THEN
+	; WHEN RND(2)=1 GOSUB 99
 
 	ldab	#2
 	jsr	irnd_ir1_pb
@@ -3097,13 +3097,8 @@ LINE_97
 	ldab	#1
 	jsr	ldeq_ir1_ir1_pb
 
-	ldx	#LINE_98
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 99
-
 	ldx	#LINE_99
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_98
 
@@ -3274,7 +3269,7 @@ LINE_110
 	ldab	#0
 	jsr	ld_ix_pb
 
-	; IF PEEK(G+M+1)=159 THEN
+	; WHEN PEEK(G+M+1)=159 GOTO 100
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -3413,7 +3408,7 @@ LINE_210
 	ldx	#STRVAR_M
 	jsr	ld_sx_sr1
 
-	; IF M$="" THEN
+	; WHEN M$="" GOTO 210
 
 	ldx	#STRVAR_M
 	jsr	ld_sr1_sx
@@ -3426,7 +3421,7 @@ LINE_210
 
 LINE_220
 
-	; IF M$="Y" THEN
+	; WHEN M$="Y" GOTO 1070
 
 	ldx	#STRVAR_M
 	jsr	ld_sr1_sx
@@ -5341,7 +5336,7 @@ LINE_2050
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0"
 
-	; IF Q<10 THEN
+	; WHEN Q<10 GOSUB 4000
 
 	ldx	#FLTVAR_Q
 	jsr	ld_fr1_fx
@@ -5349,13 +5344,8 @@ LINE_2050
 	ldab	#10
 	jsr	ldlt_ir1_fr1_pb
 
-	ldx	#LINE_2060
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 4000
-
 	ldx	#LINE_4000
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_2060
 
@@ -5824,7 +5814,7 @@ LINE_3160
 
 	jsr	ld_fp_fr1
 
-	; IF (A(0)<1) OR (A(0)>4) THEN
+	; WHEN (A(0)<1) OR (A(0)>4) GOTO 3160
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -6355,15 +6345,6 @@ _add1
 	.module	mdgeteq
 geteq
 	beq	_1
-	ldd	#0
-	rts
-_1
-	ldd	#-1
-	rts
-
-	.module	mdgetge
-getge
-	bge	_1
 	ldd	#0
 	rts
 _1
@@ -7871,7 +7852,7 @@ for_ix_pb			; numCalls = 11
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 46
+gosub_ix			; numCalls = 44
 	.module	modgosub_ix
 	ldab	#3
 	pshb
@@ -7920,7 +7901,7 @@ irnd_ir2_pb			; numCalls = 1
 	stab	r2
 	rts
 
-jmpeq_ir1_ix			; numCalls = 37
+jmpeq_ir1_ix			; numCalls = 33
 	.module	modjmpeq_ir1_ix
 	ldd	r1+1
 	bne	_rts
@@ -7932,7 +7913,7 @@ jmpeq_ir1_ix			; numCalls = 37
 _rts
 	rts
 
-jmpne_ir1_ix			; numCalls = 6
+jmpne_ir1_ix			; numCalls = 8
 	.module	modjmpne_ir1_ix
 	ldd	r1+1
 	bne	_go
@@ -7942,6 +7923,18 @@ jmpne_ir1_ix			; numCalls = 6
 _go
 	ins
 	ins
+	jmp	,x
+
+jsrne_ir1_ix			; numCalls = 2
+	.module	modjsrne_ir1_ix
+	ldd	r1+1
+	bne	_go
+	ldaa	r1
+	bne	_go
+	rts
+_go
+	ldab	#3
+	pshb
 	jmp	,x
 
 ld_fp_fr1			; numCalls = 2
@@ -8175,7 +8168,7 @@ _done
 	stab	r1
 	rts
 
-ldeq_ir1_ir1_pb			; numCalls = 20
+ldeq_ir1_ir1_pb			; numCalls = 19
 	.module	modldeq_ir1_ir1_pb
 	cmpb	r1+2
 	bne	_done
@@ -8221,17 +8214,6 @@ _done
 	stab	r2
 	rts
 
-ldge_ir1_ir1_ix			; numCalls = 1
-	.module	modldge_ir1_ir1_ix
-	ldd	r1+1
-	subd	1,x
-	ldab	r1
-	sbcb	0,x
-	jsr	getge
-	std	r1+1
-	stab	r1
-	rts
-
 ldlt_ir1_fr1_pb			; numCalls = 3
 	.module	modldlt_ir1_fr1_pb
 	clra
@@ -8256,7 +8238,7 @@ ldlt_ir1_ir1_ir2			; numCalls = 1
 	stab	r1
 	rts
 
-ldlt_ir1_ir1_ix			; numCalls = 8
+ldlt_ir1_ir1_ix			; numCalls = 9
 	.module	modldlt_ir1_ir1_ix
 	ldd	r1+1
 	subd	1,x
@@ -8305,7 +8287,7 @@ ldlt_ir2_ir2_ix			; numCalls = 1
 	stab	r2
 	rts
 
-ldne_ir1_ir1_pb			; numCalls = 2
+ldne_ir1_ir1_pb			; numCalls = 3
 	.module	modldne_ir1_ir1_pb
 	cmpb	r1+2
 	bne	_done

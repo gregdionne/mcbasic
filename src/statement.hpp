@@ -114,7 +114,9 @@ public:
   std::unique_ptr<NumericExpr> predicate;
   int lineNumber;
   void operate(StatementOp *op) override { op->operate(*this); }
-  std::string statementName() override { return isSub ? "WHEN..GOSUB" : "WHEN..GOTO"; }
+  std::string statementName() override {
+    return isSub ? "WHEN..GOSUB" : "WHEN..GOTO";
+  }
 };
 
 class If : public Statement {

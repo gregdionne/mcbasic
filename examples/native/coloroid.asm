@@ -383,7 +383,7 @@ LINE_6
 	ldx	#LINE_7
 	jsr	jmpeq_ir1_ix
 
-	; IF POINT(X*2,Y*2)=R THEN
+	; WHEN POINT(X*2,Y*2)=R GOSUB 3
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -402,13 +402,8 @@ LINE_6
 	ldx	#INTVAR_R
 	jsr	ldeq_ir1_ir1_ix
 
-	ldx	#LINE_7
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 3
-
 	ldx	#LINE_3
-	jsr	gosub_ix
+	jsr	jsrne_ir1_ix
 
 LINE_7
 
@@ -616,7 +611,7 @@ LINE_9
 
 LINE_10
 
-	; IF W>E THEN
+	; WHEN W>E GOTO 5
 
 	ldx	#INTVAR_E
 	jsr	ld_ir1_ix
@@ -693,7 +688,7 @@ LINE_820
 	ldx	#INTVAR_MB
 	jsr	ld_ix_ir1
 
-	; IF (B<4) OR (B>16) THEN
+	; WHEN (B<4) OR (B>16) GOTO 820
 
 	ldx	#INTVAR_B
 	jsr	ld_ir1_ix
@@ -1179,7 +1174,7 @@ LINE_2640
 	ldx	#STRVAR_H
 	jsr	ld_sx_sr1
 
-	; IF H$="" THEN
+	; WHEN H$="" GOTO 2640
 
 	ldx	#STRVAR_H
 	jsr	ld_sr1_sx
@@ -1222,7 +1217,7 @@ LINE_2655
 	ldab	#1
 	jsr	add_ix_ix_pb
 
-	; IF (KH=1) AND (H$="R") THEN
+	; WHEN (KH=1) AND (H$="R") GOTO 1000
 
 	ldx	#INTVAR_KH
 	jsr	ld_ir1_ix
@@ -1251,7 +1246,7 @@ LINE_2660
 	ldx	#INTVAR_H
 	jsr	ld_ix_ir1
 
-	; IF (H<1) OR (H>6) THEN
+	; WHEN (H<1) OR (H>6) GOTO 2640
 
 	ldx	#INTVAR_H
 	jsr	ld_ir1_ix
@@ -1289,7 +1284,7 @@ LINE_2680
 	ldx	#INTVAR_R
 	jsr	ld_ix_ir1
 
-	; IF H=R THEN
+	; WHEN H=R GOTO 2640
 
 	ldx	#INTVAR_H
 	jsr	ld_ir1_ix
@@ -1322,7 +1317,7 @@ LINE_2710
 
 LINE_2720
 
-	; IF M<=PA(LV) THEN
+	; WHEN M<=PA(LV) GOTO 2750
 
 	ldx	#INTVAR_LV
 	jsr	ld_ir1_ix
@@ -1355,7 +1350,7 @@ LINE_2740
 	ldx	#STRVAR_H
 	jsr	ld_sx_sr1
 
-	; IF H$="" THEN
+	; WHEN H$="" GOTO 2740
 
 	ldx	#STRVAR_H
 	jsr	ld_sr1_sx
@@ -1368,7 +1363,7 @@ LINE_2740
 
 LINE_2745
 
-	; IF H$="Y" THEN
+	; WHEN H$="Y" GOTO 1000
 
 	ldx	#STRVAR_H
 	jsr	ld_sr1_sx
@@ -1574,7 +1569,7 @@ LINE_2770
 	ldx	#STRVAR_H
 	jsr	ld_sx_sr1
 
-	; IF H$="" THEN
+	; WHEN H$="" GOTO 2770
 
 	ldx	#STRVAR_H
 	jsr	ld_sr1_sx
@@ -1587,7 +1582,7 @@ LINE_2770
 
 LINE_2775
 
-	; IF H$="Y" THEN
+	; WHEN H$="Y" GOTO 2780
 
 	ldx	#STRVAR_H
 	jsr	ld_sr1_sx
@@ -1600,7 +1595,7 @@ LINE_2775
 
 LINE_2776
 
-	; IF H$="N" THEN
+	; WHEN H$="N" GOTO 2730
 
 	ldx	#STRVAR_H
 	jsr	ld_sr1_sx
@@ -2024,7 +2019,7 @@ LINE_3045
 	ldx	#STRVAR_H
 	jsr	ld_sx_sr1
 
-	; IF H$="" THEN
+	; WHEN H$="" GOTO 3045
 
 	ldx	#STRVAR_H
 	jsr	ld_sr1_sx
@@ -3417,7 +3412,7 @@ for_ix_pb			; numCalls = 6
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 14
+gosub_ix			; numCalls = 13
 	.module	modgosub_ix
 	ldab	#3
 	pshb
@@ -3474,7 +3469,7 @@ irnd_ir1_pb			; numCalls = 1
 	stab	r1
 	rts
 
-jmpeq_ir1_ix			; numCalls = 15
+jmpeq_ir1_ix			; numCalls = 14
 	.module	modjmpeq_ir1_ix
 	ldd	r1+1
 	bne	_rts
@@ -3496,6 +3491,18 @@ jmpne_ir1_ix			; numCalls = 13
 _go
 	ins
 	ins
+	jmp	,x
+
+jsrne_ir1_ix			; numCalls = 1
+	.module	modjsrne_ir1_ix
+	ldd	r1+1
+	bne	_go
+	ldaa	r1
+	bne	_go
+	rts
+_go
+	ldab	#3
+	pshb
 	jmp	,x
 
 ld_ip_ir1			; numCalls = 2

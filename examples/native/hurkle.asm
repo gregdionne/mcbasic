@@ -284,7 +284,7 @@ LINE_330
 
 LINE_340
 
-	; IF (ABS(X-A)+ABS(Y-B))=0 THEN
+	; WHEN (ABS(X-A)+ABS(Y-B))=0 GOTO 500
 
 	ldx	#FLTVAR_X
 	jsr	ld_fr1_fx
@@ -459,7 +459,7 @@ LINE_610
 
 LINE_620
 
-	; IF Y=B THEN
+	; WHEN Y=B GOTO 670
 
 	ldx	#FLTVAR_Y
 	jsr	ld_fr1_fx
@@ -472,7 +472,7 @@ LINE_620
 
 LINE_630
 
-	; IF Y<B THEN
+	; WHEN Y<B GOTO 660
 
 	ldx	#FLTVAR_Y
 	jsr	ld_fr1_fx
@@ -506,7 +506,7 @@ LINE_660
 
 LINE_670
 
-	; IF X=A THEN
+	; WHEN X=A GOTO 720
 
 	ldx	#FLTVAR_X
 	jsr	ld_fr1_fx
@@ -519,7 +519,7 @@ LINE_670
 
 LINE_680
 
-	; IF X<A THEN
+	; WHEN X<A GOTO 710
 
 	ldx	#FLTVAR_X
 	jsr	ld_fr1_fx

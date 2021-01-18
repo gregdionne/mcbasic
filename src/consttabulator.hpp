@@ -46,12 +46,15 @@ class StatementConstTabulator : public StatementOp {
 public:
   explicit StatementConstTabulator(ConstTable &ct) : op(ct), that(&op) {}
   void operate(For &s) override;
+  void operate(When &s) override;
   void operate(If &s) override;
   void operate(Print &s) override;
   void operate(Input &s) override;
   void operate(On &s) override;
   void operate(Dim &s) override;
   void operate(Let &s) override;
+  void operate(Inc &s) override;
+  void operate(Dec &s) override;
   void operate(Poke &s) override;
   void operate(Clear &s) override;
   void operate(Set &s) override;

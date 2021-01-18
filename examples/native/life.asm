@@ -1257,7 +1257,7 @@ LINE_540
 	ldx	#STRVAR_I
 	jsr	ld_sx_sr1
 
-	; IF I$="" THEN
+	; WHEN I$="" GOTO 540
 
 	ldx	#STRVAR_I
 	jsr	ld_sr1_sx
@@ -1344,7 +1344,7 @@ LINE_550
 
 LINE_560
 
-	; IF I$<>"N" THEN
+	; WHEN I$<>"N" GOTO 540
 
 	ldx	#STRVAR_I
 	jsr	ld_sr1_sx
@@ -1376,7 +1376,7 @@ LINE_570
 	ldx	#STRVAR_I
 	jsr	ld_sx_sr1
 
-	; IF I$="" THEN
+	; WHEN I$="" GOTO 570
 
 	ldx	#STRVAR_I
 	jsr	ld_sr1_sx
@@ -1487,7 +1487,7 @@ LINE_575
 
 LINE_580
 
-	; IF I$="N" THEN
+	; WHEN I$="N" GOTO 600
 
 	ldx	#STRVAR_I
 	jsr	ld_sr1_sx
