@@ -450,7 +450,8 @@ Expr *Parser::getRelationalExpression() {
   while (skipKeyword("<>") || skipKeyword("<=") || skipKeyword(">=") ||
          skipKeyword("><") || skipKeyword("=>") || skipKeyword("=<") ||
          skipKeyword("<") || skipKeyword("=") || skipKeyword(">")) {
-    expr = new RelationalExpr(keywords[in.keyID], expr,
+    const char *keyword = keywords[in.keyID];
+    expr = new RelationalExpr(keyword, expr,
                               matchTypes(expr, &Parser::getAdditiveExpression));
   }
 

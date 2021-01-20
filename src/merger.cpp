@@ -156,7 +156,8 @@ void ExprMerger::mergeDoubleShift(std::unique_ptr<NumericExpr> &expr) {
   ShiftExpr *innerExpr = nullptr;
 
   if (((outerExpr = dynamic_cast<ShiftExpr *>(expr.get())) != nullptr) &&
-      ((innerExpr = dynamic_cast<ShiftExpr *>(outerExpr->expr.get())) != nullptr)) {
+      ((innerExpr = dynamic_cast<ShiftExpr *>(outerExpr->expr.get())) !=
+       nullptr)) {
     outerExpr->rhs += innerExpr->rhs;
     outerExpr->expr = std::move(innerExpr->expr);
   }
