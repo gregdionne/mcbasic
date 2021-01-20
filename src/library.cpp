@@ -14,6 +14,10 @@ void Library::makeFoundation() {
   foundation["mdrefint"] = Lib{0, mdArrayRefInt(), {}};
   foundation["mdrefflt"] = Lib{0, mdArrayRefFlt(), {}};
   foundation["mddivflt"] = Lib{0, mdDivFlt(), {}};
+  foundation["mdinvflt"] = Lib{0, mdInvFlt(), {"mddivflt"}};
+  foundation["mdshlflt"] = Lib{0, mdShlFlt(), {}};
+  foundation["mdshlint"] = Lib{0, mdShlInt(), {}};
+  foundation["mdshrflt"] = Lib{0, mdShrFlt(), {}};
   foundation["mdmul12"] = Lib{0, mdMul12(), {}};
   foundation["mdmulint"] = Lib{0, mdMulInt(), {}};
   foundation["mdmulhlf"] = Lib{0, mdMulHlf(), {"mdmulint"}};
@@ -1485,6 +1489,101 @@ std::string Library::mdMulInt() {
   return tasm.source();
 }
 
+std::string Library::mdShlInt() {
+  Assembler tasm;
+  tasm.comment("multiply X by 2^ACCB");
+  tasm.comment("  ENTRY  X contains multiplicand in (0,x 1,x 2,x)");
+  tasm.comment("  EXIT   X*2^ACCB in (0,x 1,x 2,x)");
+  tasm.comment("         uses tmp1");
+  tasm.label("shlint");
+  tasm.cmpb("#8");
+  tasm.blo("_shlbit");
+  tasm.stab("tmp1");
+  tasm.ldd("1,x");
+  tasm.std("0,x");
+  tasm.clr("2,x");
+  tasm.ldab("tmp1");
+  tasm.subb("#8");
+  tasm.bne("shlint");
+  tasm.rts();
+  tasm.label("_shlbit");
+  tasm.lsl("2,x");
+  tasm.rol("1,x");
+  tasm.rol("0,x");
+  tasm.decb();
+  tasm.bne("_shlbit");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdShlFlt() {
+  Assembler tasm;
+  tasm.comment("multiply X by 2^ACCB for positive ACCB");
+  tasm.comment("  ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("  EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("         uses tmp1");
+  tasm.label("shlflt");
+  tasm.cmpb("#8");
+  tasm.blo("_shlbit");
+  tasm.stab("tmp1");
+  tasm.ldd("1,x");
+  tasm.std("0,x");
+  tasm.ldd("3,x");
+  tasm.std("2,x");
+  tasm.clr("4,x");
+  tasm.ldab("tmp1");
+  tasm.subb("#8");
+  tasm.bne("shlflt");
+  tasm.rts();
+  tasm.label("_shlbit");
+  tasm.lsl("4,x");
+  tasm.rol("3,x");
+  tasm.rol("2,x");
+  tasm.rol("1,x");
+  tasm.rol("0,x");
+  tasm.decb();
+  tasm.bne("_shlbit");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdShrFlt() {
+  Assembler tasm;
+  tasm.comment("multiply X by 2^ACCB for negative ACCB");
+  tasm.comment("  ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("  EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("         uses tmp1");
+  tasm.label("shrint");
+  tasm.clr("3,x");
+  tasm.clr("4,x");
+  tasm.label("shrflt");
+  tasm.cmpb("#-8");
+  tasm.bhi("_shrbit");
+  tasm.stab("tmp1");
+  tasm.ldd("2,x");
+  tasm.std("3,x");
+  tasm.ldd("0,x");
+  tasm.std("1,x");
+  tasm.clrb();
+  tasm.lsla();
+  tasm.sbcb("#0");
+  tasm.stab("0,x");
+  tasm.ldab("tmp1");
+  tasm.addb("#8");
+  tasm.bne("shrflt");
+  tasm.rts();
+  tasm.label("_shrbit");
+  tasm.asr("0,x");
+  tasm.ror("1,x");
+  tasm.ror("2,x");
+  tasm.ror("3,x");
+  tasm.ror("4,x");
+  tasm.incb();
+  tasm.bne("_shrbit");
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string Library::mdDivFlt() {
   Assembler tasm;
   tasm.comment("divide X by Y");
@@ -1588,6 +1687,23 @@ std::string Library::mdDivFlt() {
   tasm.adcb("#0");
   tasm.stab("0,x");
   tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdInvFlt() {
+  Assembler tasm;
+  tasm.comment("X = 1/Y");
+  tasm.comment("  ENTRY  Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv");
+  tasm.comment("  EXIT   1/Y in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("         scratch in (5,x 6,x 7,x 8,x 9,x)");
+  tasm.comment("         uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4");
+  tasm.label("invflt");
+  tasm.ldd("#0");
+  tasm.std("0,x");
+  tasm.std("3,x");
+  tasm.incb();
+  tasm.stab("2,x");
+  tasm.jmp("divflt");
   return tasm.source();
 }
 

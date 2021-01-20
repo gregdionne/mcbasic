@@ -6,6 +6,14 @@ void IsFloat::operate(ValExpr & /*expr*/) { result = true; }
 
 void IsFloat::operate(AbsExpr &e) { e.expr->operate(this); }
 
+void IsFloat::operate(ShiftExpr &e) {
+  if (e.rhs < 0) {
+    result = true;
+  } else {
+    e.expr->operate(this);
+  }
+}
+
 void IsFloat::operate(NegatedExpr &e) { e.expr->operate(this); }
 
 void IsFloat::operate(MultiplicativeExpr &e) {

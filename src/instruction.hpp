@@ -31,6 +31,7 @@ class InstArrayRef;
 class InstArrayVal;
 class InstLd;
 class InstAbs;
+class InstShift;
 class InstNeg;
 class InstCom;
 class InstSgn;
@@ -131,6 +132,7 @@ public:
   virtual std::string operate(InstArrayVal &inst) = 0;
   virtual std::string operate(InstLd &inst) = 0;
   virtual std::string operate(InstAbs &inst) = 0;
+  virtual std::string operate(InstShift &inst) = 0;
   virtual std::string operate(InstNeg &inst) = 0;
   virtual std::string operate(InstCom &inst) = 0;
   virtual std::string operate(InstSgn &inst) = 0;
@@ -408,6 +410,7 @@ public:
   void resultFlt();
   void resultStr();
   void resultPtr();
+  void resultShift();
   void resultPromoteFlt();
   void labelArg();
   std::string callLabel() const;
@@ -663,6 +666,18 @@ public:
     return iop->operate(*this);
   }
   void arrayArg();
+};
+
+class InstShift : public Instruction {
+public:
+  InstShift(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
+            std::unique_ptr<AddressMode> am2)
+      : Instruction("shift", std::move(dest), std::move(am1), std::move(am2)) {
+    resultShift();
+  }
+  std::string operate(InstructionOp *iop) override {
+    return iop->operate(*this);
+  }
 };
 
 // Unary (argument)

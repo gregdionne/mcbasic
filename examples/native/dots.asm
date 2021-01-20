@@ -143,7 +143,7 @@ LINE_16
 
 LINE_17
 
-	; C1=LC<>(INT(LC/2)*2)
+	; C1=LC<>SHIFT(INT(SHIFT(LC,-1)),1)
 
 	ldx	#INTVAR_LC
 	jsr	ld_ir1_ix
@@ -151,11 +151,11 @@ LINE_17
 	ldx	#INTVAR_LC
 	jsr	ld_ir2_ix
 
-	ldab	#2
-	jsr	div_fr2_ir2_pb
+	ldab	#-1
+	jsr	shift_fr2_ir2_nb
 
-	ldab	#2
-	jsr	mul_ir2_ir2_pb
+	ldab	#1
+	jsr	shift_ir2_ir2_pb
 
 	jsr	ldne_ir1_ir1_ir2
 
@@ -1196,7 +1196,7 @@ LINE_430
 
 LINE_440
 
-	; I=RND(19)+(RND(13)*32)+33+SC
+	; I=RND(19)+SHIFT(RND(13),5)+33+SC
 
 	ldab	#19
 	jsr	irnd_ir1_pb
@@ -1204,8 +1204,8 @@ LINE_440
 	ldab	#13
 	jsr	irnd_ir2_pb
 
-	ldab	#32
-	jsr	mul_ir2_ir2_pb
+	ldab	#5
+	jsr	shift_ir2_ir2_pb
 
 	jsr	add_ir1_ir1_ir2
 
@@ -2141,7 +2141,7 @@ LINE_790
 	ldab	#3
 	jsr	to_ip_pb
 
-	; POKE BX,((J-1)*16)+143
+	; POKE BX,SHIFT(J-1,4)+143
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -2149,8 +2149,8 @@ LINE_790
 	ldab	#1
 	jsr	sub_ir1_ir1_pb
 
-	ldab	#16
-	jsr	mul_ir1_ir1_pb
+	ldab	#4
+	jsr	shift_ir1_ir1_pb
 
 	ldab	#143
 	jsr	add_ir1_ir1_pb
@@ -2163,7 +2163,7 @@ LINE_790
 	ldx	#LINE_760
 	jsr	gosub_ix
 
-	; POKE BX,((J-1)*16)+143
+	; POKE BX,SHIFT(J-1,4)+143
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -2171,8 +2171,8 @@ LINE_790
 	ldab	#1
 	jsr	sub_ir1_ir1_pb
 
-	ldab	#16
-	jsr	mul_ir1_ir1_pb
+	ldab	#4
+	jsr	shift_ir1_ir1_pb
 
 	ldab	#143
 	jsr	add_ir1_ir1_pb
@@ -2199,7 +2199,7 @@ LINE_790
 	ldab	#18
 	jsr	add_ix_ix_pb
 
-	; POKE BX,((J-1)*16)+143
+	; POKE BX,SHIFT(J-1,4)+143
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -2207,8 +2207,8 @@ LINE_790
 	ldab	#1
 	jsr	sub_ir1_ir1_pb
 
-	ldab	#16
-	jsr	mul_ir1_ir1_pb
+	ldab	#4
+	jsr	shift_ir1_ir1_pb
 
 	ldab	#143
 	jsr	add_ir1_ir1_pb
@@ -3147,6 +3147,64 @@ _done
 _rts
 	rts
 
+	.module	mdshlint
+; multiply X by 2^ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x)
+;          uses tmp1
+shlint
+	cmpb	#8
+	blo	_shlbit
+	stab	tmp1
+	ldd	1,x
+	std	0,x
+	clr	2,x
+	ldab	tmp1
+	subb	#8
+	bne	shlint
+	rts
+_shlbit
+	lsl	2,x
+	rol	1,x
+	rol	0,x
+	decb
+	bne	_shlbit
+	rts
+
+	.module	mdshrflt
+; multiply X by 2^ACCB for negative ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
+;          uses tmp1
+shrint
+	clr	3,x
+	clr	4,x
+shrflt
+	cmpb	#-8
+	bhi	_shrbit
+	stab	tmp1
+	ldd	2,x
+	std	3,x
+	ldd	0,x
+	std	1,x
+	clrb
+	lsla
+	sbcb	#0
+	stab	0,x
+	ldab	tmp1
+	addb	#8
+	bne	shrflt
+	rts
+_shrbit
+	asr	0,x
+	ror	1,x
+	ror	2,x
+	ror	3,x
+	ror	4,x
+	incb
+	bne	_shrbit
+	rts
+
 	.module	mdstrdel
 ; remove a permanent string
 ; then re-link trailing strings
@@ -3917,16 +3975,6 @@ div_fr1_fr1_pb			; numCalls = 1
 	ldx	#r1
 	jmp	divflt
 
-div_fr2_ir2_pb			; numCalls = 1
-	.module	moddiv_fr2_ir2_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
-	std	3+argv
-	std	r2+3
-	ldx	#r2
-	jmp	divflt
-
 for_ix_pb			; numCalls = 9
 	.module	modfor_ix_pb
 	stx	letptr
@@ -4379,22 +4427,6 @@ mul_fr2_ir2_fx			; numCalls = 1
 	ldx	#r2
 	jmp	mulfltx
 
-mul_ir1_ir1_pb			; numCalls = 3
-	.module	modmul_ir1_ir1_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
-	ldx	#r1
-	jmp	mulintx
-
-mul_ir2_ir2_pb			; numCalls = 2
-	.module	modmul_ir2_ir2_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
-	ldx	#r2
-	jmp	mulintx
-
 next			; numCalls = 9
 	.module	modnext
 	pulx
@@ -4719,6 +4751,21 @@ rnd_fr1_pb			; numCalls = 1
 	std	r1+1
 	stab	r1
 	rts
+
+shift_fr2_ir2_nb			; numCalls = 1
+	.module	modshift_fr2_ir2_nb
+	ldx	#r2
+	jmp	shrint
+
+shift_ir1_ir1_pb			; numCalls = 3
+	.module	modshift_ir1_ir1_pb
+	ldx	#r1
+	jmp	shlint
+
+shift_ir2_ir2_pb			; numCalls = 2
+	.module	modshift_ir2_ir2_pb
+	ldx	#r2
+	jmp	shlint
 
 sound_ir1_ir2			; numCalls = 3
 	.module	modsound_ir1_ir2

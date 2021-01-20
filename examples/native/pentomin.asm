@@ -618,7 +618,7 @@ LINE_1120
 	ldx	#FLTVAR_W1
 	jsr	to_ip_ix
 
-	; PRINT @((Y+2)*32)+X, "ß";
+	; PRINT @SHIFT(Y+2,5)+X, "ß";
 
 	ldx	#INTVAR_Y
 	jsr	ld_ir1_ix
@@ -626,8 +626,8 @@ LINE_1120
 	ldab	#2
 	jsr	add_ir1_ir1_pb
 
-	ldab	#32
-	jsr	mul_ir1_ir1_pb
+	ldab	#5
+	jsr	shift_ir1_ir1_pb
 
 	ldx	#INTVAR_X
 	jsr	add_ir1_ir1_ix
@@ -1437,7 +1437,7 @@ LINE_3230
 
 LINE_3500
 
-	; PRINT @((Y+2)*32)+X, C$;
+	; PRINT @SHIFT(Y+2,5)+X, C$;
 
 	ldx	#INTVAR_Y
 	jsr	ld_ir1_ix
@@ -1445,8 +1445,8 @@ LINE_3500
 	ldab	#2
 	jsr	add_ir1_ir1_pb
 
-	ldab	#32
-	jsr	mul_ir1_ir1_pb
+	ldab	#5
+	jsr	shift_ir1_ir1_pb
 
 	ldx	#INTVAR_X
 	jsr	add_ir1_ir1_ix
@@ -1725,47 +1725,6 @@ mul12
 	ldab	tmp3+1
 	rts
 
-	.module	mdmulint
-mulint
-	ldaa	2+argv
-	ldab	2,x
-	mul
-	std	tmp2
-	ldaa	1+argv
-	ldab	1,x
-	mul
-	stab	tmp1+1
-	ldaa	2+argv
-	ldab	1,x
-	mul
-	addb	tmp2
-	adca	tmp1+1
-	std	tmp1+1
-	ldaa	1+argv
-	ldab	2,x
-	mul
-	addb	tmp2
-	adca	tmp1+1
-	std	tmp1+1
-	ldaa	2+argv
-	ldab	0,x
-	mul
-	addb	tmp1+1
-	stab	tmp1+1
-	ldaa	0+argv
-	ldab	2,x
-	mul
-	addb	tmp1+1
-	stab	tmp1+1
-	rts
-mulintx
-	bsr	mulint
-	ldab	tmp1+1
-	stab	0,x
-	ldd	tmp2
-	std	1,x
-	rts
-
 	.module	mdprat
 prat
 	bita	#$FE
@@ -1899,6 +1858,30 @@ rsstrng
 	stab	0,X
 	ldd	tmp2
 	std	1,X
+	rts
+
+	.module	mdshlint
+; multiply X by 2^ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x)
+;          uses tmp1
+shlint
+	cmpb	#8
+	blo	_shlbit
+	stab	tmp1
+	ldd	1,x
+	std	0,x
+	clr	2,x
+	ldab	tmp1
+	subb	#8
+	bne	shlint
+	rts
+_shlbit
+	lsl	2,x
+	rol	1,x
+	rol	0,x
+	decb
+	bne	_shlbit
 	rts
 
 	.module	mdstrdel
@@ -3015,14 +2998,6 @@ _done
 	stab	r2
 	rts
 
-mul_ir1_ir1_pb			; numCalls = 2
-	.module	modmul_ir1_ir1_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
-	ldx	#r1
-	jmp	mulintx
-
 next			; numCalls = 11
 	.module	modnext
 	pulx
@@ -3308,6 +3283,11 @@ _ok
 	inx
 	txs
 	rts
+
+shift_ir1_ir1_pb			; numCalls = 2
+	.module	modshift_ir1_ir1_pb
+	ldx	#r1
+	jmp	shlint
 
 str_sr1_fr1			; numCalls = 1
 	.module	modstr_sr1_fr1

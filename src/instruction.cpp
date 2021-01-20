@@ -87,6 +87,14 @@ void Instruction::resultFlt() {
   result = arg1->clone();
 }
 
+void Instruction::resultShift() {
+  if (arg3->isNegByte()) {
+    resultFlt();
+  } else {
+    resultArg();
+  }
+}
+
 void Instruction::resultStr() {
   arg1->dataType = DataType::Str;
   result = arg1->clone();

@@ -62,6 +62,7 @@ private:
   // remove multiplication if only one argument
   // remove addition if only one argument
   // replace subtraction with negation if only one argument
+  //
   static void mergeUnaryOp(std::unique_ptr<NumericExpr> &expr);
 
   // replace
@@ -69,24 +70,40 @@ private:
   //    <boolean> *   <integer> with <boolean> AND - <integer>
   //  - <integer> *   <boolean> with <boolean> AND <integer>
   //    <boolean> * - <integer> with <boolean> AND <integer>
-
+  //
   static void reduceRelationalMultiplication(std::unique_ptr<NumericExpr> &expr,
                                              IsFloat &isFloat,
                                              ExprMerger *that);
 
+  // replace
+  //    <number> * F, where F = 2^N  with SHIFT(<number>, N) for non-zero N
+  //    <number> / F, where F = 2^N  with SHIFT(<number>,-N) for non-zero N
+  //                                      <number>           for N zero.
+  //
+  static void reducePowerOfTwoMultiplication(std::unique_ptr<NumericExpr> &expr,
+                                             ExprMerger *that);
+
   // replace - ( -(<expr1>) * <expr2> ) with <expr1>*<expr2>
+  //
   static void mergeNegatedMultiplication(std::unique_ptr<NumericExpr> &expr);
 
   // replace - ( <expr1> - <expr2>  ) with <expr2> - <expr1>
+  //
   static void mergeNegatedSum(std::unique_ptr<NumericExpr> &expr);
 
   // replace - ( - (<expr> ) ) with <expr>
+  //
   static void mergeDoubleNegation(std::unique_ptr<NumericExpr> &expr);
+
+  // replace SHIFT(SHIFT(<expr>, m), n) with SHIFT(<expr>, m+n)
+  //
+  static void mergeDoubleShift(std::unique_ptr<NumericExpr> &expr);
 
   // move relational operators earlier in expression
   //   (delays promoting bool to integer)
   // move constants and variables towards end of expression
   //   (reduce register pressure)
+  //
   static void knead(std::vector<std::unique_ptr<NumericExpr>> &operands);
 };
 

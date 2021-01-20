@@ -112,6 +112,8 @@ void Assembler::singlearg(std::string const &opcode, std::string const &operand,
 
 void Assembler::aba(std::string const &comment) { inherent("aba", comment); }
 void Assembler::abx(std::string const &comment) { inherent("abx", comment); }
+void Assembler::asra(std::string const &comment) { inherent("asra", comment); }
+void Assembler::asrb(std::string const &comment) { inherent("asrb", comment); }
 void Assembler::clra(std::string const &comment) { inherent("clra", comment); }
 void Assembler::clrb(std::string const &comment) { inherent("clrb", comment); }
 void Assembler::coma(std::string const &comment) { inherent("coma", comment); }
@@ -168,6 +170,9 @@ void Assembler::anda(std::string const &operand, std::string const &comment) {
 }
 void Assembler::andb(std::string const &operand, std::string const &comment) {
   singlearg("andb", operand, comment);
+}
+void Assembler::asr(std::string const &operand, std::string const &comment) {
+  singlearg("asr", operand, comment);
 }
 void Assembler::bcc(std::string const &operand, std::string const &comment) {
   singlearg("bcc", operand, comment);

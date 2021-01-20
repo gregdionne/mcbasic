@@ -29,6 +29,15 @@ struct FixedPoint {
   // true if (wholenum>>16) == -1
   bool isNegWord() const;
 
+  // true if is a power-of-two
+  bool isPowerOfTwo() const;
+
+  // return fixed point abs
+  FixedPoint abs() const;
+
+  // return log2(abs()). (zero returns zero).
+  int log2abs() const;
+
   // return a TASM label for the constant
   std::string label() const;
 

@@ -317,6 +317,16 @@ void ExprConstFolder::operate(StrExpr &e) {
   }
 }
 
+void ExprConstFolder::operate(ShiftExpr &e) {
+  if (fold(e.expr)) {
+    if (e.rhs > 0) {
+      dvalue *= (1 << e.rhs);
+    } else if (e.rhs < 0) {
+      dvalue /= (1 << e.rhs);
+    }
+  }
+}
+
 void ExprConstFolder::operate(ValExpr &e) {
   fold(e.expr);
   gotConst = false;

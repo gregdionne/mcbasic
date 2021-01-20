@@ -162,7 +162,7 @@ LINE_120
 
 LINE_130
 
-	; Z=INT((H-L)/2)
+	; Z=INT(SHIFT(H-L,-1))
 
 	ldx	#INTVAR_H
 	jsr	ld_ir1_ix
@@ -170,8 +170,8 @@ LINE_130
 	ldx	#INTVAR_L
 	jsr	sub_ir1_ir1_ix
 
-	ldab	#2
-	jsr	div_fr1_ir1_pb
+	ldab	#-1
+	jsr	shift_fr1_ir1_nb
 
 	ldx	#INTVAR_Z
 	jsr	ld_ix_ir1
@@ -596,104 +596,6 @@ strlink
 _rts
 	rts
 
-	.module	mddivflt
-; divide X by Y
-;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
-;                     scratch in  (5,x 6,x 7,x 8,x 9,x)
-;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
-;   EXIT   X/Y in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
-divflt
-	clr	tmp4
-	tst	0,x
-	bpl	_posX
-	com	tmp4
-	neg	4,x
-	ngc	3,x
-	ngc	2,x
-	ngc	1,x
-	ngc	0,x
-_posX
-	tst	0+argv
-	bpl	_posA
-	com	tmp4
-	neg	4+argv
-	ngc	3+argv
-	ngc	2+argv
-	ngc	1+argv
-	ngc	0+argv
-divufl
-_posA
-	ldd	3,x
-	std	6,x
-	ldd	1,x
-	std	4,x
-	ldab	0,x
-	stab	3,x
-	ldd	#0
-	std	8,x
-	std	1,x
-	stab	0,x
-	ldaa	#41
-	staa	tmp1
-_nxtdiv
-	ldd	3,x
-	subd	3+argv
-	std	tmp3
-	ldd	1,x
-	sbcb	2+argv
-	sbca	1+argv
-	std	tmp2
-	ldab	0,x
-	sbcb	0+argv
-	stab	tmp1+1
-	blo	_shift
-	ldd	tmp3
-	std	3,x
-	ldd	tmp2
-	std	1,x
-	ldab	tmp1+1
-	stab	0,x
-_shift
-	rol	9,x
-	rol	8,x
-	rol	7,x
-	rol	6,x
-	rol	5,x
-	rol	4,x
-	rol	3,x
-	rol	2,x
-	rol	1,x
-	rol	0,x
-	dec	tmp1
-	bne	_nxtdiv
-	tst	tmp4
-	bne	_add1
-	ldd	8,x
-	coma
-	comb
-	std	3,x
-	ldd	6,x
-	coma
-	comb
-	std	1,x
-	ldab	5,x
-	comb
-	stab	0,x
-	rts
-_add1
-	ldd	8,x
-	addd	#1
-	std	3,x
-	ldd	6,x
-	adcb	#0
-	adca	#0
-	std	1,x
-	ldab	5,x
-	adcb	#0
-	stab	0,x
-	rts
-
 	.module	mdgeteq
 geteq
 	beq	_1
@@ -774,6 +676,40 @@ refint
 	addd	tmp1
 	addd	0,x
 	std	tmp1
+	rts
+
+	.module	mdshrflt
+; multiply X by 2^ACCB for negative ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
+;          uses tmp1
+shrint
+	clr	3,x
+	clr	4,x
+shrflt
+	cmpb	#-8
+	bhi	_shrbit
+	stab	tmp1
+	ldd	2,x
+	std	3,x
+	ldd	0,x
+	std	1,x
+	clrb
+	lsla
+	sbcb	#0
+	stab	0,x
+	ldab	tmp1
+	addb	#8
+	bne	shrflt
+	rts
+_shrbit
+	asr	0,x
+	ror	1,x
+	ror	2,x
+	ror	3,x
+	ror	4,x
+	incb
+	bne	_shrbit
 	rts
 
 add_ir1_ir1_pb			; numCalls = 2
@@ -867,16 +803,6 @@ _start
 	ldx	#startdata
 	stx	dataptr
 	rts
-
-div_fr1_ir1_pb			; numCalls = 1
-	.module	moddiv_fr1_ir1_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
-	std	3+argv
-	std	r1+3
-	ldx	#r1
-	jmp	divflt
 
 gosub_ix			; numCalls = 2
 	.module	modgosub_ix
@@ -1155,6 +1081,11 @@ _ok
 	inx
 	txs
 	rts
+
+shift_fr1_ir1_nb			; numCalls = 1
+	.module	modshift_fr1_ir1_nb
+	ldx	#r1
+	jmp	shrint
 
 sub_ir1_ir1_ix			; numCalls = 1
 	.module	modsub_ir1_ir1_ix

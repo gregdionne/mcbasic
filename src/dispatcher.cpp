@@ -131,6 +131,18 @@ std::string Dispatcher::operate(InstArrayVal &inst) {
   return implementation->unimplemented(inst);
 }
 
+std::string Dispatcher::operate(InstShift &inst) {
+  return inst.isRegInt_regInt_posByte()
+             ? implementation->regInt_regInt_posByte(inst)
+         : inst.isRegFlt_regFlt_posByte()
+             ? implementation->regFlt_regFlt_posByte(inst)
+         : inst.isRegFlt_regInt_negByte()
+             ? implementation->regFlt_regInt_negByte(inst)
+         : inst.isRegFlt_regFlt_negByte()
+             ? implementation->regFlt_regFlt_negByte(inst)
+             : implementation->unimplemented(inst);
+}
+
 std::string Dispatcher::operate(InstLd &inst) {
   return inst.isRegFlt_posByte()   ? implementation->regFlt_posByte(inst)
          : inst.isRegFlt_negByte() ? implementation->regFlt_negByte(inst)
@@ -211,12 +223,17 @@ std::string Dispatcher::operate(InstPeek &inst) {
          : inst.isRegInt_posWord() ? implementation->regInt_posWord(inst)
                                    : implementation->unimplemented(inst);
 }
+
 std::string Dispatcher::operate(InstSqr &inst) {
   return implementation->unimplemented(inst);
 }
+
 std::string Dispatcher::operate(InstInv &inst) {
-  return implementation->unimplemented(inst);
+  return inst.isRegFlt_regInt()   ? implementation->regFlt_regInt(inst)
+         : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+                                  : implementation->unimplemented(inst);
 }
+
 std::string Dispatcher::operate(InstLog &inst) {
   return implementation->unimplemented(inst);
 }

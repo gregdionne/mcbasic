@@ -30,6 +30,7 @@ public:
   void operate(ComplementedExpr &e) override;
   void operate(AndExpr &e) override;
   void operate(OrExpr &e) override;
+  void operate(ShiftExpr &e) override;
   void operate(SgnExpr &e) override;
   void operate(IntExpr &e) override;
   void operate(AbsExpr &e) override;

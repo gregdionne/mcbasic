@@ -36,6 +36,8 @@ public:
   // inherent instructions
   void aba(std::string const &comment = "");
   void abx(std::string const &comment = "");
+  void asra(std::string const &comment = "");
+  void asrb(std::string const &comment = "");
   void clra(std::string const &comment = "");
   void clrb(std::string const &comment = "");
   void coma(std::string const &comment = "");
@@ -80,6 +82,7 @@ public:
   void addd(std::string const &operand, std::string const &comment = "");
   void anda(std::string const &operand, std::string const &comment = "");
   void andb(std::string const &operand, std::string const &comment = "");
+  void asr(std::string const &operand, std::string const &comment = "");
   void bcc(std::string const &operand, std::string const &comment = "");
   void beq(std::string const &operand, std::string const &comment = "");
   void bge(std::string const &operand, std::string const &comment = "");

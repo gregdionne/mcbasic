@@ -3,9 +3,9 @@
 #ifndef ADDRESSMODE_HPP
 #define ADDRESSMODE_HPP
 
+#include <memory>
 #include <string>
 #include <utility>
-#include <memory>
 #include <vector>
 
 #include "datatype.hpp"

@@ -474,7 +474,7 @@ LINE_7
 	ldx	#STRVAR_M
 	jsr	pr_sx
 
-	; L=PEEK(17025)+((PEEK(17024) AND 1)*256)+M-1
+	; L=PEEK(17025)+SHIFT(PEEK(17024) AND 1,8)+M-1
 
 	ldd	#17025
 	jsr	peek_ir1_pw
@@ -485,8 +485,8 @@ LINE_7
 	ldab	#1
 	jsr	and_ir2_ir2_pb
 
-	ldd	#256
-	jsr	mul_ir2_ir2_pw
+	ldab	#8
+	jsr	shift_ir2_ir2_pb
 
 	jsr	add_ir1_ir1_ir2
 
@@ -2838,6 +2838,30 @@ _done
 _rts
 	rts
 
+	.module	mdshlint
+; multiply X by 2^ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x)
+;          uses tmp1
+shlint
+	cmpb	#8
+	blo	_shlbit
+	stab	tmp1
+	ldd	1,x
+	std	0,x
+	clr	2,x
+	ldab	tmp1
+	subb	#8
+	bne	shlint
+	rts
+_shlbit
+	lsl	2,x
+	rol	1,x
+	rol	0,x
+	decb
+	bne	_shlbit
+	rts
+
 	.module	mdstrdel
 ; remove a permanent string
 ; then re-link trailing strings
@@ -4051,14 +4075,6 @@ mul_ir2_ir2_ix			; numCalls = 2
 	ldx	#r2
 	jmp	mulintx
 
-mul_ir2_ir2_pw			; numCalls = 1
-	.module	modmul_ir2_ir2_pw
-	std	1+argv
-	clrb
-	stab	0+argv
-	ldx	#r2
-	jmp	mulintx
-
 neg_ir1_ix			; numCalls = 1
 	.module	modneg_ir1_ix
 	ldd	#0
@@ -4451,6 +4467,11 @@ _flt
 	std	r1+1
 	stab	r1
 	rts
+
+shift_ir2_ir2_pb			; numCalls = 1
+	.module	modshift_ir2_ir2_pb
+	ldx	#r2
+	jmp	shlint
 
 sound_ir1_ir2			; numCalls = 9
 	.module	modsound_ir1_ir2

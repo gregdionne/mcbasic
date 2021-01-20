@@ -1298,6 +1298,42 @@ std::string CoreImplementation::immLbl(InstGoSub &inst) {
   return unimplemented(inst);
 }
 
+std::string CoreImplementation::regInt_regInt_posByte(InstShift &inst) {
+  inst.dependencies.insert("mdshlint");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("shlint");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regFlt_posByte(InstShift &inst) {
+  inst.dependencies.insert("mdshlflt");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("shlflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regInt_negByte(InstShift &inst) {
+  inst.dependencies.insert("mdshrflt");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("shrint");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regFlt_negByte(InstShift &inst) {
+  inst.dependencies.insert("mdshrflt");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("shrflt");
+  return tasm.source();
+}
+
 std::string CoreImplementation::regFlt_posByte(InstLd &inst) {
   Assembler tasm;
   preamble(tasm, inst);
@@ -2366,6 +2402,40 @@ std::string CoreImplementation::regFlt_extInt(InstRnd &inst) {
   tasm.std(inst.arg1->lword());
   tasm.stab(inst.arg1->sbyte());
   tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regInt(InstInv &inst) {
+  inst.dependencies.insert("mdinvflt");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("1+argv");
+  tasm.ldd("#0");
+  tasm.std("3+argv");
+  tasm.std(inst.arg1->fract());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("invflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regFlt(InstInv &inst) {
+  inst.dependencies.insert("mdinvflt");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("1+argv");
+  tasm.ldd(inst.arg2->fract());
+  tasm.std("3+argv");
+  tasm.std(inst.arg1->fract());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("invflt");
   return tasm.source();
 }
 

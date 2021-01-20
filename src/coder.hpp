@@ -81,6 +81,9 @@ public:
   std::string operate(InstArrayVal &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
+  std::string operate(InstShift &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
   std::string operate(InstLd &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }

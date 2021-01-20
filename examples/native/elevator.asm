@@ -270,13 +270,13 @@ LINE_6
 	ldab	#4
 	jsr	setc_ir1_ir2_pb
 
-	; I+=J*2
+	; I+=SHIFT(J,1)
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
 
-	ldab	#2
-	jsr	mul_ir1_ir1_pb
+	ldab	#1
+	jsr	shift_ir1_ir1_pb
 
 	ldx	#INTVAR_I
 	jsr	add_ix_ix_ir1
@@ -348,13 +348,13 @@ LINE_7
 
 LINE_8
 
-	; I+=J*2
+	; I+=SHIFT(J,1)
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
 
-	ldab	#2
-	jsr	mul_ir1_ir1_pb
+	ldab	#1
+	jsr	shift_ir1_ir1_pb
 
 	ldx	#INTVAR_I
 	jsr	add_ix_ix_ir1
@@ -1012,24 +1012,24 @@ LINE_30
 	ldx	#INTVAR_H
 	jsr	ld_ix_ir1
 
-	; J=J*2
+	; J=SHIFT(J,1)
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
 
-	ldab	#2
-	jsr	mul_ir1_ir1_pb
+	ldab	#1
+	jsr	shift_ir1_ir1_pb
 
 	ldx	#INTVAR_J
 	jsr	ld_ix_ir1
 
-	; I=(J*2)+L
+	; I=SHIFT(J,1)+L
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
 
-	ldab	#2
-	jsr	mul_ir1_ir1_pb
+	ldab	#1
+	jsr	shift_ir1_ir1_pb
 
 	ldx	#INTVAR_L
 	jsr	add_ir1_ir1_ix
@@ -1186,7 +1186,7 @@ LINE_34
 	ldx	#LINE_36
 	jsr	jmpeq_ir1_ix
 
-	; FOR I=I TO (J*2)+I STEP J
+	; FOR I=I TO SHIFT(J,1)+I STEP J
 
 	ldx	#INTVAR_I
 	jsr	ld_ir1_ix
@@ -1197,8 +1197,8 @@ LINE_34
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
 
-	ldab	#2
-	jsr	mul_ir1_ir1_pb
+	ldab	#1
+	jsr	shift_ir1_ir1_pb
 
 	ldx	#INTVAR_I
 	jsr	add_ir1_ir1_ix
@@ -2484,13 +2484,13 @@ LINE_82
 	ldx	#LINE_47
 	jsr	gosub_ix
 
-	; SOUND P/2,1
+	; SOUND SHIFT(P,-1),1
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
 
-	ldab	#2
-	jsr	div_fr1_ir1_pb
+	ldab	#-1
+	jsr	shift_fr1_ir1_nb
 
 	ldab	#1
 	jsr	ld_ir2_pb
@@ -2595,13 +2595,13 @@ LINE_84
 	ldx	#LINE_47
 	jsr	gosub_ix
 
-	; SOUND P/2,1
+	; SOUND SHIFT(P,-1),1
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
 
-	ldab	#2
-	jsr	div_fr1_ir1_pb
+	ldab	#-1
+	jsr	shift_fr1_ir1_nb
 
 	ldab	#1
 	jsr	ld_ir2_pb
@@ -2817,7 +2817,7 @@ LINE_89
 	ldx	#INTVAR_T
 	jsr	ld_ix_ir1
 
-	; FOR X=X TO T STEP Y*2
+	; FOR X=X TO T STEP SHIFT(Y,1)
 
 	ldx	#FLTVAR_X
 	jsr	ld_fr1_fx
@@ -2831,8 +2831,8 @@ LINE_89
 	ldx	#INTVAR_Y
 	jsr	ld_ir1_ix
 
-	ldab	#2
-	jsr	mul_ir1_ir1_pb
+	ldab	#1
+	jsr	shift_ir1_ir1_pb
 
 	jsr	step_fp_ir1
 
@@ -3676,13 +3676,13 @@ LINE_1000
 
 LINE_1001
 
-	; M=RND(-(PEEK(9)*256)-PEEK(10))
+	; M=RND(-SHIFT(PEEK(9),8)-PEEK(10))
 
 	ldab	#9
 	jsr	peek_ir1_pb
 
-	ldd	#256
-	jsr	mul_ir1_ir1_pw
+	ldab	#8
+	jsr	shift_ir1_ir1_pb
 
 	ldab	#10
 	jsr	peek_ir2_pb
@@ -5502,13 +5502,13 @@ LINE_2200
 	ldx	#LINE_47
 	jsr	gosub_ix
 
-	; SOUND P/2,2
+	; SOUND SHIFT(P,-1),2
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
 
-	ldab	#2
-	jsr	div_fr1_ir1_pb
+	ldab	#-1
+	jsr	shift_fr1_ir1_nb
 
 	ldab	#2
 	jsr	ld_ir2_pb
@@ -5560,13 +5560,13 @@ LINE_2210
 	ldx	#LINE_47
 	jsr	gosub_ix
 
-	; SOUND P/2,2
+	; SOUND SHIFT(P,-1),2
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
 
-	ldab	#2
-	jsr	div_fr1_ir1_pb
+	ldab	#-1
+	jsr	shift_fr1_ir1_nb
 
 	ldab	#2
 	jsr	ld_ir2_pb
@@ -5843,7 +5843,7 @@ LINE_3160
 
 LINE_3170
 
-	; A(0)=A(0)*2
+	; A(0)=SHIFT(A(0),1)
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -5857,8 +5857,8 @@ LINE_3170
 	ldx	#FLTARR_A
 	jsr	arrval1_ir1_fx
 
-	ldab	#2
-	jsr	mul_fr1_fr1_pb
+	ldab	#1
+	jsr	shift_fr1_fr1_pb
 
 	jsr	ld_fp_fr1
 
@@ -6806,6 +6806,92 @@ _loadc
 	clrb
 _ok
 	bra	doset
+
+	.module	mdshlflt
+; multiply X by 2^ACCB for positive ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
+;          uses tmp1
+shlflt
+	cmpb	#8
+	blo	_shlbit
+	stab	tmp1
+	ldd	1,x
+	std	0,x
+	ldd	3,x
+	std	2,x
+	clr	4,x
+	ldab	tmp1
+	subb	#8
+	bne	shlflt
+	rts
+_shlbit
+	lsl	4,x
+	rol	3,x
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	decb
+	bne	_shlbit
+	rts
+
+	.module	mdshlint
+; multiply X by 2^ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x)
+;          uses tmp1
+shlint
+	cmpb	#8
+	blo	_shlbit
+	stab	tmp1
+	ldd	1,x
+	std	0,x
+	clr	2,x
+	ldab	tmp1
+	subb	#8
+	bne	shlint
+	rts
+_shlbit
+	lsl	2,x
+	rol	1,x
+	rol	0,x
+	decb
+	bne	_shlbit
+	rts
+
+	.module	mdshrflt
+; multiply X by 2^ACCB for negative ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
+;          uses tmp1
+shrint
+	clr	3,x
+	clr	4,x
+shrflt
+	cmpb	#-8
+	bhi	_shrbit
+	stab	tmp1
+	ldd	2,x
+	std	3,x
+	ldd	0,x
+	std	1,x
+	clrb
+	lsla
+	sbcb	#0
+	stab	0,x
+	ldab	tmp1
+	addb	#8
+	bne	shrflt
+	rts
+_shrbit
+	asr	0,x
+	ror	1,x
+	ror	2,x
+	ror	3,x
+	ror	4,x
+	incb
+	bne	_shrbit
+	rts
 
 	.module	mdstrdel
 ; remove a permanent string
@@ -7792,16 +7878,6 @@ div_fr1_ir1_ix			; numCalls = 1
 	ldx	#r1
 	jmp	divflt
 
-div_fr1_ir1_pb			; numCalls = 4
-	.module	moddiv_fr1_ir1_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
-	std	3+argv
-	std	r1+3
-	ldx	#r1
-	jmp	divflt
-
 div_fr2_ir2_ix			; numCalls = 1
 	.module	moddiv_fr2_ir2_ix
 	ldab	0,x
@@ -8309,28 +8385,11 @@ mul_fr1_fr1_ix			; numCalls = 1
 	ldx	#r1
 	jmp	mulfltx
 
-mul_fr1_fr1_pb			; numCalls = 1
-	.module	modmul_fr1_fr1_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
-	std	3+argv
-	ldx	#r1
-	jmp	mulfltx
-
-mul_ir1_ir1_pb			; numCalls = 10
+mul_ir1_ir1_pb			; numCalls = 4
 	.module	modmul_ir1_ir1_pb
 	stab	2+argv
 	ldd	#0
 	std	0+argv
-	ldx	#r1
-	jmp	mulintx
-
-mul_ir1_ir1_pw			; numCalls = 1
-	.module	modmul_ir1_ir1_pw
-	std	1+argv
-	clrb
-	stab	0+argv
 	ldx	#r1
 	jmp	mulintx
 
@@ -8797,6 +8856,21 @@ _neg
 _done
 	std	r1
 	rts
+
+shift_fr1_fr1_pb			; numCalls = 1
+	.module	modshift_fr1_fr1_pb
+	ldx	#r1
+	jmp	shlflt
+
+shift_fr1_ir1_nb			; numCalls = 4
+	.module	modshift_fr1_ir1_nb
+	ldx	#r1
+	jmp	shrint
+
+shift_ir1_ir1_pb			; numCalls = 7
+	.module	modshift_ir1_ir1_pb
+	ldx	#r1
+	jmp	shlint
 
 sound_ir1_ir2			; numCalls = 32
 	.module	modsound_ir1_ir2

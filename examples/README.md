@@ -29,13 +29,13 @@ native/pentomin.bas  | Puzzle/Pentomin/PENTOMIN2.TXT                |  fix typo
 
 ### Ports that still need logic modification to be playable due to speed differences:
 
-Incomplete Ports      |  Jim's source                     | Changes
---------------------- | --------------------------------- | --------------------------------
-bytecode/loderun.bas  |  Arcade/Loderunner/LODERUN33.TXT  | remove machine code
-bytecode/nmahjong.bas |  Puzzle/Mahjong/NMAHJ15.TXT       | replace VAL with INT(VAL())) use MC-10 WASZ no CSAVE/CLOAD
-native/decoy.bas      |  Arcade/Decoy/DECOY4.TXT          | identical
-native/dots.bas       |  Puzzle/Dots/DOTS3.TXT            | identical
-native/elevator.bas   |  Arcade/Elevator/ELEVATOR19.TXT   | identical
-native/mcmine.bas     |  Puzzle/MCMine/MCMINE2.TXT        | identical
+Incomplete Ports       |  Jim's source                            | Changes
+---------------------- | ---------------------------------------- | --------------------------------
+bytecode/loderun35.bas |  Arcade/Loderunner/LODERUN35compiler.TXT | identical
+bytecode/nmahjong.bas  |  Puzzle/Mahjong/NMAHJ15.TXT              | replace VAL with INT(VAL())) use MC-10 WASZ no CSAVE/CLOAD
+native/decoy.bas       |  Arcade/Decoy/DECOY4.TXT                 | identical
+native/dots.bas        |  Puzzle/Dots/DOTS3.TXT                   | identical
+native/elevator.bas    |  Arcade/Elevator/ELEVATOR19.TXT          | identical
+native/mcmine.bas      |  Puzzle/MCMine/MCMINE2.TXT               | identical
 
 The results of the compiled code are saved as .C10 files.  You may CLOADM them into your favorite MC-10 emulator.

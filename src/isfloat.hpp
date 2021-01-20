@@ -14,6 +14,7 @@ public:
   explicit IsFloat(SymbolTable &st) : result(false), symbolTable(st) {}
   void operate(ValExpr &e) override;
   void operate(AbsExpr &e) override;
+  void operate(ShiftExpr &e) override;
   void operate(NegatedExpr &e) override;
   void operate(MultiplicativeExpr &e) override;
   void operate(AdditiveExpr &e) override;

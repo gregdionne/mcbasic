@@ -1239,19 +1239,19 @@ LINE_76
 
 LINE_78
 
-	; I1=(8*W)+(SGN(N)*4)+I
-
-	ldab	#8
-	jsr	ld_ir1_pb
+	; I1=SHIFT(W,3)+SHIFT(SGN(N),2)+I
 
 	ldx	#INTVAR_W
-	jsr	mul_ir1_ir1_ix
+	jsr	ld_ir1_ix
+
+	ldab	#3
+	jsr	shift_ir1_ir1_pb
 
 	ldx	#INTVAR_N
 	jsr	sgn_ir2_ix
 
-	ldab	#4
-	jsr	mul_ir2_ir2_pb
+	ldab	#2
+	jsr	shift_ir2_ir2_pb
 
 	jsr	add_ir1_ir1_ir2
 
@@ -1261,13 +1261,13 @@ LINE_78
 	ldx	#INTVAR_I1
 	jsr	ld_ix_ir1
 
-	; V+=(V((8*W)+1)*N)+V(I1)
-
-	ldab	#8
-	jsr	ld_ir1_pb
+	; V+=(V(SHIFT(W,3)+1)*N)+V(I1)
 
 	ldx	#INTVAR_W
-	jsr	mul_ir1_ir1_ix
+	jsr	ld_ir1_ix
+
+	ldab	#3
+	jsr	shift_ir1_ir1_pb
 
 	ldab	#1
 	jsr	add_ir1_ir1_pb
@@ -2825,6 +2825,30 @@ _ok
 	pulx
 	rts
 
+	.module	mdshlint
+; multiply X by 2^ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x)
+;          uses tmp1
+shlint
+	cmpb	#8
+	blo	_shlbit
+	stab	tmp1
+	ldd	1,x
+	std	0,x
+	clr	2,x
+	ldab	tmp1
+	subb	#8
+	bne	shlint
+	rts
+_shlbit
+	lsl	2,x
+	rol	1,x
+	rol	0,x
+	decb
+	bne	_shlbit
+	rts
+
 	.module	mdstrdel
 ; remove a permanent string
 ; then re-link trailing strings
@@ -3824,7 +3848,7 @@ ld_ip_pb			; numCalls = 2
 	std	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 60
+ld_ir1_ix			; numCalls = 62
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -3839,7 +3863,7 @@ ld_ir1_nb			; numCalls = 1
 	std	r1
 	rts
 
-ld_ir1_pb			; numCalls = 16
+ld_ir1_pb			; numCalls = 14
 	.module	modld_ir1_pb
 	stab	r1+2
 	ldd	#0
@@ -4084,7 +4108,7 @@ ldne_ir1_sr1_ss			; numCalls = 1
 	stab	r1
 	rts
 
-mul_ir1_ir1_ix			; numCalls = 5
+mul_ir1_ir1_ix			; numCalls = 3
 	.module	modmul_ir1_ir1_ix
 	ldab	0,x
 	stab	0+argv
@@ -4099,14 +4123,6 @@ mul_ir1_ir1_pb			; numCalls = 1
 	ldd	#0
 	std	0+argv
 	ldx	#r1
-	jmp	mulintx
-
-mul_ir2_ir2_pb			; numCalls = 1
-	.module	modmul_ir2_ir2_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
-	ldx	#r2
 	jmp	mulintx
 
 neg_ir1_ix			; numCalls = 2
@@ -4387,6 +4403,16 @@ _neg
 _done
 	std	r2
 	rts
+
+shift_ir1_ir1_pb			; numCalls = 2
+	.module	modshift_ir1_ir1_pb
+	ldx	#r1
+	jmp	shlint
+
+shift_ir2_ir2_pb			; numCalls = 1
+	.module	modshift_ir2_ir2_pb
+	ldx	#r2
+	jmp	shlint
 
 sound_ir1_ir2			; numCalls = 4
 	.module	modsound_ir1_ir2

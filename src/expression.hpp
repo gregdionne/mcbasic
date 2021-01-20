@@ -36,6 +36,7 @@ class ComplementedExpr;
 class RelationalExpr;
 class AndExpr;
 class OrExpr;
+class ShiftExpr;
 class SgnExpr;
 class IntExpr;
 class AbsExpr;
@@ -79,6 +80,7 @@ public:
   virtual void operate(RelationalExpr & /*expr*/) {}
   virtual void operate(AndExpr & /*expr*/) {}
   virtual void operate(OrExpr & /*expr*/) {}
+  virtual void operate(ShiftExpr & /*expr*/) {}
   virtual void operate(SgnExpr & /*expr*/) {}
   virtual void operate(IntExpr & /*expr*/) {}
   virtual void operate(AbsExpr & /*expr*/) {}
@@ -349,6 +351,16 @@ public:
     }
     return true;
   }
+};
+
+class ShiftExpr : public NumericExpr {
+public:
+  std::string funcName = "SHIFT";
+  std::unique_ptr<NumericExpr> expr;
+  int rhs;
+  ShiftExpr(std::unique_ptr<NumericExpr> e, int n)
+      : expr(std::move(e)), rhs(n) {}
+  void operate(ExprOp *op) override { op->operate(*this); }
 };
 
 class SgnExpr : public UnaryNumericExpr {

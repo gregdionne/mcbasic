@@ -139,6 +139,10 @@ void ExprLister::operate(StringArrayExpr &e) {
 
 void ExprLister::operate(NegatedExpr &e) { result = "-" + plist(e.expr); }
 
+void ExprLister::operate(ShiftExpr &e) {
+  result = e.funcName + '(' + list(e.expr) + ',' + std::to_string(e.rhs) + ')';
+}
+
 void ExprLister::operate(ComplementedExpr &e) {
   result = e.funcName + " " + plist(e.expr);
 }

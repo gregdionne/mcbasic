@@ -12,7 +12,12 @@ Don't have James' Virtual MC-10?  You really should.  Don't have Windows?
 
 ## Limitations
 * Darren Atkinson's MCX-BASIC ROM is not yet supported.
-* SQR() LOG() EXP() SIN() COS() TAN() are not yet implemented
+* Scientific E notation is not yet supported
+
+## Unimplemented keywords
+* CLOAD*, CSAVE*
+* SQR() LOG() EXP() SIN() COS() TAN()
+* USR() VARPTR() EXEC CLOADM
 
 ## Compilation
 

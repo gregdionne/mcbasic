@@ -69,6 +69,10 @@ private:
   static std::string mdMulFlt();
   static std::string mdMulHlf();
   static std::string mdMulInt();
+  static std::string mdShlInt();
+  static std::string mdShlFlt();
+  static std::string mdShrFlt();
+  static std::string mdInvFlt();
   static std::string mdDivFlt();
   static std::string mdPrAt();
   static std::string mdPrint();

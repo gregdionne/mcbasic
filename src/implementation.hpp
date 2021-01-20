@@ -112,6 +112,11 @@ public:
   virtual std::string immLbl(InstGoTo &inst) = 0;
   virtual std::string immLbl(InstGoSub &inst) = 0;
 
+  virtual std::string regInt_regInt_posByte(InstShift &inst) = 0;
+  virtual std::string regFlt_regFlt_posByte(InstShift &inst) = 0;
+  virtual std::string regFlt_regInt_negByte(InstShift &inst) = 0;
+  virtual std::string regFlt_regFlt_negByte(InstShift &inst) = 0;
+
   virtual std::string regFlt_posByte(InstLd &inst) = 0;
   virtual std::string regFlt_negByte(InstLd &inst) = 0;
   virtual std::string regFlt_posWord(InstLd &inst) = 0;
@@ -203,6 +208,9 @@ public:
   virtual std::string regFlt_negWord(InstRnd &inst) = 0;
   virtual std::string regFlt_regInt(InstRnd &inst) = 0;
   virtual std::string regFlt_extInt(InstRnd &inst) = 0;
+
+  virtual std::string regFlt_regInt(InstInv &inst) = 0;
+  virtual std::string regFlt_regFlt(InstInv &inst) = 0;
 
   virtual std::string regInt_regStr(InstAsc &inst) = 0;
   virtual std::string regInt_extStr(InstAsc &inst) = 0;

@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef GRAPH_HPP
-#define GRAPH_HPP
+#ifndef GRAPHER_HPP
+#define GRAPHER_HPP
 
 #include "program.hpp"
 
@@ -38,6 +38,7 @@ public:
   void operate(OrExpr &e) override {
     operate(static_cast<NaryNumericExpr &>(e));
   }
+  void operate(ShiftExpr &e) override;
   void operate(SgnExpr &e) override;
   void operate(IntExpr &e) override;
   void operate(AbsExpr &e) override;

@@ -650,37 +650,49 @@ void ExprCompiler::operate(StringArrayExpr &e) {
   exit(1);
 }
 
+void ExprCompiler::operate(ShiftExpr &e) {
+  e.expr->operate(this);
+  if (e.rhs != 0) {
+    result = queue.load(std::move(result));
+    auto dest = result->clone();
+    result = queue.append(std::make_unique<InstShift>(
+        std::move(dest), std::move(result),
+        std::make_unique<AddressModeImm>(e.rhs<0, e.rhs)));
+  }
+}
+
 void ExprCompiler::operate(NegatedExpr &e) {
   e.expr->operate(this);
-  result = queue.append(std::make_unique<InstNeg>(queue.alloc(result->clone()),
-                                                  std::move(result)));
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(
+      std::make_unique<InstNeg>(std::move(dest), std::move(result)));
 }
 
 void ExprCompiler::operate(ComplementedExpr &e) {
   e.expr->operate(this);
   result->castToInt();
-  result = queue.append(std::make_unique<InstCom>(queue.alloc(result->clone()),
-                                                  std::move(result)));
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(
+      std::make_unique<InstCom>(std::move(dest), std::move(result)));
 }
 
 void ExprCompiler::operate(SgnExpr &e) {
   e.expr->operate(this);
-  result = queue.append(std::make_unique<InstSgn>(queue.alloc(result->clone()),
-                                                  std::move(result)));
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(
+      std::make_unique<InstSgn>(std::move(dest), std::move(result)));
 }
 
 void ExprCompiler::operate(IntExpr &e) {
   e.expr->operate(this);
   result->castToInt();
-  // result =
-  // queue.append(std::make_unique<InstInt>(queue.alloc(result->clone()),
-  // std::move(result)));
 }
 
 void ExprCompiler::operate(AbsExpr &e) {
   e.expr->operate(this);
-  result = queue.append(std::make_unique<InstAbs>(queue.alloc(result->clone()),
-                                                  std::move(result)));
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(
+      std::make_unique<InstAbs>(std::move(dest), std::move(result)));
 }
 
 void ExprCompiler::operate(RndExpr &e) {
@@ -689,25 +701,29 @@ void ExprCompiler::operate(RndExpr &e) {
 
   double c; // make result int when result is integer greater than 0.
   if (e.expr->isConst(c) && c > 0) {
-    result = queue.append(std::make_unique<InstIRnd>(
-        queue.alloc(result->clone()), std::move(result)));
+    auto dest = queue.alloc(result->clone());
+    result = queue.append(
+        std::make_unique<InstIRnd>(std::move(dest), std::move(result)));
   } else {
-    result = queue.append(std::make_unique<InstRnd>(
-        queue.alloc(result->clone()), std::move(result)));
+    auto dest = queue.alloc(result->clone());
+    result = queue.append(
+        std::make_unique<InstRnd>(std::move(dest), std::move(result)));
   }
 }
 
 void ExprCompiler::operate(PeekExpr &e) {
   e.expr->operate(this);
   result->castToInt();
-  result = queue.append(std::make_unique<InstPeek>(queue.alloc(result->clone()),
-                                                   std::move(result)));
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(
+      std::make_unique<InstPeek>(std::move(dest), std::move(result)));
 }
 
 void ExprCompiler::operate(LenExpr &e) {
   e.expr->operate(this);
-  result = queue.append(std::make_unique<InstLen>(queue.alloc(result->clone()),
-                                                  std::move(result)));
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(
+      std::make_unique<InstLen>(std::move(dest), std::move(result)));
 }
 
 void ExprCompiler::operate(StrExpr &e) {
@@ -721,21 +737,24 @@ void ExprCompiler::operate(StrExpr &e) {
 
 void ExprCompiler::operate(ValExpr &e) {
   e.expr->operate(this);
-  result = queue.append(std::make_unique<InstVal>(queue.alloc(result->clone()),
-                                                  std::move(result)));
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(
+      std::make_unique<InstVal>(std::move(dest), std::move(result)));
 }
 
 void ExprCompiler::operate(AscExpr &e) {
   e.expr->operate(this);
-  result = queue.append(std::make_unique<InstAsc>(queue.alloc(result->clone()),
-                                                  std::move(result)));
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(
+      std::make_unique<InstAsc>(std::move(dest), std::move(result)));
 }
 
 void ExprCompiler::operate(ChrExpr &e) {
   e.expr->operate(this);
   result->castToInt();
-  result = queue.append(std::make_unique<InstChr>(queue.alloc(result->clone()),
-                                                  std::move(result)));
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(
+      std::make_unique<InstChr>(std::move(dest), std::move(result)));
   if (result->dataType != DataType::Str) {
     exit(1);
   }
@@ -840,7 +859,8 @@ void ExprCompiler::operate(AdditiveExpr &e) {
     for (auto &invoperand : e.invoperands) {
       if (needLoad) {
         invoperand->operate(this);
-        reg = queue.load(std::move(result));
+        result = queue.load(std::move(result));
+        reg = result->clone();
         needLoad = false;
       } else {
         invoperand->operate(this);
@@ -880,7 +900,8 @@ void ExprCompiler::operate(MultiplicativeExpr &e) {
     for (auto &invoperand : e.invoperands) {
       if (needLoad) {
         invoperand->operate(this);
-        reg = queue.load(std::move(result));
+        result = queue.load(std::move(result));
+        reg = result->clone();
         needLoad = false;
       } else {
         invoperand->operate(this);

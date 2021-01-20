@@ -52,6 +52,7 @@ public:
   std::string operate(InstArrayDim &inst) override;
   std::string operate(InstArrayRef &inst) override;
   std::string operate(InstArrayVal &inst) override;
+  std::string operate(InstShift &inst) override;
   std::string operate(InstLd &inst) override;
   std::string operate(InstAbs &inst) override;
   std::string operate(InstNeg &inst) override;

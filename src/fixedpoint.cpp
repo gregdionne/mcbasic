@@ -44,6 +44,42 @@ bool FixedPoint::isPosWord() const { return isPositive() && isWord(); }
 
 bool FixedPoint::isNegWord() const { return isNegative() && isWord(); }
 
+bool FixedPoint::isPowerOfTwo() const {
+  return (
+      (wholenum == 0 && fraction != 0 && (fraction & (fraction - 1)) == 0) ||
+      (fraction == 0 && wholenum != 0 && (wholenum & (wholenum - 1)) == 0));
+}
+
+FixedPoint FixedPoint::abs() const {
+  auto x = FixedPoint(0);
+
+  x.wholenum = wholenum < 0 && fraction != 0   ? ~wholenum
+               : wholenum < 0 && fraction == 0 ? -wholenum
+                                               : wholenum;
+
+  x.fraction = wholenum < 0 && fraction != 0 ? 65536 - fraction : fraction;
+
+  return x;
+}
+
+int FixedPoint::log2abs() const {
+  auto x = (wholenum < 0) ? abs() : *this;
+  int n = 0;
+  if (x.wholenum > 0) {
+    while (x.wholenum > 1) {
+      x.wholenum >>= 1;
+      ++n;
+    }
+  } else if ((x.fraction & 0x0ffff) != 0) {
+    while ((x.fraction & 0x10000) == 0) {
+      x.fraction <<= 1;
+      --n;
+    }
+  }
+
+  return n;
+}
+
 std::string FixedPoint::label() const {
   char buf[1024];
 

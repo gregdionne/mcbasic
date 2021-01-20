@@ -111,6 +111,12 @@ void ExprGrapher::operate(StringArrayExpr &e) {
   indentOp(e.indices, this);
 }
 
+void ExprGrapher::operate(ShiftExpr &e) {
+  printtab(n, e.funcName.c_str());
+  indentOp(e.expr, this);
+  printtab(n + 1, "%i", e.rhs);
+}
+
 void ExprGrapher::operate(NegatedExpr &e) {
   printtab(n, (e.funcName + "(neg)").c_str());
   indentOp(e.expr, this);
