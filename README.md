@@ -21,15 +21,21 @@ Don't have James' Virtual MC-10?  You really should.  Don't have Windows?
 
 ## Compilation
 
-Requires C++14.  Most modern C++ compilers should be able to support this.
-Tested on Apple clang version 11.0.0 (clang-1100.0.33.12).
+### Tested Platform (Darwin)
+
+Requires C++14.  Tested on Apple clang version 12.0.0 (clang-1200.0.32.28).
 
 `c++ -std=c++14 *.cpp -o mcbasic`
 
-Some attempt has been made to make the source compatible with the Windows Visual C++ compiler.
-I've tested it sporadically against it.  What works is to follow the instructions [here](https://docs.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=vs-2019).  If the link fails, try searching the internet for "Walkthrough:  Compile a C program on the command line".
+or if you're comfortable with `make`, a sample Makefile is in the source directory.
+
+### Untested Platform (Windows)
+
+Some attempt has been made to make the source compatible with Windows Visual Studio 2017.
 
 `cl /EHsc *.cpp /link /out:mcbasic.exe`
+
+While the program compiles fine, the output generated is incorrect (as of commit f827b287b42259dc2700b4adf307e9ce9ab7e865).
 
 ## Usage
 
