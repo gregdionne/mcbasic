@@ -657,7 +657,7 @@ void ExprCompiler::operate(ShiftExpr &e) {
     auto dest = result->clone();
     result = queue.append(std::make_unique<InstShift>(
         std::move(dest), std::move(result),
-        std::make_unique<AddressModeImm>(e.rhs<0, e.rhs)));
+        std::make_unique<AddressModeImm>(e.rhs < 0, e.rhs)));
   }
 }
 
