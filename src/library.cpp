@@ -1872,7 +1872,7 @@ std::string Library::mdSin() {
   tasm.pulb();
   tasm.std("3+argv");
   tasm.jsr("mulfltx");
-  tasm.ldd("#5040");
+  tasm.ldd("#$0DD0");
   tasm.bra("_rdiv");
 
   tasm.comment("cos of angle less than pi/4");
@@ -1889,14 +1889,28 @@ std::string Library::mdSin() {
   tasm.bsr("_rsubm");
   tasm.ldd("#40320");
   tasm.bsr("_rsub");
-  tasm.ldd("#40320");
+  tasm.ldd("#$A11A");
 
+  tasm.comment("divide by 5040 or 40320");
+  tasm.comment(" equivalent to multiplying by:");
+  tasm.comment(" 13.003174/65536 or 1.625397/65536");
+  tasm.comment(" $0D.00D0/65536 or $01.A01A/65536");
   tasm.label("_rdiv");
-  tasm.std("1+argv");
+  tasm.stab("4+argv");
+  tasm.tab();
+  tasm.anda("#$0f");
+  tasm.andb("#$f0");
+  tasm.std("2+argv");
   tasm.ldd("#0");
-  tasm.stab("0+argv");
-  tasm.std("3+argv");
-  tasm.jmp("divflt");
+  tasm.std("0+argv");
+  tasm.jsr("mulfltx");
+  tasm.ldd("1,x");
+  tasm.std("3,x");
+  tasm.ldab("0,x");
+  tasm.stab("2,x");
+  tasm.ldd("#0");
+  tasm.std("0,x");
+  tasm.rts();
 
   tasm.label("_rsubm");
   tasm.bsr("_rsub");

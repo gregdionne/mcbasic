@@ -785,7 +785,7 @@ _sin
 	pulb
 	std	3+argv
 	jsr	mulfltx
-	ldd	#5040
+	ldd	#$0DD0
 	bra	_rdiv
 ; cos of angle less than pi/4
 _cos
@@ -801,13 +801,27 @@ _cos
 	bsr	_rsubm
 	ldd	#40320
 	bsr	_rsub
-	ldd	#40320
+	ldd	#$A11A
+; divide by 5040 or 40320
+;  equivalent to multiplying by:
+;  13.003174/65536 or 1.625397/65536
+;  $0D.00D0/65536 or $01.A01A/65536
 _rdiv
-	std	1+argv
+	stab	4+argv
+	tab
+	anda	#$0f
+	andb	#$f0
+	std	2+argv
 	ldd	#0
-	stab	0+argv
-	std	3+argv
-	jmp	divflt
+	std	0+argv
+	jsr	mulfltx
+	ldd	1,x
+	std	3,x
+	ldab	0,x
+	stab	2,x
+	ldd	#0
+	std	0,x
+	rts
 _rsubm
 	bsr	_rsub
 	jmp	mulfltx
