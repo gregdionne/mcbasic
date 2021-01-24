@@ -3,6 +3,7 @@
 #include "constfolder.hpp"
 
 #include <algorithm>
+#include <cmath>
 #include <string>
 
 // fold expressions...
@@ -401,6 +402,24 @@ void ExprConstFolder::operate(AbsExpr &e) {
 void ExprConstFolder::operate(RndExpr &e) {
   fold(e.expr);
   gotConst = false;
+}
+
+void ExprConstFolder::operate(SinExpr &e) {
+  if (fold(e.expr)) {
+    dvalue = std::sin(dvalue);
+  }
+}
+
+void ExprConstFolder::operate(CosExpr &e) {
+  if (fold(e.expr)) {
+    dvalue = std::cos(dvalue);
+  }
+}
+
+void ExprConstFolder::operate(TanExpr &e) {
+  if (fold(e.expr)) {
+    dvalue = std::tan(dvalue);
+  }
 }
 
 void ExprConstFolder::operate(PeekExpr &e) {

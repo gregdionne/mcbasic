@@ -1709,71 +1709,10 @@ _rts
 ;   EXIT   X/Y in (0,x 1,x 2,x 3,x 4,x)
 ;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
 divflt
-	clr	tmp4
-	tst	0,x
-	bpl	_posX
-	com	tmp4
-	neg	4,x
-	ngc	3,x
-	ngc	2,x
-	ngc	1,x
-	ngc	0,x
-_posX
-	tst	0+argv
-	bpl	_posA
-	com	tmp4
-	neg	4+argv
-	ngc	3+argv
-	ngc	2+argv
-	ngc	1+argv
-	ngc	0+argv
-divufl
-_posA
-	ldd	3,x
-	std	6,x
-	ldd	1,x
-	std	4,x
-	ldab	0,x
-	stab	3,x
-	ldd	#0
-	std	8,x
-	std	1,x
-	stab	0,x
-	ldaa	#41
-	staa	tmp1
-_nxtdiv
-	ldd	3,x
-	subd	3+argv
-	std	tmp3
-	ldd	1,x
-	sbcb	2+argv
-	sbca	1+argv
-	std	tmp2
-	ldab	0,x
-	sbcb	0+argv
-	stab	tmp1+1
-	blo	_shift
-	ldd	tmp3
-	std	3,x
-	ldd	tmp2
-	std	1,x
-	ldab	tmp1+1
-	stab	0,x
-_shift
-	rol	9,x
-	rol	8,x
-	rol	7,x
-	rol	6,x
-	rol	5,x
-	rol	4,x
-	rol	3,x
-	rol	2,x
-	rol	1,x
-	rol	0,x
-	dec	tmp1
-	bne	_nxtdiv
+	ldaa	#8*5
+	bsr	divmod
 	tst	tmp4
-	bne	_add1
+	bmi	_add1
 	ldd	8,x
 	coma
 	comb
@@ -1797,6 +1736,90 @@ _add1
 	ldab	5,x
 	adcb	#0
 	stab	0,x
+	rts
+
+	.module	mddivmod
+; divide/modulo X by Y with remainder
+;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
+;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+;          #shifts in ACCA (24 for modulus, 40 for division
+;   EXIT   ~|X|/|Y| in (5,x 6,x 7,x 8,x 9,x) when dividing
+;           |X|%|Y| in (0,x 1,x 2,x 3,x 4,x) when modulo
+;          result sign in tmp4.(0 = pos, -1 = neg).
+;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1
+divmod
+	staa	tmp1
+	clr	tmp4
+	tst	0,x
+	bpl	_posX
+	com	tmp4
+	bsr	negx
+_posX
+	tst	0+argv
+	bpl	_posA
+	com	tmp4
+	bsr	negargv
+divufl
+_posA
+	ldd	3,x
+	std	6,x
+	ldd	1,x
+	std	4,x
+	ldab	0,x
+	stab	3,x
+	clra
+	clrb
+	std	8,x
+	std	1,x
+	stab	0,x
+_nxtdiv
+	rol	6,x
+	rol	5,x
+	rol	4,x
+	rol	3,x
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	ldd	3,x
+	subd	3+argv
+	std	tmp3
+	ldd	1,x
+	sbcb	2+argv
+	sbca	1+argv
+	std	tmp2
+	ldab	0,x
+	sbcb	0+argv
+	stab	tmp1+1
+	blo	_shift
+	ldd	tmp3
+	std	3,x
+	ldd	tmp2
+	std	1,x
+	ldab	tmp1+1
+	stab	0,x
+_shift
+	rol	9,x
+	rol	8,x
+	rol	7,x
+	dec	tmp1
+	bne	_nxtdiv
+	rol	6,x
+	rol	5,x
+	rol	4,x
+	rts
+negx
+	neg	4,x
+	ngc	3,x
+	ngc	2,x
+	ngc	1,x
+	ngc	0,x
+	rts
+negargv
+	neg	4+argv
+	ngc	3+argv
+	ngc	2+argv
+	ngc	1+argv
+	ngc	0+argv
 	rts
 
 	.module	mdgeteq

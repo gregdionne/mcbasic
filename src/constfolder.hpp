@@ -39,6 +39,9 @@ public:
   void operate(IntExpr &e) override;
   void operate(AbsExpr &e) override;
   void operate(RndExpr &e) override;
+  void operate(SinExpr &e) override;
+  void operate(CosExpr &e) override;
+  void operate(TanExpr &e) override;
   void operate(PeekExpr &e) override;
   void operate(RelationalExpr &e) override;
   void operate(PointExpr &e) override;

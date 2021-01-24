@@ -13,8 +13,13 @@ void Library::makeFoundation() {
   foundation["mdref5"] = Lib{0, mdArrayRef5(), {"mdmul12"}};
   foundation["mdrefint"] = Lib{0, mdArrayRefInt(), {}};
   foundation["mdrefflt"] = Lib{0, mdArrayRefFlt(), {}};
-  foundation["mddivflt"] = Lib{0, mdDivFlt(), {}};
+  foundation["mddivmod"] = Lib{0, mdDivMod(), {}};
+  foundation["mddivflt"] = Lib{0, mdDivFlt(), {"mddivmod"}};
+  foundation["mdmodflt"] = Lib{0, mdModFlt(), {"mddivmod"}};
   foundation["mdinvflt"] = Lib{0, mdInvFlt(), {"mddivflt"}};
+  foundation["mdsin"] = Lib{0, mdSin(), {"mdmulflt", "mddivflt", "mdmodflt"}};
+  foundation["mdcos"] = Lib{0, mdCos(), {"mdsin"}};
+  foundation["mdtan"] = Lib{0, mdTan(), {"mdsin", "mdcos"}};
   foundation["mdshlflt"] = Lib{0, mdShlFlt(), {}};
   foundation["mdshlint"] = Lib{0, mdShlInt(), {}};
   foundation["mdshrflt"] = Lib{0, mdShrFlt(), {}};
@@ -1584,6 +1589,25 @@ std::string Library::mdShrFlt() {
   return tasm.source();
 }
 
+std::string Library::mdModFlt() {
+  Assembler tasm;
+  tasm.comment("modulo X by Y");
+  tasm.comment("  ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("                    scratch in  (5,x 6,x 7,x 8,x 9,x)");
+  tasm.comment("         Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv");
+  tasm.comment("  EXIT   X%Y in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("         uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4");
+  tasm.label("modflt");
+  tasm.ldaa("#8*3"); // set number of shifts
+  tasm.jsr("divmod");
+  tasm.tst("tmp4");
+  tasm.bpl("_rts");
+  tasm.jmp("negx");
+  tasm.label("_rts");
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string Library::mdDivFlt() {
   Assembler tasm;
   tasm.comment("divide X by Y");
@@ -1593,25 +1617,60 @@ std::string Library::mdDivFlt() {
   tasm.comment("  EXIT   X/Y in (0,x 1,x 2,x 3,x 4,x)");
   tasm.comment("         uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4");
   tasm.label("divflt");
-  tasm.clr("tmp4");
-  tasm.tst("0,x");
+  tasm.ldaa("#8*5"); // set number of shifts
+  tasm.bsr("divmod");
+  tasm.tst("tmp4");
+  tasm.bmi("_add1"); // result negative
+  tasm.ldd("8,x");
+  tasm.coma();
+  tasm.comb();
+  tasm.std("3,x");
+  tasm.ldd("6,x");
+  tasm.coma();
+  tasm.comb();
+  tasm.std("1,x");
+  tasm.ldab("5,x");
+  tasm.comb();
+  tasm.stab("0,x");
+  tasm.rts();
+  tasm.label("_add1");
+  tasm.ldd("8,x");
+  tasm.addd("#1");
+  tasm.std("3,x");
+  tasm.ldd("6,x");
+  tasm.adcb("#0");
+  tasm.adca("#0");
+  tasm.std("1,x");
+  tasm.ldab("5,x");
+  tasm.adcb("#0");
+  tasm.stab("0,x");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdDivMod() {
+  Assembler tasm;
+  tasm.comment("divide/modulo X by Y with remainder");
+  tasm.comment("  ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("         Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv");
+  tasm.comment("         #shifts in ACCA (24 for modulus, 40 for division");
+  tasm.comment("  EXIT   ~|X|/|Y| in (5,x 6,x 7,x 8,x 9,x) when dividing");
+  tasm.comment("          |X|%|Y| in (0,x 1,x 2,x 3,x 4,x) when modulo");
+  tasm.comment("         result sign in tmp4.(0 = pos, -1 = neg).");
+  tasm.comment("         uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1");
+  tasm.label("divmod");
+  tasm.staa("tmp1");
+  tasm.clr("tmp4"); // clear output sign
+  tasm.tst("0,x");  // dividend positive?
   tasm.bpl("_posX");
-  tasm.com("tmp4");
-  tasm.neg("4,x");
-  tasm.ngc("3,x");
-  tasm.ngc("2,x");
-  tasm.ngc("1,x");
-  tasm.ngc("0,x");
+  tasm.com("tmp4"); // no, invert output sign
+  tasm.bsr("negx");
 
   tasm.label("_posX");
-  tasm.tst("0+argv");
+  tasm.tst("0+argv"); // divisor positive?
   tasm.bpl("_posA");
-  tasm.com("tmp4");
-  tasm.neg("4+argv");
-  tasm.ngc("3+argv");
-  tasm.ngc("2+argv");
-  tasm.ngc("1+argv");
-  tasm.ngc("0+argv");
+  tasm.com("tmp4"); // no, invert output sign
+  tasm.bsr("negargv");
 
   tasm.label("divufl");
   tasm.label("_posA");
@@ -1621,14 +1680,20 @@ std::string Library::mdDivFlt() {
   tasm.std("4,x");
   tasm.ldab("0,x");
   tasm.stab("3,x");
-  tasm.ldd("#0");
+  tasm.clra(); // clear C flag
+  tasm.clrb(); // instead of ldd #0
   tasm.std("8,x");
   tasm.std("1,x");
   tasm.stab("0,x");
-  tasm.ldaa("#41");
-  tasm.staa("tmp1");
 
   tasm.label("_nxtdiv");
+  tasm.rol("6,x");
+  tasm.rol("5,x");
+  tasm.rol("4,x");
+  tasm.rol("3,x");
+  tasm.rol("2,x");
+  tasm.rol("1,x");
+  tasm.rol("0,x");
   tasm.ldd("3,x");
   tasm.subd("3+argv");
   tasm.std("tmp3");
@@ -1651,42 +1716,29 @@ std::string Library::mdDivFlt() {
   tasm.rol("9,x");
   tasm.rol("8,x");
   tasm.rol("7,x");
+  tasm.dec("tmp1");
+  tasm.bne("_nxtdiv");
   tasm.rol("6,x");
   tasm.rol("5,x");
   tasm.rol("4,x");
-  tasm.rol("3,x");
-  tasm.rol("2,x");
-  tasm.rol("1,x");
-  tasm.rol("0,x");
-  tasm.dec("tmp1");
-  tasm.bne("_nxtdiv");
-  tasm.tst("tmp4");
-  tasm.bne("_add1");
-  tasm.ldd("8,x");
-  tasm.coma();
-  tasm.comb();
-  tasm.std("3,x");
-  tasm.ldd("6,x");
-  tasm.coma();
-  tasm.comb();
-  tasm.std("1,x");
-  tasm.ldab("5,x");
-  tasm.comb();
-  tasm.stab("0,x");
   tasm.rts();
 
-  tasm.label("_add1");
-  tasm.ldd("8,x");
-  tasm.addd("#1");
-  tasm.std("3,x");
-  tasm.ldd("6,x");
-  tasm.adcb("#0");
-  tasm.adca("#0");
-  tasm.std("1,x");
-  tasm.ldab("5,x");
-  tasm.adcb("#0");
-  tasm.stab("0,x");
+  tasm.label("negx");
+  tasm.neg("4,x");
+  tasm.ngc("3,x");
+  tasm.ngc("2,x");
+  tasm.ngc("1,x");
+  tasm.ngc("0,x");
   tasm.rts();
+
+  tasm.label("negargv");
+  tasm.neg("4+argv");
+  tasm.ngc("3+argv");
+  tasm.ngc("2+argv");
+  tasm.ngc("1+argv");
+  tasm.ngc("0+argv");
+  tasm.rts();
+
   return tasm.source();
 }
 
@@ -1703,6 +1755,216 @@ std::string Library::mdInvFlt() {
   tasm.std("3,x");
   tasm.incb();
   tasm.stab("2,x");
+  tasm.jmp("divflt");
+  return tasm.source();
+}
+
+std::string Library::mdSin() {
+  Assembler tasm;
+
+  tasm.label("sin");
+  tasm.tst("0,x");     // is arg positive?
+  tasm.bpl("_sinpos"); //   go if so
+  tasm.jsr("negx");    // otherwise
+  tasm.bsr("_sinpos"); //   return -sin(-x)
+  tasm.jmp("negx");
+
+  // sin of positive x
+  tasm.label("_sinpos");
+  tasm.ldd("#0"); // compute arg mod 2 pi
+  tasm.std("0+argv");
+  tasm.ldab("#$6");
+  tasm.stab("2+argv"); // although $06.487F is closer to $06.487ED5
+  tasm.ldd("#$487F");  // users often use multiples of pi (not 2pi)
+  tasm.std("3+argv");  // pi rounds down to $03.243F, so twice that
+  tasm.jsr("modflt");  // is $06.487E.
+
+  tasm.bsr("_x2arg");
+  tasm.stx("tmp1");
+  tasm.ldx("#_tbl_pi1"); // if arg < pi
+  tasm.bsr("_cmptbl");
+  tasm.blo("_q12");    // do quad_12
+  tasm.bsr("_subtbl"); // else do -sin(arg-pi)
+  tasm.bsr("_q12");
+  tasm.jmp("negx");
+
+  tasm.label("_q12");
+  tasm.ldx("#_tbl_pi2"); // is arg < pi/2
+  tasm.bsr("_cmptbl");
+  tasm.blo("_q1");
+  tasm.ldx("#_tbl_pi1");
+  tasm.bsr("_rsubtbl"); // else do sin(pi-arg)
+
+  tasm.label("_q1"); // if argv < pi/4
+  tasm.ldx("#_tbl_pi4");
+  tasm.bsr("_cmptbl");
+  tasm.blo("_sin");
+  tasm.ldx("#_tbl_pi2"); // else do cos(pi/2-arg)
+  tasm.bsr("_rsubtbl");
+  tasm.jmp("_cos");
+
+  tasm.comment("copy x to argv");
+  tasm.label("_x2arg");
+  tasm.ldab("0,x");
+  tasm.stab("0+argv");
+  tasm.ldd("1,x");
+  tasm.std("1+argv");
+  tasm.ldd("3,x");
+  tasm.std("3+argv");
+  tasm.rts();
+
+  tasm.comment("copy argv to x");
+  tasm.label("_arg2x");
+  tasm.ldab("0+argv");
+  tasm.stab("0,x");
+  tasm.ldd("1+argv");
+  tasm.std("1,x");
+  tasm.ldd("3+argv");
+  tasm.std("3,x");
+  tasm.rts();
+
+  tasm.comment("compare argv with *x");
+  tasm.label("_cmptbl");
+  tasm.ldd("2+argv");
+  tasm.subd(",x");
+  tasm.bne("_rts");
+  tasm.ldab("4+argv");
+  tasm.subb("2,x");
+  tasm.label("_rts");
+  tasm.rts();
+
+  tasm.comment("subtract *x from argv");
+  tasm.label("_subtbl");
+  tasm.ldd("3+argv");
+  tasm.subd("1,x");
+  tasm.std("3+argv");
+  tasm.ldab("2+argv");
+  tasm.sbcb("0,x");
+  tasm.stab("2+argv");
+  tasm.rts();
+
+  tasm.comment("subtract *x from argv then negate");
+  tasm.label("_rsubtbl");
+  tasm.ldd("1,x");
+  tasm.subd("3+argv");
+  tasm.std("3+argv");
+  tasm.ldab("0,x");
+  tasm.sbcb("2+argv");
+  tasm.stab("2+argv");
+  tasm.rts();
+
+  tasm.comment("sin of angle less than pi/4");
+  tasm.label("_sin");
+  tasm.ldx("tmp1");
+  tasm.bsr("_arg2x");
+  tasm.ldd("3,x");
+  tasm.pshb();
+  tasm.psha();
+  tasm.jsr("mulfltx");
+  tasm.bsr("_x2arg");
+  tasm.ldd("#42");
+  tasm.bsr("_rsubm");
+  tasm.ldd("#840");
+  tasm.bsr("_rsubm");
+  tasm.ldd("#5040");
+  tasm.bsr("_rsub");
+  tasm.pula();
+  tasm.pulb();
+  tasm.std("3+argv");
+  tasm.jsr("mulfltx");
+  tasm.ldd("#5040");
+  tasm.bra("_rdiv");
+
+  tasm.comment("cos of angle less than pi/4");
+  tasm.label("_cos");
+  tasm.ldx("tmp1");
+  tasm.bsr("_arg2x");
+  tasm.jsr("mulfltx"); // square X
+  tasm.bsr("_x2arg");  // save in multiplicand
+  tasm.ldd("#56");
+  tasm.bsr("_rsubm");
+  tasm.ldd("#1680");
+  tasm.bsr("_rsubm");
+  tasm.ldd("#20160");
+  tasm.bsr("_rsubm");
+  tasm.ldd("#40320");
+  tasm.bsr("_rsub");
+  tasm.ldd("#40320");
+
+  tasm.label("_rdiv");
+  tasm.std("1+argv");
+  tasm.ldd("#0");
+  tasm.stab("0+argv");
+  tasm.std("3+argv");
+  tasm.jmp("divflt");
+
+  tasm.label("_rsubm");
+  tasm.bsr("_rsub");
+  tasm.jmp("mulfltx");
+
+  tasm.label("_rsub");
+  tasm.neg("4,x");
+  tasm.ngc("3,x");
+  tasm.sbcb("2,x");
+  tasm.sbca("1,x");
+  tasm.std("1,x");
+  tasm.ngc("0,x");
+  tasm.rts();
+
+  tasm.labelByte("_tbl_pi1", "$03,$24,$40");
+  tasm.labelByte("_tbl_pi2", "$01,$92,$20");
+  tasm.labelByte("_tbl_pi4", "$00,$C9,$10");
+  return tasm.source();
+}
+
+std::string Library::mdCos() {
+  Assembler tasm;
+  tasm.label("cos");
+  tasm.ldd("3,x");
+  tasm.addd("#$9220");
+  tasm.std("3,x");
+  tasm.ldd("1,x");
+  tasm.adcb("#$1");
+  tasm.adca("#0");
+  tasm.std("1,x");
+  tasm.ldab("0,x");
+  tasm.adcb("#0");
+  tasm.stab("0,x");
+  tasm.jmp("sin");
+  return tasm.source();
+}
+
+std::string Library::mdTan() {
+  Assembler tasm;
+  tasm.label("tan");
+  tasm.ldd("3,x");
+  tasm.pshb();
+  tasm.psha();
+  tasm.ldd("1,x");
+  tasm.pshb();
+  tasm.psha();
+  tasm.ldab("0,x");
+  tasm.pshb();
+  tasm.jsr("sin");
+  tasm.pulb();
+  tasm.stab("5,x");
+  tasm.pula();
+  tasm.pulb();
+  tasm.std("6,x");
+  tasm.pula();
+  tasm.pulb();
+  tasm.std("8,x");
+  tasm.pshx();
+  tasm.ldab("#5");
+  tasm.abx();
+  tasm.jsr("cos");
+  tasm.ldab("0,x");
+  tasm.stab("0+argv");
+  tasm.ldd("1,x");
+  tasm.std("1+argv");
+  tasm.ldd("3,x");
+  tasm.std("3+argv");
+  tasm.pulx();
   tasm.jmp("divflt");
   return tasm.source();
 }

@@ -212,6 +212,15 @@ public:
   virtual std::string regFlt_regInt(InstInv &inst) = 0;
   virtual std::string regFlt_regFlt(InstInv &inst) = 0;
 
+  virtual std::string regFlt_regInt(InstSin &inst) = 0;
+  virtual std::string regFlt_regFlt(InstSin &inst) = 0;
+
+  virtual std::string regFlt_regInt(InstCos &inst) = 0;
+  virtual std::string regFlt_regFlt(InstCos &inst) = 0;
+
+  virtual std::string regFlt_regInt(InstTan &inst) = 0;
+  virtual std::string regFlt_regFlt(InstTan &inst) = 0;
+
   virtual std::string regInt_regStr(InstAsc &inst) = 0;
   virtual std::string regInt_extStr(InstAsc &inst) = 0;
 

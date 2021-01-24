@@ -74,6 +74,11 @@ private:
   static std::string mdShrFlt();
   static std::string mdInvFlt();
   static std::string mdDivFlt();
+  static std::string mdModFlt();
+  static std::string mdDivMod();
+  static std::string mdSin();
+  static std::string mdCos();
+  static std::string mdTan();
   static std::string mdPrAt();
   static std::string mdPrint();
   static std::string mdPrTab();

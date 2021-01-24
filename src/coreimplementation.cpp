@@ -2439,6 +2439,72 @@ std::string CoreImplementation::regFlt_regFlt(InstInv &inst) {
   return tasm.source();
 }
 
+std::string CoreImplementation::regFlt_regInt(InstSin &inst) {
+  inst.dependencies.insert("mdsin");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd("#0");
+  tasm.std(inst.arg1->fract());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("sin");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regFlt(InstSin &inst) {
+  inst.dependencies.insert("mdsin");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("sin");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regInt(InstCos &inst) {
+  inst.dependencies.insert("mdcos");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd("#0");
+  tasm.std(inst.arg1->fract());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("cos");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regFlt(InstCos &inst) {
+  inst.dependencies.insert("mdcos");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("cos");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regInt(InstTan &inst) {
+  inst.dependencies.insert("mdtan");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd("#0");
+  tasm.std(inst.arg1->fract());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("tan");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regFlt(InstTan &inst) {
+  inst.dependencies.insert("mdtan");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("tan");
+  return tasm.source();
+}
+
 std::string CoreImplementation::regInt_regStr(InstAsc &inst) {
   inst.dependencies.insert("mdstrrel");
 

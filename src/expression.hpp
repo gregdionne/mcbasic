@@ -41,6 +41,9 @@ class SgnExpr;
 class IntExpr;
 class AbsExpr;
 class RndExpr;
+class SinExpr;
+class CosExpr;
+class TanExpr;
 class PeekExpr;
 class LenExpr;
 class StrExpr;
@@ -85,6 +88,9 @@ public:
   virtual void operate(IntExpr & /*expr*/) {}
   virtual void operate(AbsExpr & /*expr*/) {}
   virtual void operate(RndExpr & /*expr*/) {}
+  virtual void operate(SinExpr & /*expr*/) {}
+  virtual void operate(CosExpr & /*expr*/) {}
+  virtual void operate(TanExpr & /*expr*/) {}
   virtual void operate(PeekExpr & /*expr*/) {}
   virtual void operate(LenExpr & /*expr*/) {}
   virtual void operate(StrExpr & /*expr*/) {}
@@ -392,6 +398,30 @@ public:
   std::unique_ptr<NumericExpr> expr;
   explicit RndExpr(std::unique_ptr<NumericExpr> e)
       : UnaryNumericExpr("RND"), expr(std::move(e)) {}
+  void operate(ExprOp *op) override { op->operate(*this); }
+};
+
+class SinExpr : public UnaryNumericExpr {
+public:
+  std::unique_ptr<NumericExpr> expr;
+  explicit SinExpr(std::unique_ptr<NumericExpr> e)
+      : UnaryNumericExpr("SIN"), expr(std::move(e)) {}
+  void operate(ExprOp *op) override { op->operate(*this); }
+};
+
+class CosExpr : public UnaryNumericExpr {
+public:
+  std::unique_ptr<NumericExpr> expr;
+  explicit CosExpr(std::unique_ptr<NumericExpr> e)
+      : UnaryNumericExpr("COS"), expr(std::move(e)) {}
+  void operate(ExprOp *op) override { op->operate(*this); }
+};
+
+class TanExpr : public UnaryNumericExpr {
+public:
+  std::unique_ptr<NumericExpr> expr;
+  explicit TanExpr(std::unique_ptr<NumericExpr> e)
+      : UnaryNumericExpr("TAN"), expr(std::move(e)) {}
   void operate(ExprOp *op) override { op->operate(*this); }
 };
 

@@ -19,6 +19,9 @@ public:
   void operate(MultiplicativeExpr &e) override;
   void operate(AdditiveExpr &e) override;
   void operate(RndExpr &e) override;
+  void operate(SinExpr &e) override;
+  void operate(CosExpr &e) override;
+  void operate(TanExpr &e) override;
   void operate(NumericConstantExpr &e) override;
   void operate(NumericVariableExpr &e) override;
   void operate(NumericArrayExpr &e) override;

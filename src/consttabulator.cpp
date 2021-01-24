@@ -165,10 +165,13 @@ void ExprConstTabulator::operate(IntExpr &e) { e.expr->operate(this); }
 
 void ExprConstTabulator::operate(AbsExpr &e) { e.expr->operate(this); }
 
-void ExprConstTabulator::operate(RndExpr &e) {
-  e.expr->operate(this);
-  ;
-}
+void ExprConstTabulator::operate(RndExpr &e) { e.expr->operate(this); }
+
+void ExprConstTabulator::operate(SinExpr &e) { e.expr->operate(this); }
+
+void ExprConstTabulator::operate(CosExpr &e) { e.expr->operate(this); }
+
+void ExprConstTabulator::operate(TanExpr &e) { e.expr->operate(this); }
 
 void ExprConstTabulator::operate(PeekExpr &e) { e.expr->operate(this); }
 

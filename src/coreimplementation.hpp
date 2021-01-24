@@ -212,6 +212,15 @@ public:
   std::string regFlt_regInt(InstInv &inst) override;
   std::string regFlt_regFlt(InstInv &inst) override;
 
+  std::string regFlt_regInt(InstSin &inst) override;
+  std::string regFlt_regFlt(InstSin &inst) override;
+
+  std::string regFlt_regInt(InstCos &inst) override;
+  std::string regFlt_regFlt(InstCos &inst) override;
+
+  std::string regFlt_regInt(InstTan &inst) override;
+  std::string regFlt_regFlt(InstTan &inst) override;
+
   std::string regInt_regStr(InstAsc &inst) override;
   std::string regInt_extStr(InstAsc &inst) override;
 

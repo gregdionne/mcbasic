@@ -51,6 +51,12 @@ void IsFloat::operate(RndExpr &e) {
   result = !(e.expr->isConst(value) && value >= 1);
 }
 
+void IsFloat::operate(SinExpr & /*e*/) { result = true; }
+
+void IsFloat::operate(CosExpr & /*e*/) { result = true; }
+
+void IsFloat::operate(TanExpr & /*e*/) { result = true; }
+
 void IsFloat::operate(NumericConstantExpr &e) {
   result = e.value != static_cast<double>(static_cast<int>(e.value));
 }

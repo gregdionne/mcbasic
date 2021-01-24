@@ -240,14 +240,23 @@ std::string Dispatcher::operate(InstLog &inst) {
 std::string Dispatcher::operate(InstExp &inst) {
   return implementation->unimplemented(inst);
 }
+
 std::string Dispatcher::operate(InstSin &inst) {
-  return implementation->unimplemented(inst);
+  return inst.isRegFlt_regInt()   ? implementation->regFlt_regInt(inst)
+         : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+                                  : implementation->unimplemented(inst);
 }
+
 std::string Dispatcher::operate(InstCos &inst) {
-  return implementation->unimplemented(inst);
+  return inst.isRegFlt_regInt()   ? implementation->regFlt_regInt(inst)
+         : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+                                  : implementation->unimplemented(inst);
 }
+
 std::string Dispatcher::operate(InstTan &inst) {
-  return implementation->unimplemented(inst);
+  return inst.isRegFlt_regInt()   ? implementation->regFlt_regInt(inst)
+         : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+                                  : implementation->unimplemented(inst);
 }
 
 std::string Dispatcher::operate(InstIRnd &inst) {

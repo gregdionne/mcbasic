@@ -16,7 +16,7 @@ Don't have James' Virtual MC-10?  You really should.  Don't have Windows?
 
 ## Unimplemented keywords
 * CLOAD*, CSAVE*
-* SQR() LOG() EXP() SIN() COS() TAN()
+* SQR() LOG() EXP()
 * USR() VARPTR() EXEC CLOADM
 
 

@@ -711,6 +711,30 @@ void ExprCompiler::operate(RndExpr &e) {
   }
 }
 
+void ExprCompiler::operate(SinExpr &e) {
+  e.expr->operate(this);
+  result = queue.load(std::move(result));
+  auto dest = result->clone();
+  result = queue.append(
+      std::make_unique<InstSin>(std::move(dest), std::move(result)));
+}
+
+void ExprCompiler::operate(CosExpr &e) {
+  e.expr->operate(this);
+  result = queue.load(std::move(result));
+  auto dest = result->clone();
+  result = queue.append(
+      std::make_unique<InstCos>(std::move(dest), std::move(result)));
+}
+
+void ExprCompiler::operate(TanExpr &e) {
+  e.expr->operate(this);
+  result = queue.load(std::move(result));
+  auto dest = result->clone();
+  result = queue.append(
+      std::make_unique<InstTan>(std::move(dest), std::move(result)));
+}
+
 void ExprCompiler::operate(PeekExpr &e) {
   e.expr->operate(this);
   result->castToInt();
