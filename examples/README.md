@@ -3,7 +3,7 @@
 These are some example programs to evaluate the performance of the compiler.
 
 ## Benchmark
-The files in the benchmark directory show how well the compiler fares against hand-written assembly routines.  See the README.md file in that directory to learn more about them. 
+The files in the benchmark directory are small examples that can be run to compare the speed or performance against the MICROCOLOR BASIC interpreter.  See the README.md file in that directory to learn more about them. 
 
 ## Jim Gerrie's Programs
 The files in the native and bytecode directories were taken from talented and dedicated programmer Jim Gerrie.
