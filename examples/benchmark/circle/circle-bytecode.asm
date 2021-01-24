@@ -124,7 +124,7 @@ LINE_50
 
 LINE_60
 
-	; S=
+	; S=SIN(A)
 
 	.byte	bytecode_ld_fr1_fx
 	.byte	bytecode_FLTVAR_A
@@ -136,7 +136,7 @@ LINE_60
 
 LINE_70
 
-	; C=
+	; C=COS(A)
 
 	.byte	bytecode_ld_fr1_fx
 	.byte	bytecode_FLTVAR_A

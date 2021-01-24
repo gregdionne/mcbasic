@@ -163,6 +163,18 @@ void ExprLister::operate(RndExpr &e) {
   result += e.funcName + '(' + list(e.expr) + ')';
 }
 
+void ExprLister::operate(SinExpr &e) {
+  result += e.funcName + '(' + list(e.expr) + ')';
+}
+
+void ExprLister::operate(CosExpr &e) {
+  result += e.funcName + '(' + list(e.expr) + ')';
+}
+
+void ExprLister::operate(TanExpr &e) {
+  result += e.funcName + '(' + list(e.expr) + ')';
+}
+
 void ExprLister::operate(PeekExpr &e) {
   result += e.funcName + '(' + list(e.expr) + ')';
 }
