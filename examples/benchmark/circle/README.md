@@ -13,6 +13,7 @@ The second method uses angle-addition formulae for SIN() and COS() to perform th
 ## Brensenham's Circle Algorithm
 The last method uses Brensenham's method. It should run fast since it uses only integers and requires no multiplicatin.
 
+# Notes
 The bytecode assembly source file (circle-bytecode.asm) was generated via "mcbasic circle.bas"
 
 The native assembly source file (circle-native.asm) was generated via "mcbasic -native circle.bas"
