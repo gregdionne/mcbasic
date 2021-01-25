@@ -170,7 +170,6 @@ _posX
 	bpl	_posA
 	com	tmp4
 	bsr	negargv
-divufl
 _posA
 	ldd	3,x
 	std	6,x

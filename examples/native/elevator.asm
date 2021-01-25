@@ -6302,7 +6302,6 @@ _posX
 	bpl	_posA
 	com	tmp4
 	bsr	negargv
-divufl
 _posA
 	ldd	3,x
 	std	6,x
@@ -7360,7 +7359,7 @@ inptval
 	ldd	#0
 	std	3,x
 	stab	tmp4
-	jsr	divufl
+	jsr	divflt
 	ldd	3,x
 	std	tmp3
 	ldab	#10

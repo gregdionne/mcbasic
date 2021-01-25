@@ -836,7 +836,7 @@ std::string Library::mdStrVal() {
   tasm.ldd("#0");
   tasm.std("3,x");
   tasm.stab("tmp4");
-  tasm.jsr("divufl");
+  tasm.jsr("divflt");
   tasm.ldd("3,x");
   tasm.std("tmp3");
   tasm.ldab("#10");
@@ -1672,7 +1672,6 @@ std::string Library::mdDivMod() {
   tasm.com("tmp4"); // no, invert output sign
   tasm.bsr("negargv");
 
-  tasm.label("divufl");
   tasm.label("_posA");
   tasm.ldd("3,x");
   tasm.std("6,x");
