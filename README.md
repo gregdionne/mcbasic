@@ -3,20 +3,31 @@ A cross-compiler for MICROCOLOR BASIC 1.0 which runs on a stock TRS-80 MC-10 or 
 
 ## Requirements
 * A real "stock" TRS-80 MC-10 or an emulator like the "Virtual MC-10"
+* A text file containing a MICROCOLOR BASIC program.
 * A compatible Telemark cross-assembler capable of assembling the undocumented "negate with carry" instructions.
 * The 16K Expansion is very helpful except for very small programs
 
-Don't have James' Virtual MC-10?  You really should.  Don't have Windows?
+Don't have James' Virtual MC-10?  You really should if you have Microsoft Windows.  Don't have Windows?
 * You'll find a tasm6801 repository [here](https://github.com/gregdionne/tasm6801)
-* You'll find a JavaScript based emulator [here](https://github.com/gregdionne/mc-10).
+* You'll find a modified version of Mike Tinnes' JavaScript emulator [here](https://github.com/gregdionne/mc-10)
+
+Don't have a MICROCOLOR BASIC program?
+* Have a look at Jim Gerrie's TRS-80 MC-10 amazing repository [here](https://github.com/jggames/trs80mc10)
+* Have a look at the [examples](https://github.com/gregdionne/mcbasic/tree/main/examples), which contain a few precompiled programs from Jim's repository.
+
+Want to write your own program?
+* You may find it easier to first develop with an emulator that supports loading external text files rather than typing them in manually into the emulator.  The Virtual MC-10 has a "QuickType" feature for this purpose.  The modified JavaScript emulator allows you to enter keystrokes via a text file through the "Choose File" button. 
+* You'll find a language reference manual [here](https://colorcomputerarchive.com/repo/MC-10/Documents/Manuals/Hardware/MC-10%20Operation%20and%20Language%20Reference%20Manual/MC-10%20Operation%20and%20Language%20Reference%20Manual%20(Tandy).pdf).
 
 ## Limitations
 * Darren Atkinson's MCX-BASIC ROM is not yet supported.
 * Scientific E notation is not yet supported
+* BREAK interruption is not supported
 
 ## Unimplemented keywords
-* CLOAD*, CSAVE*
-* USR() VARPTR() EXEC CLOADM
+* CLOAD*, CSAVE*, LIST, CONT
+* LLIST, LPRINT  
+* USR(), VARPTR(), EXEC, CLOADM
 
 
 ## Compilation
@@ -34,7 +45,6 @@ or if you're comfortable with `make`, a sample Makefile is in the source directo
 Some attempt has been made to make the source compatible with Windows Visual Studio 2017.  What works is to follow the instructions [here](https://docs.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=vs-2019).  If the link fails, try searching the internet for "Walkthrough:  Compile a C program on the command line".
 
 `cl /EHsc *.cpp /link /out:mcbasic.exe`
-
 
 
 ## Usage
