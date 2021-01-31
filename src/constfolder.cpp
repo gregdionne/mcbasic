@@ -399,9 +399,22 @@ void ExprConstFolder::operate(AbsExpr &e) {
   }
 }
 
-void ExprConstFolder::operate(RndExpr &e) {
-  fold(e.expr);
-  gotConst = false;
+void ExprConstFolder::operate(SqrExpr &e) {
+  if (fold(e.expr)) {
+    dvalue = std::sqrt(dvalue);
+  }
+}
+
+void ExprConstFolder::operate(ExpExpr &e) {
+  if (fold(e.expr)) {
+    dvalue = std::exp(dvalue);
+  }
+}
+
+void ExprConstFolder::operate(LogExpr &e) {
+  if (fold(e.expr)) {
+    dvalue = std::log(dvalue);
+  }
 }
 
 void ExprConstFolder::operate(SinExpr &e) {
@@ -420,6 +433,11 @@ void ExprConstFolder::operate(TanExpr &e) {
   if (fold(e.expr)) {
     dvalue = std::tan(dvalue);
   }
+}
+
+void ExprConstFolder::operate(RndExpr &e) {
+  fold(e.expr);
+  gotConst = false;
 }
 
 void ExprConstFolder::operate(PeekExpr &e) {
@@ -504,6 +522,18 @@ void ExprConstFolder::operate(AdditiveExpr &e) {
     gotConst = true;
   } else {
     gotConst = false;
+  }
+}
+
+void ExprConstFolder::operate(PowerExpr &e) {
+  fold(e.base);
+  fold(e.exponent);
+
+  double base;
+  double exponent;
+  gotConst = e.base->isConst(base) && e.exponent->isConst(exponent);
+  if (gotConst) {
+    dvalue = std::pow(base, exponent);
   }
 }
 

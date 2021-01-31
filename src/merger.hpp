@@ -38,6 +38,7 @@ public:
   void operate(NumericArrayExpr &e) override;
   void operate(ArrayIndicesExpr &e) override;
   void operate(NegatedExpr &e) override;
+  void operate(PowerExpr &e) override;
   void operate(MultiplicativeExpr &e) override;
   void operate(AdditiveExpr &e) override;
   void operate(ComplementedExpr &e) override;

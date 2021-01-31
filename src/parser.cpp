@@ -246,7 +246,7 @@ std::unique_ptr<NumericExpr> Parser::numeric(Expr *expr) {
   NumericExpr *nexpr = dynamic_cast<NumericExpr *>(expr);
 
   if (expr->isString() || (nexpr == nullptr)) {
-    in.die("ooo numeric expression expected");
+    in.die("numeric expression expected");
   }
 
   return std::unique_ptr<NumericExpr>(nexpr);
@@ -378,6 +378,12 @@ Expr *Parser::getFunction() {
              ? (new AbsExpr(numeric(&Parser::getParenthetical)))
          : skipKeyword("RND")
              ? (new RndExpr(numeric(&Parser::getParenthetical)))
+         : skipKeyword("SQR")
+             ? (new SqrExpr(numeric(&Parser::getParenthetical)))
+         : skipKeyword("LOG")
+             ? (new LogExpr(numeric(&Parser::getParenthetical)))
+         : skipKeyword("EXP")
+             ? (new ExpExpr(numeric(&Parser::getParenthetical)))
          : skipKeyword("SIN")
              ? (new SinExpr(numeric(&Parser::getParenthetical)))
          : skipKeyword("COS")
@@ -414,14 +420,24 @@ Expr *Parser::getSignedFactor() {
                 : getFunction();
 }
 
-Expr *Parser::getTerm() {
+Expr *Parser::getPowerExpression() {
   Expr *expr = getSignedFactor();
+
+  if (skipKeyword("^")) {
+    expr = new PowerExpr(numeric(expr), numeric(&Parser::getSignedFactor));
+  }
+
+  return expr;
+}
+
+Expr *Parser::getTerm() {
+  Expr *expr = getPowerExpression();
 
   if (isKeyword("*") || isKeyword("/")) {
     MultiplicativeExpr *mulExpr = new MultiplicativeExpr(numeric(expr));
     while (isKeyword("*") || isKeyword("/")) {
       bool isMul = matchEitherKeyword("*", "/");
-      mulExpr->append(isMul, numeric(&Parser::getSignedFactor));
+      mulExpr->append(isMul, numeric(&Parser::getPowerExpression));
     }
     expr = mulExpr;
   }

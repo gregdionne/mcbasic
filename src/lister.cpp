@@ -12,7 +12,8 @@ template <typename T> static inline std::string list(T &t) {
 
 template <typename T> static inline std::string plist(T &t) {
   if (nullptr == dynamic_cast<NaryNumericExpr *>(t.get()) &&
-      nullptr == dynamic_cast<RelationalExpr *>(t.get())) {
+      nullptr == dynamic_cast<RelationalExpr *>(t.get()) &&
+      nullptr == dynamic_cast<PowerExpr *>(t.get())) {
     return list(t);
   }
   return '(' + list(t) + ')';
@@ -139,6 +140,10 @@ void ExprLister::operate(StringArrayExpr &e) {
 
 void ExprLister::operate(NegatedExpr &e) { result = "-" + plist(e.expr); }
 
+void ExprLister::operate(PowerExpr &e) {
+  result = plist(e.base) + e.funcName + plist(e.exponent);
+}
+
 void ExprLister::operate(ShiftExpr &e) {
   result = e.funcName + '(' + list(e.expr) + ',' + std::to_string(e.rhs) + ')';
 }
@@ -159,7 +164,15 @@ void ExprLister::operate(AbsExpr &e) {
   result += e.funcName + '(' + list(e.expr) + ')';
 }
 
-void ExprLister::operate(RndExpr &e) {
+void ExprLister::operate(SqrExpr &e) {
+  result += e.funcName + '(' + list(e.expr) + ')';
+}
+
+void ExprLister::operate(ExpExpr &e) {
+  result += e.funcName + '(' + list(e.expr) + ')';
+}
+
+void ExprLister::operate(LogExpr &e) {
   result += e.funcName + '(' + list(e.expr) + ')';
 }
 
@@ -172,6 +185,10 @@ void ExprLister::operate(CosExpr &e) {
 }
 
 void ExprLister::operate(TanExpr &e) {
+  result += e.funcName + '(' + list(e.expr) + ')';
+}
+
+void ExprLister::operate(RndExpr &e) {
   result += e.funcName + '(' + list(e.expr) + ')';
 }
 

@@ -10,6 +10,7 @@ DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
 ; Memory equates
+M_KBUF	.equ	$4231	; keystrobe buffer (8 bytes)
 M_PMSK	.equ	$423C	; pixel mask for SET, RESET and POINT
 M_IKEY	.equ	$427F	; key code for INKEY$
 M_CRSR	.equ	$4280	; cursor location
@@ -280,6 +281,7 @@ divflt
 	bsr	divmod
 	tst	tmp4
 	bmi	_add1
+_com
 	ldd	8,x
 	coma
 	comb
@@ -304,16 +306,25 @@ _add1
 	adcb	#0
 	stab	0,x
 	rts
+divuflt
+	clr	tmp4
+	ldab	#8*5
+	stab	tmp1
+	bsr	divumod
+	bra	_com
 
 	.module	mddivmod
 ; divide/modulo X by Y with remainder
 ;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
 ;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
 ;          #shifts in ACCA (24 for modulus, 40 for division
-;   EXIT   ~|X|/|Y| in (5,x 6,x 7,x 8,x 9,x) when dividing
-;           |X|%|Y| in (0,x 1,x 2,x 3,x 4,x) when modulo
+;   EXIT   for division:
+;            NOT ABS(X)/ABS(Y) in (5,x 6,x 7,x 8,x 9,x)
+;   EXIT   for modulus:
+;            NOT INT(ABS(X)/ABS(Y)) in (7,x 8,x 9,x)
+;            FMOD(X,Y) in (0,x 1,x 2,x 3,x 4,x)
 ;          result sign in tmp4.(0 = pos, -1 = neg).
-;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1
+;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
 divmod
 	staa	tmp1
 	clr	tmp4
@@ -323,10 +334,10 @@ divmod
 	bsr	negx
 _posX
 	tst	0+argv
-	bpl	_posA
+	bpl	divumod
 	com	tmp4
 	bsr	negargv
-_posA
+divumod
 	ldd	3,x
 	std	6,x
 	ldd	1,x
@@ -339,6 +350,7 @@ _posA
 	std	1,x
 	stab	0,x
 _nxtdiv
+	rol	7,x
 	rol	6,x
 	rol	5,x
 	rol	4,x
@@ -346,6 +358,21 @@ _nxtdiv
 	rol	2,x
 	rol	1,x
 	rol	0,x
+	bcc	_trialsub
+	; force subtraction
+	ldd	3,x
+	subd	3+argv
+	std	3,x
+	ldd	1,x
+	sbcb	2+argv
+	sbca	1+argv
+	std	1,x
+	ldab	0,x
+	sbcb	0+argv
+	stab	0,x
+	clc
+	bra	_shift
+_trialsub
 	ldd	3,x
 	subd	3+argv
 	std	tmp3
@@ -366,12 +393,11 @@ _nxtdiv
 _shift
 	rol	9,x
 	rol	8,x
-	rol	7,x
 	dec	tmp1
 	bne	_nxtdiv
+	rol	7,x
 	rol	6,x
 	rol	5,x
-	rol	4,x
 	rts
 negx
 	neg	4,x
@@ -775,6 +801,7 @@ NF_ERROR	.equ	0
 RG_ERROR	.equ	4
 OD_ERROR	.equ	6
 FC_ERROR	.equ	8
+OV_ERROR	.equ	10
 OM_ERROR	.equ	12
 BS_ERROR	.equ	16
 DD_ERROR	.equ	18

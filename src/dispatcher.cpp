@@ -224,21 +224,28 @@ std::string Dispatcher::operate(InstPeek &inst) {
                                    : implementation->unimplemented(inst);
 }
 
-std::string Dispatcher::operate(InstSqr &inst) {
-  return implementation->unimplemented(inst);
-}
-
 std::string Dispatcher::operate(InstInv &inst) {
   return inst.isRegFlt_regInt()   ? implementation->regFlt_regInt(inst)
          : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
                                   : implementation->unimplemented(inst);
 }
 
-std::string Dispatcher::operate(InstLog &inst) {
-  return implementation->unimplemented(inst);
+std::string Dispatcher::operate(InstSqr &inst) {
+  return inst.isRegFlt_regInt()   ? implementation->regFlt_regInt(inst)
+         : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+                                  : implementation->unimplemented(inst);
 }
+
 std::string Dispatcher::operate(InstExp &inst) {
-  return implementation->unimplemented(inst);
+  return inst.isRegFlt_regInt()   ? implementation->regFlt_regInt(inst)
+         : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+                                  : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstLog &inst) {
+  return inst.isRegFlt_regInt()   ? implementation->regFlt_regInt(inst)
+         : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+                                  : implementation->unimplemented(inst);
 }
 
 std::string Dispatcher::operate(InstSin &inst) {
@@ -605,6 +612,42 @@ std::string Dispatcher::operate(InstDiv &inst) {
              ? implementation->regFlt_regInt_negByte(inst)
          : inst.isRegFlt_regInt_posWord()
              ? implementation->regFlt_regInt_posWord(inst)
+         : inst.isRegFlt_regInt_negWord()
+             ? implementation->regFlt_regInt_negWord(inst)
+             : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstPow &inst) {
+  return inst.isRegFlt_regFlt_regFlt()
+             ? implementation->regFlt_regFlt_regFlt(inst)
+         : inst.isRegFlt_regFlt_extFlt()
+             ? implementation->regFlt_regFlt_extFlt(inst)
+         : inst.isRegFlt_regFlt_regInt()
+             ? implementation->regFlt_regFlt_regInt(inst)
+         : inst.isRegFlt_regFlt_extInt()
+             ? implementation->regFlt_regFlt_extInt(inst)
+         : inst.isRegFlt_regFlt_posByte()
+             ? implementation->regFlt_regFlt_posByte(inst)
+         : inst.isRegFlt_regFlt_negByte()
+             ? implementation->regFlt_regFlt_negByte(inst)
+         : inst.isRegFlt_regFlt_posWord()
+             ? implementation->regFlt_regFlt_posWord(inst)
+         : inst.isRegFlt_regFlt_negWord()
+             ? implementation->regFlt_regFlt_negWord(inst)
+         : inst.isRegFlt_regInt_regFlt()
+             ? implementation->regFlt_regInt_regFlt(inst)
+         : inst.isRegFlt_regInt_extFlt()
+             ? implementation->regFlt_regInt_extFlt(inst)
+         : inst.isRegFlt_regInt_regInt()
+             ? implementation->regFlt_regInt_regInt(inst)
+         : inst.isRegFlt_regInt_extInt()
+             ? implementation->regFlt_regInt_extInt(inst)
+         : inst.isRegInt_regInt_posByte()
+             ? implementation->regInt_regInt_posByte(inst)
+         : inst.isRegFlt_regInt_negByte()
+             ? implementation->regFlt_regInt_negByte(inst)
+         : inst.isRegInt_regInt_posWord()
+             ? implementation->regInt_regInt_posWord(inst)
          : inst.isRegFlt_regInt_negWord()
              ? implementation->regFlt_regInt_negWord(inst)
              : implementation->unimplemented(inst);

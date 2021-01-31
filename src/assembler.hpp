@@ -17,6 +17,7 @@ std::string strescape(std::string const &in);
 class Assembler {
 public:
   void comment(std::string const &comment);
+  void incomment(std::string const &comment);
 
   // directives
   void org(std::string const &address);
@@ -38,10 +39,12 @@ public:
   void abx(std::string const &comment = "");
   void asra(std::string const &comment = "");
   void asrb(std::string const &comment = "");
+  void clc(std::string const &comment = "");
   void clra(std::string const &comment = "");
   void clrb(std::string const &comment = "");
   void coma(std::string const &comment = "");
   void comb(std::string const &comment = "");
+  void deca(std::string const &comment = "");
   void decb(std::string const &comment = "");
   void des(std::string const &comment = "");
   void dex(std::string const &comment = "");
@@ -54,7 +57,10 @@ public:
   void lsld(std::string const &comment = "");
   void lsra(std::string const &comment = "");
   void lsrb(std::string const &comment = "");
+  void lsrd(std::string const &comment = "");
   void mul(std::string const &comment = "");
+  void nega(std::string const &comment = "");
+  void negb(std::string const &comment = "");
   void psha(std::string const &comment = "");
   void pshb(std::string const &comment = "");
   void pshx(std::string const &comment = "");
@@ -62,6 +68,9 @@ public:
   void pulb(std::string const &comment = "");
   void pulx(std::string const &comment = "");
   void rola(std::string const &comment = "");
+  void rolb(std::string const &comment = "");
+  void rora(std::string const &comment = "");
+  void rorb(std::string const &comment = "");
   void rts(std::string const &comment = "");
   void sba(std::string const &comment = "");
   void sec(std::string const &comment = "");
@@ -84,12 +93,14 @@ public:
   void andb(std::string const &operand, std::string const &comment = "");
   void asr(std::string const &operand, std::string const &comment = "");
   void bcc(std::string const &operand, std::string const &comment = "");
+  void bcs(std::string const &operand, std::string const &comment = "");
   void beq(std::string const &operand, std::string const &comment = "");
   void bge(std::string const &operand, std::string const &comment = "");
   void bhi(std::string const &operand, std::string const &comment = "");
   void bhs(std::string const &operand, std::string const &comment = "");
   void bita(std::string const &operand, std::string const &comment = "");
   void bitb(std::string const &operand, std::string const &comment = "");
+  void ble(std::string const &operand, std::string const &comment = "");
   void blo(std::string const &operand, std::string const &comment = "");
   void bls(std::string const &operand, std::string const &comment = "");
   void blt(std::string const &operand, std::string const &comment = "");
@@ -104,6 +115,8 @@ public:
   void com(std::string const &operand, std::string const &comment = "");
   void cpx(std::string const &operand, std::string const &comment = "");
   void dec(std::string const &operand, std::string const &comment = "");
+  void eora(std::string const &operand, std::string const &comment = "");
+  void eorb(std::string const &operand, std::string const &comment = "");
   void inc(std::string const &operand, std::string const &comment = "");
   void jmp(std::string const &operand, std::string const &comment = "");
   void jsr(std::string const &operand, std::string const &comment = "");

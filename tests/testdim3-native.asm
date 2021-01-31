@@ -10,6 +10,7 @@ DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
 ; Memory equates
+M_KBUF	.equ	$4231	; keystrobe buffer (8 bytes)
 M_PMSK	.equ	$423C	; pixel mask for SET, RESET and POINT
 M_IKEY	.equ	$427F	; key code for INKEY$
 M_CRSR	.equ	$4280	; cursor location
@@ -306,7 +307,8 @@ refint
 	.module	mdtonat
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
-;         r1    contains stopping variable and is always float.
+;         r1    contains stopping variable
+;               and is always fixedpoint.
 ;         r1+3  must contain zero if an integer.
 to
 	clra
@@ -632,6 +634,7 @@ NF_ERROR	.equ	0
 RG_ERROR	.equ	4
 OD_ERROR	.equ	6
 FC_ERROR	.equ	8
+OV_ERROR	.equ	10
 OM_ERROR	.equ	12
 BS_ERROR	.equ	16
 DD_ERROR	.equ	18

@@ -56,6 +56,10 @@ void Assembler::text(std::string const &data) {
   buffer += "\t.text\t" + data + '\n';
 }
 
+void Assembler::incomment(std::string const &comment) {
+  buffer += "\t; " + comment + "\n";
+}
+
 void Assembler::comment(std::string const &comment) {
   buffer += "; " + comment + "\n";
 }
@@ -114,10 +118,12 @@ void Assembler::aba(std::string const &comment) { inherent("aba", comment); }
 void Assembler::abx(std::string const &comment) { inherent("abx", comment); }
 void Assembler::asra(std::string const &comment) { inherent("asra", comment); }
 void Assembler::asrb(std::string const &comment) { inherent("asrb", comment); }
+void Assembler::clc(std::string const &comment) { inherent("clc", comment); }
 void Assembler::clra(std::string const &comment) { inherent("clra", comment); }
 void Assembler::clrb(std::string const &comment) { inherent("clrb", comment); }
 void Assembler::coma(std::string const &comment) { inherent("coma", comment); }
 void Assembler::comb(std::string const &comment) { inherent("comb", comment); }
+void Assembler::deca(std::string const &comment) { inherent("deca", comment); }
 void Assembler::decb(std::string const &comment) { inherent("decb", comment); }
 void Assembler::des(std::string const &comment) { inherent("des", comment); }
 void Assembler::dex(std::string const &comment) { inherent("dex", comment); }
@@ -130,7 +136,10 @@ void Assembler::lslb(std::string const &comment) { inherent("lslb", comment); }
 void Assembler::lsld(std::string const &comment) { inherent("lsld", comment); }
 void Assembler::lsra(std::string const &comment) { inherent("lsra", comment); }
 void Assembler::lsrb(std::string const &comment) { inherent("lsrb", comment); }
+void Assembler::lsrd(std::string const &comment) { inherent("lsrd", comment); }
 void Assembler::mul(std::string const &comment) { inherent("mul", comment); }
+void Assembler::nega(std::string const &comment) { inherent("nega", comment); }
+void Assembler::negb(std::string const &comment) { inherent("negb", comment); }
 void Assembler::psha(std::string const &comment) { inherent("psha", comment); }
 void Assembler::pshb(std::string const &comment) { inherent("pshb", comment); }
 void Assembler::pshx(std::string const &comment) { inherent("pshx", comment); }
@@ -138,6 +147,9 @@ void Assembler::pula(std::string const &comment) { inherent("pula", comment); }
 void Assembler::pulb(std::string const &comment) { inherent("pulb", comment); }
 void Assembler::pulx(std::string const &comment) { inherent("pulx", comment); }
 void Assembler::rola(std::string const &comment) { inherent("rola", comment); }
+void Assembler::rolb(std::string const &comment) { inherent("rolb", comment); }
+void Assembler::rora(std::string const &comment) { inherent("rora", comment); }
+void Assembler::rorb(std::string const &comment) { inherent("rorb", comment); }
 void Assembler::rts(std::string const &comment) { inherent("rts", comment); }
 void Assembler::sba(std::string const &comment) { inherent("sba", comment); }
 void Assembler::sec(std::string const &comment) { inherent("sec", comment); }
@@ -177,6 +189,9 @@ void Assembler::asr(std::string const &operand, std::string const &comment) {
 void Assembler::bcc(std::string const &operand, std::string const &comment) {
   singlearg("bcc", operand, comment);
 }
+void Assembler::bcs(std::string const &operand, std::string const &comment) {
+  singlearg("bcs", operand, comment);
+}
 void Assembler::beq(std::string const &operand, std::string const &comment) {
   singlearg("beq", operand, comment);
 }
@@ -194,6 +209,9 @@ void Assembler::bita(std::string const &operand, std::string const &comment) {
 }
 void Assembler::bitb(std::string const &operand, std::string const &comment) {
   singlearg("bitb", operand, comment);
+}
+void Assembler::ble(std::string const &operand, std::string const &comment) {
+  singlearg("ble", operand, comment);
 }
 void Assembler::blo(std::string const &operand, std::string const &comment) {
   singlearg("blo", operand, comment);
@@ -236,6 +254,12 @@ void Assembler::cpx(std::string const &operand, std::string const &comment) {
 }
 void Assembler::dec(std::string const &operand, std::string const &comment) {
   singlearg("dec", operand, comment);
+}
+void Assembler::eora(std::string const &operand, std::string const &comment) {
+  singlearg("eora", operand, comment);
+}
+void Assembler::eorb(std::string const &operand, std::string const &comment) {
+  singlearg("eorb", operand, comment);
 }
 void Assembler::inc(std::string const &operand, std::string const &comment) {
   singlearg("inc", operand, comment);

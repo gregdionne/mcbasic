@@ -165,7 +165,11 @@ void ExprConstTabulator::operate(IntExpr &e) { e.expr->operate(this); }
 
 void ExprConstTabulator::operate(AbsExpr &e) { e.expr->operate(this); }
 
-void ExprConstTabulator::operate(RndExpr &e) { e.expr->operate(this); }
+void ExprConstTabulator::operate(SqrExpr &e) { e.expr->operate(this); }
+
+void ExprConstTabulator::operate(ExpExpr &e) { e.expr->operate(this); }
+
+void ExprConstTabulator::operate(LogExpr &e) { e.expr->operate(this); }
 
 void ExprConstTabulator::operate(SinExpr &e) { e.expr->operate(this); }
 
@@ -174,6 +178,8 @@ void ExprConstTabulator::operate(CosExpr &e) { e.expr->operate(this); }
 void ExprConstTabulator::operate(TanExpr &e) { e.expr->operate(this); }
 
 void ExprConstTabulator::operate(PeekExpr &e) { e.expr->operate(this); }
+
+void ExprConstTabulator::operate(RndExpr &e) { e.expr->operate(this); }
 
 void ExprConstTabulator::operate(PointExpr &e) {
   e.x->operate(this);
@@ -188,6 +194,11 @@ void ExprConstTabulator::operate(AdditiveExpr &e) {
   for (auto &invoperand : e.invoperands) {
     invoperand->operate(this);
   }
+}
+
+void ExprConstTabulator::operate(PowerExpr &e) {
+  e.base->operate(this);
+  e.exponent->operate(this);
 }
 
 void ExprConstTabulator::operate(MultiplicativeExpr &e) {

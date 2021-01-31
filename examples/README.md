@@ -26,6 +26,7 @@ native/defcon1.bas   | Strategy & Simulation/DefCon1/DEFCON1_14.TXT |  tweak mis
 native/hurkle.bas    | Puzzle/Hurkle/HURKLE.TXT                     |  RND() -> INT(RND())
 native/life.bas JG   | Ideas & Others/LIFE10.TXT                    |  identical
 native/pentomin.bas  | Puzzle/Pentomin/PENTOMIN2.TXT                |  fix typo
+native/swelfoop.bas  | Puzzle/SwelFoop/SWELLFOOPcompiler8.TXT       |  identical
 
 ### Ports that still need logic modification to be playable due to speed differences:
 

@@ -10,6 +10,7 @@ DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
 ; Memory equates
+M_KBUF	.equ	$4231	; keystrobe buffer (8 bytes)
 M_PMSK	.equ	$423C	; pixel mask for SET, RESET and POINT
 M_IKEY	.equ	$427F	; key code for INKEY$
 M_CRSR	.equ	$4280	; cursor location
@@ -298,7 +299,25 @@ LLAST
 
 	jsr	progend
 
+	.module	mdarg2x
+; copy argv to [X]
+;   ENTRY  Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+arg2x
+	ldab	0+argv
+	stab	0,x
+	ldd	1+argv
+	std	1,x
+	ldd	3+argv
+	std	3,x
+	rts
+
 	.module	mdcos
+; X = COS(X)
+;   ENTRY  X in 0,X 1,X 2,X 3,X 4,X
+;   EXIT   COS(X) in (0,x 1,x 2,x 3,x 4,x)
+;          uses (5,x 6,x 7,x 8,x 9,x)
+;          uses argv and tmp1-tmp4
 cos
 	ldd	3,x
 	addd	#$9220
@@ -324,6 +343,7 @@ divflt
 	bsr	divmod
 	tst	tmp4
 	bmi	_add1
+_com
 	ldd	8,x
 	coma
 	comb
@@ -348,16 +368,25 @@ _add1
 	adcb	#0
 	stab	0,x
 	rts
+divuflt
+	clr	tmp4
+	ldab	#8*5
+	stab	tmp1
+	bsr	divumod
+	bra	_com
 
 	.module	mddivmod
 ; divide/modulo X by Y with remainder
 ;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
 ;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
 ;          #shifts in ACCA (24 for modulus, 40 for division
-;   EXIT   ~|X|/|Y| in (5,x 6,x 7,x 8,x 9,x) when dividing
-;           |X|%|Y| in (0,x 1,x 2,x 3,x 4,x) when modulo
+;   EXIT   for division:
+;            NOT ABS(X)/ABS(Y) in (5,x 6,x 7,x 8,x 9,x)
+;   EXIT   for modulus:
+;            NOT INT(ABS(X)/ABS(Y)) in (7,x 8,x 9,x)
+;            FMOD(X,Y) in (0,x 1,x 2,x 3,x 4,x)
 ;          result sign in tmp4.(0 = pos, -1 = neg).
-;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1
+;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
 divmod
 	staa	tmp1
 	clr	tmp4
@@ -367,10 +396,10 @@ divmod
 	bsr	negx
 _posX
 	tst	0+argv
-	bpl	_posA
+	bpl	divumod
 	com	tmp4
 	bsr	negargv
-_posA
+divumod
 	ldd	3,x
 	std	6,x
 	ldd	1,x
@@ -383,6 +412,7 @@ _posA
 	std	1,x
 	stab	0,x
 _nxtdiv
+	rol	7,x
 	rol	6,x
 	rol	5,x
 	rol	4,x
@@ -390,6 +420,21 @@ _nxtdiv
 	rol	2,x
 	rol	1,x
 	rol	0,x
+	bcc	_trialsub
+	; force subtraction
+	ldd	3,x
+	subd	3+argv
+	std	3,x
+	ldd	1,x
+	sbcb	2+argv
+	sbca	1+argv
+	std	1,x
+	ldab	0,x
+	sbcb	0+argv
+	stab	0,x
+	clc
+	bra	_shift
+_trialsub
 	ldd	3,x
 	subd	3+argv
 	std	tmp3
@@ -410,12 +455,11 @@ _nxtdiv
 _shift
 	rol	9,x
 	rol	8,x
-	rol	7,x
 	dec	tmp1
 	bne	_nxtdiv
+	rol	7,x
 	rol	6,x
 	rol	5,x
-	rol	4,x
 	rts
 negx
 	neg	4,x
@@ -438,19 +482,30 @@ negargv
 ;                     scratch in  (5,x 6,x 7,x 8,x 9,x)
 ;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
 ;   EXIT   X%Y in (0,x 1,x 2,x 3,x 4,x)
+;          FIX(X/Y) in (7,x 8,x 9,x)
 ;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
 modflt
 	ldaa	#8*3
 	jsr	divmod
 	tst	tmp4
 	bpl	_rts
-	jmp	negx
+	jsr	negx
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+	rts
 _rts
+	com	9,x
+	com	8,x
+	com	7,x
 	rts
 
 	.module	mdmulflt
 mulfltx
-	bsr	mulflt
+	bsr	mulfltt
 	ldab	tmp1+1
 	stab	0,x
 	ldd	tmp2
@@ -458,7 +513,7 @@ mulfltx
 	ldd	tmp3
 	std	3,x
 	rts
-mulflt
+mulfltt
 	jsr	mulhlf
 	clr	tmp4
 _4_3
@@ -684,7 +739,40 @@ _loop
 	bne	_loop
 	rts
 
+	.module	mdrmul315
+; special routine to divide by 5040 or 40320
+;   (reciprocal-multiply by 315 and shifting)
+;               1/5040 = 256/315 >> 16
+;              1/40320 = 128/315 >> 16
+;   ENTRY  X in 0,X 1,X 2,X 3,X 4,X
+;          0DD0 or A11A in ACCD
+;   EXIT   result in (0,x 1,x 2,x 3,x 4,x)
+;          result ~= X/5040 when D is $0DD0
+;          result ~= X/40320 when D is $A11A
+;          uses argv and tmp1-tmp4 (tmp4+1 unused)
+rmul315
+	stab	4+argv
+	tab
+	anda	#$0f
+	andb	#$f0
+	std	2+argv
+	ldd	#0
+	std	0+argv
+	jsr	mulfltx
+	ldd	1,x
+	std	3,x
+	ldab	0,x
+	stab	2,x
+	ldd	#0
+	std	0,x
+	rts
+
 	.module	mdsin
+; X = SIN(X)
+;   ENTRY  X in 0,X 1,X 2,X 3,X 4,X
+;   EXIT   SIN(X) in (0,x 1,x 2,x 3,x 4,x)
+;          uses (5,x 6,x 7,x 8,x 9,x)
+;          uses argv and tmp1-tmp4 (tmp4+1 unused)
 sin
 	tst	0,x
 	bpl	_sinpos
@@ -699,7 +787,7 @@ _sinpos
 	ldd	#$487F
 	std	3+argv
 	jsr	modflt
-	bsr	_x2arg
+	jsr	x2arg
 	stx	tmp1
 	ldx	#_tbl_pi1
 	bsr	_cmptbl
@@ -720,25 +808,7 @@ _q1
 	ldx	#_tbl_pi2
 	bsr	_rsubtbl
 	jmp	_cos
-; copy x to argv
-_x2arg
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldd	3,x
-	std	3+argv
-	rts
-; copy argv to x
-_arg2x
-	ldab	0+argv
-	stab	0,x
-	ldd	1+argv
-	std	1,x
-	ldd	3+argv
-	std	3,x
-	rts
-; compare argv with *x
+	; compare argv with *x
 _cmptbl
 	ldd	2+argv
 	subd	,x
@@ -747,7 +817,7 @@ _cmptbl
 	subb	2,x
 _rts
 	rts
-; subtract *x from argv
+	; subtract *x from argv
 _subtbl
 	ldd	3+argv
 	subd	1,x
@@ -756,7 +826,7 @@ _subtbl
 	sbcb	0,x
 	stab	2+argv
 	rts
-; subtract *x from argv then negate
+	; subtract *x from argv then negate
 _rsubtbl
 	ldd	1,x
 	subd	3+argv
@@ -765,15 +835,15 @@ _rsubtbl
 	sbcb	2+argv
 	stab	2+argv
 	rts
-; sin of angle less than pi/4
+	; sin of angle less than pi/4
 _sin
 	ldx	tmp1
-	bsr	_arg2x
+	jsr	arg2x
 	ldd	3,x
 	pshb
 	psha
 	jsr	mulfltx
-	bsr	_x2arg
+	jsr	x2arg
 	ldd	#42
 	bsr	_rsubm
 	ldd	#840
@@ -785,13 +855,13 @@ _sin
 	std	3+argv
 	jsr	mulfltx
 	ldd	#$0DD0
-	bra	_rdiv
-; cos of angle less than pi/4
+	jmp	rmul315
+	; cos of angle less than pi/4
 _cos
 	ldx	tmp1
-	bsr	_arg2x
+	jsr	arg2x
 	jsr	mulfltx
-	bsr	_x2arg
+	jsr	x2arg
 	ldd	#56
 	bsr	_rsubm
 	ldd	#1680
@@ -801,26 +871,7 @@ _cos
 	ldd	#40320
 	bsr	_rsub
 	ldd	#$A11A
-; divide by 5040 or 40320
-;  equivalent to multiplying by:
-;  13.003174/65536 or 1.625397/65536
-;  $0D.00D0/65536 or $01.A01A/65536
-_rdiv
-	stab	4+argv
-	tab
-	anda	#$0f
-	andb	#$f0
-	std	2+argv
-	ldd	#0
-	std	0+argv
-	jsr	mulfltx
-	ldd	1,x
-	std	3,x
-	ldab	0,x
-	stab	2,x
-	ldd	#0
-	std	0,x
-	rts
+	jmp	rmul315
 _rsubm
 	bsr	_rsub
 	jmp	mulfltx
@@ -1037,6 +1088,12 @@ _rts
 	rts
 
 	.module	mdtan
+; X = TAN(X)
+;   ENTRY  X in 0,X 1,X 2,X 3,X 4,X
+;   EXIT   TAN(X) in (0,x 1,x 2,x 3,x 4,x)
+;          uses ( 5,x  6,x  7,x  8,x  9,x)
+;          uses (10,x 11,x 12,x 13,x 14,x)
+;          uses argv and tmp1-tmp4
 tan
 	ldd	3,x
 	pshb
@@ -1071,7 +1128,8 @@ tan
 	.module	mdtonat
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
-;         r1    contains stopping variable and is always float.
+;         r1    contains stopping variable
+;               and is always fixedpoint.
 ;         r1+3  must contain zero if an integer.
 to
 	clra
@@ -1122,6 +1180,20 @@ _flt
 _done
 	ldx	tmp1
 	jmp	,x
+
+	.module	mdx2arg
+; copy [X] to argv
+;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
+;   EXIT   Y copied to 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+	; copy x to argv
+x2arg
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	std	3+argv
+	rts
 
 clear			; numCalls = 1
 	.module	modclear
@@ -1445,6 +1517,7 @@ NF_ERROR	.equ	0
 RG_ERROR	.equ	4
 OD_ERROR	.equ	6
 FC_ERROR	.equ	8
+OV_ERROR	.equ	10
 OM_ERROR	.equ	12
 BS_ERROR	.equ	16
 DD_ERROR	.equ	18

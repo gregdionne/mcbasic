@@ -55,6 +55,7 @@ class InstAdd;
 class InstSub;
 class InstMul;
 class InstDiv;
+class InstPow;
 class InstLdEq;
 class InstLdNe;
 class InstLdLo;
@@ -156,6 +157,7 @@ public:
   virtual std::string operate(InstSub &inst) = 0;
   virtual std::string operate(InstMul &inst) = 0;
   virtual std::string operate(InstDiv &inst) = 0;
+  virtual std::string operate(InstPow &inst) = 0;
   virtual std::string operate(InstLdEq &inst) = 0;
   virtual std::string operate(InstLdNe &inst) = 0;
   virtual std::string operate(InstLdLo &inst) = 0;
@@ -412,6 +414,7 @@ public:
   void resultPtr();
   void resultShift();
   void resultPromoteFlt();
+  void resultPow();
   void labelArg();
   std::string callLabel() const;
 
@@ -955,6 +958,18 @@ public:
           std::unique_ptr<AddressMode> am2)
       : Instruction("mul", std::move(dest), std::move(am1), std::move(am2)) {
     resultPromoteFlt();
+  }
+  std::string operate(InstructionOp *iop) override {
+    return iop->operate(*this);
+  }
+};
+
+class InstPow : public Instruction {
+public:
+  InstPow(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
+          std::unique_ptr<AddressMode> am2)
+      : Instruction("pow", std::move(dest), std::move(am1), std::move(am2)) {
+    resultPow();
   }
   std::string operate(InstructionOp *iop) override {
     return iop->operate(*this);

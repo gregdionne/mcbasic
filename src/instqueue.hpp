@@ -14,6 +14,17 @@
 struct InstQueue {
   InstQueue() = default;
 
+  // reserve (but do not allocate) n registers after the active register
+  //
+  // TODO: we should really make the compiler unaware of any register
+  // implementation.  Failing that, the compiler should be unaware of
+  // how many registers each instruction allocates internally, or
+  // perhaps the implementation should never allocate another register
+  // (perhaps using the stack instead).
+  //
+  // Otherwise, consider delegating this task to an InstructionOp.
+  void reserve(int n);
+
   // allocate register on register stack
   int allocRegister();
 

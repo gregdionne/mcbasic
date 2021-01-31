@@ -57,6 +57,7 @@ std::string CoreTarget::generateMicroColorConstants() {
   tasm.comment("");
 
   tasm.comment("Memory equates");
+  tasm.equ("M_KBUF", "$4231", "keystrobe buffer (8 bytes)");
   tasm.equ("M_PMSK", "$423C", "pixel mask for SET, RESET and POINT");
   tasm.equ("M_IKEY", "$427F", "key code for INKEY$");
   tasm.equ("M_CRSR", "$4280", "cursor location");

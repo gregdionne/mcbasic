@@ -10,6 +10,7 @@ DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
 ; Memory equates
+M_KBUF	.equ	$4231	; keystrobe buffer (8 bytes)
 M_PMSK	.equ	$423C	; pixel mask for SET, RESET and POINT
 M_IKEY	.equ	$427F	; key code for INKEY$
 M_CRSR	.equ	$4280	; cursor location
@@ -170,7 +171,7 @@ LINE_130
 	ldx	#INTVAR_L
 	jsr	sub_ir1_ir1_ix
 
-	ldab	#-1
+	ldab	#1
 	jsr	shift_fr1_ir1_nb
 
 	ldx	#INTVAR_Z
@@ -632,6 +633,26 @@ _1
 	ldd	#-1
 	rts
 
+	.module	mdpeek
+; perform PEEK(X), emulating keypolling
+;   ENTRY: X holds storage byte
+;   EXIT:  ACCB holds peeked byte
+peek
+	cpx	#M_KBUF
+	blo	_peek
+	cpx	#M_IKEY
+	bhi	_peek
+	beq	_poll
+	cpx	#M_KBUF+7
+	bhi	_peek
+_poll
+	jsr	R_KPOLL
+	beq	_peek
+	staa	M_IKEY
+_peek
+	ldab	,x
+	rts
+
 	.module	mdprint
 print
 _loop
@@ -679,7 +700,7 @@ refint
 	rts
 
 	.module	mdshrflt
-; multiply X by 2^ACCB for negative ACCB
+; divide X by 2^ACCB for positive ACCB
 ;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
 ;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
 ;          uses tmp1
@@ -687,8 +708,8 @@ shrint
 	clr	3,x
 	clr	4,x
 shrflt
-	cmpb	#-8
-	bhi	_shrbit
+	cmpb	#8
+	blo	_shrbit
 	stab	tmp1
 	ldd	2,x
 	std	3,x
@@ -699,7 +720,7 @@ shrflt
 	sbcb	#0
 	stab	0,x
 	ldab	tmp1
-	addb	#8
+	subb	#8
 	bne	shrflt
 	rts
 _shrbit
@@ -708,7 +729,7 @@ _shrbit
 	ror	2,x
 	ror	3,x
 	ror	4,x
-	incb
+	decb
 	bne	_shrbit
 	rts
 
@@ -993,13 +1014,7 @@ or_ir1_ir1_ir2			; numCalls = 1
 peek_ir1_ix			; numCalls = 10
 	.module	modpeek_ir1_ix
 	ldx	1,x
-	cpx	#M_IKEY
-	bne	_nostore
-	jsr	R_KPOLL
-	beq	_nostore
-	staa	M_IKEY
-_nostore
-	ldab	,x
+	jsr	peek
 	stab	r1+2
 	ldd	#0
 	std	r1
@@ -1008,13 +1023,7 @@ _nostore
 peek_ir2_ix			; numCalls = 2
 	.module	modpeek_ir2_ix
 	ldx	1,x
-	cpx	#M_IKEY
-	bne	_nostore
-	jsr	R_KPOLL
-	beq	_nostore
-	staa	M_IKEY
-_nostore
-	ldab	,x
+	jsr	peek
 	stab	r2+2
 	ldd	#0
 	std	r2
@@ -1058,6 +1067,7 @@ NF_ERROR	.equ	0
 RG_ERROR	.equ	4
 OD_ERROR	.equ	6
 FC_ERROR	.equ	8
+OV_ERROR	.equ	10
 OM_ERROR	.equ	12
 BS_ERROR	.equ	16
 DD_ERROR	.equ	18

@@ -657,7 +657,8 @@ void ExprCompiler::operate(ShiftExpr &e) {
     auto dest = result->clone();
     result = queue.append(std::make_unique<InstShift>(
         std::move(dest), std::move(result),
-        std::make_unique<AddressModeImm>(e.rhs < 0, e.rhs)));
+        std::make_unique<AddressModeImm>(e.rhs < 0,
+                                         e.rhs < 0 ? -e.rhs : e.rhs)));
   }
 }
 
@@ -695,6 +696,60 @@ void ExprCompiler::operate(AbsExpr &e) {
       std::make_unique<InstAbs>(std::move(dest), std::move(result)));
 }
 
+void ExprCompiler::operate(SqrExpr &e) {
+  e.expr->operate(this);
+  result = queue.load(std::move(result));
+  auto dest = result->clone();
+  result = queue.append(
+      std::make_unique<InstSqr>(std::move(dest), std::move(result)));
+  queue.reserve(2); // allocate two phantom regs for guess and division
+}
+
+void ExprCompiler::operate(ExpExpr &e) {
+  e.expr->operate(this);
+  result = queue.load(std::move(result));
+  auto dest = result->clone();
+  result = queue.append(
+      std::make_unique<InstExp>(std::move(dest), std::move(result)));
+  queue.reserve(1); // allocate phantom reg for division
+}
+
+void ExprCompiler::operate(LogExpr &e) {
+  e.expr->operate(this);
+  result = queue.load(std::move(result));
+  auto dest = result->clone();
+  result = queue.append(
+      std::make_unique<InstLog>(std::move(dest), std::move(result)));
+  queue.reserve(3); // allocate three phantom regs for target and exp
+}
+
+void ExprCompiler::operate(SinExpr &e) {
+  e.expr->operate(this);
+  result = queue.load(std::move(result));
+  auto dest = result->clone();
+  result = queue.append(
+      std::make_unique<InstSin>(std::move(dest), std::move(result)));
+  queue.reserve(1); // allocate phantom reg for division
+}
+
+void ExprCompiler::operate(CosExpr &e) {
+  e.expr->operate(this);
+  result = queue.load(std::move(result));
+  auto dest = result->clone();
+  result = queue.append(
+      std::make_unique<InstCos>(std::move(dest), std::move(result)));
+  queue.reserve(1); // allocate phantom reg for division
+}
+
+void ExprCompiler::operate(TanExpr &e) {
+  e.expr->operate(this);
+  result = queue.load(std::move(result));
+  auto dest = result->clone();
+  result = queue.append(
+      std::make_unique<InstTan>(std::move(dest), std::move(result)));
+  queue.reserve(2); // allocate two phantom regs for sin and cos.
+}
+
 void ExprCompiler::operate(RndExpr &e) {
   e.expr->operate(this);
   result->castToInt();
@@ -709,30 +764,6 @@ void ExprCompiler::operate(RndExpr &e) {
     result = queue.append(
         std::make_unique<InstRnd>(std::move(dest), std::move(result)));
   }
-}
-
-void ExprCompiler::operate(SinExpr &e) {
-  e.expr->operate(this);
-  result = queue.load(std::move(result));
-  auto dest = result->clone();
-  result = queue.append(
-      std::make_unique<InstSin>(std::move(dest), std::move(result)));
-}
-
-void ExprCompiler::operate(CosExpr &e) {
-  e.expr->operate(this);
-  result = queue.load(std::move(result));
-  auto dest = result->clone();
-  result = queue.append(
-      std::make_unique<InstCos>(std::move(dest), std::move(result)));
-}
-
-void ExprCompiler::operate(TanExpr &e) {
-  e.expr->operate(this);
-  result = queue.load(std::move(result));
-  auto dest = result->clone();
-  result = queue.append(
-      std::make_unique<InstTan>(std::move(dest), std::move(result)));
 }
 
 void ExprCompiler::operate(PeekExpr &e) {
@@ -917,6 +948,15 @@ void ExprCompiler::operate(AdditiveExpr &e) {
   }
 }
 
+void ExprCompiler::operate(PowerExpr &e) {
+  e.base->operate(this);
+  auto reg = queue.load(std::move(result));
+  queue.reserve(3);
+  e.exponent->operate(this);
+  result = queue.append(
+      std::make_unique<InstPow>(reg->clone(), reg->clone(), std::move(result)));
+}
+
 void ExprCompiler::operate(MultiplicativeExpr &e) {
   std::unique_ptr<AddressMode> reg;
   bool needLoad = true;
@@ -951,10 +991,10 @@ void ExprCompiler::operate(MultiplicativeExpr &e) {
     }
     for (auto &invoperand : e.invoperands) {
       invoperand->operate(this);
-      queue.allocRegister(); // need additional phantom reg for div
       result = queue.append(std::make_unique<InstDiv>(
           reg->clone(), reg->clone(), std::move(result)));
       reg = result->clone(); // make sure datatype is carried over
+      queue.reserve(1);      // need additional phantom reg for div
     }
   }
 }

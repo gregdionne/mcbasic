@@ -397,6 +397,11 @@ void ExprMerger::operate(PointExpr &e) {
   merge(e.y);
 }
 
+void ExprMerger::operate(PowerExpr &e) {
+  merge(e.base);
+  merge(e.exponent);
+}
+
 void ExprMerger::merge(NaryNumericExpr &e) {
   for (auto &operand : e.operands) {
     merge(operand);

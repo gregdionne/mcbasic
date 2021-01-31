@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "isfloat.hpp"
-
+#include "fixedpoint.hpp"
 void IsFloat::operate(ValExpr & /*expr*/) { result = true; }
 
 void IsFloat::operate(AbsExpr &e) { e.expr->operate(this); }
@@ -15,6 +15,14 @@ void IsFloat::operate(ShiftExpr &e) {
 }
 
 void IsFloat::operate(NegatedExpr &e) { e.expr->operate(this); }
+
+void IsFloat::operate(PowerExpr &e) {
+  e.base->operate(this);
+  if (!result) {
+    double value;
+    result = !e.isConst(value) || !FixedPoint(value).isPosWord();
+  }
+}
 
 void IsFloat::operate(MultiplicativeExpr &e) {
   if (!e.invoperands.empty()) {
@@ -46,16 +54,22 @@ void IsFloat::operate(AdditiveExpr &e) {
   }
 }
 
-void IsFloat::operate(RndExpr &e) {
-  double value;
-  result = !(e.expr->isConst(value) && value >= 1);
-}
+void IsFloat::operate(SqrExpr & /*e*/) { result = true; }
+
+void IsFloat::operate(ExpExpr & /*e*/) { result = true; }
+
+void IsFloat::operate(LogExpr & /*e*/) { result = true; }
 
 void IsFloat::operate(SinExpr & /*e*/) { result = true; }
 
 void IsFloat::operate(CosExpr & /*e*/) { result = true; }
 
 void IsFloat::operate(TanExpr & /*e*/) { result = true; }
+
+void IsFloat::operate(RndExpr &e) {
+  double value;
+  result = !(e.expr->isConst(value) && value >= 1);
+}
 
 void IsFloat::operate(NumericConstantExpr &e) {
   result = e.value != static_cast<double>(static_cast<int>(e.value));

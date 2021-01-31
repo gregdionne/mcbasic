@@ -59,10 +59,10 @@ public:
   std::string operate(InstCom &inst) override;
   std::string operate(InstSgn &inst) override;
   std::string operate(InstPeek &inst) override;
-  std::string operate(InstSqr &inst) override;
   std::string operate(InstInv &inst) override;
-  std::string operate(InstLog &inst) override;
+  std::string operate(InstSqr &inst) override;
   std::string operate(InstExp &inst) override;
+  std::string operate(InstLog &inst) override;
   std::string operate(InstSin &inst) override;
   std::string operate(InstCos &inst) override;
   std::string operate(InstTan &inst) override;
@@ -78,6 +78,7 @@ public:
   std::string operate(InstSub &inst) override;
   std::string operate(InstMul &inst) override;
   std::string operate(InstDiv &inst) override;
+  std::string operate(InstPow &inst) override;
   std::string operate(InstLdEq &inst) override;
   std::string operate(InstLdNe &inst) override;
   std::string operate(InstLdLo &inst) override;

@@ -212,6 +212,15 @@ public:
   virtual std::string regFlt_regInt(InstInv &inst) = 0;
   virtual std::string regFlt_regFlt(InstInv &inst) = 0;
 
+  virtual std::string regFlt_regInt(InstSqr &inst) = 0;
+  virtual std::string regFlt_regFlt(InstSqr &inst) = 0;
+
+  virtual std::string regFlt_regInt(InstExp &inst) = 0;
+  virtual std::string regFlt_regFlt(InstExp &inst) = 0;
+
+  virtual std::string regFlt_regInt(InstLog &inst) = 0;
+  virtual std::string regFlt_regFlt(InstLog &inst) = 0;
+
   virtual std::string regFlt_regInt(InstSin &inst) = 0;
   virtual std::string regFlt_regFlt(InstSin &inst) = 0;
 
@@ -570,6 +579,22 @@ public:
   virtual std::string regFlt_regInt_negByte(InstDiv &inst) = 0;
   virtual std::string regFlt_regInt_posWord(InstDiv &inst) = 0;
   virtual std::string regFlt_regInt_negWord(InstDiv &inst) = 0;
-};
 
+  virtual std::string regFlt_regFlt_regFlt(InstPow &inst) = 0;
+  virtual std::string regFlt_regFlt_extFlt(InstPow &inst) = 0;
+  virtual std::string regFlt_regFlt_regInt(InstPow &inst) = 0;
+  virtual std::string regFlt_regFlt_extInt(InstPow &inst) = 0;
+  virtual std::string regFlt_regFlt_posByte(InstPow &inst) = 0;
+  virtual std::string regFlt_regFlt_negByte(InstPow &inst) = 0;
+  virtual std::string regFlt_regFlt_posWord(InstPow &inst) = 0;
+  virtual std::string regFlt_regFlt_negWord(InstPow &inst) = 0;
+  virtual std::string regFlt_regInt_regFlt(InstPow &inst) = 0;
+  virtual std::string regFlt_regInt_extFlt(InstPow &inst) = 0;
+  virtual std::string regFlt_regInt_regInt(InstPow &inst) = 0;
+  virtual std::string regFlt_regInt_extInt(InstPow &inst) = 0;
+  virtual std::string regInt_regInt_posByte(InstPow &inst) = 0;
+  virtual std::string regFlt_regInt_negByte(InstPow &inst) = 0;
+  virtual std::string regInt_regInt_posWord(InstPow &inst) = 0;
+  virtual std::string regFlt_regInt_negWord(InstPow &inst) = 0;
+};
 #endif

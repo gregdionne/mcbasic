@@ -159,6 +159,9 @@ public:
   std::string operate(InstDiv &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
+  std::string operate(InstPow &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
   std::string operate(InstLdEq &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }

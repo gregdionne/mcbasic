@@ -48,6 +48,7 @@ private:
   Expr *getMidFunction();
   Expr *getFunction();
   Expr *getSignedFactor();
+  Expr *getPowerExpression();
   Expr *getTerm();
   Expr *getAdditiveExpression();
   Expr *getRelationalExpression();

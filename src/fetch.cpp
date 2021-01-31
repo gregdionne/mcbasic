@@ -55,7 +55,7 @@ void fetch::die(const char *formatstr, ...) {
   va_list vl;
   va_start(vl, formatstr);
 
-  if ((linenum != 0) && (argcnt != 0) && argcnt < argc) {
+  if ((linenum != 0) && (argcnt != 0) && argfile < argc) {
     int len = fprintf(stderr, "%s(%i): ", argv[argfile], linenum);
     fprintf(stderr, "%s", buf);
     for (int i = 0; i < len + colnum; i++) {

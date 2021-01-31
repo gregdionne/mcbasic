@@ -212,6 +212,15 @@ public:
   std::string regFlt_regInt(InstInv &inst) override;
   std::string regFlt_regFlt(InstInv &inst) override;
 
+  std::string regFlt_regInt(InstSqr &inst) override;
+  std::string regFlt_regFlt(InstSqr &inst) override;
+
+  std::string regFlt_regInt(InstExp &inst) override;
+  std::string regFlt_regFlt(InstExp &inst) override;
+
+  std::string regFlt_regInt(InstLog &inst) override;
+  std::string regFlt_regFlt(InstLog &inst) override;
+
   std::string regFlt_regInt(InstSin &inst) override;
   std::string regFlt_regFlt(InstSin &inst) override;
 
@@ -570,6 +579,23 @@ public:
   std::string regFlt_regInt_negByte(InstDiv &inst) override;
   std::string regFlt_regInt_posWord(InstDiv &inst) override;
   std::string regFlt_regInt_negWord(InstDiv &inst) override;
+
+  std::string regFlt_regFlt_regFlt(InstPow &inst) override;
+  std::string regFlt_regFlt_extFlt(InstPow &inst) override;
+  std::string regFlt_regFlt_regInt(InstPow &inst) override;
+  std::string regFlt_regFlt_extInt(InstPow &inst) override;
+  std::string regFlt_regFlt_posByte(InstPow &inst) override;
+  std::string regFlt_regFlt_negByte(InstPow &inst) override;
+  std::string regFlt_regFlt_posWord(InstPow &inst) override;
+  std::string regFlt_regFlt_negWord(InstPow &inst) override;
+  std::string regFlt_regInt_regFlt(InstPow &inst) override;
+  std::string regFlt_regInt_extFlt(InstPow &inst) override;
+  std::string regFlt_regInt_regInt(InstPow &inst) override;
+  std::string regFlt_regInt_extInt(InstPow &inst) override;
+  std::string regInt_regInt_posByte(InstPow &inst) override;
+  std::string regFlt_regInt_negByte(InstPow &inst) override;
+  std::string regInt_regInt_posWord(InstPow &inst) override;
+  std::string regFlt_regInt_negWord(InstPow &inst) override;
 
 protected:
   virtual void preamble(Assembler &tasm, Instruction &inst);

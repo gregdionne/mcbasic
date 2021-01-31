@@ -10,6 +10,7 @@ DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
 ; Memory equates
+M_KBUF	.equ	$4231	; keystrobe buffer (8 bytes)
 M_PMSK	.equ	$423C	; pixel mask for SET, RESET and POINT
 M_IKEY	.equ	$427F	; key code for INKEY$
 M_CRSR	.equ	$4280	; cursor location
@@ -176,6 +177,26 @@ strlink
 	abx
 	bra	strlink
 _rts
+	rts
+
+	.module	mdpeek
+; perform PEEK(X), emulating keypolling
+;   ENTRY: X holds storage byte
+;   EXIT:  ACCB holds peeked byte
+peek
+	cpx	#M_KBUF
+	blo	_peek
+	cpx	#M_IKEY
+	bhi	_peek
+	beq	_poll
+	cpx	#M_KBUF+7
+	bhi	_peek
+_poll
+	jsr	R_KPOLL
+	beq	_peek
+	staa	M_IKEY
+_peek
+	ldab	,x
 	rts
 
 	.module	mdprint
@@ -411,13 +432,7 @@ peek_ir1_pw			; numCalls = 2
 	.module	modpeek_ir1_pw
 	std	tmp1
 	ldx	tmp1
-	cpx	#M_IKEY
-	bne	_nostore
-	jsr	R_KPOLL
-	beq	_nostore
-	staa	M_IKEY
-_nostore
-	ldab	,x
+	jsr	peek
 	stab	r1+2
 	ldd	#0
 	std	r1
@@ -473,6 +488,7 @@ NF_ERROR	.equ	0
 RG_ERROR	.equ	4
 OD_ERROR	.equ	6
 FC_ERROR	.equ	8
+OV_ERROR	.equ	10
 OM_ERROR	.equ	12
 BS_ERROR	.equ	16
 DD_ERROR	.equ	18

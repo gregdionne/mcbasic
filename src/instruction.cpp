@@ -87,6 +87,14 @@ void Instruction::resultFlt() {
   result = arg1->clone();
 }
 
+void Instruction::resultPow() {
+  arg1->dataType = arg2->dataType == DataType::Int &&
+                           (arg3->isPosByte() || arg3->isPosWord())
+                       ? DataType::Int
+                       : DataType::Flt;
+  result = arg1->clone();
+}
+
 void Instruction::resultShift() {
   if (arg3->isNegByte()) {
     resultFlt();

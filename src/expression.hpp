@@ -30,6 +30,7 @@ class PrintSpaceExpr;
 class PrintCRExpr;
 class PrintCommaExpr;
 class NegatedExpr;
+class PowerExpr;
 class MultiplicativeExpr;
 class AdditiveExpr;
 class ComplementedExpr;
@@ -40,10 +41,13 @@ class ShiftExpr;
 class SgnExpr;
 class IntExpr;
 class AbsExpr;
-class RndExpr;
+class SqrExpr;
+class ExpExpr;
+class LogExpr;
 class SinExpr;
 class CosExpr;
 class TanExpr;
+class RndExpr;
 class PeekExpr;
 class LenExpr;
 class StrExpr;
@@ -77,6 +81,7 @@ public:
   virtual void operate(PrintCRExpr & /*expr*/) {}
   virtual void operate(PrintCommaExpr & /*expr*/) {}
   virtual void operate(NegatedExpr & /*expr*/) {}
+  virtual void operate(PowerExpr & /*expr*/) {}
   virtual void operate(MultiplicativeExpr & /*expr*/) {}
   virtual void operate(AdditiveExpr & /*expr*/) {}
   virtual void operate(ComplementedExpr & /*expr*/) {}
@@ -87,10 +92,13 @@ public:
   virtual void operate(SgnExpr & /*expr*/) {}
   virtual void operate(IntExpr & /*expr*/) {}
   virtual void operate(AbsExpr & /*expr*/) {}
-  virtual void operate(RndExpr & /*expr*/) {}
+  virtual void operate(SqrExpr & /*expr*/) {}
+  virtual void operate(ExpExpr & /*expr*/) {}
+  virtual void operate(LogExpr & /*expr*/) {}
   virtual void operate(SinExpr & /*expr*/) {}
   virtual void operate(CosExpr & /*expr*/) {}
   virtual void operate(TanExpr & /*expr*/) {}
+  virtual void operate(RndExpr & /*expr*/) {}
   virtual void operate(PeekExpr & /*expr*/) {}
   virtual void operate(LenExpr & /*expr*/) {}
   virtual void operate(StrExpr & /*expr*/) {}
@@ -278,6 +286,16 @@ public:
   void operate(ExprOp *op) override { op->operate(*this); }
 };
 
+class PowerExpr : public NumericExpr {
+public:
+  std::unique_ptr<NumericExpr> base;
+  std::unique_ptr<NumericExpr> exponent;
+  std::string funcName = "^";
+  PowerExpr(std::unique_ptr<NumericExpr> b, std::unique_ptr<NumericExpr> e)
+      : base(std::move(b)), exponent(std::move(e)) {}
+  void operate(ExprOp *op) override { op->operate(*this); }
+};
+
 class MultiplicativeExpr : public NaryNumericExpr {
 public:
   explicit MultiplicativeExpr(std::unique_ptr<NumericExpr> e) {
@@ -393,11 +411,27 @@ public:
   void operate(ExprOp *op) override { op->operate(*this); }
 };
 
-class RndExpr : public UnaryNumericExpr {
+class SqrExpr : public UnaryNumericExpr {
 public:
   std::unique_ptr<NumericExpr> expr;
-  explicit RndExpr(std::unique_ptr<NumericExpr> e)
-      : UnaryNumericExpr("RND"), expr(std::move(e)) {}
+  explicit SqrExpr(std::unique_ptr<NumericExpr> e)
+      : UnaryNumericExpr("SQR"), expr(std::move(e)) {}
+  void operate(ExprOp *op) override { op->operate(*this); }
+};
+
+class ExpExpr : public UnaryNumericExpr {
+public:
+  std::unique_ptr<NumericExpr> expr;
+  explicit ExpExpr(std::unique_ptr<NumericExpr> e)
+      : UnaryNumericExpr("EXP"), expr(std::move(e)) {}
+  void operate(ExprOp *op) override { op->operate(*this); }
+};
+
+class LogExpr : public UnaryNumericExpr {
+public:
+  std::unique_ptr<NumericExpr> expr;
+  explicit LogExpr(std::unique_ptr<NumericExpr> e)
+      : UnaryNumericExpr("LOG"), expr(std::move(e)) {}
   void operate(ExprOp *op) override { op->operate(*this); }
 };
 
@@ -422,6 +456,14 @@ public:
   std::unique_ptr<NumericExpr> expr;
   explicit TanExpr(std::unique_ptr<NumericExpr> e)
       : UnaryNumericExpr("TAN"), expr(std::move(e)) {}
+  void operate(ExprOp *op) override { op->operate(*this); }
+};
+
+class RndExpr : public UnaryNumericExpr {
+public:
+  std::unique_ptr<NumericExpr> expr;
+  explicit RndExpr(std::unique_ptr<NumericExpr> e)
+      : UnaryNumericExpr("RND"), expr(std::move(e)) {}
   void operate(ExprOp *op) override { op->operate(*this); }
 };
 

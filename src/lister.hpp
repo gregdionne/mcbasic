@@ -24,6 +24,7 @@ public:
   void operate(NumericArrayExpr &e) override;
   void operate(StringArrayExpr &e) override;
   void operate(NegatedExpr &e) override;
+  void operate(PowerExpr &e) override;
   void operate(MultiplicativeExpr &e) override {
     operate(static_cast<NaryNumericExpr &>(e));
   }
@@ -41,10 +42,13 @@ public:
   void operate(SgnExpr &e) override;
   void operate(IntExpr &e) override;
   void operate(AbsExpr &e) override;
-  void operate(RndExpr &e) override;
+  void operate(SqrExpr &e) override;
+  void operate(ExpExpr &e) override;
+  void operate(LogExpr &e) override;
   void operate(SinExpr &e) override;
   void operate(CosExpr &e) override;
   void operate(TanExpr &e) override;
+  void operate(RndExpr &e) override;
   void operate(PeekExpr &e) override;
   void operate(LenExpr &e) override;
   void operate(StrExpr &e) override;

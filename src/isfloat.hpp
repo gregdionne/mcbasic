@@ -16,12 +16,16 @@ public:
   void operate(AbsExpr &e) override;
   void operate(ShiftExpr &e) override;
   void operate(NegatedExpr &e) override;
+  void operate(PowerExpr &e) override;
   void operate(MultiplicativeExpr &e) override;
   void operate(AdditiveExpr &e) override;
-  void operate(RndExpr &e) override;
+  void operate(SqrExpr &e) override;
+  void operate(ExpExpr &e) override;
+  void operate(LogExpr &e) override;
   void operate(SinExpr &e) override;
   void operate(CosExpr &e) override;
   void operate(TanExpr &e) override;
+  void operate(RndExpr &e) override;
   void operate(NumericConstantExpr &e) override;
   void operate(NumericVariableExpr &e) override;
   void operate(NumericArrayExpr &e) override;

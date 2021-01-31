@@ -4,6 +4,10 @@
 
 #include <algorithm>
 
+void InstQueue::reserve(int n) {
+  maxRegisterCount = std::max(maxRegisterCount, registerCount + n);
+}
+
 int InstQueue::allocRegister() {
   maxRegisterCount = std::max(maxRegisterCount, ++registerCount);
   return registerCount;
