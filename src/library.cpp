@@ -2866,7 +2866,7 @@ std::string Library::mdInput() {
   tasm.ldx("inptptr");
   tasm.ldaa(",x");
   tasm.inx();
-  tasm.cmpa("','");
+  tasm.cmpa("#','");
   tasm.beq("_skpspc");
   tasm.jsr("inputqqs");
   tasm.bra("rdinit");

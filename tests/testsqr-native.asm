@@ -453,7 +453,7 @@ rdinit
 	ldx	inptptr
 	ldaa	,x
 	inx
-	cmpa	','
+	cmpa	#','
 	beq	_skpspc
 	jsr	inputqqs
 	bra	rdinit
