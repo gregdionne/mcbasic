@@ -10137,8 +10137,11 @@ str_sr1_ix			; numCalls = 1
 strcat_sr1_sr1_sr2			; numCalls = 6
 	.module	modstrcat_sr1_sr1_sr2
 	jsr	noargs
-	ldab	r2
-	addb	r1
+	ldx	r1+1
+	ldab	r1
+	abx
+	stx	strfree
+	addb	r2
 	stab	r1
 	ldab	r2
 	ldx	r2+1

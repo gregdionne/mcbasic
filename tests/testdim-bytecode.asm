@@ -722,8 +722,11 @@ error
 strcat_sr1_sr1_sx			; numCalls = 1
 	.module	modstrcat_sr1_sr1_sx
 	jsr	extend
-	ldab	0,x
-	addb	r1
+	ldx	r1+1
+	ldab	r1
+	abx
+	stx	strfree
+	addb	0,x
 	stab	r1
 	ldab	0,x
 	ldx	1,x

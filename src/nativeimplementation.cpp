@@ -226,6 +226,10 @@ std::string NativeImplementation::regStr_regStr_immStr(InstStrCat &inst) {
   inst.dependencies.insert("mdstrtmp");
 
   Assembler tasm;
+  tasm.ldx(inst.arg2->lword());
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.abx();
+  tasm.stx("strfree");
   tasm.tsx();
   tasm.ldx(",x");
   tasm.ldab(",x");

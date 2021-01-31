@@ -4500,6 +4500,10 @@ str_sr1_fx			; numCalls = 1
 
 strcat_sr1_sr1_ss			; numCalls = 1
 	.module	modstrcat_sr1_sr1_ss
+	ldx	r1+1
+	ldab	r1
+	abx
+	stx	strfree
 	tsx
 	ldx	,x
 	ldab	,x

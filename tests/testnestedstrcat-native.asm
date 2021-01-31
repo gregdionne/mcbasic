@@ -1,5 +1,5 @@
-; Assembly for teststrvar.bas
-; compiled with mcbasic
+; Assembly for testnestedstrcat.bas
+; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
@@ -53,10 +53,10 @@ redoptr	.block	2
 letptr	.block	2
 	.org	$a3
 r1	.block	5
+r2	.block	5
+r3	.block	5
 rend
 rvseed	.block	2
-curinst	.block	2
-nxtinst	.block	2
 tmp1	.block	2
 tmp2	.block	2
 tmp3	.block	2
@@ -64,131 +64,124 @@ tmp4	.block	2
 tmp5	.block	2
 argv	.block	10
 
+
+; main program
 	.org	M_CODE
 
-	.module	mdmain
-	ldx	#program
-	stx	nxtinst
-mainloop
-	ldx	nxtinst
-	stx	curinst
-	ldab	,x
-	ldx	#catalog
-	abx
-	abx
-	ldx	,x
-	jsr	0,x
-	bra	mainloop
+	jsr	progbegin
 
-program
-
-	.byte	bytecode_progbegin
-
-	.byte	bytecode_clear
+	jsr	clear
 
 LINE_10
 
-	; A$="FRED"
+	; A$="123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	.byte	bytecode_ld_sr1_ss
-	.text	4, "FRED"
+	jsr	ld_sr1_ss
+	.text	35, "123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-	.byte	bytecode_ld_sx_sr1
-	.byte	bytecode_STRVAR_A
+	ldx	#STRVAR_A
+	jsr	ld_sx_sr1
 
 LINE_20
 
-	; B$="BORNEY"
+	; Y=RND(4)
 
-	.byte	bytecode_ld_sr1_ss
-	.text	6, "BORNEY"
+	ldab	#4
+	jsr	irnd_ir1_pb
 
-	.byte	bytecode_ld_sx_sr1
-	.byte	bytecode_STRVAR_B
+	ldx	#INTVAR_Y
+	jsr	ld_ix_ir1
+
+LINE_26
+
+	; PRINT S$
+
+	ldx	#STRVAR_S
+	jsr	pr_sx
+
+	jsr	pr_ss
+	.text	1, "\r"
 
 LINE_30
 
-	; C$=A$+B$
+	; GOSUB 1000
 
-	.byte	bytecode_strinit_sr1_sx
-	.byte	bytecode_STRVAR_A
-
-	.byte	bytecode_strcat_sr1_sr1_sx
-	.byte	bytecode_STRVAR_B
-
-	.byte	bytecode_ld_sx_sr1
-	.byte	bytecode_STRVAR_C
+	ldx	#LINE_1000
+	jsr	gosub_ix
 
 LINE_40
 
-	; PRINT C$
+	; PRINT S$
 
-	.byte	bytecode_pr_sx
-	.byte	bytecode_STRVAR_C
+	ldx	#STRVAR_S
+	jsr	pr_sx
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_50
 
-	; D$=B$+A$
+	; GOSUB 1000
 
-	.byte	bytecode_strinit_sr1_sx
-	.byte	bytecode_STRVAR_B
-
-	.byte	bytecode_strcat_sr1_sr1_sx
-	.byte	bytecode_STRVAR_A
-
-	.byte	bytecode_ld_sx_sr1
-	.byte	bytecode_STRVAR_D
+	ldx	#LINE_1000
+	jsr	gosub_ix
 
 LINE_60
 
-	; PRINT D$
+	; PRINT S$
 
-	.byte	bytecode_pr_sx
-	.byte	bytecode_STRVAR_D
+	ldx	#STRVAR_S
+	jsr	pr_sx
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_70
 
-	; PRINT C$
+	; END
 
-	.byte	bytecode_pr_sx
-	.byte	bytecode_STRVAR_C
+	jsr	progend
 
-	.byte	bytecode_pr_ss
-	.text	1, "\r"
+LINE_1000
+
+	; S$=S$+MID$("_"+LEFT$(A$,16),Y,1)
+
+	ldx	#STRVAR_S
+	jsr	strinit_sr1_sx
+
+	jsr	strinit_sr2_ss
+	.text	1, "_"
+
+	ldx	#STRVAR_A
+	jsr	ld_sr3_sx
+
+	ldab	#16
+	jsr	left_sr3_sr3_pb
+
+	jsr	strcat_sr2_sr2_sr3
+
+	ldx	#INTVAR_Y
+	jsr	ld_ir3_ix
+
+	ldab	#1
+	jsr	midT_sr2_sr2_pb
+
+	jsr	strcat_sr1_sr1_sr2
+
+	ldx	#STRVAR_S
+	jsr	ld_sx_sr1
+
+LINE_1010
+
+	; RETURN
+
+	jsr	return
 
 LLAST
 
 	; END
 
-	.byte	bytecode_progend
-
-; Library Catalog
-bytecode_clear	.equ	0
-bytecode_ld_sr1_ss	.equ	1
-bytecode_ld_sx_sr1	.equ	2
-bytecode_pr_ss	.equ	3
-bytecode_pr_sx	.equ	4
-bytecode_progbegin	.equ	5
-bytecode_progend	.equ	6
-bytecode_strcat_sr1_sr1_sx	.equ	7
-bytecode_strinit_sr1_sx	.equ	8
-
-catalog
-	.word	clear
-	.word	ld_sr1_ss
-	.word	ld_sx_sr1
-	.word	pr_ss
-	.word	pr_sx
-	.word	progbegin
-	.word	progend
-	.word	strcat_sr1_sr1_sx
-	.word	strinit_sr1_sx
+	jsr	progend
 
 	.module	mdalloc
 ; alloc D bytes in array memory.
@@ -247,102 +240,6 @@ strlink
 _rts
 	rts
 
-	.module	mdbcode
-noargs
-	ldx	curinst
-	inx
-	stx	nxtinst
-	rts
-extend
-	ldx	curinst
-	inx
-	ldab	,x
-	inx
-	stx	nxtinst
-	ldx	#symstart
-	abx
-	rts
-getaddr
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldx	1,x
-	rts
-getbyte
-	ldx	curinst
-	inx
-	ldab	,x
-	inx
-	stx	nxtinst
-	rts
-getword
-	ldx	curinst
-	inx
-	ldd	,x
-	inx
-	inx
-	stx	nxtinst
-	rts
-extbyte
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldab	2,x
-	pshb
-	ldab	1,x
-	ldx	#symstart
-	abx
-	pulb
-	rts
-extword
-	ldd	curinst
-	addd	#4
-	std	nxtinst
-	ldx	curinst
-	ldd	2,x
-	pshb
-	ldab	1,x
-	ldx	#symstart
-	abx
-	pulb
-	rts
-byteext
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldab	1,x
-	pshb
-	ldab	2,x
-	ldx	#symstart
-	abx
-	pulb
-	rts
-wordext
-	ldd	curinst
-	addd	#4
-	std	nxtinst
-	ldx	curinst
-	ldd	1,x
-	pshb
-	ldab	3,x
-	ldx	#symstart
-	abx
-	pulb
-	rts
-immstr
-	ldx	curinst
-	inx
-	ldab	,x
-	inx
-	pshx
-	abx
-	stx	nxtinst
-	pulx
-	rts
-
 	.module	mdprint
 print
 _loop
@@ -351,6 +248,85 @@ _loop
 	inx
 	decb
 	bne	_loop
+	rts
+
+	.module	mdrnd
+rnd
+	ldab	tmp1+1
+	bpl	gornd
+	orab	#1
+	pshb
+	ldaa	tmp2
+	mul
+	std	rvseed
+	ldaa	tmp2+1
+	pulb
+	mul
+	addd	rvseed
+	std	rvseed
+gornd
+	ldaa	rvseed
+	ldab	#-2
+	mul
+	std	tmp3
+	ldaa	rvseed+1
+	ldab	#-2
+	mul
+	addb	#-2
+	adca	tmp3+1
+	sbcb	tmp3
+	sbca	#0
+	adcb	#0
+	adca	#0
+	std	rvseed
+	rts
+irnd
+	bsr	rnd
+	ldaa	tmp2+1
+	ldab	rvseed+1
+	mul
+	staa	tmp3+1
+	ldaa	tmp2+1
+	ldab	rvseed
+	mul
+	addb	tmp3+1
+	adca	#0
+	std	tmp3
+	ldaa	tmp2
+	ldab	rvseed+1
+	mul
+	addd	tmp3
+	staa	tmp3+1
+	ldaa	#0
+	adca	#0
+	staa	tmp3
+	ldaa	tmp2
+	ldab	rvseed
+	mul
+	addd	tmp3
+	std	tmp3
+	ldaa	#0
+	adca	#0
+	staa	tmp1
+	ldaa	tmp1+1
+	beq	_done
+	ldab	rvseed+1
+	mul
+	addb	tmp3
+	stab	tmp3
+	adca	tmp1
+	staa	tmp1
+	ldaa	tmp1+1
+	ldab	rvseed
+	mul
+	addb	tmp1
+	stab	tmp1
+_done
+	ldd	tmp3
+	addd	#1
+	bcc	_rts
+	inc	tmp1
+_rts
 	rts
 
 	.module	mdstrdel
@@ -539,7 +515,6 @@ _null
 
 clear			; numCalls = 1
 	.module	modclear
-	jsr	noargs
 	clra
 	ldx	#bss
 	bra	_start
@@ -560,45 +535,139 @@ _start
 	stx	dataptr
 	rts
 
-ld_sr1_ss			; numCalls = 2
+gosub_ix			; numCalls = 2
+	.module	modgosub_ix
+	ldab	#3
+	pshb
+	jmp	,x
+
+irnd_ir1_pb			; numCalls = 1
+	.module	modirnd_ir1_pb
+	clra
+	staa	tmp1+1
+	std	tmp2
+	jsr	irnd
+	std	r1+1
+	ldab	tmp1
+	stab	r1
+	rts
+
+ld_ir3_ix			; numCalls = 1
+	.module	modld_ir3_ix
+	ldd	1,x
+	std	r3+1
+	ldab	0,x
+	stab	r3
+	rts
+
+ld_ix_ir1			; numCalls = 1
+	.module	modld_ix_ir1
+	ldd	r1+1
+	std	1,x
+	ldab	r1
+	stab	0,x
+	rts
+
+ld_sr1_ss			; numCalls = 1
 	.module	modld_sr1_ss
-	ldx	curinst
-	inx
+	pulx
 	ldab	,x
 	stab	r1
 	inx
 	stx	r1+1
 	abx
-	stx	nxtinst
+	jmp	,x
+
+ld_sr3_sx			; numCalls = 1
+	.module	modld_sr3_sx
+	ldd	1,x
+	std	r3+1
+	ldab	0,x
+	stab	r3
 	rts
 
-ld_sx_sr1			; numCalls = 4
+ld_sx_sr1			; numCalls = 2
 	.module	modld_sx_sr1
-	jsr	extend
 	ldab	r1
 	stab	0+argv
 	ldd	r1+1
 	std	1+argv
 	jmp	strprm
 
+left_sr3_sr3_pb			; numCalls = 1
+	.module	modleft_sr3_sr3_pb
+	tstb
+	beq	_zero
+	cmpb	r3
+	bhs	_rts
+	stab	r3
+	rts
+_zero
+	pshx
+	ldx	r3+1
+	jsr	strrel
+	pulx
+	ldd	#$0100
+	std	r3+1
+	stab	r3
+_rts
+	rts
+_fc_error
+	ldab	#FC_ERROR
+	jmp	error
+
+midT_sr2_sr2_pb			; numCalls = 1
+	.module	modmidT_sr2_sr2_pb
+	clra
+	std	tmp1
+	ldd	5+r2
+	beq	_ok
+	bmi	_fc_error
+	bne	_zero
+_ok
+	ldab	5+r2+2
+	beq	_fc_error
+	ldab	r2
+	subb	5+r2+2
+	blo	_zero
+	incb
+	stab	r2
+	ldd	5+r2+1
+	subd	#1
+	addd	r2+1
+	std	r2+1
+	ldab	tmp1+1
+	cmpb	r2
+	bhs	_rts
+	stab	r2
+	rts
+_zero
+	pshx
+	ldx	r2+1
+	jsr	strrel
+	pulx
+	ldd	#$0100
+	std	r2+1
+	stab	r2
+_rts
+	rts
+_fc_error
+	ldab	#FC_ERROR
+	jmp	error
+
 pr_ss			; numCalls = 3
 	.module	modpr_ss
-	ldx	curinst
-	inx
+	pulx
 	ldab	,x
 	beq	_null
 	inx
 	jsr	print
-	stx	nxtinst
-	rts
+	jmp	,x
 _null
-	inx
-	stx	nxtinst
-	rts
+	jmp	1,x
 
 pr_sx			; numCalls = 3
 	.module	modpr_sx
-	jsr	extend
 	ldab	0,x
 	beq	_rts
 	ldx	1,x
@@ -608,7 +677,6 @@ _rts
 
 progbegin			; numCalls = 1
 	.module	modprogbegin
-	jsr	noargs
 	ldx	R_MCXID
 	cpx	#'h'*256+'C'
 	bne	_mcbasic
@@ -626,9 +694,8 @@ _mcbasic
 	pulx
 	rts
 
-progend			; numCalls = 1
+progend			; numCalls = 2
 	.module	modprogend
-	jsr	noargs
 	pulx
 	pula
 	pula
@@ -646,22 +713,50 @@ DD_ERROR	.equ	18
 error
 	jmp	R_ERROR
 
-strcat_sr1_sr1_sx			; numCalls = 2
-	.module	modstrcat_sr1_sr1_sx
-	jsr	extend
+return			; numCalls = 1
+	.module	modreturn
+	pulx
+	tsx
+	clrb
+_nxt
+	abx
+	ldab	,x
+	bne	_ok
+	ldab	#RG_ERROR
+	jmp	error
+_ok
+	cmpb	#3
+	bne	_nxt
+	inx
+	txs
+	rts
+
+strcat_sr1_sr1_sr2			; numCalls = 1
+	.module	modstrcat_sr1_sr1_sr2
 	ldx	r1+1
 	ldab	r1
 	abx
 	stx	strfree
-	addb	0,x
+	addb	r2
 	stab	r1
-	ldab	0,x
-	ldx	1,x
+	ldab	r2
+	ldx	r2+1
 	jmp	strtmp
 
-strinit_sr1_sx			; numCalls = 2
+strcat_sr2_sr2_sr3			; numCalls = 1
+	.module	modstrcat_sr2_sr2_sr3
+	ldx	r2+1
+	ldab	r2
+	abx
+	stx	strfree
+	addb	r3
+	stab	r2
+	ldab	r3
+	ldx	r3+1
+	jmp	strtmp
+
+strinit_sr1_sx			; numCalls = 1
 	.module	modstrinit_sr1_sx
-	jsr	extend
 	ldab	0,x
 	stab	r1
 	ldx	1,x
@@ -669,17 +764,23 @@ strinit_sr1_sx			; numCalls = 2
 	std	r1+1
 	rts
 
+strinit_sr2_ss			; numCalls = 1
+	.module	modstrinit_sr2_ss
+	tsx
+	ldx	,x
+	ldab	,x
+	stab	r2
+	inx
+	jsr	strtmp
+	std	r2+1
+	pulx
+	ldab	,x
+	abx
+	jmp	1,x
+
 ; data table
 startdata
 enddata
-
-; Bytecode equates
-
-
-bytecode_STRVAR_A	.equ	STRVAR_A-symstart
-bytecode_STRVAR_B	.equ	STRVAR_B-symstart
-bytecode_STRVAR_C	.equ	STRVAR_C-symstart
-bytecode_STRVAR_D	.equ	STRVAR_D-symstart
 
 symstart
 
@@ -687,11 +788,10 @@ symstart
 bss
 
 ; Numeric Variables
+INTVAR_Y	.block	3
 ; String Variables
 STRVAR_A	.block	3
-STRVAR_B	.block	3
-STRVAR_C	.block	3
-STRVAR_D	.block	3
+STRVAR_S	.block	3
 ; Numeric Arrays
 ; String Arrays
 

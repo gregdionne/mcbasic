@@ -4289,8 +4289,11 @@ str_sr3_ir3			; numCalls = 1
 
 strcat_sr1_sr1_sr2			; numCalls = 4
 	.module	modstrcat_sr1_sr1_sr2
-	ldab	r2
-	addb	r1
+	ldx	r1+1
+	ldab	r1
+	abx
+	stx	strfree
+	addb	r2
 	stab	r1
 	ldab	r2
 	ldx	r2+1
@@ -4298,6 +4301,10 @@ strcat_sr1_sr1_sr2			; numCalls = 4
 
 strcat_sr1_sr1_ss			; numCalls = 3
 	.module	modstrcat_sr1_sr1_ss
+	ldx	r1+1
+	ldab	r1
+	abx
+	stx	strfree
 	tsx
 	ldx	,x
 	ldab	,x
@@ -4313,8 +4320,11 @@ strcat_sr1_sr1_ss			; numCalls = 3
 
 strcat_sr2_sr2_sr3			; numCalls = 1
 	.module	modstrcat_sr2_sr2_sr3
-	ldab	r3
-	addb	r2
+	ldx	r2+1
+	ldab	r2
+	abx
+	stx	strfree
+	addb	r3
 	stab	r2
 	ldab	r3
 	ldx	r3+1
