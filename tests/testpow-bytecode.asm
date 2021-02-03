@@ -56,6 +56,7 @@ r1	.block	5
 r2	.block	5
 r3	.block	5
 r4	.block	5
+r5	.block	5
 rend
 rvseed	.block	2
 curinst	.block	2
@@ -228,6 +229,54 @@ LINE_80
 	.byte	bytecode_pr_ss
 	.text	2, " \r"
 
+LINE_100
+
+	; X=2
+
+	.byte	bytecode_ld_ix_pb
+	.byte	bytecode_INTVAR_X
+	.byte	2
+
+	; Y=3
+
+	.byte	bytecode_ld_ix_pb
+	.byte	bytecode_INTVAR_Y
+	.byte	3
+
+	; Z=4
+
+	.byte	bytecode_ld_ix_pb
+	.byte	bytecode_INTVAR_Z
+	.byte	4
+
+LINE_110
+
+	; PRINT STR$(-(X^-(Y^-Z)));" "
+
+	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_INTVAR_X
+
+	.byte	bytecode_ld_ir2_ix
+	.byte	bytecode_INTVAR_Y
+
+	.byte	bytecode_neg_ir3_ix
+	.byte	bytecode_INTVAR_Z
+
+	.byte	bytecode_pow_fr2_ir2_ir3
+
+	.byte	bytecode_neg_fr2_fr2
+
+	.byte	bytecode_pow_fr1_ir1_fr2
+
+	.byte	bytecode_neg_fr1_fr1
+
+	.byte	bytecode_str_sr1_fr1
+
+	.byte	bytecode_pr_sr1
+
+	.byte	bytecode_pr_ss
+	.text	2, " \r"
+
 LLAST
 
 	; END
@@ -237,22 +286,36 @@ LLAST
 ; Library Catalog
 bytecode_clear	.equ	0
 bytecode_ld_ir1_ix	.equ	1
-bytecode_ld_ix_pw	.equ	2
-bytecode_pow_fr1_ir1_fx	.equ	3
-bytecode_pow_fr1_ir1_nb	.equ	4
-bytecode_pr_sr1	.equ	5
-bytecode_pr_ss	.equ	6
-bytecode_progbegin	.equ	7
-bytecode_progend	.equ	8
-bytecode_str_sr1_fr1	.equ	9
-bytecode_str_sr1_ix	.equ	10
+bytecode_ld_ir2_ix	.equ	2
+bytecode_ld_ix_pb	.equ	3
+bytecode_ld_ix_pw	.equ	4
+bytecode_neg_fr1_fr1	.equ	5
+bytecode_neg_fr2_fr2	.equ	6
+bytecode_neg_ir3_ix	.equ	7
+bytecode_pow_fr1_ir1_fr2	.equ	8
+bytecode_pow_fr1_ir1_fx	.equ	9
+bytecode_pow_fr1_ir1_nb	.equ	10
+bytecode_pow_fr2_ir2_ir3	.equ	11
+bytecode_pr_sr1	.equ	12
+bytecode_pr_ss	.equ	13
+bytecode_progbegin	.equ	14
+bytecode_progend	.equ	15
+bytecode_str_sr1_fr1	.equ	16
+bytecode_str_sr1_ix	.equ	17
 
 catalog
 	.word	clear
 	.word	ld_ir1_ix
+	.word	ld_ir2_ix
+	.word	ld_ix_pb
 	.word	ld_ix_pw
+	.word	neg_fr1_fr1
+	.word	neg_fr2_fr2
+	.word	neg_ir3_ix
+	.word	pow_fr1_ir1_fr2
 	.word	pow_fr1_ir1_fx
 	.word	pow_fr1_ir1_nb
+	.word	pow_fr2_ir2_ir3
 	.word	pr_sr1
 	.word	pr_ss
 	.word	progbegin
@@ -1376,13 +1439,30 @@ _start
 	stx	dataptr
 	rts
 
-ld_ir1_ix			; numCalls = 7
+ld_ir1_ix			; numCalls = 8
 	.module	modld_ir1_ix
 	jsr	extend
 	ldd	1,x
 	std	r1+1
 	ldab	0,x
 	stab	r1
+	rts
+
+ld_ir2_ix			; numCalls = 1
+	.module	modld_ir2_ix
+	jsr	extend
+	ldd	1,x
+	std	r2+1
+	ldab	0,x
+	stab	r2
+	rts
+
+ld_ix_pb			; numCalls = 3
+	.module	modld_ix_pb
+	jsr	extbyte
+	stab	2,x
+	ldd	#0
+	std	0,x
 	rts
 
 ld_ix_pw			; numCalls = 1
@@ -1392,6 +1472,51 @@ ld_ix_pw			; numCalls = 1
 	ldab	#0
 	stab	0,x
 	rts
+
+neg_fr1_fr1			; numCalls = 1
+	.module	modneg_fr1_fr1
+	jsr	noargs
+	neg	r1+4
+	ngc	r1+3
+	ngc	r1+2
+	ngc	r1+1
+	ngc	r1
+	rts
+
+neg_fr2_fr2			; numCalls = 1
+	.module	modneg_fr2_fr2
+	jsr	noargs
+	neg	r2+4
+	ngc	r2+3
+	ngc	r2+2
+	ngc	r2+1
+	ngc	r2
+	rts
+
+neg_ir3_ix			; numCalls = 1
+	.module	modneg_ir3_ix
+	jsr	extend
+	ldd	#0
+	subd	1,x
+	std	r3+1
+	ldab	#0
+	sbcb	0,x
+	stab	r3
+	rts
+
+pow_fr1_ir1_fr2			; numCalls = 1
+	.module	modpow_fr1_ir1_fr2
+	jsr	noargs
+	ldab	r2
+	stab	0+argv
+	ldd	r2+1
+	std	1+argv
+	ldd	r2+3
+	std	3+argv
+	ldd	#0
+	std	r1+3
+	ldx	#r1
+	jmp	powfltx
 
 pow_fr1_ir1_fx			; numCalls = 6
 	.module	modpow_fr1_ir1_fx
@@ -1419,7 +1544,20 @@ pow_fr1_ir1_nb			; numCalls = 1
 	ldx	#r1
 	jmp	powfltx
 
-pr_sr1			; numCalls = 8
+pow_fr2_ir2_ir3			; numCalls = 1
+	.module	modpow_fr2_ir2_ir3
+	jsr	noargs
+	ldab	r3
+	stab	0+argv
+	ldd	r3+1
+	std	1+argv
+	ldd	#0
+	std	r2+3
+	std	3+argv
+	ldx	#r2
+	jmp	powfltx
+
+pr_sr1			; numCalls = 9
 	.module	modpr_sr1
 	jsr	noargs
 	ldab	r1
@@ -1431,7 +1569,7 @@ pr_sr1			; numCalls = 8
 _rts
 	rts
 
-pr_ss			; numCalls = 8
+pr_ss			; numCalls = 9
 	.module	modpr_ss
 	ldx	curinst
 	inx
@@ -1486,7 +1624,7 @@ DD_ERROR	.equ	18
 error
 	jmp	R_ERROR
 
-str_sr1_fr1			; numCalls = 7
+str_sr1_fr1			; numCalls = 8
 	.module	modstr_sr1_fr1
 	jsr	noargs
 	ldd	r1+1
@@ -1530,6 +1668,8 @@ bytecode_FLT_0p33332	.equ	FLT_0p33332-symstart
 bytecode_FLT_0p50000	.equ	FLT_0p50000-symstart
 
 bytecode_INTVAR_X	.equ	INTVAR_X-symstart
+bytecode_INTVAR_Y	.equ	INTVAR_Y-symstart
+bytecode_INTVAR_Z	.equ	INTVAR_Z-symstart
 
 symstart
 
@@ -1546,6 +1686,8 @@ bss
 
 ; Numeric Variables
 INTVAR_X	.block	3
+INTVAR_Y	.block	3
+INTVAR_Z	.block	3
 ; String Variables
 ; Numeric Arrays
 ; String Arrays

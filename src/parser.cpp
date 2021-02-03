@@ -407,6 +407,16 @@ Expr *Parser::getFunction() {
                                  : unimplementedKeywordExpression();
 }
 
+Expr *Parser::getPowerExpression() {
+  Expr *expr = getFunction();
+
+  if (skipKeyword("^")) {
+    expr = new PowerExpr(numeric(expr), numeric(&Parser::getSignedFactor));
+  }
+
+  return expr;
+}
+
 Expr *Parser::getSignedFactor() {
   bool negate = false;
 
@@ -416,28 +426,18 @@ Expr *Parser::getSignedFactor() {
     }
   }
 
-  return negate ? new NegatedExpr(numeric(&Parser::getFunction))
-                : getFunction();
-}
-
-Expr *Parser::getPowerExpression() {
-  Expr *expr = getSignedFactor();
-
-  if (skipKeyword("^")) {
-    expr = new PowerExpr(numeric(expr), numeric(&Parser::getSignedFactor));
-  }
-
-  return expr;
+  return negate ? new NegatedExpr(numeric(&Parser::getPowerExpression))
+                : getPowerExpression();
 }
 
 Expr *Parser::getTerm() {
-  Expr *expr = getPowerExpression();
+  Expr *expr = getSignedFactor();
 
   if (isKeyword("*") || isKeyword("/")) {
     MultiplicativeExpr *mulExpr = new MultiplicativeExpr(numeric(expr));
     while (isKeyword("*") || isKeyword("/")) {
       bool isMul = matchEitherKeyword("*", "/");
-      mulExpr->append(isMul, numeric(&Parser::getPowerExpression));
+      mulExpr->append(isMul, numeric(&Parser::getSignedFactor));
     }
     expr = mulExpr;
   }

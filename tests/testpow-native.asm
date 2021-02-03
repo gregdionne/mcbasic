@@ -56,6 +56,7 @@ r1	.block	5
 r2	.block	5
 r3	.block	5
 r4	.block	5
+r5	.block	5
 rend
 rvseed	.block	2
 tmp1	.block	2
@@ -204,6 +205,54 @@ LINE_80
 
 	ldx	#FLT_m0p08332
 	jsr	pow_fr1_ir1_fx
+
+	jsr	str_sr1_fr1
+
+	jsr	pr_sr1
+
+	jsr	pr_ss
+	.text	2, " \r"
+
+LINE_100
+
+	; X=2
+
+	ldx	#INTVAR_X
+	ldab	#2
+	jsr	ld_ix_pb
+
+	; Y=3
+
+	ldx	#INTVAR_Y
+	ldab	#3
+	jsr	ld_ix_pb
+
+	; Z=4
+
+	ldx	#INTVAR_Z
+	ldab	#4
+	jsr	ld_ix_pb
+
+LINE_110
+
+	; PRINT STR$(-(X^-(Y^-Z)));" "
+
+	ldx	#INTVAR_X
+	jsr	ld_ir1_ix
+
+	ldx	#INTVAR_Y
+	jsr	ld_ir2_ix
+
+	ldx	#INTVAR_Z
+	jsr	neg_ir3_ix
+
+	jsr	pow_fr2_ir2_ir3
+
+	jsr	neg_fr2_fr2
+
+	jsr	pow_fr1_ir1_fr2
+
+	jsr	neg_fr1_fr1
 
 	jsr	str_sr1_fr1
 
@@ -1237,12 +1286,27 @@ _start
 	stx	dataptr
 	rts
 
-ld_ir1_ix			; numCalls = 7
+ld_ir1_ix			; numCalls = 8
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
 	ldab	0,x
 	stab	r1
+	rts
+
+ld_ir2_ix			; numCalls = 1
+	.module	modld_ir2_ix
+	ldd	1,x
+	std	r2+1
+	ldab	0,x
+	stab	r2
+	rts
+
+ld_ix_pb			; numCalls = 3
+	.module	modld_ix_pb
+	stab	2,x
+	ldd	#0
+	std	0,x
 	rts
 
 ld_ix_pw			; numCalls = 1
@@ -1251,6 +1315,47 @@ ld_ix_pw			; numCalls = 1
 	ldab	#0
 	stab	0,x
 	rts
+
+neg_fr1_fr1			; numCalls = 1
+	.module	modneg_fr1_fr1
+	neg	r1+4
+	ngc	r1+3
+	ngc	r1+2
+	ngc	r1+1
+	ngc	r1
+	rts
+
+neg_fr2_fr2			; numCalls = 1
+	.module	modneg_fr2_fr2
+	neg	r2+4
+	ngc	r2+3
+	ngc	r2+2
+	ngc	r2+1
+	ngc	r2
+	rts
+
+neg_ir3_ix			; numCalls = 1
+	.module	modneg_ir3_ix
+	ldd	#0
+	subd	1,x
+	std	r3+1
+	ldab	#0
+	sbcb	0,x
+	stab	r3
+	rts
+
+pow_fr1_ir1_fr2			; numCalls = 1
+	.module	modpow_fr1_ir1_fr2
+	ldab	r2
+	stab	0+argv
+	ldd	r2+1
+	std	1+argv
+	ldd	r2+3
+	std	3+argv
+	ldd	#0
+	std	r1+3
+	ldx	#r1
+	jmp	powfltx
 
 pow_fr1_ir1_fx			; numCalls = 6
 	.module	modpow_fr1_ir1_fx
@@ -1276,7 +1381,19 @@ pow_fr1_ir1_nb			; numCalls = 1
 	ldx	#r1
 	jmp	powfltx
 
-pr_sr1			; numCalls = 8
+pow_fr2_ir2_ir3			; numCalls = 1
+	.module	modpow_fr2_ir2_ir3
+	ldab	r3
+	stab	0+argv
+	ldd	r3+1
+	std	1+argv
+	ldd	#0
+	std	r2+3
+	std	3+argv
+	ldx	#r2
+	jmp	powfltx
+
+pr_sr1			; numCalls = 9
 	.module	modpr_sr1
 	ldab	r1
 	beq	_rts
@@ -1287,7 +1404,7 @@ pr_sr1			; numCalls = 8
 _rts
 	rts
 
-pr_ss			; numCalls = 8
+pr_ss			; numCalls = 9
 	.module	modpr_ss
 	pulx
 	ldab	,x
@@ -1336,7 +1453,7 @@ DD_ERROR	.equ	18
 error
 	jmp	R_ERROR
 
-str_sr1_fr1			; numCalls = 7
+str_sr1_fr1			; numCalls = 8
 	.module	modstr_sr1_fr1
 	ldd	r1+1
 	std	tmp2
@@ -1383,6 +1500,8 @@ bss
 
 ; Numeric Variables
 INTVAR_X	.block	3
+INTVAR_Y	.block	3
+INTVAR_Z	.block	3
 ; String Variables
 ; Numeric Arrays
 ; String Arrays

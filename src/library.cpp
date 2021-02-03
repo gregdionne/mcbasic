@@ -3053,7 +3053,7 @@ std::string Library::mdRdSUByte() {
   tasm.comment("ENTRY: X holds destination string descriptor");
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rsubyte");
-  tasm.jsr("strrel");
+  tasm.jsr("strdel");
   tasm.jsr("rnubyte");
   tasm.ldd("#0");
   tasm.std("tmp3");
@@ -3071,7 +3071,7 @@ std::string Library::mdRdSSByte() {
   tasm.comment("ENTRY: X holds destination string descriptor");
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rssbyte");
-  tasm.jsr("strrel");
+  tasm.jsr("strdel");
   tasm.jsr("rnsbyte");
   tasm.ldd("#0");
   tasm.std("tmp3");
@@ -3089,7 +3089,7 @@ std::string Library::mdRdSUWord() {
   tasm.comment("ENTRY: X holds destination string descriptor");
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rsuword");
-  tasm.jsr("strrel");
+  tasm.jsr("strdel");
   tasm.jsr("rnuword");
   tasm.ldd("#0");
   tasm.std("tmp3");
@@ -3107,7 +3107,7 @@ std::string Library::mdRdSSWord() {
   tasm.comment("ENTRY: X holds destination string descriptor");
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rssword");
-  tasm.jsr("strrel");
+  tasm.jsr("strdel");
   tasm.jsr("rnsword");
   tasm.ldd("#0");
   tasm.std("tmp3");
@@ -3125,7 +3125,7 @@ std::string Library::mdRdSNumbr() {
   tasm.comment("ENTRY: X holds destination string descriptor");
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rsnumbr");
-  tasm.jsr("strrel");
+  tasm.jsr("strdel");
   tasm.jsr("rnnumbr");
   tasm.jsr("strflt");
   tasm.std("1+argv");
@@ -3141,7 +3141,7 @@ std::string Library::mdRdSStrng() {
   tasm.comment("ENTRY: X holds destination string descriptor");
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rsstrng");
-  tasm.jsr("strrel");
+  tasm.jsr("strdel");
   tasm.jsr("rpstrng"); // tmp1+1 holds str dec, tmp2 holds loc
   tasm.ldab("tmp1+1");
   tasm.stab("0,X");

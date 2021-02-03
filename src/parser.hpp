@@ -47,8 +47,8 @@ private:
   Expr *getRightFunction();
   Expr *getMidFunction();
   Expr *getFunction();
-  Expr *getSignedFactor();
   Expr *getPowerExpression();
+  Expr *getSignedFactor();
   Expr *getTerm();
   Expr *getAdditiveExpression();
   Expr *getRelationalExpression();

@@ -1819,10 +1819,12 @@ std::string CoreImplementation::regStr_regStr_extStr(InstStrCat &inst) {
 
   Assembler tasm;
   preamble(tasm, inst);
+  tasm.stx("tmp1");
   tasm.ldx(inst.arg2->lword());
   tasm.ldab(inst.arg2->sbyte());
   tasm.abx();
   tasm.stx("strfree");
+  tasm.ldx("tmp1");
   tasm.addb(inst.arg3->sbyte());
   tasm.stab(inst.arg1->sbyte());
   tasm.ldab(inst.arg3->sbyte());

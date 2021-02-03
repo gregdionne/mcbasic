@@ -16280,10 +16280,12 @@ str_sr1_ix			; numCalls = 2
 strcat_sr1_sr1_sx			; numCalls = 1
 	.module	modstrcat_sr1_sr1_sx
 	jsr	extend
+	stx	tmp1
 	ldx	r1+1
 	ldab	r1
 	abx
 	stx	strfree
+	ldx	tmp1
 	addb	0,x
 	stab	r1
 	ldab	0,x

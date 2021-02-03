@@ -4277,7 +4277,7 @@ _ok
 ; ENTRY: X holds destination string descriptor
 ; EXIT:  data table read, and perm string created in X
 rsstrng
-	jsr	strrel
+	jsr	strdel
 	jsr	rpstrng
 	ldab	tmp1+1
 	stab	0,X
