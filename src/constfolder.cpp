@@ -320,10 +320,15 @@ void ExprConstFolder::operate(StrExpr &e) {
 
 void ExprConstFolder::operate(ShiftExpr &e) {
   if (fold(e.expr)) {
-    if (e.rhs > 0) {
-      dvalue *= (1 << e.rhs);
-    } else if (e.rhs < 0) {
-      dvalue /= (1 << e.rhs);
+    double tmpval = dvalue;
+    if (fold(e.count)) {
+      if (dvalue != std::round(dvalue)) {
+        fprintf(stderr, "SHIFT count evaluated to non-integral value\n");
+        exit(1);
+      }
+      dvalue = dvalue > 0   ? tmpval * (1 << static_cast<int>(dvalue))
+               : dvalue < 0 ? tmpval / (1 << static_cast<int>(-dvalue))
+                            : tmpval;
     }
   }
 }

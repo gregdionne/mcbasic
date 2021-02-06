@@ -60,6 +60,12 @@ public:
   IsFloat isFloat;
 
 private:
+  // replace an empty N-ary exprssion with its identity
+  static void reduceNullOp(std::unique_ptr<NumericExpr> &expr);
+
+  // remove identity elements from N-ary argument list
+  static void pruneIdentity(std::vector<std::unique_ptr<NumericExpr>> &operands,
+                            double identity);
   // remove multiplication if only one argument
   // remove addition if only one argument
   // replace subtraction with negation if only one argument
@@ -75,6 +81,10 @@ private:
   static void reduceRelationalMultiplication(std::unique_ptr<NumericExpr> &expr,
                                              IsFloat &isFloat,
                                              ExprMerger *that);
+  // replace
+  //    2^<integer>  with SHIFT(1, <integer>) for non-zero N
+  static void reducePowerOfTwo(std::unique_ptr<NumericExpr> &expr,
+                               IsFloat &isFloat, ExprMerger *that);
 
   // replace
   //    <number> * F, where F = 2^N  with SHIFT(<number>, N) for non-zero N
@@ -98,7 +108,8 @@ private:
 
   // replace SHIFT(SHIFT(<expr>, m), n) with SHIFT(<expr>, m+n)
   //
-  static void mergeDoubleShift(std::unique_ptr<NumericExpr> &expr);
+  static void mergeDoubleShift(std::unique_ptr<NumericExpr> &expr,
+                               ExprMerger *that);
 
   // move relational operators earlier in expression
   //   (delays promoting bool to integer)

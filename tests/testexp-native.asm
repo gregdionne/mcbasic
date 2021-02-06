@@ -622,7 +622,7 @@ LINE_1030
 	ldx	#FLTVAR_E
 	jsr	ld_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#FLTVAR_E
@@ -1255,6 +1255,9 @@ rmul315
 ;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
 ;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
 ;          uses tmp1
+shifti
+	clr	3,x
+	clr	4,x
 shift
 	tstb
 	beq	_rts
@@ -2228,6 +2231,7 @@ _ok
 shift_fr1_fr1_nb			; numCalls = 1
 	.module	modshift_fr1_fr1_nb
 	ldx	#r1
+	negb
 	jmp	shrflt
 
 shift_fr1_fr1_pb			; numCalls = 1

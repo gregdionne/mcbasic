@@ -199,7 +199,7 @@ LINE_120
 	ldx	#FLTVAR_X
 	jsr	add_fr1_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#FLTVAR_X
@@ -230,7 +230,7 @@ LINE_120
 	ldx	#FLTVAR_Y
 	jsr	mul_fr1_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#FLTVAR_Y
@@ -1733,6 +1733,7 @@ _ok
 shift_fr1_fr1_nb			; numCalls = 2
 	.module	modshift_fr1_fr1_nb
 	ldx	#r1
+	negb
 	jmp	shrflt
 
 sqr_fr1_fr1			; numCalls = 1

@@ -132,7 +132,15 @@ std::string Dispatcher::operate(InstArrayVal &inst) {
 }
 
 std::string Dispatcher::operate(InstShift &inst) {
-  return inst.isRegInt_regInt_posByte()
+  return inst.isRegFlt_regFlt_regInt()
+             ? implementation->regFlt_regFlt_regInt(inst)
+         : inst.isRegFlt_regFlt_extInt()
+             ? implementation->regFlt_regFlt_extInt(inst)
+         : inst.isRegFlt_regInt_regInt()
+             ? implementation->regFlt_regInt_regInt(inst)
+         : inst.isRegFlt_regInt_extInt()
+             ? implementation->regFlt_regInt_extInt(inst)
+         : inst.isRegInt_regInt_posByte()
              ? implementation->regInt_regInt_posByte(inst)
          : inst.isRegFlt_regFlt_posByte()
              ? implementation->regFlt_regFlt_posByte(inst)

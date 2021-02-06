@@ -1009,6 +1009,9 @@ rmul315
 ;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
 ;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
 ;          uses tmp1
+shifti
+	clr	3,x
+	clr	4,x
 shift
 	tstb
 	beq	_rts

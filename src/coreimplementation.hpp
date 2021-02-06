@@ -112,10 +112,14 @@ public:
   std::string immLbl(InstGoTo &inst) override;
   std::string immLbl(InstGoSub &inst) override;
 
-  virtual std::string regInt_regInt_posByte(InstShift &inst) override;
-  virtual std::string regFlt_regFlt_posByte(InstShift &inst) override;
-  virtual std::string regFlt_regInt_negByte(InstShift &inst) override;
-  virtual std::string regFlt_regFlt_negByte(InstShift &inst) override;
+  std::string regFlt_regFlt_regInt(InstShift &inst) override;
+  std::string regFlt_regFlt_extInt(InstShift &inst) override;
+  std::string regFlt_regInt_regInt(InstShift &inst) override;
+  std::string regFlt_regInt_extInt(InstShift &inst) override;
+  std::string regInt_regInt_posByte(InstShift &inst) override;
+  std::string regFlt_regFlt_posByte(InstShift &inst) override;
+  std::string regFlt_regInt_negByte(InstShift &inst) override;
+  std::string regFlt_regFlt_negByte(InstShift &inst) override;
 
   std::string regFlt_posByte(InstLd &inst) override;
   std::string regFlt_negByte(InstLd &inst) override;

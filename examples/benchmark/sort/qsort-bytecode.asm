@@ -189,7 +189,7 @@ LINE_130
 	.byte	bytecode_INTVAR_L
 
 	.byte	bytecode_shift_fr1_ir1_nb
-	.byte	1
+	.byte	-1
 
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_Z
@@ -1319,6 +1319,7 @@ shift_fr1_ir1_nb			; numCalls = 1
 	.module	modshift_fr1_ir1_nb
 	jsr	getbyte
 	ldx	#r1
+	negb
 	jmp	shrint
 
 sub_ir1_ir1_ix			; numCalls = 1

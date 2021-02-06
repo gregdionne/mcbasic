@@ -145,7 +145,7 @@ void ExprLister::operate(PowerExpr &e) {
 }
 
 void ExprLister::operate(ShiftExpr &e) {
-  result = e.funcName + '(' + list(e.expr) + ',' + std::to_string(e.rhs) + ')';
+  result = e.funcName + '(' + list(e.expr) + ',' + list(e.count) + ')';
 }
 
 void ExprLister::operate(ComplementedExpr &e) {

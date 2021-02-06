@@ -408,7 +408,7 @@ LINE_70
 	ldx	#FLTVAR_B8
 	jsr	add_fr1_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#FLTVAR_B7
@@ -4280,7 +4280,7 @@ LINE_910
 	ldx	#INTVAR_Y
 	jsr	add_ir2_ir2_ix
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr2_ir2_nb
 
 	ldab	#1
@@ -6796,7 +6796,7 @@ LINE_2044
 	ldx	#FLTVAR_B8
 	jsr	ld_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#FLTVAR_B7
@@ -10769,11 +10769,13 @@ _done
 shift_fr1_fr1_nb			; numCalls = 2
 	.module	modshift_fr1_fr1_nb
 	ldx	#r1
+	negb
 	jmp	shrflt
 
 shift_fr2_ir2_nb			; numCalls = 1
 	.module	modshift_fr2_ir2_nb
 	ldx	#r2
+	negb
 	jmp	shrint
 
 shift_ir1_ir1_pb			; numCalls = 2

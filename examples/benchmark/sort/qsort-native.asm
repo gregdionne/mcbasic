@@ -172,7 +172,7 @@ LINE_130
 	ldx	#INTVAR_L
 	jsr	sub_ir1_ir1_ix
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_ir1_nb
 
 	ldx	#INTVAR_Z
@@ -1098,6 +1098,7 @@ _ok
 shift_fr1_ir1_nb			; numCalls = 1
 	.module	modshift_fr1_ir1_nb
 	ldx	#r1
+	negb
 	jmp	shrint
 
 sub_ir1_ir1_ix			; numCalls = 1

@@ -457,7 +457,7 @@ LINE_9
 	ldx	#FLTARR_E
 	jsr	arrval1_ir2_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr2_fr2_nb
 
 	jsr	add_fr1_fr1_fr2
@@ -718,7 +718,7 @@ LINE_29
 	ldx	#FLTARR_S
 	jsr	arrval1_ir2_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr2_fr2_nb
 
 	jsr	add_fr1_fr1_fr2
@@ -1308,7 +1308,7 @@ LINE_150
 	ldx	#FLTARR_S
 	jsr	arrval1_ir2_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr2_fr2_nb
 
 	jsr	add_fr1_fr1_fr2
@@ -6379,6 +6379,7 @@ shift_fr1_fr1_pb			; numCalls = 17
 shift_fr2_fr2_nb			; numCalls = 3
 	.module	modshift_fr2_fr2_nb
 	ldx	#r2
+	negb
 	jmp	shrflt
 
 shift_ir1_ir1_pb			; numCalls = 5

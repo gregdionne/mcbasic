@@ -653,13 +653,13 @@ void ExprCompiler::operate(StringArrayExpr &e) {
 
 void ExprCompiler::operate(ShiftExpr &e) {
   e.expr->operate(this);
-  if (e.rhs != 0) {
-    result = queue.load(std::move(result));
+  result = queue.load(std::move(result));
+  double v;
+  if (!e.count->isConst(v) || v != 0) {
     auto dest = result->clone();
+    e.count->operate(this);
     result = queue.append(std::make_unique<InstShift>(
-        std::move(dest), std::move(result),
-        std::make_unique<AddressModeImm>(e.rhs < 0,
-                                         e.rhs < 0 ? -e.rhs : e.rhs)));
+        dest->clone(), dest->clone(), std::move(result)));
   }
 }
 
@@ -961,7 +961,7 @@ void ExprCompiler::operate(PowerExpr &e) {
 void ExprCompiler::operate(MultiplicativeExpr &e) {
   std::unique_ptr<AddressMode> reg;
   bool needLoad = true;
-  if (e.operands.empty()) { // all subtractions.  add all then negate.
+  if (e.operands.empty()) { // all divisions. multiply all then negate.
     for (auto &invoperand : e.invoperands) {
       if (needLoad) {
         invoperand->operate(this);

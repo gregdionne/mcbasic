@@ -1301,6 +1301,46 @@ std::string CoreImplementation::immLbl(InstGoSub &inst) {
   return unimplemented(inst);
 }
 
+std::string CoreImplementation::regFlt_regFlt_regInt(InstShift &inst) {
+  inst.dependencies.insert("mdshift");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->lbyte());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("shift");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regFlt_extInt(InstShift &inst) {
+  inst.dependencies.insert("mdshift");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->lbyte());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("shift");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regInt_regInt(InstShift &inst) {
+  inst.dependencies.insert("mdshift");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->lbyte());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("shifti");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regInt_extInt(InstShift &inst) {
+  inst.dependencies.insert("mdshift");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->lbyte());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("shifti");
+  return tasm.source();
+}
+
 std::string CoreImplementation::regInt_regInt_posByte(InstShift &inst) {
   inst.dependencies.insert("mdshlint");
   Assembler tasm;
@@ -1324,6 +1364,7 @@ std::string CoreImplementation::regFlt_regInt_negByte(InstShift &inst) {
   Assembler tasm;
   preamble(tasm, inst);
   tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.negb();
   tasm.jmp("shrint");
   return tasm.source();
 }
@@ -1333,6 +1374,7 @@ std::string CoreImplementation::regFlt_regFlt_negByte(InstShift &inst) {
   Assembler tasm;
   preamble(tasm, inst);
   tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.negb();
   tasm.jmp("shrflt");
   return tasm.source();
 }

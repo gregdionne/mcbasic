@@ -232,13 +232,13 @@ LINE_106
 	ldx	#FLTVAR_WX
 	jsr	ld_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#FLTVAR_WX
 	jsr	ld_fr2_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr2_fr2_nb
 
 	jsr	ldne_ir1_ir1_fr2
@@ -259,13 +259,13 @@ LINE_107
 	ldx	#FLTVAR_WY
 	jsr	ld_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#FLTVAR_WY
 	jsr	ld_fr2_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr2_fr2_nb
 
 	jsr	ldne_ir1_ir1_fr2
@@ -360,7 +360,7 @@ LINE_220
 	ldx	#FLTVAR_WX
 	jsr	ld_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#INTVAR_X
@@ -371,7 +371,7 @@ LINE_220
 	ldx	#FLTVAR_WY
 	jsr	ld_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#INTVAR_Y
@@ -636,7 +636,7 @@ LINE_2010
 	ldx	#FLTVAR_WX
 	jsr	ld_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#INTVAR_X
@@ -647,7 +647,7 @@ LINE_2010
 	ldx	#FLTVAR_WY
 	jsr	ld_fr1_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_fr1_nb
 
 	ldx	#INTVAR_Y
@@ -1727,7 +1727,7 @@ LINE_3050
 	ldx	#FLTVAR_Q
 	jsr	ld_fr2_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr2_fr2_nb
 
 	jsr	reset_ir1_ir2
@@ -1988,7 +1988,7 @@ LINE_3150
 	ldx	#FLTVAR_Q
 	jsr	ld_fr2_fx
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr2_fr2_nb
 
 	jsr	reset_ir1_ir2
@@ -5439,11 +5439,13 @@ _done
 shift_fr1_fr1_nb			; numCalls = 6
 	.module	modshift_fr1_fr1_nb
 	ldx	#r1
+	negb
 	jmp	shrflt
 
 shift_fr2_fr2_nb			; numCalls = 4
 	.module	modshift_fr2_fr2_nb
 	ldx	#r2
+	negb
 	jmp	shrflt
 
 sound_ir1_ir2			; numCalls = 14

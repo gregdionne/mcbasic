@@ -1661,6 +1661,9 @@ std::string Library::mdShift() {
   tasm.comment("  EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)");
   tasm.comment("         uses tmp1");
 
+  tasm.label("shifti");
+  tasm.clr("3,x");
+  tasm.clr("4,x");
   tasm.label("shift");
   tasm.tstb();
   tasm.beq("_rts");

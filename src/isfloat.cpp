@@ -7,7 +7,8 @@ void IsFloat::operate(ValExpr & /*expr*/) { result = true; }
 void IsFloat::operate(AbsExpr &e) { e.expr->operate(this); }
 
 void IsFloat::operate(ShiftExpr &e) {
-  if (e.rhs < 0) {
+  double value;
+  if (!e.count->isConst(value) || !FixedPoint(value).isPosWord()) {
     result = true;
   } else {
     e.expr->operate(this);

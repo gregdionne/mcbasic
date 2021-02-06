@@ -639,7 +639,7 @@ LINE_1030
 	.byte	bytecode_FLTVAR_E
 
 	.byte	bytecode_shift_fr1_fr1_nb
-	.byte	1
+	.byte	-1
 
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_E
@@ -1453,6 +1453,9 @@ rmul315
 ;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
 ;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
 ;          uses tmp1
+shifti
+	clr	3,x
+	clr	4,x
 shift
 	tstb
 	beq	_rts
@@ -2465,6 +2468,7 @@ shift_fr1_fr1_nb			; numCalls = 1
 	.module	modshift_fr1_fr1_nb
 	jsr	getbyte
 	ldx	#r1
+	negb
 	jmp	shrflt
 
 shift_fr1_fr1_pb			; numCalls = 1

@@ -96,10 +96,10 @@ void Instruction::resultPow() {
 }
 
 void Instruction::resultShift() {
-  if (arg3->isNegByte()) {
-    resultFlt();
-  } else {
+  if (arg3->isPosByte() || arg3->isPosWord()) {
     resultArg();
+  } else {
+    resultFlt();
   }
 }
 

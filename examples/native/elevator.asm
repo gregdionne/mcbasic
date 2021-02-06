@@ -2491,7 +2491,7 @@ LINE_82
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_ir1_nb
 
 	ldab	#1
@@ -2602,7 +2602,7 @@ LINE_84
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_ir1_nb
 
 	ldab	#1
@@ -5509,7 +5509,7 @@ LINE_2200
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_ir1_nb
 
 	ldab	#2
@@ -5567,7 +5567,7 @@ LINE_2210
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
 
-	ldab	#1
+	ldab	#-1
 	jsr	shift_fr1_ir1_nb
 
 	ldab	#2
@@ -8955,6 +8955,7 @@ shift_fr1_fr1_pb			; numCalls = 1
 shift_fr1_ir1_nb			; numCalls = 4
 	.module	modshift_fr1_ir1_nb
 	ldx	#r1
+	negb
 	jmp	shrint
 
 shift_ir1_ir1_pb			; numCalls = 7

@@ -13,4 +13,5 @@ Items to do:
     ON 2+bool GOSUB T,F  -> IF bool THEN GOSUB true ELSE GOSUB false <ENDIF>
        2 +  0 = 2
        2 + -1 = 1
-* Add support for COCO COLORBASIC.  (e.g. ELSE)
+* factor out shift expressions from multiplicative expressions
+* Add support for MCX BASIC/COCO BASIC (e.g. "ELSE")

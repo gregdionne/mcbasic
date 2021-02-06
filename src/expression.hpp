@@ -1,4 +1,5 @@
 // Copyright (C) 2021 Greg Dionne
+
 // Distributed under MIT License
 #ifndef EXPRESSIONS_HPP
 #define EXPRESSIONS_HPP
@@ -233,6 +234,7 @@ public:
   std::vector<std::unique_ptr<NumericExpr>> invoperands;
   std::string funcName;
   std::string invName;
+  double identity{0};
   void append(bool isOp, std::unique_ptr<NumericExpr> e) {
     if (isOp) {
       operands.emplace_back(std::move(e));
@@ -301,6 +303,7 @@ public:
   explicit MultiplicativeExpr(std::unique_ptr<NumericExpr> e) {
     funcName = "*";
     invName = "/";
+    identity = 1;
     operands.emplace_back(std::move(e));
   }
   void operate(ExprOp *op) override { op->operate(*this); }
@@ -311,6 +314,7 @@ public:
   explicit AdditiveExpr(std::unique_ptr<NumericExpr> e) {
     funcName = "+";
     invName = "-";
+    identity = 0;
     operands.emplace_back(std::move(e));
   }
   void operate(ExprOp *op) override { op->operate(*this); }
@@ -341,6 +345,7 @@ class AndExpr : public NaryNumericExpr {
 public:
   explicit AndExpr(std::unique_ptr<NumericExpr> e) {
     funcName = "AND";
+    identity = -1;
     operands.emplace_back(std::move(e));
   }
   void append(std::unique_ptr<NumericExpr> e) {
@@ -361,6 +366,7 @@ class OrExpr : public NaryNumericExpr {
 public:
   explicit OrExpr(std::unique_ptr<NumericExpr> e) {
     funcName = "OR";
+    identity = 0;
     operands.emplace_back(std::move(e));
   }
   void append(std::unique_ptr<NumericExpr> e) {
@@ -381,9 +387,9 @@ class ShiftExpr : public NumericExpr {
 public:
   std::string funcName = "SHIFT";
   std::unique_ptr<NumericExpr> expr;
-  int rhs;
-  ShiftExpr(std::unique_ptr<NumericExpr> e, int n)
-      : expr(std::move(e)), rhs(n) {}
+  std::unique_ptr<NumericExpr> count;
+  ShiftExpr(std::unique_ptr<NumericExpr> e, std::unique_ptr<NumericExpr> n)
+      : expr(std::move(e)), count(std::move(n)) {}
   void operate(ExprOp *op) override { op->operate(*this); }
 };
 

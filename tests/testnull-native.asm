@@ -1,4 +1,4 @@
-; Assembly for testshift.bas
+; Assembly for testnull.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
@@ -73,195 +73,33 @@ argv	.block	10
 
 LINE_10
 
-	; A=1
+	; Y=2
 
-	ldx	#INTVAR_A
-	ldab	#1
+	ldx	#INTVAR_Y
+	ldab	#2
 	jsr	ld_ix_pb
 
 LINE_20
 
-	; B=SHIFT(A,1)
+	; X+=Y
 
-	ldx	#INTVAR_A
+	ldx	#INTVAR_Y
 	jsr	ld_ir1_ix
 
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
-
-	ldx	#INTVAR_B
-	jsr	ld_ix_ir1
+	ldx	#INTVAR_X
+	jsr	add_ix_ix_ir1
 
 LINE_30
 
-	; C=SHIFT(A,1)
+	; PRINT STR$(Y);" "
 
-	ldx	#INTVAR_A
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
-
-	ldx	#FLTVAR_C
-	jsr	ld_fx_ir1
-
-LINE_40
-
-	; D=SHIFT(C,2)
-
-	ldx	#FLTVAR_C
-	jsr	ld_fr1_fx
-
-	ldab	#2
-	jsr	shift_fr1_fr1_pb
-
-	ldx	#FLTVAR_D
-	jsr	ld_fx_fr1
-
-LINE_50
-
-	; E=SHIFT(D,-2)
-
-	ldx	#FLTVAR_D
-	jsr	ld_fr1_fx
-
-	ldab	#-2
-	jsr	shift_fr1_fr1_nb
-
-	ldx	#FLTVAR_E
-	jsr	ld_fx_fr1
-
-LINE_60
-
-	; F=SHIFT(A,-2)
-
-	ldx	#INTVAR_A
-	jsr	ld_ir1_ix
-
-	ldab	#-2
-	jsr	shift_fr1_ir1_nb
-
-	ldx	#FLTVAR_F
-	jsr	ld_fx_fr1
-
-LINE_70
-
-	; G=A
-
-	ldx	#INTVAR_A
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_G
-	jsr	ld_ix_ir1
-
-LINE_80
-
-	; H=SHIFT(A,-2)
-
-	ldx	#INTVAR_A
-	jsr	ld_ir1_ix
-
-	ldab	#-2
-	jsr	shift_fr1_ir1_nb
-
-	ldx	#FLTVAR_H
-	jsr	ld_fx_fr1
-
-LINE_100
-
-	; PRINT STR$(A);" ?= 1 "
-
-	ldx	#INTVAR_A
+	ldx	#INTVAR_Y
 	jsr	str_sr1_ix
 
 	jsr	pr_sr1
 
 	jsr	pr_ss
-	.text	7, " ?= 1 \r"
-
-LINE_110
-
-	; PRINT STR$(B);" ?= 2 "
-
-	ldx	#INTVAR_B
-	jsr	str_sr1_ix
-
-	jsr	pr_sr1
-
-	jsr	pr_ss
-	.text	7, " ?= 2 \r"
-
-LINE_120
-
-	; PRINT STR$(C);" ?= 2 "
-
-	ldx	#FLTVAR_C
-	jsr	str_sr1_fx
-
-	jsr	pr_sr1
-
-	jsr	pr_ss
-	.text	7, " ?= 2 \r"
-
-LINE_130
-
-	; PRINT STR$(D);" ?= 8 "
-
-	ldx	#FLTVAR_D
-	jsr	str_sr1_fx
-
-	jsr	pr_sr1
-
-	jsr	pr_ss
-	.text	7, " ?= 8 \r"
-
-LINE_140
-
-	; PRINT STR$(E);" ?= 2 "
-
-	ldx	#FLTVAR_E
-	jsr	str_sr1_fx
-
-	jsr	pr_sr1
-
-	jsr	pr_ss
-	.text	7, " ?= 2 \r"
-
-LINE_150
-
-	; PRINT STR$(F);" ?= 0.25 "
-
-	ldx	#FLTVAR_F
-	jsr	str_sr1_fx
-
-	jsr	pr_sr1
-
-	jsr	pr_ss
-	.text	10, " ?= 0.25 \r"
-
-LINE_160
-
-	; PRINT STR$(G);" ?= 1 "
-
-	ldx	#INTVAR_G
-	jsr	str_sr1_ix
-
-	jsr	pr_sr1
-
-	jsr	pr_ss
-	.text	7, " ?= 1 \r"
-
-LINE_170
-
-	; PRINT STR$(H);" ?= 0.25 "
-
-	ldx	#FLTVAR_H
-	jsr	str_sr1_fx
-
-	jsr	pr_sr1
-
-	jsr	pr_ss
-	.text	10, " ?= 0.25 \r"
+	.text	2, " \r"
 
 LLAST
 
@@ -422,92 +260,6 @@ _loop
 	inx
 	decb
 	bne	_loop
-	rts
-
-	.module	mdshlflt
-; multiply X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shlflt
-	cmpb	#8
-	blo	_shlbit
-	stab	tmp1
-	ldd	1,x
-	std	0,x
-	ldd	3,x
-	std	2,x
-	clr	4,x
-	ldab	tmp1
-	subb	#8
-	bne	shlflt
-	rts
-_shlbit
-	lsl	4,x
-	rol	3,x
-	rol	2,x
-	rol	1,x
-	rol	0,x
-	decb
-	bne	_shlbit
-	rts
-
-	.module	mdshlint
-; multiply X by 2^ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x)
-;          uses tmp1
-shlint
-	cmpb	#8
-	blo	_shlbit
-	stab	tmp1
-	ldd	1,x
-	std	0,x
-	clr	2,x
-	ldab	tmp1
-	subb	#8
-	bne	shlint
-	rts
-_shlbit
-	lsl	2,x
-	rol	1,x
-	rol	0,x
-	decb
-	bne	_shlbit
-	rts
-
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
-	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
 	rts
 
 	.module	mdstrflt
@@ -731,6 +483,16 @@ _panic
 	ldab	#1
 	jmp	error
 
+add_ix_ix_ir1			; numCalls = 1
+	.module	modadd_ix_ix_ir1
+	ldd	1,x
+	addd	r1+1
+	std	1,x
+	ldab	0,x
+	adcb	r1
+	stab	0,x
+	rts
+
 clear			; numCalls = 1
 	.module	modclear
 	clra
@@ -753,50 +515,12 @@ _start
 	stx	dataptr
 	rts
 
-ld_fr1_fx			; numCalls = 2
-	.module	modld_fr1_fx
-	ldd	3,x
-	std	r1+3
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
-ld_fx_fr1			; numCalls = 4
-	.module	modld_fx_fr1
-	ldd	r1+3
-	std	3,x
-	ldd	r1+1
-	std	1,x
-	ldab	r1
-	stab	0,x
-	rts
-
-ld_fx_ir1			; numCalls = 1
-	.module	modld_fx_ir1
-	ldd	#0
-	std	3,x
-	ldd	r1+1
-	std	1,x
-	ldab	r1
-	stab	0,x
-	rts
-
-ld_ir1_ix			; numCalls = 5
+ld_ir1_ix			; numCalls = 1
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
 	ldab	0,x
 	stab	r1
-	rts
-
-ld_ix_ir1			; numCalls = 2
-	.module	modld_ix_ir1
-	ldd	r1+1
-	std	1,x
-	ldab	r1
-	stab	0,x
 	rts
 
 ld_ix_pb			; numCalls = 1
@@ -806,7 +530,7 @@ ld_ix_pb			; numCalls = 1
 	std	0,x
 	rts
 
-pr_sr1			; numCalls = 8
+pr_sr1			; numCalls = 1
 	.module	modpr_sr1
 	ldab	r1
 	beq	_rts
@@ -817,7 +541,7 @@ pr_sr1			; numCalls = 8
 _rts
 	rts
 
-pr_ss			; numCalls = 8
+pr_ss			; numCalls = 1
 	.module	modpr_ss
 	pulx
 	ldab	,x
@@ -868,43 +592,7 @@ LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 
-shift_fr1_fr1_nb			; numCalls = 1
-	.module	modshift_fr1_fr1_nb
-	ldx	#r1
-	negb
-	jmp	shrflt
-
-shift_fr1_fr1_pb			; numCalls = 1
-	.module	modshift_fr1_fr1_pb
-	ldx	#r1
-	jmp	shlflt
-
-shift_fr1_ir1_nb			; numCalls = 2
-	.module	modshift_fr1_ir1_nb
-	ldx	#r1
-	negb
-	jmp	shrint
-
-shift_ir1_ir1_pb			; numCalls = 2
-	.module	modshift_ir1_ir1_pb
-	ldx	#r1
-	jmp	shlint
-
-str_sr1_fx			; numCalls = 5
-	.module	modstr_sr1_fx
-	ldd	1,x
-	std	tmp2
-	ldab	0,x
-	stab	tmp1+1
-	ldd	3,x
-	std	tmp3
-	jsr	strflt
-	std	r1+1
-	ldab	tmp1
-	stab	r1
-	rts
-
-str_sr1_ix			; numCalls = 3
+str_sr1_ix			; numCalls = 1
 	.module	modstr_sr1_ix
 	ldd	1,x
 	std	tmp2
@@ -928,14 +616,8 @@ symstart
 bss
 
 ; Numeric Variables
-INTVAR_A	.block	3
-INTVAR_B	.block	3
-INTVAR_G	.block	3
-FLTVAR_C	.block	5
-FLTVAR_D	.block	5
-FLTVAR_E	.block	5
-FLTVAR_F	.block	5
-FLTVAR_H	.block	5
+INTVAR_X	.block	3
+INTVAR_Y	.block	3
 ; String Variables
 ; Numeric Arrays
 ; String Arrays

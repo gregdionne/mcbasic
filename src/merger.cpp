@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "merger.hpp"
-
+#include "constfolder.hpp"
 #include <string>
 
 // TODO:
@@ -9,7 +9,25 @@
 //   one additional ExprOp to manage the others.  That should
 //   remove reliance upon private methods using dynamic_cast<>.
 
+void ExprMerger::reduceNullOp(std::unique_ptr<NumericExpr> &expr) {
+  auto *nexpr = dynamic_cast<NaryNumericExpr *>(expr.get());
+  if (nexpr != nullptr && nexpr->operands.empty() &&
+      nexpr->invoperands.empty()) {
+    expr = std::make_unique<NumericConstantExpr>(nexpr->identity);
+  }
+}
+
 void ExprMerger::mergeUnaryOp(std::unique_ptr<NumericExpr> &expr) {
+  auto *andexpr = dynamic_cast<AndExpr *>(expr.get());
+  if ((andexpr != nullptr) && andexpr->operands.size() == 1) {
+    expr = std::move(andexpr->operands[0]);
+  }
+
+  auto *orexpr = dynamic_cast<OrExpr *>(expr.get());
+  if ((orexpr != nullptr) && orexpr->operands.size() == 1) {
+    expr = std::move(orexpr->operands[0]);
+  }
+
   auto *mexpr = dynamic_cast<MultiplicativeExpr *>(expr.get());
   if ((mexpr != nullptr) && mexpr->operands.size() == 1 &&
       mexpr->invoperands.empty()) {
@@ -61,6 +79,20 @@ void ExprMerger::reduceRelationalMultiplication(
   }
 }
 
+void ExprMerger::reducePowerOfTwo(std::unique_ptr<NumericExpr> &expr,
+                                  IsFloat &isFloat, ExprMerger *that) {
+  auto *mexpr = dynamic_cast<PowerExpr *>(expr.get());
+  if (mexpr != nullptr) {
+    double value;
+    if (mexpr->base->isConst(value) && value == 2 &&
+        !boperate(mexpr->exponent, isFloat)) {
+      expr = std::make_unique<ShiftExpr>(
+          std::make_unique<NumericConstantExpr>(1), std::move(mexpr->exponent));
+      that->merge(expr);
+    }
+  }
+}
+
 void ExprMerger::reducePowerOfTwoMultiplication(
     std::unique_ptr<NumericExpr> &expr, ExprMerger *that) {
   auto *mexpr = dynamic_cast<MultiplicativeExpr *>(expr.get());
@@ -73,7 +105,8 @@ void ExprMerger::reducePowerOfTwoMultiplication(
         mexpr->operands.erase(iOperand);
         that->merge(expr);
         if (n != 0) {
-          expr = std::make_unique<ShiftExpr>(std::move(expr), n);
+          auto count = std::make_unique<NumericConstantExpr>(n);
+          expr = std::make_unique<ShiftExpr>(std::move(expr), std::move(count));
           that->merge(expr);
         }
         return;
@@ -88,7 +121,8 @@ void ExprMerger::reducePowerOfTwoMultiplication(
         mexpr->invoperands.erase(iOperand);
         that->merge(expr);
         if (n != 0) {
-          expr = std::make_unique<ShiftExpr>(std::move(expr), -n);
+          auto count = std::make_unique<NumericConstantExpr>(-n);
+          expr = std::make_unique<ShiftExpr>(std::move(expr), std::move(count));
           that->merge(expr);
         }
         return;
@@ -151,14 +185,21 @@ void ExprMerger::mergeDoubleNegation(std::unique_ptr<NumericExpr> &expr) {
   }
 }
 
-void ExprMerger::mergeDoubleShift(std::unique_ptr<NumericExpr> &expr) {
+void ExprMerger::mergeDoubleShift(std::unique_ptr<NumericExpr> &expr,
+                                  ExprMerger *that) {
   ShiftExpr *outerExpr = nullptr;
   ShiftExpr *innerExpr = nullptr;
 
   if (((outerExpr = dynamic_cast<ShiftExpr *>(expr.get())) != nullptr) &&
       ((innerExpr = dynamic_cast<ShiftExpr *>(outerExpr->expr.get())) !=
        nullptr)) {
-    outerExpr->rhs += innerExpr->rhs;
+    auto addExpr = std::make_unique<AdditiveExpr>(std::move(outerExpr->count));
+    addExpr->append(true, std::move(innerExpr->count));
+    ExprConstFolder cfe;
+    addExpr->operate(&cfe);
+    std::unique_ptr<NumericExpr> aExpr = std::move(addExpr);
+    that->merge(aExpr);
+    outerExpr->count = std::move(aExpr);
     outerExpr->expr = std::move(innerExpr->expr);
   }
 }
@@ -195,11 +236,13 @@ void ExprMerger::knead(std::vector<std::unique_ptr<NumericExpr>> &operands) {
 // merge expressions...
 void ExprMerger::merge(std::unique_ptr<NumericExpr> &expr) {
   expr->operate(this);
+  reduceNullOp(expr);
   mergeUnaryOp(expr);
   mergeDoubleNegation(expr);
-  mergeDoubleShift(expr);
+  mergeDoubleShift(expr, this);
   mergeNegatedSum(expr);
   mergeNegatedMultiplication(expr);
+  reducePowerOfTwo(expr, isFloat, this);
   reduceRelationalMultiplication(expr, isFloat, this);
   reducePowerOfTwoMultiplication(expr, this);
 }
@@ -402,6 +445,18 @@ void ExprMerger::operate(PowerExpr &e) {
   merge(e.exponent);
 }
 
+void ExprMerger::pruneIdentity(
+    std::vector<std::unique_ptr<NumericExpr>> &operands, double identity) {
+  auto iop = operands.begin();
+  while (iop != operands.end()) {
+    double value;
+    if ((*iop)->isConst(value) && value == identity)
+      iop = operands.erase(iop);
+    else
+      ++iop;
+  }
+}
+
 void ExprMerger::merge(NaryNumericExpr &e) {
   for (auto &operand : e.operands) {
     merge(operand);
@@ -438,6 +493,9 @@ void ExprMerger::merge(NaryNumericExpr &e) {
       --i;
     }
   }
+
+  pruneIdentity(e.operands, e.identity);
+  pruneIdentity(e.invoperands, e.identity);
 }
 
 void ExprMerger::operate(AdditiveExpr &e) {

@@ -142,7 +142,7 @@ LINE_50
 	.byte	bytecode_FLTVAR_D
 
 	.byte	bytecode_shift_fr1_fr1_nb
-	.byte	2
+	.byte	-2
 
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_E
@@ -155,7 +155,7 @@ LINE_60
 	.byte	bytecode_INTVAR_A
 
 	.byte	bytecode_shift_fr1_ir1_nb
-	.byte	2
+	.byte	-2
 
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_F
@@ -178,7 +178,7 @@ LINE_80
 	.byte	bytecode_INTVAR_A
 
 	.byte	bytecode_shift_fr1_ir1_nb
-	.byte	2
+	.byte	-2
 
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_H
@@ -1036,6 +1036,7 @@ shift_fr1_fr1_nb			; numCalls = 1
 	.module	modshift_fr1_fr1_nb
 	jsr	getbyte
 	ldx	#r1
+	negb
 	jmp	shrflt
 
 shift_fr1_fr1_pb			; numCalls = 1
@@ -1048,6 +1049,7 @@ shift_fr1_ir1_nb			; numCalls = 2
 	.module	modshift_fr1_ir1_nb
 	jsr	getbyte
 	ldx	#r1
+	negb
 	jmp	shrint
 
 shift_ir1_ir1_pb			; numCalls = 2
