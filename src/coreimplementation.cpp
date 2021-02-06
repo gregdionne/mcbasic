@@ -64,6 +64,7 @@ std::string CoreImplementation::inherent(InstBegin &inst) {
   tasm.pshb();
   tasm.pshb();
   tasm.pshb();
+  tasm.stab("strtcnt");
   tasm.jmp(",x");
   tasm.labelText("_reqmsg", "\"?MICROCOLOR BASIC ROM REQUIRED\"");
   tasm.label("_mcbasic");
@@ -92,6 +93,7 @@ std::string CoreImplementation::inherent(InstEnd &inst) {
   tasm.equ("OM_ERROR", "12");
   tasm.equ("BS_ERROR", "16");
   tasm.equ("DD_ERROR", "18");
+  tasm.equ("LS_ERROR", "28");
   tasm.label("error");
   tasm.jmp("R_ERROR");
   return tasm.source();
@@ -1802,15 +1804,21 @@ std::string CoreImplementation::regStr_regStr_regStr(InstStrCat &inst) {
 
   Assembler tasm;
   preamble(tasm, inst);
+  tasm.ldx(inst.arg3->lword());
+  tasm.jsr("strrel");
   tasm.ldx(inst.arg2->lword());
   tasm.ldab(inst.arg2->sbyte());
   tasm.abx();
   tasm.stx("strfree");
   tasm.addb(inst.arg3->sbyte());
+  tasm.bcs("_lserror");
   tasm.stab(inst.arg1->sbyte());
   tasm.ldab(inst.arg3->sbyte());
   tasm.ldx(inst.arg3->lword());
   tasm.jmp("strtmp");
+  tasm.label("_lserror");
+  tasm.ldab("#LS_ERROR");
+  tasm.jmp("error");
   return tasm.source();
 }
 
@@ -1826,10 +1834,14 @@ std::string CoreImplementation::regStr_regStr_extStr(InstStrCat &inst) {
   tasm.stx("strfree");
   tasm.ldx("tmp1");
   tasm.addb(inst.arg3->sbyte());
+  tasm.bcs("_lserror");
   tasm.stab(inst.arg1->sbyte());
   tasm.ldab(inst.arg3->sbyte());
   tasm.ldx(inst.arg3->lword());
   tasm.jmp("strtmp");
+  tasm.label("_lserror");
+  tasm.ldab("#LS_ERROR");
+  tasm.jmp("error");
   return tasm.source();
 }
 

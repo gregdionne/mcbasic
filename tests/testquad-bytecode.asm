@@ -43,6 +43,7 @@ R_MCXID	.equ	$FFDA	; ID location for MCX BASIC
 
 ; direct page registers
 	.org	$80
+strtcnt	.block	1
 strbuf	.block	2
 strend	.block	2
 strfree	.block	2
@@ -795,6 +796,8 @@ _shlbit
 ; ENTRY: tmp1+1 holds length, tmp2 holds compare
 ; EXIT:  we return correct Z flag for caller
 streqbs
+	ldx	tmp2
+	jsr	strrel
 	jsr	immstr
 	sts	tmp3
 	cmpb	tmp1+1
@@ -820,6 +823,7 @@ _ne
 
 	.module	mdstrflt
 strflt
+	inc	strtcnt
 	pshx
 	tst	tmp1+1
 	bmi	_neg
@@ -1008,15 +1012,35 @@ _fdone
 	.module	mdstrrel
 ; release a temporary string
 ; ENTRY: X holds string start
-; EXIT:  X holds new end of string space
+; EXIT:  <all reg's preserved>
+; sttrel should be called from:
+;  - ASC, VAL, LEN, PRINT
+;  - right hand side of strcat
+;  - relational operators
+;  - when LEFT$, MID$, RIGHT$ return null
 strrel
 	cpx	strend
 	bls	_rts
 	cpx	strstop
 	bhs	_rts
+	tst	strtcnt
+	beq	_panic
+	dec	strtcnt
+	beq	_restore
 	stx	strfree
 _rts
 	rts
+_restore
+	pshx
+	ldx	strend
+	inx
+	inx
+	stx	strfree
+	pulx
+	rts
+_panic
+	ldab	#1
+	jmp	error
 
 	.module	mdtobc
 ; push for-loop record on stack
@@ -1366,6 +1390,7 @@ progbegin			; numCalls = 1
 	pshb
 	pshb
 	pshb
+	stab	strtcnt
 	jmp	,x
 _reqmsg	.text	"?MICROCOLOR BASIC ROM REQUIRED"
 _mcbasic
@@ -1392,6 +1417,7 @@ OV_ERROR	.equ	10
 OM_ERROR	.equ	12
 BS_ERROR	.equ	16
 DD_ERROR	.equ	18
+LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 

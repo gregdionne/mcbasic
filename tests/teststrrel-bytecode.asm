@@ -1,4 +1,4 @@
-; Assembly for teststrvar.bas
+; Assembly for teststrrel.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
@@ -89,79 +89,75 @@ program
 
 LINE_10
 
-	; A$="FRED"
+	; A$="THIS IS A TEST TO SEE IF REPEATED CALLS"
 
 	.byte	bytecode_ld_sr1_ss
-	.text	4, "FRED"
+	.text	39, "THIS IS A TEST TO SEE IF REPEATED CALLS"
 
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_A
 
 LINE_20
 
-	; B$="BORNEY"
+	; B$="TO STRING CONCATENATION GENERATE A LEAK"
 
 	.byte	bytecode_ld_sr1_ss
-	.text	6, "BORNEY"
+	.text	39, "TO STRING CONCATENATION GENERATE A LEAK"
 
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_B
 
 LINE_30
 
-	; C$=A$+B$
+	; C$="WHEN USING MID$ or RIGHT$"
 
-	.byte	bytecode_strinit_sr1_sx
-	.byte	bytecode_STRVAR_A
-
-	.byte	bytecode_strcat_sr1_sr1_sx
-	.byte	bytecode_STRVAR_B
+	.byte	bytecode_ld_sr1_ss
+	.text	25, "WHEN USING MID$ or RIGHT$"
 
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_C
 
 LINE_40
 
-	; PRINT C$
+	; FOR I=1 TO 1000
 
-	.byte	bytecode_pr_sx
-	.byte	bytecode_STRVAR_C
+	.byte	bytecode_for_ix_pb
+	.byte	bytecode_INTVAR_I
+	.byte	1
 
-	.byte	bytecode_pr_ss
-	.text	1, "\r"
+	.byte	bytecode_to_ip_pw
+	.word	1000
 
 LINE_50
 
-	; D$=B$+A$
+	; PRINT STR$(LEN(LEFT$(A$+B$+C$,1)));" "
 
 	.byte	bytecode_strinit_sr1_sx
+	.byte	bytecode_STRVAR_A
+
+	.byte	bytecode_strcat_sr1_sr1_sx
 	.byte	bytecode_STRVAR_B
 
 	.byte	bytecode_strcat_sr1_sr1_sx
-	.byte	bytecode_STRVAR_A
+	.byte	bytecode_STRVAR_C
 
-	.byte	bytecode_ld_sx_sr1
-	.byte	bytecode_STRVAR_D
+	.byte	bytecode_left_sr1_sr1_pb
+	.byte	1
+
+	.byte	bytecode_len_ir1_sr1
+
+	.byte	bytecode_str_sr1_ir1
+
+	.byte	bytecode_pr_sr1
+
+	.byte	bytecode_pr_ss
+	.text	2, " \r"
 
 LINE_60
 
-	; PRINT D$
+	; NEXT
 
-	.byte	bytecode_pr_sx
-	.byte	bytecode_STRVAR_D
-
-	.byte	bytecode_pr_ss
-	.text	1, "\r"
-
-LINE_70
-
-	; PRINT C$
-
-	.byte	bytecode_pr_sx
-	.byte	bytecode_STRVAR_C
-
-	.byte	bytecode_pr_ss
-	.text	1, "\r"
+	.byte	bytecode_next
 
 LLAST
 
@@ -171,25 +167,37 @@ LLAST
 
 ; Library Catalog
 bytecode_clear	.equ	0
-bytecode_ld_sr1_ss	.equ	1
-bytecode_ld_sx_sr1	.equ	2
-bytecode_pr_ss	.equ	3
-bytecode_pr_sx	.equ	4
-bytecode_progbegin	.equ	5
-bytecode_progend	.equ	6
-bytecode_strcat_sr1_sr1_sx	.equ	7
-bytecode_strinit_sr1_sx	.equ	8
+bytecode_for_ix_pb	.equ	1
+bytecode_ld_sr1_ss	.equ	2
+bytecode_ld_sx_sr1	.equ	3
+bytecode_left_sr1_sr1_pb	.equ	4
+bytecode_len_ir1_sr1	.equ	5
+bytecode_next	.equ	6
+bytecode_pr_sr1	.equ	7
+bytecode_pr_ss	.equ	8
+bytecode_progbegin	.equ	9
+bytecode_progend	.equ	10
+bytecode_str_sr1_ir1	.equ	11
+bytecode_strcat_sr1_sr1_sx	.equ	12
+bytecode_strinit_sr1_sx	.equ	13
+bytecode_to_ip_pw	.equ	14
 
 catalog
 	.word	clear
+	.word	for_ix_pb
 	.word	ld_sr1_ss
 	.word	ld_sx_sr1
+	.word	left_sr1_sr1_pb
+	.word	len_ir1_sr1
+	.word	next
+	.word	pr_sr1
 	.word	pr_ss
-	.word	pr_sx
 	.word	progbegin
 	.word	progend
+	.word	str_sr1_ir1
 	.word	strcat_sr1_sr1_sx
 	.word	strinit_sr1_sx
+	.word	to_ip_pw
 
 	.module	mdalloc
 ; alloc D bytes in array memory.
@@ -344,6 +352,151 @@ immstr
 	pulx
 	rts
 
+	.module	mddivflt
+; divide X by Y
+;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
+;                     scratch in  (5,x 6,x 7,x 8,x 9,x)
+;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+;   EXIT   X/Y in (0,x 1,x 2,x 3,x 4,x)
+;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
+divflt
+	ldaa	#8*5
+	bsr	divmod
+	tst	tmp4
+	bmi	_add1
+_com
+	ldd	8,x
+	coma
+	comb
+	std	3,x
+	ldd	6,x
+	coma
+	comb
+	std	1,x
+	ldab	5,x
+	comb
+	stab	0,x
+	rts
+_add1
+	ldd	8,x
+	addd	#1
+	std	3,x
+	ldd	6,x
+	adcb	#0
+	adca	#0
+	std	1,x
+	ldab	5,x
+	adcb	#0
+	stab	0,x
+	rts
+divuflt
+	clr	tmp4
+	ldab	#8*5
+	stab	tmp1
+	bsr	divumod
+	bra	_com
+
+	.module	mddivmod
+; divide/modulo X by Y with remainder
+;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
+;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+;          #shifts in ACCA (24 for modulus, 40 for division
+;   EXIT   for division:
+;            NOT ABS(X)/ABS(Y) in (5,x 6,x 7,x 8,x 9,x)
+;   EXIT   for modulus:
+;            NOT INT(ABS(X)/ABS(Y)) in (7,x 8,x 9,x)
+;            FMOD(X,Y) in (0,x 1,x 2,x 3,x 4,x)
+;          result sign in tmp4.(0 = pos, -1 = neg).
+;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
+divmod
+	staa	tmp1
+	clr	tmp4
+	tst	0,x
+	bpl	_posX
+	com	tmp4
+	bsr	negx
+_posX
+	tst	0+argv
+	bpl	divumod
+	com	tmp4
+	bsr	negargv
+divumod
+	ldd	3,x
+	std	6,x
+	ldd	1,x
+	std	4,x
+	ldab	0,x
+	stab	3,x
+	clra
+	clrb
+	std	8,x
+	std	1,x
+	stab	0,x
+_nxtdiv
+	rol	7,x
+	rol	6,x
+	rol	5,x
+	rol	4,x
+	rol	3,x
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	bcc	_trialsub
+	; force subtraction
+	ldd	3,x
+	subd	3+argv
+	std	3,x
+	ldd	1,x
+	sbcb	2+argv
+	sbca	1+argv
+	std	1,x
+	ldab	0,x
+	sbcb	0+argv
+	stab	0,x
+	clc
+	bra	_shift
+_trialsub
+	ldd	3,x
+	subd	3+argv
+	std	tmp3
+	ldd	1,x
+	sbcb	2+argv
+	sbca	1+argv
+	std	tmp2
+	ldab	0,x
+	sbcb	0+argv
+	stab	tmp1+1
+	blo	_shift
+	ldd	tmp3
+	std	3,x
+	ldd	tmp2
+	std	1,x
+	ldab	tmp1+1
+	stab	0,x
+_shift
+	rol	9,x
+	rol	8,x
+	dec	tmp1
+	bne	_nxtdiv
+	rol	7,x
+	rol	6,x
+	rol	5,x
+	rts
+negx
+	neg	4,x
+	ngc	3,x
+	ngc	2,x
+	ngc	1,x
+	ngc	0,x
+	rts
+negargv
+	neg	4+argv
+	ngc	3+argv
+	ngc	2+argv
+	ngc	1+argv
+	ngc	0+argv
+	rts
+
 	.module	mdprint
 print
 _loop
@@ -392,6 +545,194 @@ _nxtwrd
 	ldx	tmp1
 	jmp	strlink
 _rts
+	rts
+
+	.module	mdstrflt
+strflt
+	inc	strtcnt
+	pshx
+	tst	tmp1+1
+	bmi	_neg
+	ldab	' '
+	bra	_wdigs
+_neg
+	neg	tmp3+1
+	ngc	tmp3
+	ngc	tmp2+1
+	ngc	tmp2
+	ngc	tmp1+1
+	ldab	'-'
+_wdigs
+	ldx	tmp3
+	pshx
+	ldx	strfree
+	stab	,x
+	clr	tmp1
+_nxtwdig
+	inc	tmp1
+	lsr	tmp1+1
+	ror	tmp2
+	ror	tmp2+1
+	ror	tmp3
+	ldaa	tmp1+1
+	adda	tmp2
+	adca	tmp2+1
+	adca	#0
+	adca	#0
+	tab
+	lsra
+	lsra
+	lsra
+	lsra
+	andb	#$0F
+	aba
+_dec
+	suba	#5
+	bhs	_dec
+	adda	#5
+	staa	tmp3+1
+	lsl	tmp3
+	rola
+	adda	#'0'
+	psha
+	ldd	tmp2
+	subb	tmp3+1
+	sbca	#0
+	std	tmp2
+	ldab	tmp1+1
+	sbcb	#0
+	stab	tmp1+1
+	pshb
+	ldd	tmp2
+	psha
+	ldaa	#$CC
+	mul
+	std	tmp3
+	addd	tmp2
+	std	tmp2
+	ldab	tmp1+1
+	adcb	tmp3+1
+	stab	tmp1+1
+	ldd	tmp1+1
+	addd	tmp3
+	std	tmp1+1
+	pulb
+	ldaa	#$CC
+	mul
+	stab	tmp3+1
+	addd	tmp1+1
+	std	tmp1+1
+	pulb
+	ldaa	#$CC
+	mul
+	addb	tmp1+1
+	addb	tmp3+1
+	stab	tmp1+1
+	bne	_nxtwdig
+	ldd	tmp2
+	bne	_nxtwdig
+	ldab	tmp1
+_nxtc
+	pula
+	inx
+	staa	,x
+	decb
+	bne	_nxtc
+	inx
+	inc	tmp1
+	pula
+	pulb
+	subd	#0
+	bne	_fdo
+	jmp	_fdone
+_fdo
+	std	tmp2
+	ldab	#'.'
+	stab	,x
+	inc	tmp1
+	inx
+	ldd	#6
+	staa	tmp1+1
+	stab	tmp3
+_nxtf
+	ldd	tmp2
+	lsl	tmp2+1
+	rol	tmp2
+	rol	tmp1+1
+	lsl	tmp2+1
+	rol	tmp2
+	rol	tmp1+1
+	addd	tmp2
+	std	tmp2
+	ldab	tmp1+1
+	adcb	#0
+	stab	tmp1+1
+	lsl	tmp2+1
+	rol	tmp2
+	rol	tmp1+1
+	ldd	tmp1
+	addb	#'0'
+	stab	,x
+	inx
+	inc	tmp1
+	clrb
+	stab	tmp1+1
+	dec	tmp3
+	bne	_nxtf
+	tst	tmp2
+	bmi	_nxtrnd
+_nxtzero
+	dex
+	dec	tmp1
+	ldaa	,x
+	cmpa	#'0'
+	beq	_nxtzero
+	bra	_zdone
+_nxtrnd
+	dex
+	dec	tmp1
+	ldaa	,x
+	cmpa	#'.'
+	beq	_dot
+	inca
+	cmpa	#'9'
+	bhi	_nxtrnd
+	bra	_rdone
+_dot
+	ldaa	#'0'
+	staa	,x
+	ldab	tmp1
+_ndot
+	decb
+	beq	_dzero
+	dex
+	ldaa	,x
+	inca
+	cmpa	#'9'
+	bls	_ddone
+	bra	_ndot
+_ddone
+	staa	,x
+	ldx	strfree
+	ldab	tmp1
+	abx
+	bra	_fdone
+_dzero
+	ldaa	#'1'
+	staa	,x
+	ldx	strfree
+	ldab	tmp1
+	abx
+	ldaa	#'0'
+_rdone
+	staa	,x
+_zdone
+	inx
+	inc	tmp1
+_fdone
+	ldd	strfree
+	stx	strfree
+	pulx
 	rts
 
 	.module	mdstrprm
@@ -562,6 +903,62 @@ _null
 	ldd	strfree
 	rts
 
+	.module	mdtobc
+; push for-loop record on stack
+; ENTRY:  ACCB  contains size of record
+;         r1    contains stopping variable
+;               and is always fixedpoint.
+;         r1+3  must contain zero if an integer.
+to
+	clra
+	std	tmp3
+	pulx
+	stx	tmp1
+	tsx
+	clrb
+_nxtfor
+	abx
+	ldd	1,x
+	subd	letptr
+	beq	_oldfor
+	ldab	,x
+	cmpb	#3
+	bhi	_nxtfor
+	sts	tmp2
+	ldd	tmp2
+	subd	tmp3
+	std	tmp2
+	lds	tmp2
+	tsx
+	ldab	tmp3+1
+	stab	0,x
+	ldd	letptr
+	std	1,x
+_oldfor
+	ldd	nxtinst
+	std	3,x
+	ldab	r1
+	stab	5,x
+	ldd	r1+1
+	std	6,x
+	ldd	r1+3
+	std	8,x
+	ldab	tmp3+1
+	cmpb	#15
+	beq	_flt
+	inca
+	staa	10,x
+	bra	_done
+_flt
+	ldd	#0
+	std	10,x
+	std	13,x
+	inca
+	staa	12,x
+_done
+	ldx	tmp1
+	jmp	,x
+
 clear			; numCalls = 1
 	.module	modclear
 	jsr	noargs
@@ -585,7 +982,16 @@ _start
 	stx	dataptr
 	rts
 
-ld_sr1_ss			; numCalls = 2
+for_ix_pb			; numCalls = 1
+	.module	modfor_ix_pb
+	jsr	extbyte
+	stx	letptr
+	clra
+	staa	0,x
+	std	1,x
+	rts
+
+ld_sr1_ss			; numCalls = 3
 	.module	modld_sr1_ss
 	ldx	curinst
 	inx
@@ -597,7 +1003,7 @@ ld_sr1_ss			; numCalls = 2
 	stx	nxtinst
 	rts
 
-ld_sx_sr1			; numCalls = 4
+ld_sx_sr1			; numCalls = 3
 	.module	modld_sx_sr1
 	jsr	extend
 	ldab	r1
@@ -606,7 +1012,156 @@ ld_sx_sr1			; numCalls = 4
 	std	1+argv
 	jmp	strprm
 
-pr_ss			; numCalls = 3
+left_sr1_sr1_pb			; numCalls = 1
+	.module	modleft_sr1_sr1_pb
+	jsr	getbyte
+	tstb
+	beq	_zero
+	cmpb	r1
+	bhs	_rts
+	stab	r1
+	rts
+_zero
+	pshx
+	ldx	r1+1
+	jsr	strrel
+	pulx
+	ldd	#$0100
+	std	r1+1
+	stab	r1
+_rts
+	rts
+_fc_error
+	ldab	#FC_ERROR
+	jmp	error
+
+len_ir1_sr1			; numCalls = 1
+	.module	modlen_ir1_sr1
+	jsr	noargs
+	ldab	r1
+	ldx	r1+1
+	jsr	strrel
+	stab	r1+2
+	ldd	#0
+	std	r1
+	rts
+
+next			; numCalls = 1
+	.module	modnext
+	jsr	noargs
+	pulx
+	tsx
+	ldab	,x
+	cmpb	#3
+	bhi	_ok
+	ldab	#NF_ERROR
+	jmp	error
+_ok
+	cmpb	#11
+	bne	_flt
+	ldd	9,x
+	std	r1+1
+	ldab	8,x
+	stab	r1
+	ldx	1,x
+	ldd	r1+1
+	addd	1,x
+	std	r1+1
+	std	1,x
+	ldab	r1
+	adcb	,x
+	stab	r1
+	stab	,x
+	tsx
+	tst	8,x
+	bpl	_iopp
+	ldd	r1+1
+	subd	6,x
+	ldab	r1
+	sbcb	5,x
+	blt	_idone
+	ldx	3,x
+	stx	nxtinst
+	jmp	mainloop
+_iopp
+	ldd	6,x
+	subd	r1+1
+	ldab	5,x
+	sbcb	r1
+	blt	_idone
+	ldx	3,x
+	stx	nxtinst
+	jmp	mainloop
+_idone
+	ldab	#11
+	bra	_done
+_flt
+	ldd	13,x
+	std	r1+3
+	ldd	11,x
+	std	r1+1
+	ldab	10,x
+	stab	r1
+	ldx	1,x
+	ldd	r1+3
+	addd	3,x
+	std	r1+3
+	std	3,x
+	ldd	1,x
+	adcb	r1+2
+	adca	r1+1
+	std	r1+1
+	std	1,x
+	ldab	r1
+	adcb	,x
+	stab	r1
+	stab	,x
+	tsx
+	tst	10,x
+	bpl	_fopp
+	ldd	r1+3
+	subd	8,x
+	ldd	r1+1
+	sbcb	7,x
+	sbca	6,x
+	ldab	r1
+	sbcb	5,x
+	blt	_fdone
+	ldx	3,x
+	stx	nxtinst
+	jmp	mainloop
+_fopp
+	ldd	8,x
+	subd	r1+3
+	ldd	6,x
+	sbcb	r1+2
+	sbca	r1+1
+	ldab	5,x
+	sbcb	r1
+	blt	_fdone
+	ldx	3,x
+	stx	nxtinst
+	jmp	mainloop
+_fdone
+	ldab	#15
+_done
+	abx
+	txs
+	jmp	mainloop
+
+pr_sr1			; numCalls = 1
+	.module	modpr_sr1
+	jsr	noargs
+	ldab	r1
+	beq	_rts
+	ldx	r1+1
+	jsr	print
+	ldx	r1+1
+	jmp	strrel
+_rts
+	rts
+
+pr_ss			; numCalls = 1
 	.module	modpr_ss
 	ldx	curinst
 	inx
@@ -619,16 +1174,6 @@ pr_ss			; numCalls = 3
 _null
 	inx
 	stx	nxtinst
-	rts
-
-pr_sx			; numCalls = 3
-	.module	modpr_sx
-	jsr	extend
-	ldab	0,x
-	beq	_rts
-	ldx	1,x
-	jsr	print
-_rts
 	rts
 
 progbegin			; numCalls = 1
@@ -673,6 +1218,21 @@ LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 
+str_sr1_ir1			; numCalls = 1
+	.module	modstr_sr1_ir1
+	jsr	noargs
+	ldd	r1+1
+	std	tmp2
+	ldab	r1
+	stab	tmp1+1
+	ldd	#0
+	std	tmp3
+	jsr	strflt
+	std	r1+1
+	ldab	tmp1
+	stab	r1
+	rts
+
 strcat_sr1_sr1_sx			; numCalls = 2
 	.module	modstrcat_sr1_sr1_sx
 	jsr	extend
@@ -692,7 +1252,7 @@ _lserror
 	ldab	#LS_ERROR
 	jmp	error
 
-strinit_sr1_sx			; numCalls = 2
+strinit_sr1_sx			; numCalls = 1
 	.module	modstrinit_sr1_sx
 	jsr	extend
 	ldab	0,x
@@ -702,6 +1262,16 @@ strinit_sr1_sx			; numCalls = 2
 	std	r1+1
 	rts
 
+to_ip_pw			; numCalls = 1
+	.module	modto_ip_pw
+	jsr	getword
+	std	r1+1
+	ldd	#0
+	stab	r1
+	std	r1+3
+	ldab	#11
+	jmp	to
+
 ; data table
 startdata
 enddata
@@ -709,10 +1279,10 @@ enddata
 ; Bytecode equates
 
 
+bytecode_INTVAR_I	.equ	INTVAR_I-symstart
 bytecode_STRVAR_A	.equ	STRVAR_A-symstart
 bytecode_STRVAR_B	.equ	STRVAR_B-symstart
 bytecode_STRVAR_C	.equ	STRVAR_C-symstart
-bytecode_STRVAR_D	.equ	STRVAR_D-symstart
 
 symstart
 
@@ -720,11 +1290,11 @@ symstart
 bss
 
 ; Numeric Variables
+INTVAR_I	.block	3
 ; String Variables
 STRVAR_A	.block	3
 STRVAR_B	.block	3
 STRVAR_C	.block	3
-STRVAR_D	.block	3
 ; Numeric Arrays
 ; String Arrays
 

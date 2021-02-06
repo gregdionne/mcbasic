@@ -43,6 +43,7 @@ R_MCXID	.equ	$FFDA	; ID location for MCX BASIC
 
 ; direct page registers
 	.org	$80
+strtcnt	.block	1
 strbuf	.block	2
 strend	.block	2
 strfree	.block	2
@@ -444,6 +445,7 @@ _ready
 	inx
 	inx
 	stx	strfree
+	clr	strtcnt
 	ldx	tmp1
 	std	1,x
 	ldab	0+argv
@@ -465,6 +467,7 @@ _const
 	stab	0,x
 	ldd	1+argv
 	std	1,x
+	clr	strtcnt
 	rts
 _copyip
 	dex
@@ -485,6 +488,7 @@ _nxtchr
 	decb
 	bne	_nxtchr
 	lds	tmp2
+	clr	strtcnt
 	rts
 
 and_ir1_ir1_ir2			; numCalls = 1
@@ -605,6 +609,7 @@ progbegin			; numCalls = 1
 	pshb
 	pshb
 	pshb
+	stab	strtcnt
 	jmp	,x
 _reqmsg	.text	"?MICROCOLOR BASIC ROM REQUIRED"
 _mcbasic
@@ -631,6 +636,7 @@ OV_ERROR	.equ	10
 OM_ERROR	.equ	12
 BS_ERROR	.equ	16
 DD_ERROR	.equ	18
+LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 

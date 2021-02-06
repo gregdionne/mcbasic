@@ -214,7 +214,8 @@ void StatementCompiler::operate(On &s) {
   value.result->castToInt(); // override
   queue.append(s.isSub ? makeInst<InstOnGoSub>(
                              std::move(value.result),
-                             std::make_unique<AddressModeStk>(s.branchTable))
+                             std::make_unique<AddressModeStk>(s.branchTable),
+                             generateLines)
                        : makeInst<InstOnGoTo>(
                              std::move(value.result),
                              std::make_unique<AddressModeStk>(s.branchTable)));

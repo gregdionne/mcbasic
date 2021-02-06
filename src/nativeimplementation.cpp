@@ -234,6 +234,7 @@ std::string NativeImplementation::regStr_regStr_immStr(InstStrCat &inst) {
   tasm.ldx(",x");
   tasm.ldab(",x");
   tasm.addb(inst.arg2->sbyte());
+  tasm.bcs("_lserror");
   tasm.stab(inst.arg1->sbyte());
   tasm.ldab(",x");
   tasm.inx();
@@ -242,6 +243,9 @@ std::string NativeImplementation::regStr_regStr_immStr(InstStrCat &inst) {
   tasm.ldab(",x");
   tasm.abx();
   tasm.jmp("1,x");
+  tasm.label("_lserror");
+  tasm.ldab("#LS_ERROR");
+  tasm.jmp("error");
   return tasm.source();
 }
 
@@ -759,7 +763,11 @@ std::string NativeImplementation::regInt_immLbls(InstOnGoSub &inst) {
   tasm.abx();
   tasm.inx();
   tasm.pshx();
-  tasm.ldaa("#3");
+  if (inst.generateLines) {
+    tasm.ldx("DP_LNUM");
+    tasm.pshx();
+  }
+  tasm.ldaa(inst.generateLines ? "#5" : "#3");
   tasm.psha();
   tasm.ldx("tmp1");
   tasm.ldab("tmp2");

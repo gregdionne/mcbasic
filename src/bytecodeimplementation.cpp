@@ -268,6 +268,7 @@ std::string ByteCodeImplementation::regStr_regStr_immStr(InstStrCat &inst) {
   tasm.inx();
   tasm.ldab(",x");
   tasm.addb(inst.arg2->sbyte());
+  tasm.bcs("_lserror");
   tasm.stab(inst.arg1->sbyte());
   tasm.ldab(",x");
   tasm.inx();
@@ -276,6 +277,9 @@ std::string ByteCodeImplementation::regStr_regStr_immStr(InstStrCat &inst) {
   tasm.stx("nxtinst");
   tasm.pulx();
   tasm.jmp("strtmp");
+  tasm.label("_lserror");
+  tasm.ldab("#LS_ERROR");
+  tasm.jmp("error");
   return tasm.source();
 }
 
@@ -835,7 +839,11 @@ std::string ByteCodeImplementation::regInt_immLbls(InstOnGoSub &inst) {
   tasm.abx();
   tasm.inx();
   tasm.pshx();
-  tasm.ldaa("#3");
+  if (inst.generateLines) {
+    tasm.ldx("DP_LNUM");
+    tasm.pshx();
+  }
+  tasm.ldaa(inst.generateLines ? "#5" : "#3");
   tasm.psha();
   tasm.ldx("tmp1");
   tasm.ldab("tmp2");

@@ -17,6 +17,7 @@ std::string CoreTarget::generateDirectPage(InstQueue &queue) {
   Assembler tasm;
   tasm.comment("direct page registers");
   tasm.org("$80");
+  tasm.block("strtcnt", "1");
   tasm.block("strbuf", "2");
   tasm.block("strend", "2");
   tasm.block("strfree", "2");
@@ -26,7 +27,7 @@ std::string CoreTarget::generateDirectPage(InstQueue &queue) {
   tasm.block("redoptr", "2");
   tasm.block("letptr", "2");
 
-  tasm.org("$a3");
+  tasm.org("$a3"); // we want to leave $93-4 alone
   for (int i = 1; i <= queue.maxRegisterCount; i++) {
     tasm.block("r" + std::to_string(i), "5");
   }

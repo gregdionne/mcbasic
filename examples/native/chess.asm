@@ -43,6 +43,7 @@ R_MCXID	.equ	$FFDA	; ID location for MCX BASIC
 
 ; direct page registers
 	.org	$80
+strtcnt	.block	1
 strbuf	.block	2
 strend	.block	2
 strfree	.block	2
@@ -8505,6 +8506,8 @@ _rts
 ; EXIT:  we modify those two bytes to point to code beyond payload so caller can just RTS
 ;        we return correct Z flag for caller
 streqs
+	ldx	tmp2
+	jsr	strrel
 	sts	tmp3
 	tsx
 	ldx	2,x
@@ -8547,6 +8550,7 @@ _fudge
 
 	.module	mdstrflt
 strflt
+	inc	strtcnt
 	pshx
 	tst	tmp1+1
 	bmi	_neg
@@ -8735,6 +8739,10 @@ _fdone
 	.module	mdstrlo
 strlo
 	stab	tmp1+1
+	ldx	1+argv
+	jsr	strrel
+	ldx	tmp2
+	jsr	strrel
 	cmpb	0+argv
 	bls	_ok
 	ldab	0+argv
@@ -8848,6 +8856,7 @@ _ready
 	inx
 	inx
 	stx	strfree
+	clr	strtcnt
 	ldx	tmp1
 	std	1,x
 	ldab	0+argv
@@ -8869,6 +8878,7 @@ _const
 	stab	0,x
 	ldd	1+argv
 	std	1,x
+	clr	strtcnt
 	rts
 _copyip
 	dex
@@ -8889,20 +8899,41 @@ _nxtchr
 	decb
 	bne	_nxtchr
 	lds	tmp2
+	clr	strtcnt
 	rts
 
 	.module	mdstrrel
 ; release a temporary string
 ; ENTRY: X holds string start
-; EXIT:  X holds new end of string space
+; EXIT:  <all reg's preserved>
+; sttrel should be called from:
+;  - ASC, VAL, LEN, PRINT
+;  - right hand side of strcat
+;  - relational operators
+;  - when LEFT$, MID$, RIGHT$ return null
 strrel
 	cpx	strend
 	bls	_rts
 	cpx	strstop
 	bhs	_rts
+	tst	strtcnt
+	beq	_panic
+	dec	strtcnt
+	beq	_restore
 	stx	strfree
 _rts
 	rts
+_restore
+	pshx
+	ldx	strend
+	inx
+	inx
+	stx	strfree
+	pulx
+	rts
+_panic
+	ldab	#1
+	jmp	error
 
 	.module	mdstrtmp
 ; make a temporary clone of a string
@@ -8910,6 +8941,7 @@ _rts
 ;        B holds string length
 ; EXIT:  D holds new string pointer
 strtmp
+	inc	strtcnt
 	tstb
 	beq	_null
 	sts	tmp1
@@ -10553,6 +10585,7 @@ progbegin			; numCalls = 1
 	pshb
 	pshb
 	pshb
+	stab	strtcnt
 	jmp	,x
 _reqmsg	.text	"?MICROCOLOR BASIC ROM REQUIRED"
 _mcbasic
@@ -10578,6 +10611,7 @@ OV_ERROR	.equ	10
 OM_ERROR	.equ	12
 BS_ERROR	.equ	16
 DD_ERROR	.equ	18
+LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 
@@ -10787,6 +10821,7 @@ strcat_sr1_sr1_ss			; numCalls = 2
 	ldx	,x
 	ldab	,x
 	addb	r1
+	bcs	_lserror
 	stab	r1
 	ldab	,x
 	inx
@@ -10795,6 +10830,9 @@ strcat_sr1_sr1_ss			; numCalls = 2
 	ldab	,x
 	abx
 	jmp	1,x
+_lserror
+	ldab	#LS_ERROR
+	jmp	error
 
 strcat_sr1_sr1_sx			; numCalls = 2
 	.module	modstrcat_sr1_sr1_sx
@@ -10805,10 +10843,14 @@ strcat_sr1_sr1_sx			; numCalls = 2
 	stx	strfree
 	ldx	tmp1
 	addb	0,x
+	bcs	_lserror
 	stab	r1
 	ldab	0,x
 	ldx	1,x
 	jmp	strtmp
+_lserror
+	ldab	#LS_ERROR
+	jmp	error
 
 strinit_sr1_sr1			; numCalls = 1
 	.module	modstrinit_sr1_sr1

@@ -36,10 +36,10 @@ void Library::makeFoundation() {
   foundation["mdstrtmp"] = Lib{0, mdStrTmp(), {}};
   foundation["mdstrdel"] = Lib{0, mdStrDel(), {"mdalloc"}};
   foundation["mdstrval"] = Lib{0, mdStrVal(), {}};
-  foundation["mdstreqs"] = Lib{0, mdStrEqs(), {}};
-  foundation["mdstreqbs"] = Lib{0, mdStrEqbs(), {}};
-  foundation["mdstreqx"] = Lib{0, mdStrEqx(), {}};
-  foundation["mdstrlo"] = Lib{0, mdStrLo(), {}};
+  foundation["mdstreqs"] = Lib{0, mdStrEqs(), {"mdstrrel"}};
+  foundation["mdstreqbs"] = Lib{0, mdStrEqbs(), {"mdstrrel"}};
+  foundation["mdstreqx"] = Lib{0, mdStrEqx(), {"mdstrrel"}};
+  foundation["mdstrlo"] = Lib{0, mdStrLo(), {"mdstrrel"}};
   foundation["mdstrlos"] = Lib{0, mdStrLos(), {"mdstrlo"}};
   foundation["mdstrlobs"] = Lib{0, mdStrLobs(), {"mdstrlo"}};
   foundation["mdstrlox"] = Lib{0, mdStrLox(), {"mdstrlo"}};
@@ -365,15 +365,35 @@ std::string Library::mdStrRel() {
   Assembler tasm;
   tasm.comment("release a temporary string");
   tasm.comment("ENTRY: X holds string start");
-  tasm.comment("EXIT:  X holds new end of string space");
+  tasm.comment("EXIT:  <all reg's preserved>");
+  tasm.comment("sttrel should be called from:");
+  tasm.comment(" - ASC, VAL, LEN, PRINT");
+  tasm.comment(" - right hand side of strcat");
+  tasm.comment(" - relational operators");
+  tasm.comment(" - when LEFT$, MID$, RIGHT$ return null");
   tasm.label("strrel");
   tasm.cpx("strend");
   tasm.bls("_rts");
   tasm.cpx("strstop");
   tasm.bhs("_rts");
-  tasm.stx("strfree");
-  tasm.label("_rts");
+  tasm.tst("strtcnt");  // note:
+  tasm.beq("_panic");   //  relational ops leak when
+  tasm.dec("strtcnt");  //  freed in non-reversed alloc
+  tasm.beq("_restore"); //  order.  MID$ and RIGHT$
+  tasm.stx("strfree");  //  leak if not after a strcat
+  tasm.label("_rts");   //  leak persists until g.c.
   tasm.rts();
+  tasm.label("_restore");
+  tasm.pshx();        // save X
+  tasm.ldx("strend"); // garbage collect:
+  tasm.inx();         //  restore strfree
+  tasm.inx();         //  to two bytes after strend
+  tasm.stx("strfree");
+  tasm.pulx();
+  tasm.rts();
+  tasm.label("_panic"); // temporary debug code
+  tasm.ldab("#1");      // FS error (free string)
+  tasm.jmp("error");    // string never allocated
   return tasm.source();
 }
 
@@ -384,6 +404,7 @@ std::string Library::mdStrTmp() {
   tasm.comment("       B holds string length");
   tasm.comment("EXIT:  D holds new string pointer");
   tasm.label("strtmp");
+  tasm.inc("strtcnt");
   tasm.tstb();
   tasm.beq("_null");
   tasm.sts("tmp1");
@@ -502,6 +523,7 @@ std::string Library::mdStrPrm() {
   tasm.inx();
   tasm.inx();
   tasm.stx("strfree");
+  tasm.clr("strtcnt");
   tasm.ldx("tmp1");
   tasm.std("1,x");
   tasm.ldab("0+argv");
@@ -527,6 +549,7 @@ std::string Library::mdStrPrm() {
   tasm.stab("0,x");
   tasm.ldd("1+argv");
   tasm.std("1,x");
+  tasm.clr("strtcnt");
   tasm.rts();
 
   tasm.label("_copyip"); // copy in place
@@ -552,6 +575,7 @@ std::string Library::mdStrPrm() {
   tasm.decb();
   tasm.bne("_nxtchr");
   tasm.lds("tmp2");
+  tasm.clr("strtcnt");
   tasm.rts();
   return tasm.source();
 }
@@ -602,6 +626,7 @@ std::string Library::mdStrDel() {
 std::string Library::mdStrFlt() {
   Assembler tasm;
   tasm.label("strflt");
+  tasm.inc("strtcnt");
   tasm.pshx();
   tasm.tst("tmp1+1"); // tmp1+1 == sbyte
   tasm.bmi("_neg");   // tmp2   == lword
@@ -975,13 +1000,15 @@ std::string Library::mdStrEqx() {
   tasm.label("streqx");
   tasm.ldab("0,x");
   tasm.cmpb("tmp1+1");
-  tasm.bne("_rts");
+  tasm.bne("_frts");
   tasm.tstb();
-  tasm.beq("_rts");
+  tasm.beq("_frts");
   tasm.sts("tmp3");
   tasm.ldx("1,x");
+  tasm.jsr("strrel");
   tasm.txs();
   tasm.ldx("tmp2");
+  tasm.jsr("strrel");
   tasm.label("_nxtchr");
   tasm.pula();
   tasm.cmpa(",x");
@@ -994,7 +1021,15 @@ std::string Library::mdStrEqx() {
   tasm.rts();
   tasm.label("_ne");
   tasm.lds("tmp3");
-  tasm.label("_rts");
+  tasm.rts();
+
+  tasm.label("_frts");
+  tasm.tpa();
+  tasm.ldx("1,x");
+  tasm.jsr("strrel");
+  tasm.ldx("tmp2");
+  tasm.jsr("strrel");
+  tasm.tap();
   tasm.rts();
   return tasm.source();
 }
@@ -1010,6 +1045,8 @@ std::string Library::mdStrEqs() {
       "caller can just RTS");
   tasm.comment("       we return correct Z flag for caller");
   tasm.label("streqs");
+  tasm.ldx("tmp2");
+  tasm.jsr("strrel");
   tasm.sts("tmp3");
   tasm.tsx();
   tasm.ldx("2,x");
@@ -1062,6 +1099,8 @@ std::string Library::mdStrEqbs() {
   tasm.comment("ENTRY: tmp1+1 holds length, tmp2 holds compare");
   tasm.comment("EXIT:  we return correct Z flag for caller");
   tasm.label("streqbs");
+  tasm.ldx("tmp2");
+  tasm.jsr("strrel");
   tasm.jsr("immstr");
   tasm.sts("tmp3");
   tasm.cmpb("tmp1+1");
@@ -1094,6 +1133,10 @@ std::string Library::mdStrLo() {
   Assembler tasm;
   tasm.label("strlo"); // entry argv0 holds len, lhs
   tasm.stab("tmp1+1"); //      tmp1+1 holds len, rhs
+  tasm.ldx("1+argv");
+  tasm.jsr("strrel");
+  tasm.ldx("tmp2");
+  tasm.jsr("strrel");
   tasm.cmpb("0+argv");
   tasm.bls("_ok");
   tasm.ldab("0+argv");

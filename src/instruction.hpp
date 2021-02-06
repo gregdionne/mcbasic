@@ -1320,11 +1320,13 @@ public:
 class InstOnGoSub : public Instruction {
 public:
   InstOnGoSub(std::unique_ptr<AddressMode> am1,
-              std::unique_ptr<AddressMode> am2)
-      : Instruction("ongosub", std::move(am1), std::move(am2)) {}
+              std::unique_ptr<AddressMode> am2, bool g)
+      : Instruction("ongosub", std::move(am1), std::move(am2)),
+        generateLines(g) {}
   std::string operate(InstructionOp *iop) override {
     return iop->operate(*this);
   }
+  bool generateLines;
 };
 
 class InstJsrIfEqual : public Instruction {
