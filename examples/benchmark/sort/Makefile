@@ -10,14 +10,18 @@ all: $(BSORT) $(QSORT)
 %.c10: %.asm
 	tasm $<
 
-%-native.asm: %.bas $(MCBASIC)
-	mcbasic -native $<
-	mv $(<:.bas=.asm) $@
+%-native.bas: %.bas
+	cp $< $@
 
-%-bytecode.asm: %.bas $(MCBASIC)
+%-native.asm: %-native.bas $(MCBASIC)
+	mcbasic -native $<
+
+%-bytecode.bas: %.bas
+	cp $< $@
+
+%-bytecode.asm: %-bytecode.bas $(MCBASIC)
 	mcbasic $<
-	mv $(<:.bas=.asm) $@
 
 clean:
-	rm -f *.lst *.obj *.c10 qsort.asm bsort.asm *-bytecode.asm *-native.asm
+	rm -f *.lst *.obj *.c10 qsort.asm bsort.asm *-bytecode.asm *-native.asm *-native.bas *-bytecode.bas
 

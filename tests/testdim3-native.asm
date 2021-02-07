@@ -1,4 +1,4 @@
-; Assembly for testdim3.bas
+; Assembly for testdim3-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

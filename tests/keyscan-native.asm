@@ -1,4 +1,4 @@
-; Assembly for keyscan.bas
+; Assembly for keyscan-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

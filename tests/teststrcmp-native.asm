@@ -1,4 +1,4 @@
-; Assembly for teststrcmp.bas
+; Assembly for teststrcmp-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

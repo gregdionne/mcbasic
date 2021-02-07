@@ -1,4 +1,4 @@
-; Assembly for testinput.bas
+; Assembly for testinput-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

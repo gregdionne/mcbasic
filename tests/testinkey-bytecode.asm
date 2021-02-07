@@ -1,4 +1,4 @@
-; Assembly for testinkey.bas
+; Assembly for testinkey-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

@@ -1,4 +1,4 @@
-; Assembly for testkeystrobe.bas
+; Assembly for testkeystrobe-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

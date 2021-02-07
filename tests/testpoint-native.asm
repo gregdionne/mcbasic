@@ -1,4 +1,4 @@
-; Assembly for testpoint.bas
+; Assembly for testpoint-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

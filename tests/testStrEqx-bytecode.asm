@@ -1,4 +1,4 @@
-; Assembly for testStrEqx.bas
+; Assembly for testStrEqx-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

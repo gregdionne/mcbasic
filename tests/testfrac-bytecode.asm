@@ -1,4 +1,4 @@
-; Assembly for testfrac.bas
+; Assembly for testfrac-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

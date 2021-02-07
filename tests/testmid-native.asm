@@ -1,4 +1,4 @@
-; Assembly for testmid.bas
+; Assembly for testmid-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

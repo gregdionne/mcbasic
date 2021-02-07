@@ -1,4 +1,4 @@
-; Assembly for testnestedstrcat.bas
+; Assembly for testnestedstrcat-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

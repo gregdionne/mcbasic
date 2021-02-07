@@ -1,4 +1,4 @@
-; Assembly for arraystr.bas
+; Assembly for arraystr-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

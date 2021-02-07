@@ -1,4 +1,4 @@
-; Assembly for testmul.bas
+; Assembly for testmul-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

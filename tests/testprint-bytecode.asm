@@ -1,4 +1,4 @@
-; Assembly for testprint.bas
+; Assembly for testprint-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

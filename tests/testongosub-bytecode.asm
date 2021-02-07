@@ -1,4 +1,4 @@
-; Assembly for testongosub.bas
+; Assembly for testongosub-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

@@ -1,4 +1,4 @@
-; Assembly for testnull.bas
+; Assembly for testnull-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

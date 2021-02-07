@@ -1,4 +1,4 @@
-; Assembly for testconsts.bas
+; Assembly for testconsts-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

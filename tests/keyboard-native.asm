@@ -1,4 +1,4 @@
-; Assembly for keyboard.bas
+; Assembly for keyboard-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

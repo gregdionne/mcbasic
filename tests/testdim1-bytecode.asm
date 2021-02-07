@@ -1,4 +1,4 @@
-; Assembly for testdim1.bas
+; Assembly for testdim1-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

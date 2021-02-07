@@ -1,4 +1,4 @@
-; Assembly for testlen.bas
+; Assembly for testlen-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

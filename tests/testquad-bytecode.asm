@@ -1,4 +1,4 @@
-; Assembly for testquad.bas
+; Assembly for testquad-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

@@ -1,4 +1,4 @@
-; Assembly for testlog.bas
+; Assembly for testlog-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

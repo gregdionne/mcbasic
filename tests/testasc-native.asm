@@ -1,4 +1,4 @@
-; Assembly for testasc.bas
+; Assembly for testasc-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

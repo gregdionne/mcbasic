@@ -1,4 +1,4 @@
-; Assembly for kaleido.bas
+; Assembly for kaleido-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

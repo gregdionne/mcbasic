@@ -1,4 +1,4 @@
-; Assembly for testpow2.bas
+; Assembly for testpow2-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

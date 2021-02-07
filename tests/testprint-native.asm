@@ -1,4 +1,4 @@
-; Assembly for testprint.bas
+; Assembly for testprint-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

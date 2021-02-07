@@ -1,4 +1,4 @@
-; Assembly for bsort.bas
+; Assembly for bsort-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

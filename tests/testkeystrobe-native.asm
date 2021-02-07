@@ -1,4 +1,4 @@
-; Assembly for testkeystrobe.bas
+; Assembly for testkeystrobe-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

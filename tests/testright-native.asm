@@ -1,4 +1,4 @@
-; Assembly for testright.bas
+; Assembly for testright-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

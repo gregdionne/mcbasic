@@ -1,4 +1,4 @@
-; Assembly for testunary.bas
+; Assembly for testunary-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

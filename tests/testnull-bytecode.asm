@@ -1,4 +1,4 @@
-; Assembly for testnull.bas
+; Assembly for testnull-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

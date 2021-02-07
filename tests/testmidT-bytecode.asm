@@ -1,4 +1,4 @@
-; Assembly for testmidT.bas
+; Assembly for testmidT-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

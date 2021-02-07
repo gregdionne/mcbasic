@@ -1,4 +1,4 @@
-; Assembly for testfmul.bas
+; Assembly for testfmul-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

@@ -1,4 +1,4 @@
-; Assembly for teststrvar.bas
+; Assembly for teststrvar-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

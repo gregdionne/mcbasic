@@ -26,17 +26,17 @@ public:
   void operate(StringArrayExpr &e) override;
   void operate(NegatedExpr &e) override;
   void operate(MultiplicativeExpr &e) override {
-    operate(static_cast<NaryNumericExpr &>(e));
+    e.NaryNumericExpr::operate(this);
   }
   void operate(AdditiveExpr &e) override {
-    operate(static_cast<NaryNumericExpr &>(e));
+    e.NaryNumericExpr::operate(this);
   }
   void operate(ComplementedExpr &e) override;
   void operate(AndExpr &e) override {
-    operate(static_cast<NaryNumericExpr &>(e));
+    e.NaryNumericExpr::operate(this);
   }
   void operate(OrExpr &e) override {
-    operate(static_cast<NaryNumericExpr &>(e));
+    e.NaryNumericExpr::operate(this);
   }
   void operate(ShiftExpr &e) override;
   void operate(SgnExpr &e) override;

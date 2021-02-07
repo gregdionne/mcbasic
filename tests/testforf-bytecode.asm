@@ -1,4 +1,4 @@
-; Assembly for testforf.bas
+; Assembly for testforf-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

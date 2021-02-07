@@ -1,4 +1,4 @@
-; Assembly for testset.bas
+; Assembly for testset-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

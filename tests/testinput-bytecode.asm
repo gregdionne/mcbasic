@@ -1,4 +1,4 @@
-; Assembly for testinput.bas
+; Assembly for testinput-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

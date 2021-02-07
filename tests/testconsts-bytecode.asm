@@ -1,4 +1,4 @@
-; Assembly for testconsts.bas
+; Assembly for testconsts-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0

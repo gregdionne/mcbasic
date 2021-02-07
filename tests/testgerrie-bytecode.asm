@@ -1,4 +1,4 @@
-; Assembly for testgerrie.bas
+; Assembly for testgerrie-bytecode.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
