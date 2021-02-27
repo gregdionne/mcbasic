@@ -15,3 +15,5 @@ Items to do:
        2 + -1 = 1
 * factor out shift expressions from multiplicative expressions
 * Add support for MCX BASIC/COCO BASIC (e.g. "ELSE")
+* Add EXEC, VARPTR, VARSIZ, USR
+* Add inline-assembly

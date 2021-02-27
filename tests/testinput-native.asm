@@ -323,7 +323,7 @@ strflt
 	pshx
 	tst	tmp1+1
 	bmi	_neg
-	ldab	' '
+	ldab	#' '
 	bra	_wdigs
 _neg
 	neg	tmp3+1
@@ -331,7 +331,7 @@ _neg
 	ngc	tmp2+1
 	ngc	tmp2
 	ngc	tmp1+1
-	ldab	'-'
+	ldab	#'-'
 _wdigs
 	ldx	tmp3
 	pshx

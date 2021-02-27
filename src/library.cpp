@@ -630,7 +630,7 @@ std::string Library::mdStrFlt() {
   tasm.pshx();
   tasm.tst("tmp1+1"); // tmp1+1 == sbyte
   tasm.bmi("_neg");   // tmp2   == lword
-  tasm.ldab("' '");   // tmp3   == frac
+  tasm.ldab("#' '");  // tmp3   == frac
   tasm.bra("_wdigs");
   tasm.label("_neg");
   tasm.neg("tmp3+1");
@@ -638,7 +638,7 @@ std::string Library::mdStrFlt() {
   tasm.ngc("tmp2+1");
   tasm.ngc("tmp2");
   tasm.ngc("tmp1+1");
-  tasm.ldab("'-'");
+  tasm.ldab("#'-'");
   tasm.label("_wdigs");
   tasm.ldx("tmp3"); // repurpose tmp3 as even/odd save
   tasm.pshx();      // repurpose tmp3+1 as mod 5 result
