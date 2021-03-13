@@ -8,8 +8,8 @@
 
 #include <cstddef>
 
-static const char *const validOps[] = {"-Wfloat", "-Wno-float", "-g",
-                                       "-list",   "-native",    "--"};
+static const char *const validOps[] = {"-Wfloat", "-Wno-float", "-g", "-list",
+                                       "-native", "-undoc",     "--"};
 static const bool exclusive[] = {true, false, false, false, false, false};
 
 void usage(char *argv[]) {
@@ -56,6 +56,7 @@ void Options::process(int argc, char *argv[]) {
     list |= strcmp(argv[argcnt], "-list") == 0;
     Wfloat |= strcmp(argv[argcnt], "-Wfloat") == 0;
     Wfloat &= !(strcmp(argv[argcnt], "-Wno-float") == 0);
+    undoc |= strcmp(argv[argcnt], "-undoc") == 0;
     argcnt++;
   }
 

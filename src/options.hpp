@@ -10,6 +10,7 @@ struct Options {
   bool g = false;
   bool list = false;
   bool Wfloat = true;
+  bool undoc = false;
   int argcnt = 0;
 
   // check option list, generate usage if invalid options detected

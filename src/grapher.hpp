@@ -28,16 +28,10 @@ public:
   void operate(MultiplicativeExpr &e) override {
     e.NaryNumericExpr::operate(this);
   }
-  void operate(AdditiveExpr &e) override {
-    e.NaryNumericExpr::operate(this);
-  }
+  void operate(AdditiveExpr &e) override { e.NaryNumericExpr::operate(this); }
   void operate(ComplementedExpr &e) override;
-  void operate(AndExpr &e) override {
-    e.NaryNumericExpr::operate(this);
-  }
-  void operate(OrExpr &e) override {
-    e.NaryNumericExpr::operate(this);
-  }
+  void operate(AndExpr &e) override { e.NaryNumericExpr::operate(this); }
+  void operate(OrExpr &e) override { e.NaryNumericExpr::operate(this); }
   void operate(ShiftExpr &e) override;
   void operate(SgnExpr &e) override;
   void operate(IntExpr &e) override;

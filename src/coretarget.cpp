@@ -7,9 +7,9 @@
 std::string CoreTarget::generateAssembly(DataTable &dataTable,
                                          ConstTable &constTable,
                                          SymbolTable &symbolTable,
-                                         InstQueue &queue) {
+                                         InstQueue &queue, Options &options) {
   return generateDirectPage(queue) + generateCode(queue) +
-         generateLibrary(queue) + generateDataTable(dataTable) +
+         generateLibrary(queue, options) + generateDataTable(dataTable) +
          generateSymbols(constTable, symbolTable);
 }
 
@@ -98,8 +98,8 @@ std::string CoreTarget::generateMicroColorConstants() {
   return tasm.source();
 }
 
-std::string CoreTarget::generateLibrary(InstQueue &queue) {
-  Library library(queue);
+std::string CoreTarget::generateLibrary(InstQueue &queue, Options &options) {
+  Library library(queue, options.undoc);
   library.assemble(makeDispatcher().get());
 
   std::string ops = generateLibraryCatalog(library);

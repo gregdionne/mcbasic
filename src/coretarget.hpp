@@ -15,8 +15,8 @@
 class CoreTarget : public Target {
 public:
   std::string generateAssembly(DataTable &dataTable, ConstTable &constTable,
-                               SymbolTable &symbolTable,
-                               InstQueue &queue) override;
+                               SymbolTable &symbolTable, InstQueue &queue,
+                               Options &options) override;
 
 protected:
   // generates the core BASIC registers
@@ -29,7 +29,7 @@ protected:
   virtual std::string generateCode(InstQueue & /*queue*/) = 0;
 
   // invokes the dispatcher to create the library
-  virtual std::string generateLibrary(InstQueue &queue);
+  virtual std::string generateLibrary(InstQueue &queue, Options &options);
 
   // writes the DATA text
   virtual std::string generateDataTable(DataTable &dataTable);

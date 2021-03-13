@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     out.writeHeader();
 
     out.writeString(
-        target->generateAssembly(dataTable, constTable, symbolTable, q));
+        target->generateAssembly(dataTable, constTable, symbolTable, q, opts));
 
     out.close();
   } while (parser.in.openNext() && out.openNext());

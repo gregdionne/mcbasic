@@ -1910,12 +1910,12 @@ std::string CoreImplementation::regStr(InstInkey &inst) {
 }
 
 std::string CoreImplementation::regInt_regInt(InstNeg &inst) {
+  inst.dependencies.insert("mdnegx");
+
   Assembler tasm;
   preamble(tasm, inst);
-  tasm.neg(inst.arg1->lbyte());
-  tasm.ngc(inst.arg1->hbyte());
-  tasm.ngc(inst.arg1->sbyte());
-  tasm.rts();
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("negxi");
   return tasm.source();
 }
 
@@ -1933,14 +1933,12 @@ std::string CoreImplementation::regInt_extInt(InstNeg &inst) {
 }
 
 std::string CoreImplementation::regFlt_regFlt(InstNeg &inst) {
+  inst.dependencies.insert("mdnegx");
+
   Assembler tasm;
   preamble(tasm, inst);
-  tasm.neg(inst.arg1->lfrac());
-  tasm.ngc(inst.arg1->hfrac());
-  tasm.ngc(inst.arg1->lbyte());
-  tasm.ngc(inst.arg1->hbyte());
-  tasm.ngc(inst.arg1->sbyte());
-  tasm.rts();
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("negx");
   return tasm.source();
 }
 std::string CoreImplementation::regFlt_extFlt(InstNeg &inst) {
@@ -2089,28 +2087,28 @@ std::string CoreImplementation::regInt_extFlt(InstSgn &inst) {
 }
 
 std::string CoreImplementation::regFlt_regFlt(InstAbs &inst) {
+  inst.dependencies.insert("mdnegx");
+
   Assembler tasm;
   preamble(tasm, inst);
   tasm.ldaa(inst.arg1->sbyte());
   tasm.bpl("_rts");
-  tasm.neg(inst.arg1->lfrac());
-  tasm.ngc(inst.arg1->hfrac());
-  tasm.ngc(inst.arg1->lbyte());
-  tasm.ngc(inst.arg1->hbyte());
-  tasm.ngc(inst.arg1->sbyte());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("negx");
   tasm.label("_rts");
   tasm.rts();
   return tasm.source();
 }
 
 std::string CoreImplementation::regInt_regInt(InstAbs &inst) {
+  inst.dependencies.insert("mdnegx");
+
   Assembler tasm;
   preamble(tasm, inst);
   tasm.ldaa(inst.arg1->sbyte());
   tasm.bpl("_rts");
-  tasm.neg(inst.arg1->lbyte());
-  tasm.ngc(inst.arg1->hbyte());
-  tasm.ngc(inst.arg1->sbyte());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("negxi");
   tasm.label("_rts");
   tasm.rts();
   return tasm.source();

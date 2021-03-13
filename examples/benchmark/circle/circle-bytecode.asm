@@ -870,12 +870,12 @@ divmod
 	tst	0,x
 	bpl	_posX
 	com	tmp4
-	bsr	negx
+	jsr	negx
 _posX
 	tst	0+argv
 	bpl	divumod
 	com	tmp4
-	bsr	negargv
+	jsr	negargv
 divumod
 	ldd	3,x
 	std	6,x
@@ -937,20 +937,6 @@ _shift
 	rol	7,x
 	rol	6,x
 	rol	5,x
-	rts
-negx
-	neg	4,x
-	ngc	3,x
-	ngc	2,x
-	ngc	1,x
-	ngc	0,x
-	rts
-negargv
-	neg	4+argv
-	ngc	3+argv
-	ngc	2+argv
-	ngc	1+argv
-	ngc	0+argv
 	rts
 
 	.module	mdgetge
@@ -1224,6 +1210,51 @@ mulintx
 	std	1,x
 	rts
 
+	.module	mdnegargv
+negargv
+	neg	4+argv
+	bcs	_com3
+	neg	3+argv
+	bcs	_com2
+	neg	2+argv
+	bcs	_com1
+	neg	1+argv
+	bcs	_com0
+	neg	0+argv
+	rts
+_com3
+	com	3+argv
+_com2
+	com	2+argv
+_com1
+	com	1+argv
+_com0
+	com	0+argv
+	rts
+
+	.module	mdnegx
+negx
+	neg	4,x
+	bcs	_com3
+	neg	3,x
+	bcs	_com2
+negxi
+	neg	2,x
+	bcs	_com1
+	neg	1,x
+	bcs	_com0
+	neg	0,x
+	rts
+_com3
+	com	3,x
+_com2
+	com	2,x
+_com1
+	com	1,x
+_com0
+	com	0,x
+	rts
+
 	.module	mdprint
 print
 _loop
@@ -1438,11 +1469,20 @@ _rsubm
 	jmp	mulfltx
 _rsub
 	neg	4,x
-	ngc	3,x
+	bcs	_ngc1
+	com	3,x
+	bra	_ngc2
+_ngc1
+	neg	3,x
+_ngc2
 	sbcb	2,x
 	sbca	1,x
 	std	1,x
-	ngc	0,x
+	bcs	_ngc3
+	com	0,x
+	rts
+_ngc3
+	neg	0,x
 	rts
 _tbl_pi1	.byte	$03,$24,$40
 _tbl_pi2	.byte	$01,$92,$20

@@ -343,12 +343,12 @@ divmod
 	tst	0,x
 	bpl	_posX
 	com	tmp4
-	bsr	negx
+	jsr	negx
 _posX
 	tst	0+argv
 	bpl	divumod
 	com	tmp4
-	bsr	negargv
+	jsr	negargv
 divumod
 	ldd	3,x
 	std	6,x
@@ -410,20 +410,6 @@ _shift
 	rol	7,x
 	rol	6,x
 	rol	5,x
-	rts
-negx
-	neg	4,x
-	ngc	3,x
-	ngc	2,x
-	ngc	1,x
-	ngc	0,x
-	rts
-negargv
-	neg	4+argv
-	ngc	3+argv
-	ngc	2+argv
-	ngc	1+argv
-	ngc	0+argv
 	rts
 
 	.module	mdexp
@@ -915,6 +901,73 @@ mulintx
 	std	1,x
 	rts
 
+	.module	mdnegargv
+negargv
+	neg	4+argv
+	bcs	_com3
+	neg	3+argv
+	bcs	_com2
+	neg	2+argv
+	bcs	_com1
+	neg	1+argv
+	bcs	_com0
+	neg	0+argv
+	rts
+_com3
+	com	3+argv
+_com2
+	com	2+argv
+_com1
+	com	1+argv
+_com0
+	com	0+argv
+	rts
+
+	.module	mdnegtmp
+negtmp
+	neg	tmp3+1
+	bcs	_com3
+	neg	tmp3
+	bcs	_com2
+	neg	tmp2+1
+	bcs	_com1
+	neg	tmp2
+	bcs	_com0
+	neg	tmp1+1
+	rts
+_com3
+	com	tmp3
+_com2
+	com	tmp2+1
+_com1
+	com	tmp2
+_com0
+	com	tmp1+1
+	rts
+
+	.module	mdnegx
+negx
+	neg	4,x
+	bcs	_com3
+	neg	3,x
+	bcs	_com2
+negxi
+	neg	2,x
+	bcs	_com1
+	neg	1,x
+	bcs	_com0
+	neg	0,x
+	rts
+_com3
+	com	3,x
+_com2
+	com	2,x
+_com1
+	com	1,x
+_com0
+	com	0,x
+	rts
+
 	.module	mdpowflt
 powfltx
 	ldd	3+argv
@@ -1063,11 +1116,7 @@ strflt
 	ldab	#' '
 	bra	_wdigs
 _neg
-	neg	tmp3+1
-	ngc	tmp3
-	ngc	tmp2+1
-	ngc	tmp2
-	ngc	tmp1+1
+	jsr	negtmp
 	ldab	#'-'
 _wdigs
 	ldx	tmp3
@@ -1343,21 +1392,13 @@ ld_ix_pw			; numCalls = 1
 
 neg_fr1_fr1			; numCalls = 1
 	.module	modneg_fr1_fr1
-	neg	r1+4
-	ngc	r1+3
-	ngc	r1+2
-	ngc	r1+1
-	ngc	r1
-	rts
+	ldx	#r1
+	jmp	negx
 
 neg_fr2_fr2			; numCalls = 1
 	.module	modneg_fr2_fr2
-	neg	r2+4
-	ngc	r2+3
-	ngc	r2+2
-	ngc	r2+1
-	ngc	r2
-	rts
+	ldx	#r2
+	jmp	negx
 
 neg_ir3_ix			; numCalls = 1
 	.module	modneg_ir3_ix

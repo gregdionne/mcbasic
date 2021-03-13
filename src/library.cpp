@@ -13,7 +13,7 @@ void Library::makeFoundation() {
   foundation["mdref5"] = Lib{0, mdArrayRef5(), {"mdmul12"}};
   foundation["mdrefint"] = Lib{0, mdArrayRefInt(), {}};
   foundation["mdrefflt"] = Lib{0, mdArrayRefFlt(), {}};
-  foundation["mddivmod"] = Lib{0, mdDivMod(), {}};
+  foundation["mddivmod"] = Lib{0, mdDivMod(), {"mdnegx", "mdnegargv"}};
   foundation["mddivflt"] = Lib{0, mdDivFlt(), {"mddivmod"}};
   foundation["mdmodflt"] = Lib{0, mdModFlt(), {"mddivmod"}};
   foundation["mdinvflt"] = Lib{0, mdInvFlt(), {"mddivflt"}};
@@ -30,12 +30,15 @@ void Library::makeFoundation() {
   foundation["mdpowflt"] = Lib{0, mdPowFlt(), {"mdlog"}};
   foundation["mdpowintn"] = Lib{0, mdPowIntN(), {"mdmulint", "mdx2arg"}};
   foundation["mdpowfltn"] = Lib{0, mdPowFltN(), {"mdmulflt", "mdx2arg"}};
-  foundation["mdstrflt"] = Lib{0, mdStrFlt(), {"mddivflt"}};
+  foundation["mdnegx"] = Lib{0, mdNegX(), {}};
+  foundation["mdnegargv"] = Lib{0, mdNegArgV(), {}};
+  foundation["mdnegtmp"] = Lib{0, mdNegTmp(), {}};
+  foundation["mdstrflt"] = Lib{0, mdStrFlt(), {"mddivflt", "mdnegtmp"}};
   foundation["mdstrprm"] = Lib{0, mdStrPrm(), {"mdstrdel"}};
   foundation["mdstrrel"] = Lib{0, mdStrRel(), {}};
   foundation["mdstrtmp"] = Lib{0, mdStrTmp(), {}};
   foundation["mdstrdel"] = Lib{0, mdStrDel(), {"mdalloc"}};
-  foundation["mdstrval"] = Lib{0, mdStrVal(), {}};
+  foundation["mdstrval"] = Lib{0, mdStrVal(), {"mdnegtmp"}};
   foundation["mdstreqs"] = Lib{0, mdStrEqs(), {"mdstrrel"}};
   foundation["mdstreqbs"] = Lib{0, mdStrEqbs(), {"mdstrrel"}};
   foundation["mdstreqx"] = Lib{0, mdStrEqx(), {"mdstrrel"}};
@@ -623,6 +626,117 @@ std::string Library::mdStrDel() {
   return tasm.source();
 }
 
+std::string Library::mdNegX() {
+  Assembler tasm;
+  if (undoc) {
+    tasm.label("negxi");
+    tasm.neg("2,x");
+    tasm.ngc("1,x");
+    tasm.ngc("0,x");
+    tasm.rts();
+
+    tasm.label("negx");
+    tasm.neg("4,x");
+    tasm.ngc("3,x");
+    tasm.ngc("2,x");
+    tasm.ngc("1,x");
+    tasm.ngc("0,x");
+    tasm.rts();
+  } else {
+    tasm.label("negx");
+    tasm.neg("4,x");
+    tasm.bcs("_com3");
+    tasm.neg("3,x");
+    tasm.bcs("_com2");
+    tasm.label("negxi");
+    tasm.neg("2,x");
+    tasm.bcs("_com1");
+    tasm.neg("1,x");
+    tasm.bcs("_com0");
+    tasm.neg("0,x");
+    tasm.rts();
+    tasm.label("_com3");
+    tasm.com("3,x");
+    tasm.label("_com2");
+    tasm.com("2,x");
+    tasm.label("_com1");
+    tasm.com("1,x");
+    tasm.label("_com0");
+    tasm.com("0,x");
+    tasm.rts();
+  }
+  return tasm.source();
+}
+
+std::string Library::mdNegArgV() {
+  Assembler tasm;
+  tasm.label("negargv");
+  if (undoc) {
+    tasm.neg("4+argv");
+    tasm.ngc("3+argv");
+    tasm.ngc("2+argv");
+    tasm.ngc("1+argv");
+    tasm.ngc("0+argv");
+    tasm.rts();
+  } else {
+    tasm.neg("4+argv");
+    tasm.bcs("_com3");
+    tasm.neg("3+argv");
+    tasm.bcs("_com2");
+    tasm.neg("2+argv");
+    tasm.bcs("_com1");
+    tasm.neg("1+argv");
+    tasm.bcs("_com0");
+    tasm.neg("0+argv");
+    tasm.rts();
+    tasm.label("_com3");
+    tasm.com("3+argv");
+    tasm.label("_com2");
+    tasm.com("2+argv");
+    tasm.label("_com1");
+    tasm.com("1+argv");
+    tasm.label("_com0");
+    tasm.com("0+argv");
+    tasm.rts();
+  }
+  return tasm.source();
+}
+
+std::string Library::mdNegTmp() {
+  Assembler tasm;
+  tasm.label("negtmp");
+  if (undoc) {
+    tasm.neg("tmp3+1");
+    tasm.ngc("tmp3");
+    tasm.ngc("tmp2+1");
+    tasm.ngc("tmp2");
+    tasm.ngc("tmp1+1");
+    tasm.rts();
+  } else {
+    tasm.neg("tmp3+1");
+    tasm.bcs("_com3");
+    tasm.neg("tmp3");
+    tasm.bcs("_com2");
+    tasm.neg("tmp2+1");
+    tasm.bcs("_com1");
+    tasm.neg("tmp2");
+    tasm.bcs("_com0");
+    tasm.neg("tmp1+1");
+    tasm.rts();
+    tasm.label("_com3");
+    tasm.com("tmp3");
+    tasm.label("_com2");
+    tasm.com("tmp2+1");
+    tasm.label("_com1");
+    tasm.com("tmp2");
+    tasm.label("_com0");
+    tasm.com("tmp1+1");
+    tasm.rts();
+  }
+
+  return tasm.source();
+}
+
 std::string Library::mdStrFlt() {
   Assembler tasm;
   tasm.label("strflt");
@@ -633,11 +747,7 @@ std::string Library::mdStrFlt() {
   tasm.ldab("#' '");  // tmp3   == frac
   tasm.bra("_wdigs");
   tasm.label("_neg");
-  tasm.neg("tmp3+1");
-  tasm.ngc("tmp3");
-  tasm.ngc("tmp2+1");
-  tasm.ngc("tmp2");
-  tasm.ngc("tmp1+1");
+  tasm.jsr("negtmp");
   tasm.ldab("#'-'");
   tasm.label("_wdigs");
   tasm.ldx("tmp3"); // repurpose tmp3 as even/odd save
@@ -893,14 +1003,8 @@ std::string Library::mdStrVal() {
 
   tasm.label("_dosign");
   tasm.tst("tmp1");
-  tasm.beq("_rts");
-  tasm.neg("tmp3+1");
-  tasm.ngc("tmp3");
-  tasm.ngc("tmp2+1");
-  tasm.ngc("tmp2");
-  tasm.ngc("tmp1+1");
-  tasm.label("_rts");
-  tasm.rts();
+  tasm.beq("_srts");
+  tasm.jmp("negtmp");
 
   tasm.label("_getsgn");
   tasm.tstb();
@@ -1773,13 +1877,13 @@ std::string Library::mdDivMod() {
   tasm.tst("0,x");  // dividend positive?
   tasm.bpl("_posX");
   tasm.com("tmp4"); // no, invert output sign
-  tasm.bsr("negx");
+  tasm.jsr("negx");
 
   tasm.label("_posX");
   tasm.tst("0+argv"); // divisor positive?
   tasm.bpl("divumod");
   tasm.com("tmp4"); // no, invert output sign
-  tasm.bsr("negargv");
+  tasm.jsr("negargv");
 
   tasm.label("divumod");
   tasm.ldd("3,x");
@@ -1846,22 +1950,6 @@ std::string Library::mdDivMod() {
   tasm.rol("7,x");
   tasm.rol("6,x");
   tasm.rol("5,x");
-  tasm.rts();
-
-  tasm.label("negx");
-  tasm.neg("4,x");
-  tasm.ngc("3,x");
-  tasm.ngc("2,x");
-  tasm.ngc("1,x");
-  tasm.ngc("0,x");
-  tasm.rts();
-
-  tasm.label("negargv");
-  tasm.neg("4+argv");
-  tasm.ngc("3+argv");
-  tasm.ngc("2+argv");
-  tasm.ngc("1+argv");
-  tasm.ngc("0+argv");
   tasm.rts();
 
   return tasm.source();
@@ -2593,11 +2681,28 @@ std::string Library::mdSin() {
 
   tasm.label("_rsub");
   tasm.neg("4,x");
-  tasm.ngc("3,x");
+  if (undoc) {
+    tasm.ngc("3,x");
+  } else {
+    tasm.bcs("_ngc1");
+    tasm.com("3,x");
+    tasm.bra("_ngc2");
+    tasm.label("_ngc1");
+    tasm.neg("3,x");
+    tasm.label("_ngc2");
+  }
   tasm.sbcb("2,x");
   tasm.sbca("1,x");
   tasm.std("1,x");
-  tasm.ngc("0,x");
+  if (undoc) {
+    tasm.ngc("0,x");
+  } else {
+    tasm.bcs("_ngc3");
+    tasm.com("0,x");
+    tasm.rts();
+    tasm.label("_ngc3");
+    tasm.neg("0,x");
+  }
   tasm.rts();
 
   tasm.labelByte("_tbl_pi1", "$03,$24,$40");

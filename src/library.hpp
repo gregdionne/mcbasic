@@ -23,7 +23,10 @@ struct Lib {
 
 class Library {
 public:
-  explicit Library(InstQueue &queue_in) : queue(queue_in) { makeFoundation(); }
+  Library(InstQueue &queue_in, bool useUndoc)
+      : queue(queue_in), undoc(useUndoc) {
+    makeFoundation();
+  }
 
   // implementation calls
   std::map<std::string, Lib> calls;
@@ -41,6 +44,8 @@ public:
   void assemble(InstructionOp *implementation);
 
 private:
+  bool undoc;
+
   void makeFoundation();
   void addDependencies(std::set<std::string> &dependencies);
   static std::string mdAlloc();
@@ -65,6 +70,9 @@ private:
   static std::string mdStrLobs();
   static std::string mdStrLox();
   static std::string mdRnd();
+  std::string mdNegX();
+  std::string mdNegArgV();
+  std::string mdNegTmp();
   static std::string mdMul12();
   static std::string mdMulFlt();
   static std::string mdMulHlf();
@@ -87,7 +95,7 @@ private:
   static std::string mdSqr();
   static std::string mdExp();
   static std::string mdLog();
-  static std::string mdSin();
+  std::string mdSin();
   static std::string mdCos();
   static std::string mdTan();
   static std::string mdPrAt();

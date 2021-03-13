@@ -7,6 +7,7 @@
 #include "consttable.hpp"
 #include "datatable.hpp"
 #include "instqueue.hpp"
+#include "options.hpp"
 #include "symboltable.hpp"
 
 // Top level class to generate assembly for the target.
@@ -17,7 +18,7 @@ public:
   virtual std::string generateAssembly(DataTable &dataTable,
                                        ConstTable &constTable,
                                        SymbolTable &symbolTable,
-                                       InstQueue &queue) = 0;
+                                       InstQueue &queue, Options &options) = 0;
 };
 
 #endif
