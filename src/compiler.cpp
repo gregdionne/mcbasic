@@ -1006,10 +1006,12 @@ void ExprCompiler::operate(OrExpr &e) {
   for (auto &operand : e.operands) {
     if (needLoad) {
       operand->operate(this);
+      result->castToInt();
       reg = queue.load(std::move(result));
       needLoad = false;
     } else {
       operand->operate(this);
+      result->castToInt();
       result = queue.append(std::make_unique<InstOr>(reg->clone(), reg->clone(),
                                                      std::move(result)));
     }
@@ -1022,10 +1024,12 @@ void ExprCompiler::operate(AndExpr &e) {
   for (auto &operand : e.operands) {
     if (needLoad) {
       operand->operate(this);
+      result->castToInt();
       reg = queue.load(std::move(result));
       needLoad = false;
     } else {
       operand->operate(this);
+      result->castToInt();
       result = queue.append(std::make_unique<InstAnd>(
           reg->clone(), reg->clone(), std::move(result)));
     }
