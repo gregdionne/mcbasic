@@ -55,6 +55,9 @@ class InstAdd;
 class InstSub;
 class InstMul;
 class InstDiv;
+class InstIDiv;
+class InstIDiv3;
+class InstIDiv5;
 class InstPow;
 class InstLdEq;
 class InstLdNe;
@@ -157,6 +160,9 @@ public:
   virtual std::string operate(InstSub &inst) = 0;
   virtual std::string operate(InstMul &inst) = 0;
   virtual std::string operate(InstDiv &inst) = 0;
+  virtual std::string operate(InstIDiv &inst) = 0;
+  virtual std::string operate(InstIDiv3 &inst) = 0;
+  virtual std::string operate(InstIDiv5 &inst) = 0;
   virtual std::string operate(InstPow &inst) = 0;
   virtual std::string operate(InstLdEq &inst) = 0;
   virtual std::string operate(InstLdNe &inst) = 0;
@@ -984,6 +990,41 @@ public:
           std::unique_ptr<AddressMode> am2)
       : Instruction("div", std::move(dest), std::move(am1), std::move(am2)) {
     resultFlt();
+  }
+  std::string operate(InstructionOp *iop) override {
+    return iop->operate(*this);
+  }
+};
+
+class InstIDiv : public Instruction {
+public:
+  InstIDiv(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
+           std::unique_ptr<AddressMode> am2)
+      : Instruction("idiv", std::move(dest), std::move(am1), std::move(am2)) {
+    resultInt();
+  }
+  std::string operate(InstructionOp *iop) override {
+    return iop->operate(*this);
+  }
+};
+
+// Unary (int)
+class InstIDiv3 : public Instruction {
+public:
+  InstIDiv3(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1)
+      : Instruction("idiv3", std::move(dest), std::move(am1)) {
+    resultInt();
+  }
+  std::string operate(InstructionOp *iop) override {
+    return iop->operate(*this);
+  }
+};
+
+class InstIDiv5 : public Instruction {
+public:
+  InstIDiv5(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1)
+      : Instruction("idiv5", std::move(dest), std::move(am1)) {
+    resultInt();
   }
   std::string operate(InstructionOp *iop) override {
     return iop->operate(*this);

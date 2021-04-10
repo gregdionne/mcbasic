@@ -7492,6 +7492,336 @@ std::string CoreImplementation::regFlt_regInt_negWord(InstDiv &inst) {
   return tasm.source();
 }
 
+std::string CoreImplementation::regInt_regFlt_regFlt(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("1+argv");
+  tasm.ldd(inst.arg3->fract());
+  tasm.std("3+argv");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regFlt_extFlt(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("1+argv");
+  tasm.ldd(inst.arg3->fract());
+  tasm.std("3+argv");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regFlt_regInt(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("1+argv");
+  tasm.ldd("#0");
+  tasm.std("3+argv");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regFlt_extInt(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("1+argv");
+  tasm.ldd("#0");
+  tasm.std("3+argv");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regFlt_posByte(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("2+argv");
+  tasm.ldd("#0");
+  tasm.std("0+argv");
+  tasm.std("3+argv");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regFlt_negByte(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("2+argv");
+  tasm.ldd("#-1");
+  tasm.std("0+argv");
+  tasm.ldd("#0");
+  tasm.std("3+argv");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regFlt_posWord(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.std("1+argv");
+  tasm.ldd("#0");
+  tasm.stab("0+argv");
+  tasm.std("3+argv");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regFlt_negWord(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.std("1+argv");
+  tasm.ldd("#255");
+  tasm.stab("0+argv");
+  tasm.tab();
+  tasm.std("3+argv");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt_regFlt(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("1+argv");
+  tasm.ldd(inst.arg3->fract());
+  tasm.std("3+argv");
+  tasm.ldd("#0");
+  tasm.std(inst.arg1->sbyte() + "+3");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt_extFlt(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("1+argv");
+  tasm.ldd(inst.arg3->fract());
+  tasm.std("3+argv");
+  tasm.ldd("#0");
+  tasm.std(inst.arg1->sbyte() + "+3");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt_regInt(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("1+argv");
+  tasm.ldd("#0");
+  tasm.std("3+argv");
+  tasm.std(inst.arg1->sbyte() + "+3");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt_extInt(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("1+argv");
+  tasm.ldd("#0");
+  tasm.std("3+argv");
+  tasm.std(inst.arg1->sbyte() + "+3");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt_posByte(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("2+argv");
+  tasm.ldd("#0");
+  tasm.std("0+argv");
+  tasm.std("3+argv");
+  tasm.std(inst.arg1->sbyte() + "+3");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt_negByte(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("2+argv");
+  tasm.ldd("#-1");
+  tasm.std("0+argv");
+  tasm.ldd("#0");
+  tasm.std("3+argv");
+  tasm.std(inst.arg1->sbyte() + "+3");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt_posWord(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.std("1+argv");
+  tasm.ldd("#0");
+  tasm.stab("0+argv");
+  tasm.std("3+argv");
+  tasm.std(inst.arg1->fract());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt_negWord(InstIDiv &inst) {
+  inst.dependencies.insert("mddivflti");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.std("1+argv");
+  tasm.ldd("#255");
+  tasm.stab("0+argv");
+  tasm.tab();
+  tasm.std("3+argv");
+  tasm.std(inst.arg1->fract());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idivflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_extInt(InstIDiv3 &inst) {
+  inst.dependencies.insert("mdidiv35");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("tmp2");
+  tasm.ldd("#$AA03");
+  tasm.jsr("idiv35");
+  tasm.ldd("tmp2");
+  tasm.std(inst.arg1->lword());
+  tasm.ldab("tmp1+1");
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt(InstIDiv3 &inst) {
+  inst.dependencies.insert("mdidiv35");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("tmp2");
+  tasm.ldd("#$AA03");
+  tasm.jsr("idiv35");
+  tasm.ldd("tmp2");
+  tasm.std(inst.arg1->lword());
+  tasm.ldab("tmp1+1");
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_extInt(InstIDiv5 &inst) {
+  inst.dependencies.insert("mdidiv35");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("tmp2");
+  tasm.ldd("#$CC05");
+  tasm.jsr("idiv35");
+  tasm.ldd("tmp2");
+  tasm.std(inst.arg1->lword());
+  tasm.ldab("tmp1+1");
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt(InstIDiv5 &inst) {
+  inst.dependencies.insert("mdidiv35");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("tmp2");
+  tasm.ldd("#$CC05");
+  tasm.jsr("idiv35");
+  tasm.ldd("tmp2");
+  tasm.std(inst.arg1->lword());
+  tasm.ldab("tmp1+1");
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string CoreImplementation::regFlt_regFlt_regFlt(InstPow &inst) {
   inst.dependencies.insert("mdpowflt");
 
@@ -7673,7 +8003,7 @@ std::string CoreImplementation::regFlt_regInt_extInt(InstPow &inst) {
   tasm.std(inst.arg1->fract());
   tasm.std("3+argv");
   tasm.ldx("#" + inst.arg1->sbyte());
-  tasm.jmp("powintx");
+  tasm.jmp("powfltx");
   return tasm.source();
 }
 

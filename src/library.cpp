@@ -14,6 +14,7 @@ void Library::makeFoundation() {
   foundation["mdrefint"] = Lib{0, mdArrayRefInt(), {}};
   foundation["mdrefflt"] = Lib{0, mdArrayRefFlt(), {}};
   foundation["mddivmod"] = Lib{0, mdDivMod(), {"mdnegx", "mdnegargv"}};
+  foundation["mddivflti"] = Lib{0, mdIDivFlt(), {"mddivmod"}};
   foundation["mddivflt"] = Lib{0, mdDivFlt(), {"mddivmod"}};
   foundation["mdmodflt"] = Lib{0, mdModFlt(), {"mddivmod"}};
   foundation["mdinvflt"] = Lib{0, mdInvFlt(), {"mddivflt"}};
@@ -33,7 +34,11 @@ void Library::makeFoundation() {
   foundation["mdnegx"] = Lib{0, mdNegX(), {}};
   foundation["mdnegargv"] = Lib{0, mdNegArgV(), {}};
   foundation["mdnegtmp"] = Lib{0, mdNegTmp(), {}};
-  foundation["mdstrflt"] = Lib{0, mdStrFlt(), {"mddivflt", "mdnegtmp"}};
+  foundation["mdidivb"] = Lib{0, mdIDivByte(), {}};
+  foundation["mdimodb"] = Lib{0, mdIModByte(), {}};
+  foundation["mdidiv35"] = Lib{0, mdIDiv35(), {"mdidivb", "mdimodb"}};
+  foundation["mdstrflt"] =
+      Lib{0, mdStrFlt(), {"mddivflt", "mdnegtmp", "mdimodb", "mdidivb"}};
   foundation["mdstrprm"] = Lib{0, mdStrPrm(), {"mdstrdel"}};
   foundation["mdstrrel"] = Lib{0, mdStrRel(), {}};
   foundation["mdstrtmp"] = Lib{0, mdStrTmp(), {}};
@@ -737,6 +742,107 @@ std::string Library::mdNegTmp() {
   return tasm.source();
 }
 
+std::string Library::mdIModByte() {
+  Assembler tasm;
+  tasm.comment("fast integer modulo operation by three or five");
+  tasm.comment("ENTRY:  int in tmp1+1,tmp2,tmp2+1");
+  tasm.comment("        ACCB contains modulus (3 or 5)");
+  tasm.comment("EXIT:  result in ACCA");
+  tasm.label("imodb");
+  tasm.pshb();
+  tasm.ldaa("tmp1+1");
+  tasm.bpl("_ok");
+  tasm.deca();
+  tasm.label("_ok");
+  tasm.adda("tmp2");
+  tasm.adca("tmp2+1");
+  tasm.adca("#0");
+  tasm.adca("#0"); // just in case ACCA was $FF and carry set
+  tasm.tab();
+  tasm.lsra();
+  tasm.lsra();
+  tasm.lsra();
+  tasm.lsra();
+  tasm.andb("#$0F");
+  tasm.aba();
+  tasm.pulb();
+  tasm.label("_dec");
+  tasm.sba();
+  tasm.bhs("_dec");
+  tasm.aba();
+  tasm.tst("tmp1+1");
+  tasm.rts();
+
+  return tasm.source();
+}
+
+std::string Library::mdIDivByte() {
+  Assembler tasm;
+  tasm.comment("fast integer division by three or five");
+  tasm.comment("ENTRY+EXIT:  int in tmp1+1,tmp2,tmp2+1");
+  tasm.comment("        ACCB contains:");
+  tasm.comment("           $CC for div-5");
+  tasm.comment("           $AA for div-3");
+  tasm.comment("        tmp3,tmp3+1,tmp4 used for storage");
+  tasm.label("idivb");
+  tasm.stab("tmp4");
+  tasm.ldab("tmp1+1"); // save sbyte
+  tasm.pshb();         //
+  tasm.ldd("tmp2");    // save hbyte
+  tasm.psha();         //
+  tasm.ldaa("tmp4");   // multiply lbyte by $AAAAAA or $CCCCCC
+  tasm.mul();          // and add to result
+  tasm.std("tmp3");    //
+  tasm.addd("tmp2");   //
+  tasm.std("tmp2");    //
+  tasm.ldab("tmp1+1"); //
+  tasm.adcb("tmp3+1"); //
+  tasm.stab("tmp1+1"); //
+  tasm.ldd("tmp1+1");  //
+  tasm.addd("tmp3");   //
+  tasm.std("tmp1+1");  //
+  tasm.pulb();         // get hbyte, multiply by $AA or $CC
+  tasm.ldaa("tmp4");   // and add to result
+  tasm.mul();          //
+  tasm.stab("tmp3+1"); //
+  tasm.addd("tmp1+1"); //
+  tasm.std("tmp1+1");  // (leave tmp3+1, we'll add it next)
+  tasm.pulb();         // get sbyte, multiply by $AA or $CC
+  tasm.ldaa("tmp4");   // and add
+  tasm.mul();          //
+  tasm.addb("tmp1+1"); //
+  tasm.addb("tmp3+1"); //
+  tasm.stab("tmp1+1"); // exit with Z set if nothing left
+  tasm.rts();
+
+  return tasm.source();
+}
+
+std::string Library::mdIDiv35() {
+  Assembler tasm;
+  tasm.comment("fast divide by 3 or 5");
+  tasm.comment("ENTRY: X in tmp1+1,tmp2,tmp2+1");
+  tasm.comment("       ACCD is $CC05 for divide by 5");
+  tasm.comment("       ACCD is $AA03 for divide by 3");
+  tasm.comment("EXIT:  INT(X/(3 or 5)) in tmp1+1,tmp2,tmp2+1");
+  tasm.comment("  tmp3,tmp3+1,tmp4 used for storage");
+  tasm.label("idiv35");
+  tasm.psha();
+  tasm.jsr("imodb");
+  tasm.tab();
+  tasm.ldaa("tmp2+1");
+  tasm.sba();
+  tasm.staa("tmp2+1");
+  tasm.bcc("_dodiv");
+  tasm.ldd("tmp1+1");
+  tasm.subd("#1");
+  tasm.std("tmp1+1");
+  tasm.label("_dodiv");
+  tasm.pulb();
+  tasm.jmp("idivb");
+  return tasm.source();
+}
+
 std::string Library::mdStrFlt() {
   Assembler tasm;
   tasm.label("strflt");
@@ -761,22 +867,8 @@ std::string Library::mdStrFlt() {
   tasm.ror("tmp2");
   tasm.ror("tmp2+1");
   tasm.ror("tmp3"); // save remainder (even odd) in tmp3
-  tasm.ldaa("tmp1+1");
-  tasm.adda("tmp2");
-  tasm.adca("tmp2+1");
-  tasm.adca("#0");
-  tasm.adca("#0"); // just in case a was FF and CC set
-  tasm.tab();
-  tasm.lsra();
-  tasm.lsra();
-  tasm.lsra();
-  tasm.lsra();
-  tasm.andb("#$0F");
-  tasm.aba();
-  tasm.label("_dec");
-  tasm.suba("#5");
-  tasm.bhs("_dec");
-  tasm.adda("#5");
+  tasm.ldab("#5");
+  tasm.jsr("imodb");
   tasm.staa("tmp3+1");  // save result mod 5
   tasm.lsl("tmp3");     // restore odd
   tasm.rola();          // construct digit mod 10
@@ -789,32 +881,8 @@ std::string Library::mdStrFlt() {
   tasm.ldab("tmp1+1");  //
   tasm.sbcb("#0");      //
   tasm.stab("tmp1+1");  //
-  tasm.pshb();          // save sbyte
-  tasm.ldd("tmp2");     // save hbyte
-  tasm.psha();          //
-  tasm.ldaa("#$CC");    // multiply lbyte by $CCCCC and add to result
-  tasm.mul();           //
-  tasm.std("tmp3");     //
-  tasm.addd("tmp2");    //
-  tasm.std("tmp2");     //
-  tasm.ldab("tmp1+1");  //
-  tasm.adcb("tmp3+1");  //
-  tasm.stab("tmp1+1");  //
-  tasm.ldd("tmp1+1");   //
-  tasm.addd("tmp3");    //
-  tasm.std("tmp1+1");   //
-  tasm.pulb();          // get hbyte, multiply by $CC and add
-  tasm.ldaa("#$CC");    //
-  tasm.mul();           //
-  tasm.stab("tmp3+1");  //
-  tasm.addd("tmp1+1");  //
-  tasm.std("tmp1+1");   //  (leave tmp3+1, we'll add it next)
-  tasm.pulb();          // get sbyte, multiply by $CC and add
-  tasm.ldaa("#$CC");    //
-  tasm.mul();           //
-  tasm.addb("tmp1+1");  //
-  tasm.addb("tmp3+1");  //
-  tasm.stab("tmp1+1");  //
+  tasm.ldab("#$CC");    // multiply tmp1+1,tmp2,tmp2+1 by
+  tasm.jsr("idivb");    //  1/5 == $CCCCCD
   tasm.bne("_nxtwdig"); // if still have something left...
   tasm.ldd("tmp2");
   tasm.bne("_nxtwdig");
@@ -1780,6 +1848,29 @@ std::string Library::mdShift() {
   return tasm.source();
 }
 
+std::string Library::mdModFlti() {
+  Assembler tasm;
+  tasm.comment("modulo X by Y");
+  tasm.comment("  ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("                    scratch in  (5,x 6,x 7,x 8,x 9,x)");
+  tasm.comment("         Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv");
+  tasm.comment("  EXIT   X%Y in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("         INT(X/Y) in (7,x 8,x 9,x)");
+  tasm.comment("         uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4");
+  tasm.label("modflti");
+  tasm.ldaa("#8*3"); // set number of shifts
+  tasm.jsr("divmod");
+  tasm.tst("tmp4");
+  tasm.bpl("_rts");
+  tasm.jmp("negx");
+  tasm.label("_rts");
+  tasm.com("9,x");
+  tasm.com("8,x");
+  tasm.com("7,x");
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string Library::mdModFlt() {
   Assembler tasm;
   tasm.comment("modulo X by Y");
@@ -1806,6 +1897,51 @@ std::string Library::mdModFlt() {
   tasm.com("9,x");
   tasm.com("8,x");
   tasm.com("7,x");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdIDivFlt() {
+  Assembler tasm;
+  tasm.comment("divide X by Y and mask off fraction");
+  tasm.comment("  ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("                    scratch in  (5,x 6,x 7,x 8,x 9,x)");
+  tasm.comment("         Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv");
+  tasm.comment("  EXIT   INT(X/Y) in (0,x 1,x 2,x)");
+  tasm.comment("         uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4");
+  tasm.label("idivflt");
+  tasm.ldaa("#8*3"); // set number of shifts
+  tasm.bsr("divmod");
+  tasm.tst("tmp4");
+  tasm.bmi("_neg");
+  tasm.ldd("8,x");
+  tasm.comb();
+  tasm.coma();
+  tasm.std("1,x");
+  tasm.ldab("7,x");
+  tasm.comb();
+  tasm.stab("0,x");
+  tasm.rts();
+
+  tasm.label("_neg");
+  tasm.ldd("3,x");
+  tasm.bne("_copy");
+  tasm.ldd("1,x");
+  tasm.bne("_copy");
+  tasm.ldab(",x");
+  tasm.bne("_copy");
+  tasm.ldd("8,x");
+  tasm.addd("#1");
+  tasm.std("1,x");
+  tasm.ldab("7,x");
+  tasm.adcb("#0");
+  tasm.stab("0,x");
+  tasm.rts();
+  tasm.label("_copy");
+  tasm.ldd("8,x");
+  tasm.std("1,x");
+  tasm.ldab("7,x");
+  tasm.stab("0,x");
   tasm.rts();
   return tasm.source();
 }

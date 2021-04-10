@@ -201,6 +201,11 @@ void ExprConstTabulator::operate(PowerExpr &e) {
   e.exponent->operate(this);
 }
 
+void ExprConstTabulator::operate(IntegerDivisionExpr &e) {
+  e.dividend->operate(this);
+  e.divisor->operate(this);
+}
+
 void ExprConstTabulator::operate(MultiplicativeExpr &e) {
   for (auto &operand : e.operands) {
     operand->operate(this);

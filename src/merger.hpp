@@ -39,6 +39,7 @@ public:
   void operate(ArrayIndicesExpr &e) override;
   void operate(NegatedExpr &e) override;
   void operate(PowerExpr &e) override;
+  void operate(IntegerDivisionExpr &e) override;
   void operate(MultiplicativeExpr &e) override;
   void operate(AdditiveExpr &e) override;
   void operate(ComplementedExpr &e) override;
@@ -93,6 +94,11 @@ private:
   //
   static void reducePowerOfTwoMultiplication(std::unique_ptr<NumericExpr> &expr,
                                              ExprMerger *that);
+
+  // replace
+  //   INT(X/Y) with IDIV(X,Y)
+  static void mergeIntegerDivision(std::unique_ptr<NumericExpr> &expr,
+                                   ExprMerger *that);
 
   // replace - ( -(<expr1>) * <expr2> ) with <expr1>*<expr2>
   //

@@ -44,6 +44,23 @@ void ExprMerger::mergeUnaryOp(std::unique_ptr<NumericExpr> &expr) {
   }
 }
 
+void ExprMerger::mergeIntegerDivision(std::unique_ptr<NumericExpr> &expr,
+                                      ExprMerger *that) {
+  auto *iexpr = dynamic_cast<IntExpr *>(expr.get());
+  if (iexpr != nullptr) {
+    auto *mexpr = dynamic_cast<MultiplicativeExpr *>(iexpr->expr.get());
+    if (mexpr != nullptr && !mexpr->invoperands.empty()) {
+      auto divisor = std::make_unique<MultiplicativeExpr>(
+          std::make_unique<NumericConstantExpr>(1));
+      divisor->operands = std::move(mexpr->invoperands);
+      mexpr->invoperands.clear();
+      expr = std::make_unique<IntegerDivisionExpr>(std::move(iexpr->expr),
+                                                   std::move(divisor));
+      that->merge(expr);
+    }
+  }
+}
+
 void ExprMerger::reduceRelationalMultiplication(
     std::unique_ptr<NumericExpr> &expr, IsFloat &isFloat, ExprMerger *that) {
   auto *mexpr = dynamic_cast<MultiplicativeExpr *>(expr.get());
@@ -245,6 +262,7 @@ void ExprMerger::merge(std::unique_ptr<NumericExpr> &expr) {
   reducePowerOfTwo(expr, isFloat, this);
   reduceRelationalMultiplication(expr, isFloat, this);
   reducePowerOfTwoMultiplication(expr, this);
+  mergeIntegerDivision(expr, this);
 }
 
 void ExprMerger::merge(std::unique_ptr<StringExpr> &expr) {
@@ -443,6 +461,11 @@ void ExprMerger::operate(PointExpr &e) {
 void ExprMerger::operate(PowerExpr &e) {
   merge(e.base);
   merge(e.exponent);
+}
+
+void ExprMerger::operate(IntegerDivisionExpr &e) {
+  merge(e.dividend);
+  merge(e.divisor);
 }
 
 void ExprMerger::pruneIdentity(

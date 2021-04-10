@@ -625,6 +625,54 @@ std::string Dispatcher::operate(InstDiv &inst) {
              : implementation->unimplemented(inst);
 }
 
+std::string Dispatcher::operate(InstIDiv &inst) {
+  return inst.isRegInt_regFlt_regFlt()
+             ? implementation->regInt_regFlt_regFlt(inst)
+         : inst.isRegInt_regFlt_extFlt()
+             ? implementation->regInt_regFlt_extFlt(inst)
+         : inst.isRegInt_regFlt_regInt()
+             ? implementation->regInt_regFlt_regInt(inst)
+         : inst.isRegInt_regFlt_extInt()
+             ? implementation->regInt_regFlt_extInt(inst)
+         : inst.isRegInt_regFlt_posByte()
+             ? implementation->regInt_regFlt_posByte(inst)
+         : inst.isRegInt_regFlt_negByte()
+             ? implementation->regInt_regFlt_negByte(inst)
+         : inst.isRegInt_regFlt_posWord()
+             ? implementation->regInt_regFlt_posWord(inst)
+         : inst.isRegInt_regFlt_negWord()
+             ? implementation->regInt_regFlt_negWord(inst)
+         : inst.isRegInt_regInt_regFlt()
+             ? implementation->regInt_regInt_regFlt(inst)
+         : inst.isRegInt_regInt_extFlt()
+             ? implementation->regInt_regInt_extFlt(inst)
+         : inst.isRegInt_regInt_regInt()
+             ? implementation->regInt_regInt_regInt(inst)
+         : inst.isRegInt_regInt_extInt()
+             ? implementation->regInt_regInt_extInt(inst)
+         : inst.isRegInt_regInt_posByte()
+             ? implementation->regInt_regInt_posByte(inst)
+         : inst.isRegInt_regInt_negByte()
+             ? implementation->regInt_regInt_negByte(inst)
+         : inst.isRegInt_regInt_posWord()
+             ? implementation->regInt_regInt_posWord(inst)
+         : inst.isRegInt_regInt_negWord()
+             ? implementation->regInt_regInt_negWord(inst)
+             : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstIDiv3 &inst) {
+  return inst.isRegInt_regInt()   ? implementation->regInt_regInt(inst)
+         : inst.isRegInt_extInt() ? implementation->regInt_extInt(inst)
+                                  : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstIDiv5 &inst) {
+  return inst.isRegInt_regInt()   ? implementation->regInt_regInt(inst)
+         : inst.isRegInt_extInt() ? implementation->regInt_extInt(inst)
+                                  : implementation->unimplemented(inst);
+}
+
 std::string Dispatcher::operate(InstPow &inst) {
   return inst.isRegFlt_regFlt_regFlt()
              ? implementation->regFlt_regFlt_regFlt(inst)

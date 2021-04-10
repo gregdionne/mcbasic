@@ -91,6 +91,7 @@ public:
   void operate(StringArrayExpr &e) override;
   void operate(NegatedExpr &e) override;
   void operate(PowerExpr &e) override;
+  void operate(IntegerDivisionExpr &e) override;
   void operate(MultiplicativeExpr &e) override;
   void operate(AdditiveExpr &e) override;
   void operate(ComplementedExpr &e) override;

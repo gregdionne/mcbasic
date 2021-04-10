@@ -83,8 +83,13 @@ private:
   static std::string mdShift();
   static std::string mdInvFlt();
   static std::string mdDivFlt();
+  static std::string mdIDivFlt();
+  static std::string mdModFlti();
   static std::string mdModFlt();
   static std::string mdDivMod();
+  static std::string mdIModByte();
+  static std::string mdIDivByte();
+  static std::string mdIDiv35();
   static std::string mdPowIntN();
   static std::string mdPowFltN();
   static std::string mdPowFlt();

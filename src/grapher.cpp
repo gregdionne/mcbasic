@@ -54,6 +54,18 @@ void ExprGrapher::operate(StringVariableExpr &e) {
   printtab(n, "%s$", e.varname.c_str());
 }
 
+void ExprGrapher::operate(PowerExpr &e) {
+  printtab(n, "^");
+  indentOp(e.base, this);
+  indentOp(e.exponent, this);
+}
+
+void ExprGrapher::operate(IntegerDivisionExpr &e) {
+  printtab(n, "IDIV");
+  indentOp(e.dividend, this);
+  indentOp(e.divisor, this);
+}
+
 void ExprGrapher::operate(NaryNumericExpr &e) {
   printtab(n, (e.funcName + "op").c_str());
   ++n;

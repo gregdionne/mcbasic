@@ -25,6 +25,8 @@ public:
   void operate(NumericArrayExpr &e) override;
   void operate(StringArrayExpr &e) override;
   void operate(NegatedExpr &e) override;
+  void operate(PowerExpr &e) override;
+  void operate(IntegerDivisionExpr &e) override;
   void operate(MultiplicativeExpr &e) override {
     e.NaryNumericExpr::operate(this);
   }

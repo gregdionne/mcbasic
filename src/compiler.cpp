@@ -958,6 +958,24 @@ void ExprCompiler::operate(PowerExpr &e) {
       std::make_unique<InstPow>(reg->clone(), reg->clone(), std::move(result)));
 }
 
+void ExprCompiler::operate(IntegerDivisionExpr &e) {
+  // get numerator
+  e.dividend->operate(this);
+
+  double c;
+  if (!result->isFloat() && e.divisor->isConst(c) && (c == 5 || c == 3)) {
+    auto dest = queue.alloc(result->clone());
+    result = queue.append(c == 3 ? makeInstMove<InstIDiv3>(dest, result)
+                                 : makeInstMove<InstIDiv5>(dest, result));
+  } else {
+    auto reg = queue.load(std::move(result));
+    queue.reserve(1);
+    e.divisor->operate(this);
+    result = queue.append(std::make_unique<InstIDiv>(reg->clone(), reg->clone(),
+                                                     std::move(result)));
+  }
+}
+
 void ExprCompiler::operate(MultiplicativeExpr &e) {
   std::unique_ptr<AddressMode> reg;
   bool needLoad = true;

@@ -2751,7 +2751,7 @@ LINE_88
 	ldx	#INTVAR_Y
 	jsr	ld_ix_ir1
 
-	; X=(((P/C)-INT(P/C))*K)+(Y*3)+2
+	; X=(((P/C)-IDIV(P,C))*K)+(Y*3)+2
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -2763,7 +2763,7 @@ LINE_88
 	jsr	ld_ir2_ix
 
 	ldx	#INTVAR_C
-	jsr	div_fr2_ir2_ix
+	jsr	idiv_ir2_ir2_ix
 
 	jsr	sub_fr1_fr1_ir2
 
@@ -6290,6 +6290,47 @@ divuflt
 	bsr	divumod
 	bra	_com
 
+	.module	mddivflti
+; divide X by Y and mask off fraction
+;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
+;                     scratch in  (5,x 6,x 7,x 8,x 9,x)
+;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+;   EXIT   INT(X/Y) in (0,x 1,x 2,x)
+;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
+idivflt
+	ldaa	#8*3
+	bsr	divmod
+	tst	tmp4
+	bmi	_neg
+	ldd	8,x
+	comb
+	coma
+	std	1,x
+	ldab	7,x
+	comb
+	stab	0,x
+	rts
+_neg
+	ldd	3,x
+	bne	_copy
+	ldd	1,x
+	bne	_copy
+	ldab	,x
+	bne	_copy
+	ldd	8,x
+	addd	#1
+	std	1,x
+	ldab	7,x
+	adcb	#0
+	stab	0,x
+	rts
+_copy
+	ldd	8,x
+	std	1,x
+	ldab	7,x
+	stab	0,x
+	rts
+
 	.module	mddivmod
 ; divide/modulo X by Y with remainder
 ;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
@@ -6402,6 +6443,74 @@ getne
 	rts
 _1
 	ldd	#-1
+	rts
+
+	.module	mdidivb
+; fast integer division by three or five
+; ENTRY+EXIT:  int in tmp1+1,tmp2,tmp2+1
+;         ACCB contains:
+;            $CC for div-5
+;            $AA for div-3
+;         tmp3,tmp3+1,tmp4 used for storage
+idivb
+	stab	tmp4
+	ldab	tmp1+1
+	pshb
+	ldd	tmp2
+	psha
+	ldaa	tmp4
+	mul
+	std	tmp3
+	addd	tmp2
+	std	tmp2
+	ldab	tmp1+1
+	adcb	tmp3+1
+	stab	tmp1+1
+	ldd	tmp1+1
+	addd	tmp3
+	std	tmp1+1
+	pulb
+	ldaa	tmp4
+	mul
+	stab	tmp3+1
+	addd	tmp1+1
+	std	tmp1+1
+	pulb
+	ldaa	tmp4
+	mul
+	addb	tmp1+1
+	addb	tmp3+1
+	stab	tmp1+1
+	rts
+
+	.module	mdimodb
+; fast integer modulo operation by three or five
+; ENTRY:  int in tmp1+1,tmp2,tmp2+1
+;         ACCB contains modulus (3 or 5)
+; EXIT:  result in ACCA
+imodb
+	pshb
+	ldaa	tmp1+1
+	bpl	_ok
+	deca
+_ok
+	adda	tmp2
+	adca	tmp2+1
+	adca	#0
+	adca	#0
+	tab
+	lsra
+	lsra
+	lsra
+	lsra
+	andb	#$0F
+	aba
+	pulb
+_dec
+	sba
+	bhs	_dec
+	aba
+	tst	tmp1+1
 	rts
 
 	.module	mdmulflt
@@ -7127,22 +7236,8 @@ _nxtwdig
 	ror	tmp2
 	ror	tmp2+1
 	ror	tmp3
-	ldaa	tmp1+1
-	adda	tmp2
-	adca	tmp2+1
-	adca	#0
-	adca	#0
-	tab
-	lsra
-	lsra
-	lsra
-	lsra
-	andb	#$0F
-	aba
-_dec
-	suba	#5
-	bhs	_dec
-	adda	#5
+	ldab	#5
+	jsr	imodb
 	staa	tmp3+1
 	lsl	tmp3
 	rola
@@ -7155,32 +7250,8 @@ _dec
 	ldab	tmp1+1
 	sbcb	#0
 	stab	tmp1+1
-	pshb
-	ldd	tmp2
-	psha
-	ldaa	#$CC
-	mul
-	std	tmp3
-	addd	tmp2
-	std	tmp2
-	ldab	tmp1+1
-	adcb	tmp3+1
-	stab	tmp1+1
-	ldd	tmp1+1
-	addd	tmp3
-	std	tmp1+1
-	pulb
-	ldaa	#$CC
-	mul
-	stab	tmp3+1
-	addd	tmp1+1
-	std	tmp1+1
-	pulb
-	ldaa	#$CC
-	mul
-	addb	tmp1+1
-	addb	tmp3+1
-	stab	tmp1+1
+	ldab	#$CC
+	jsr	idivb
 	bne	_nxtwdig
 	ldd	tmp2
 	bne	_nxtwdig
@@ -8019,18 +8090,6 @@ div_fr1_ir1_ix			; numCalls = 1
 	ldx	#r1
 	jmp	divflt
 
-div_fr2_ir2_ix			; numCalls = 1
-	.module	moddiv_fr2_ir2_ix
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldd	#0
-	std	3+argv
-	std	r2+3
-	ldx	#r2
-	jmp	divflt
-
 for_fx_fr1			; numCalls = 1
 	.module	modfor_fx_fr1
 	stx	letptr
@@ -8080,6 +8139,18 @@ goto_ix			; numCalls = 35
 	ins
 	ins
 	jmp	,x
+
+idiv_ir2_ir2_ix			; numCalls = 1
+	.module	modidiv_ir2_ir2_ix
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	#0
+	std	3+argv
+	std	r2+3
+	ldx	#r2
+	jmp	idivflt
 
 inkey_sr1			; numCalls = 2
 	.module	modinkey_sr1

@@ -159,6 +159,15 @@ public:
   std::string operate(InstDiv &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
+  std::string operate(InstIDiv &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstIDiv3 &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstIDiv5 &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
   std::string operate(InstPow &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }

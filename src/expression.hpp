@@ -32,6 +32,7 @@ class PrintCRExpr;
 class PrintCommaExpr;
 class NegatedExpr;
 class PowerExpr;
+class IntegerDivisionExpr;
 class MultiplicativeExpr;
 class AdditiveExpr;
 class ComplementedExpr;
@@ -83,6 +84,7 @@ public:
   virtual void operate(PrintCommaExpr & /*expr*/) {}
   virtual void operate(NegatedExpr & /*expr*/) {}
   virtual void operate(PowerExpr & /*expr*/) {}
+  virtual void operate(IntegerDivisionExpr & /*expr*/) {}
   virtual void operate(MultiplicativeExpr & /*expr*/) {}
   virtual void operate(AdditiveExpr & /*expr*/) {}
   virtual void operate(ComplementedExpr & /*expr*/) {}
@@ -295,6 +297,17 @@ public:
   std::string funcName = "^";
   PowerExpr(std::unique_ptr<NumericExpr> b, std::unique_ptr<NumericExpr> e)
       : base(std::move(b)), exponent(std::move(e)) {}
+  void operate(ExprOp *op) override { op->operate(*this); }
+};
+
+class IntegerDivisionExpr : public NumericExpr {
+public:
+  std::unique_ptr<NumericExpr> dividend;
+  std::unique_ptr<NumericExpr> divisor;
+  std::string funcName = "^";
+  IntegerDivisionExpr(std::unique_ptr<NumericExpr> num,
+                      std::unique_ptr<NumericExpr> den)
+      : dividend(std::move(num)), divisor(std::move(den)) {}
   void operate(ExprOp *op) override { op->operate(*this); }
 };
 

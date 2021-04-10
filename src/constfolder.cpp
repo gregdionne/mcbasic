@@ -542,6 +542,18 @@ void ExprConstFolder::operate(PowerExpr &e) {
   }
 }
 
+void ExprConstFolder::operate(IntegerDivisionExpr &e) {
+  fold(e.dividend);
+  fold(e.divisor);
+
+  double dividend;
+  double divisor;
+  gotConst = e.dividend->isConst(dividend) && e.divisor->isConst(divisor);
+  if (gotConst) {
+    dvalue = std::floor(dividend / divisor);
+  }
+}
+
 void ExprConstFolder::operate(MultiplicativeExpr &e) {
   for (auto &operand : e.operands) {
     fold(operand);

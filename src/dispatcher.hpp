@@ -78,6 +78,9 @@ public:
   std::string operate(InstSub &inst) override;
   std::string operate(InstMul &inst) override;
   std::string operate(InstDiv &inst) override;
+  std::string operate(InstIDiv &inst) override;
+  std::string operate(InstIDiv3 &inst) override;
+  std::string operate(InstIDiv5 &inst) override;
   std::string operate(InstPow &inst) override;
   std::string operate(InstLdEq &inst) override;
   std::string operate(InstLdNe &inst) override;

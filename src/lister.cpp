@@ -144,6 +144,10 @@ void ExprLister::operate(PowerExpr &e) {
   result = plist(e.base) + e.funcName + plist(e.exponent);
 }
 
+void ExprLister::operate(IntegerDivisionExpr &e) {
+  result = "IDIV(" + plist(e.dividend) + "," + plist(e.divisor) + ")";
+}
+
 void ExprLister::operate(ShiftExpr &e) {
   result = e.funcName + '(' + list(e.expr) + ',' + list(e.count) + ')';
 }
