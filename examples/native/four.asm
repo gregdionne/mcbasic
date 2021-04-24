@@ -4701,7 +4701,6 @@ startdata
 	.word	1, 450, 3000, 7704
 enddata
 
-symstart
 
 ; block started by symbol
 bss

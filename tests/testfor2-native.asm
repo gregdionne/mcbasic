@@ -570,7 +570,6 @@ to_ip_pb			; numCalls = 2
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss

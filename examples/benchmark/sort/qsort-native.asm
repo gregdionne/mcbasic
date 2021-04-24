@@ -1127,7 +1127,6 @@ sub_ix_ix_pb			; numCalls = 2
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss

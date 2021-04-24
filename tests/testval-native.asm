@@ -1473,7 +1473,6 @@ val_fr1_sx			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; fixed-point constants
 FLT_m3p41462	.byte	$ff, $ff, $fc, $95, $db

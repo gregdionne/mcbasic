@@ -4055,7 +4055,6 @@ startdata
 	.text	1, "0"
 enddata
 
-symstart
 
 ; block started by symbol
 bss

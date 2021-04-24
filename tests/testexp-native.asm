@@ -2431,7 +2431,6 @@ to_ip_ix			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; large integer constants
 INT_181440	.byte	$02, $c4, $c0

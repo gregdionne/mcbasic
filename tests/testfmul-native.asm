@@ -1452,7 +1452,6 @@ str_sr1_fr1			; numCalls = 24
 startdata
 enddata
 
-symstart
 
 ; fixed-point constants
 FLT_m4335p45199	.byte	$ff, $ef, $10, $8c, $4a

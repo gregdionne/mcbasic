@@ -279,7 +279,6 @@ setc_ir1_ir2_pb			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss

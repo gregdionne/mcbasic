@@ -335,8 +335,10 @@ extend
 	ldab	,x
 	inx
 	stx	nxtinst
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	rts
 getaddr
 	ldd	curinst
@@ -368,8 +370,10 @@ extbyte
 	ldab	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 extword
@@ -380,8 +384,10 @@ extword
 	ldd	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 byteext
@@ -392,8 +398,10 @@ byteext
 	ldab	1,x
 	pshb
 	ldab	2,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 wordext
@@ -404,8 +412,10 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 immstr
@@ -1171,19 +1181,29 @@ str_sr1_ix			; numCalls = 3
 startdata
 enddata
 
-; Bytecode equates
+; Bytecode symbol lookup table
 
 
-bytecode_INTVAR_A	.equ	INTVAR_A-symstart
-bytecode_INTVAR_B	.equ	INTVAR_B-symstart
-bytecode_INTVAR_G	.equ	INTVAR_G-symstart
-bytecode_FLTVAR_C	.equ	FLTVAR_C-symstart
-bytecode_FLTVAR_D	.equ	FLTVAR_D-symstart
-bytecode_FLTVAR_E	.equ	FLTVAR_E-symstart
-bytecode_FLTVAR_F	.equ	FLTVAR_F-symstart
-bytecode_FLTVAR_H	.equ	FLTVAR_H-symstart
+bytecode_INTVAR_A	.equ	0
+bytecode_INTVAR_B	.equ	1
+bytecode_INTVAR_G	.equ	2
+bytecode_FLTVAR_C	.equ	3
+bytecode_FLTVAR_D	.equ	4
+bytecode_FLTVAR_E	.equ	5
+bytecode_FLTVAR_F	.equ	6
+bytecode_FLTVAR_H	.equ	7
 
-symstart
+symtbl
+
+	.word	INTVAR_A
+	.word	INTVAR_B
+	.word	INTVAR_G
+	.word	FLTVAR_C
+	.word	FLTVAR_D
+	.word	FLTVAR_E
+	.word	FLTVAR_F
+	.word	FLTVAR_H
+
 
 ; block started by symbol
 bss

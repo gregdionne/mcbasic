@@ -705,7 +705,6 @@ str_sr1_fr1			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; large integer constants
 INT_100000	.byte	$01, $86, $a0

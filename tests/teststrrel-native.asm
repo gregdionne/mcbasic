@@ -1188,7 +1188,6 @@ to_ip_pw			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss

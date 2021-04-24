@@ -558,7 +558,6 @@ _null
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss

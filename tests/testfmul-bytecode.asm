@@ -675,8 +675,10 @@ extend
 	ldab	,x
 	inx
 	stx	nxtinst
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	rts
 getaddr
 	ldd	curinst
@@ -708,8 +710,10 @@ extbyte
 	ldab	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 extword
@@ -720,8 +724,10 @@ extword
 	ldd	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 byteext
@@ -732,8 +738,10 @@ byteext
 	ldab	1,x
 	pshb
 	ldab	2,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 wordext
@@ -744,8 +752,10 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 immstr
@@ -1604,23 +1614,37 @@ str_sr1_fr1			; numCalls = 24
 startdata
 enddata
 
-; Bytecode equates
+; Bytecode symbol lookup table
 
-bytecode_FLT_m4335p45199	.equ	FLT_m4335p45199-symstart
-bytecode_FLT_m543p12399	.equ	FLT_m543p12399-symstart
-bytecode_FLT_m5p45199	.equ	FLT_m5p45199-symstart
-bytecode_FLT_m3p12399	.equ	FLT_m3p12399-symstart
-bytecode_FLT_m0p50000	.equ	FLT_m0p50000-symstart
-bytecode_FLT_0p50000	.equ	FLT_0p50000-symstart
-bytecode_FLT_3p12399	.equ	FLT_3p12399-symstart
-bytecode_FLT_5p45199	.equ	FLT_5p45199-symstart
-bytecode_FLT_543p12399	.equ	FLT_543p12399-symstart
-bytecode_FLT_4335p45199	.equ	FLT_4335p45199-symstart
+bytecode_FLT_m4335p45199	.equ	0
+bytecode_FLT_m543p12399	.equ	1
+bytecode_FLT_m5p45199	.equ	2
+bytecode_FLT_m3p12399	.equ	3
+bytecode_FLT_m0p50000	.equ	4
+bytecode_FLT_0p50000	.equ	5
+bytecode_FLT_3p12399	.equ	6
+bytecode_FLT_5p45199	.equ	7
+bytecode_FLT_543p12399	.equ	8
+bytecode_FLT_4335p45199	.equ	9
 
-bytecode_FLTVAR_A	.equ	FLTVAR_A-symstart
-bytecode_FLTVAR_B	.equ	FLTVAR_B-symstart
+bytecode_FLTVAR_A	.equ	10
+bytecode_FLTVAR_B	.equ	11
 
-symstart
+symtbl
+	.word	FLT_m4335p45199
+	.word	FLT_m543p12399
+	.word	FLT_m5p45199
+	.word	FLT_m3p12399
+	.word	FLT_m0p50000
+	.word	FLT_0p50000
+	.word	FLT_3p12399
+	.word	FLT_5p45199
+	.word	FLT_543p12399
+	.word	FLT_4335p45199
+
+	.word	FLTVAR_A
+	.word	FLTVAR_B
+
 
 ; fixed-point constants
 FLT_m4335p45199	.byte	$ff, $ef, $10, $8c, $4a

@@ -11091,7 +11091,6 @@ startdata
 	.byte	99, 5, 4, 7
 enddata
 
-symstart
 
 ; fixed-point constants
 FLT_4p50000	.byte	$00, $00, $04, $80, $00

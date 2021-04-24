@@ -1214,7 +1214,6 @@ val_fr1_sx			; numCalls = 2
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss

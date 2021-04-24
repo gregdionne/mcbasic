@@ -712,7 +712,6 @@ str_sr1_ir1			; numCalls = 2
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss

@@ -71,41 +71,79 @@ std::string ByteCodeTarget::generateSymbolCatalog(ConstTable &constTable,
                                                   SymbolTable &symbolTable) {
   Assembler tasm;
 
-  tasm.comment("Bytecode equates");
+  tasm.comment("Bytecode symbol lookup table");
   tasm.blank();
 
+  int count = 0;
   for (auto &entry : constTable.ints) {
     if (((entry & 0xff0000) != 0) && ((entry & 0xff0000) != 0xff0000)) {
       std::string name = FixedPoint(entry).label();
-      tasm.equ("bytecode_" + name, name + "-symstart");
+      tasm.equ("bytecode_" + name, std::to_string(count++));
     }
   }
 
   for (auto &entry : constTable.flts) {
     std::string name = entry.label();
-    tasm.equ("bytecode_" + name, name + "-symstart");
+    tasm.equ("bytecode_" + name, std::to_string(count++));
   }
 
   tasm.blank();
 
   for (const auto &symbol : symbolTable.numVarTable) {
     std::string name = (symbol.isFloat ? "FLTVAR_" : "INTVAR_") + symbol.name;
-    tasm.equ("bytecode_" + name, name + "-symstart");
+    tasm.equ("bytecode_" + name, std::to_string(count++));
   }
 
   for (const auto &symbol : symbolTable.strVarTable) {
     std::string name = "STRVAR_" + symbol.name;
-    tasm.equ("bytecode_" + name, name + "-symstart");
+    tasm.equ("bytecode_" + name, std::to_string(count++));
   }
 
   for (const auto &symbol : symbolTable.numArrTable) {
     std::string name = (symbol.isFloat ? "FLTARR_" : "INTARR_") + symbol.name;
-    tasm.equ("bytecode_" + name, name + "-symstart");
+    tasm.equ("bytecode_" + name, std::to_string(count++));
   }
 
   for (const auto &symbol : symbolTable.strArrTable) {
     std::string name = "STRARR_" + symbol.name;
-    tasm.equ("bytecode_" + name, name + "-symstart");
+    tasm.equ("bytecode_" + name, std::to_string(count++));
+  }
+
+  tasm.blank();
+  tasm.label("symtbl");
+
+  for (auto &entry : constTable.ints) {
+    if (((entry & 0xff0000) != 0) && ((entry & 0xff0000) != 0xff0000)) {
+      std::string name = FixedPoint(entry).label();
+      tasm.word(name);
+    }
+  }
+
+  for (auto &entry : constTable.flts) {
+    std::string name = entry.label();
+    tasm.word(name);
+  }
+
+  tasm.blank();
+
+  for (const auto &symbol : symbolTable.numVarTable) {
+    std::string name = (symbol.isFloat ? "FLTVAR_" : "INTVAR_") + symbol.name;
+    tasm.word(name);
+  }
+
+  for (const auto &symbol : symbolTable.strVarTable) {
+    std::string name = "STRVAR_" + symbol.name;
+    tasm.word(name);
+  }
+
+  for (const auto &symbol : symbolTable.numArrTable) {
+    std::string name = (symbol.isFloat ? "FLTARR_" : "INTARR_") + symbol.name;
+    tasm.word(name);
+  }
+
+  for (const auto &symbol : symbolTable.strArrTable) {
+    std::string name = "STRARR_" + symbol.name;
+    tasm.word(name);
   }
 
   tasm.blank();

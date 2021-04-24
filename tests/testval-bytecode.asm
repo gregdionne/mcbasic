@@ -456,8 +456,10 @@ extend
 	ldab	,x
 	inx
 	stx	nxtinst
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	rts
 getaddr
 	ldd	curinst
@@ -489,8 +491,10 @@ extbyte
 	ldab	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 extword
@@ -501,8 +505,10 @@ extword
 	ldd	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 byteext
@@ -513,8 +519,10 @@ byteext
 	ldab	1,x
 	pshb
 	ldab	2,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 wordext
@@ -525,8 +533,10 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 immstr
@@ -1638,14 +1648,19 @@ val_fr1_sx			; numCalls = 1
 startdata
 enddata
 
-; Bytecode equates
+; Bytecode symbol lookup table
 
-bytecode_FLT_m3p41462	.equ	FLT_m3p41462-symstart
+bytecode_FLT_m3p41462	.equ	0
 
-bytecode_FLTVAR_P	.equ	FLTVAR_P-symstart
-bytecode_STRVAR_A	.equ	STRVAR_A-symstart
+bytecode_FLTVAR_P	.equ	1
+bytecode_STRVAR_A	.equ	2
 
-symstart
+symtbl
+	.word	FLT_m3p41462
+
+	.word	FLTVAR_P
+	.word	STRVAR_A
+
 
 ; fixed-point constants
 FLT_m3p41462	.byte	$ff, $ff, $fc, $95, $db

@@ -171,8 +171,10 @@ extend
 	ldab	,x
 	inx
 	stx	nxtinst
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	rts
 getaddr
 	ldd	curinst
@@ -204,8 +206,10 @@ extbyte
 	ldab	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 extword
@@ -216,8 +220,10 @@ extword
 	ldd	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 byteext
@@ -228,8 +234,10 @@ byteext
 	ldab	1,x
 	pshb
 	ldab	2,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 wordext
@@ -240,8 +248,10 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 immstr
@@ -1031,13 +1041,17 @@ to_fp_pb			; numCalls = 1
 startdata
 enddata
 
-; Bytecode equates
+; Bytecode symbol lookup table
 
-bytecode_FLT_0p33332	.equ	FLT_0p33332-symstart
+bytecode_FLT_0p33332	.equ	0
 
-bytecode_FLTVAR_I	.equ	FLTVAR_I-symstart
+bytecode_FLTVAR_I	.equ	1
 
-symstart
+symtbl
+	.word	FLT_0p33332
+
+	.word	FLTVAR_I
+
 
 ; fixed-point constants
 FLT_0p33332	.byte	$00, $00, $00, $55, $55

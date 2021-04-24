@@ -219,7 +219,6 @@ error
 startdata
 enddata
 
-symstart
 
 ; large integer constants
 INT_m8388608	.byte	$80, $00, $00

@@ -165,8 +165,10 @@ extend
 	ldab	,x
 	inx
 	stx	nxtinst
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	rts
 getaddr
 	ldd	curinst
@@ -198,8 +200,10 @@ extbyte
 	ldab	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 extword
@@ -210,8 +214,10 @@ extword
 	ldd	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 byteext
@@ -222,8 +228,10 @@ byteext
 	ldab	1,x
 	pshb
 	ldab	2,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 wordext
@@ -234,8 +242,10 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 immstr
@@ -854,14 +864,19 @@ str_sr1_fr1			; numCalls = 1
 startdata
 enddata
 
-; Bytecode equates
+; Bytecode symbol lookup table
 
-bytecode_INT_100000	.equ	INT_100000-symstart
+bytecode_INT_100000	.equ	0
 
-bytecode_INTVAR_A	.equ	INTVAR_A-symstart
-bytecode_INTVAR_B	.equ	INTVAR_B-symstart
+bytecode_INTVAR_A	.equ	1
+bytecode_INTVAR_B	.equ	2
 
-symstart
+symtbl
+	.word	INT_100000
+
+	.word	INTVAR_A
+	.word	INTVAR_B
+
 
 ; large integer constants
 INT_100000	.byte	$01, $86, $a0

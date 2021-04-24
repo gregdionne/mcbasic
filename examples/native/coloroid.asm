@@ -4584,7 +4584,6 @@ startdata
 	.byte	33
 enddata
 
-symstart
 
 ; block started by symbol
 bss

@@ -315,7 +315,6 @@ _ok
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss

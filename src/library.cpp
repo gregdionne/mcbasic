@@ -3559,8 +3559,10 @@ std::string Library::mdByteCode() {
   tasm.ldab(",x");
   tasm.inx();
   tasm.stx("nxtinst");
-  tasm.ldx("#symstart");
+  tasm.ldx("#symtbl");
   tasm.abx();
+  tasm.abx();
+  tasm.ldx(",x");
   tasm.rts();
 
   tasm.label("getaddr");
@@ -3596,8 +3598,10 @@ std::string Library::mdByteCode() {
   tasm.ldab("2,x");
   tasm.pshb();
   tasm.ldab("1,x");
-  tasm.ldx("#symstart");
+  tasm.ldx("#symtbl");
   tasm.abx();
+  tasm.abx();
+  tasm.ldx(",x");
   tasm.pulb();
   tasm.rts();
 
@@ -3609,8 +3613,10 @@ std::string Library::mdByteCode() {
   tasm.ldd("2,x");
   tasm.pshb();
   tasm.ldab("1,x");
-  tasm.ldx("#symstart");
+  tasm.ldx("#symtbl");
   tasm.abx();
+  tasm.abx();
+  tasm.ldx(",x");
   tasm.pulb();
   tasm.rts();
 
@@ -3622,8 +3628,10 @@ std::string Library::mdByteCode() {
   tasm.ldab("1,x");
   tasm.pshb();
   tasm.ldab("2,x");
-  tasm.ldx("#symstart");
+  tasm.ldx("#symtbl");
   tasm.abx();
+  tasm.abx();
+  tasm.ldx(",x");
   tasm.pulb();
   tasm.rts();
 
@@ -3635,8 +3643,10 @@ std::string Library::mdByteCode() {
   tasm.ldd("1,x");
   tasm.pshb();
   tasm.ldab("3,x");
-  tasm.ldx("#symstart");
+  tasm.ldx("#symtbl");
   tasm.abx();
+  tasm.abx();
+  tasm.ldx(",x");
   tasm.pulb();
   tasm.rts();
 

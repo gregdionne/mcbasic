@@ -5069,7 +5069,6 @@ to_ip_pw			; numCalls = 2
 startdata
 enddata
 
-symstart
 
 ; fixed-point constants
 FLT_0p60000	.byte	$00, $00, $00, $99, $9a

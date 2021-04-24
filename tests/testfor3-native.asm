@@ -891,7 +891,6 @@ to_fp_fx			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; fixed-point constants
 FLT_0p33329	.byte	$00, $00, $00, $55, $53

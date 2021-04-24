@@ -190,7 +190,6 @@ std::string CoreTarget::generateSymbols(ConstTable &constTable,
   std::string catalog = generateSymbolCatalog(constTable, symbolTable);
 
   Assembler tasm;
-  tasm.label("symstart");
   tasm.blank();
 
   // Go through all constants and extract large ones...

@@ -1085,7 +1085,6 @@ str_sr1_fx			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; fixed-point constants
 FLT_3p00010	.byte	$00, $00, $03, $00, $07

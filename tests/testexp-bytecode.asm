@@ -783,8 +783,10 @@ extend
 	ldab	,x
 	inx
 	stx	nxtinst
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	rts
 getaddr
 	ldd	curinst
@@ -816,8 +818,10 @@ extbyte
 	ldab	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 extword
@@ -828,8 +832,10 @@ extword
 	ldd	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 byteext
@@ -840,8 +846,10 @@ byteext
 	ldab	1,x
 	pshb
 	ldab	2,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 wordext
@@ -852,8 +860,10 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 immstr
@@ -2675,25 +2685,41 @@ to_ip_ix			; numCalls = 1
 startdata
 enddata
 
-; Bytecode equates
+; Bytecode symbol lookup table
 
-bytecode_INT_181440	.equ	INT_181440-symstart
-bytecode_INT_362880	.equ	INT_362880-symstart
-bytecode_FLT_0p69314	.equ	FLT_0p69314-symstart
+bytecode_INT_181440	.equ	0
+bytecode_INT_362880	.equ	1
+bytecode_FLT_0p69314	.equ	2
 
-bytecode_INTVAR_I	.equ	INTVAR_I-symstart
-bytecode_INTVAR_Z	.equ	INTVAR_Z-symstart
-bytecode_FLTVAR_E	.equ	FLTVAR_E-symstart
-bytecode_FLTVAR_E0	.equ	FLTVAR_E0-symstart
-bytecode_FLTVAR_E1	.equ	FLTVAR_E1-symstart
-bytecode_FLTVAR_E2	.equ	FLTVAR_E2-symstart
-bytecode_FLTVAR_E3	.equ	FLTVAR_E3-symstart
-bytecode_FLTVAR_L	.equ	FLTVAR_L-symstart
-bytecode_FLTVAR_S1	.equ	FLTVAR_S1-symstart
-bytecode_FLTVAR_X	.equ	FLTVAR_X-symstart
-bytecode_FLTVAR_Y	.equ	FLTVAR_Y-symstart
+bytecode_INTVAR_I	.equ	3
+bytecode_INTVAR_Z	.equ	4
+bytecode_FLTVAR_E	.equ	5
+bytecode_FLTVAR_E0	.equ	6
+bytecode_FLTVAR_E1	.equ	7
+bytecode_FLTVAR_E2	.equ	8
+bytecode_FLTVAR_E3	.equ	9
+bytecode_FLTVAR_L	.equ	10
+bytecode_FLTVAR_S1	.equ	11
+bytecode_FLTVAR_X	.equ	12
+bytecode_FLTVAR_Y	.equ	13
 
-symstart
+symtbl
+	.word	INT_181440
+	.word	INT_362880
+	.word	FLT_0p69314
+
+	.word	INTVAR_I
+	.word	INTVAR_Z
+	.word	FLTVAR_E
+	.word	FLTVAR_E0
+	.word	FLTVAR_E1
+	.word	FLTVAR_E2
+	.word	FLTVAR_E3
+	.word	FLTVAR_L
+	.word	FLTVAR_S1
+	.word	FLTVAR_X
+	.word	FLTVAR_Y
+
 
 ; large integer constants
 INT_181440	.byte	$02, $c4, $c0

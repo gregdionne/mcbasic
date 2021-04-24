@@ -1775,7 +1775,6 @@ to_ip_pb			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; fixed-point constants
 FLT_0p78540	.byte	$00, $00, $00, $c9, $10

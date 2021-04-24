@@ -642,8 +642,10 @@ extend
 	ldab	,x
 	inx
 	stx	nxtinst
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	rts
 getaddr
 	ldd	curinst
@@ -675,8 +677,10 @@ extbyte
 	ldab	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 extword
@@ -687,8 +691,10 @@ extword
 	ldd	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 byteext
@@ -699,8 +705,10 @@ byteext
 	ldab	1,x
 	pshb
 	ldab	2,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 wordext
@@ -711,8 +719,10 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 immstr
@@ -2164,40 +2174,71 @@ to_fp_pb			; numCalls = 1
 startdata
 enddata
 
-; Bytecode equates
+; Bytecode symbol lookup table
 
-bytecode_FLT_0p00999	.equ	FLT_0p00999-symstart
+bytecode_FLT_0p00999	.equ	0
 
-bytecode_INTVAR_C	.equ	INTVAR_C-symstart
-bytecode_INTVAR_EP	.equ	INTVAR_EP-symstart
-bytecode_INTVAR_FP	.equ	INTVAR_FP-symstart
-bytecode_INTVAR_L	.equ	INTVAR_L-symstart
-bytecode_INTVAR_M	.equ	INTVAR_M-symstart
-bytecode_INTVAR_P	.equ	INTVAR_P-symstart
-bytecode_INTVAR_SP	.equ	INTVAR_SP-symstart
-bytecode_INTVAR_TP	.equ	INTVAR_TP-symstart
-bytecode_INTVAR_XP	.equ	INTVAR_XP-symstart
-bytecode_INTVAR_YP	.equ	INTVAR_YP-symstart
-bytecode_INTVAR_Z	.equ	INTVAR_Z-symstart
-bytecode_FLTVAR_T	.equ	FLTVAR_T-symstart
-bytecode_FLTVAR_T1	.equ	FLTVAR_T1-symstart
-bytecode_FLTVAR_T2	.equ	FLTVAR_T2-symstart
-bytecode_FLTVAR_T3	.equ	FLTVAR_T3-symstart
-bytecode_FLTVAR_U	.equ	FLTVAR_U-symstart
-bytecode_FLTVAR_V	.equ	FLTVAR_V-symstart
-bytecode_FLTVAR_X	.equ	FLTVAR_X-symstart
-bytecode_FLTVAR_Y	.equ	FLTVAR_Y-symstart
-bytecode_STRVAR_I	.equ	STRVAR_I-symstart
-bytecode_INTARR_C	.equ	INTARR_C-symstart
-bytecode_INTARR_E	.equ	INTARR_E-symstart
-bytecode_INTARR_F	.equ	INTARR_F-symstart
-bytecode_INTARR_S	.equ	INTARR_S-symstart
-bytecode_INTARR_T	.equ	INTARR_T-symstart
-bytecode_INTARR_W	.equ	INTARR_W-symstart
-bytecode_INTARR_X	.equ	INTARR_X-symstart
-bytecode_INTARR_Y	.equ	INTARR_Y-symstart
+bytecode_INTVAR_C	.equ	1
+bytecode_INTVAR_EP	.equ	2
+bytecode_INTVAR_FP	.equ	3
+bytecode_INTVAR_L	.equ	4
+bytecode_INTVAR_M	.equ	5
+bytecode_INTVAR_P	.equ	6
+bytecode_INTVAR_SP	.equ	7
+bytecode_INTVAR_TP	.equ	8
+bytecode_INTVAR_XP	.equ	9
+bytecode_INTVAR_YP	.equ	10
+bytecode_INTVAR_Z	.equ	11
+bytecode_FLTVAR_T	.equ	12
+bytecode_FLTVAR_T1	.equ	13
+bytecode_FLTVAR_T2	.equ	14
+bytecode_FLTVAR_T3	.equ	15
+bytecode_FLTVAR_U	.equ	16
+bytecode_FLTVAR_V	.equ	17
+bytecode_FLTVAR_X	.equ	18
+bytecode_FLTVAR_Y	.equ	19
+bytecode_STRVAR_I	.equ	20
+bytecode_INTARR_C	.equ	21
+bytecode_INTARR_E	.equ	22
+bytecode_INTARR_F	.equ	23
+bytecode_INTARR_S	.equ	24
+bytecode_INTARR_T	.equ	25
+bytecode_INTARR_W	.equ	26
+bytecode_INTARR_X	.equ	27
+bytecode_INTARR_Y	.equ	28
 
-symstart
+symtbl
+	.word	FLT_0p00999
+
+	.word	INTVAR_C
+	.word	INTVAR_EP
+	.word	INTVAR_FP
+	.word	INTVAR_L
+	.word	INTVAR_M
+	.word	INTVAR_P
+	.word	INTVAR_SP
+	.word	INTVAR_TP
+	.word	INTVAR_XP
+	.word	INTVAR_YP
+	.word	INTVAR_Z
+	.word	FLTVAR_T
+	.word	FLTVAR_T1
+	.word	FLTVAR_T2
+	.word	FLTVAR_T3
+	.word	FLTVAR_U
+	.word	FLTVAR_V
+	.word	FLTVAR_X
+	.word	FLTVAR_Y
+	.word	STRVAR_I
+	.word	INTARR_C
+	.word	INTARR_E
+	.word	INTARR_F
+	.word	INTARR_S
+	.word	INTARR_T
+	.word	INTARR_W
+	.word	INTARR_X
+	.word	INTARR_Y
+
 
 ; fixed-point constants
 FLT_0p00999	.byte	$00, $00, $00, $02, $8f

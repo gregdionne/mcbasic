@@ -153,8 +153,10 @@ extend
 	ldab	,x
 	inx
 	stx	nxtinst
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	rts
 getaddr
 	ldd	curinst
@@ -186,8 +188,10 @@ extbyte
 	ldab	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 extword
@@ -198,8 +202,10 @@ extword
 	ldd	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 byteext
@@ -210,8 +216,10 @@ byteext
 	ldab	1,x
 	pshb
 	ldab	2,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 wordext
@@ -222,8 +230,10 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 immstr
@@ -356,17 +366,25 @@ error
 startdata
 enddata
 
-; Bytecode equates
+; Bytecode symbol lookup table
 
-bytecode_INT_m8388608	.equ	INT_m8388608-symstart
-bytecode_INT_8388607	.equ	INT_8388607-symstart
-bytecode_FLT_3p14158	.equ	FLT_3p14158-symstart
+bytecode_INT_m8388608	.equ	0
+bytecode_INT_8388607	.equ	1
+bytecode_FLT_3p14158	.equ	2
 
-bytecode_INTVAR_X	.equ	INTVAR_X-symstart
-bytecode_INTVAR_Z	.equ	INTVAR_Z-symstart
-bytecode_FLTVAR_PI	.equ	FLTVAR_PI-symstart
+bytecode_INTVAR_X	.equ	3
+bytecode_INTVAR_Z	.equ	4
+bytecode_FLTVAR_PI	.equ	5
 
-symstart
+symtbl
+	.word	INT_m8388608
+	.word	INT_8388607
+	.word	FLT_3p14158
+
+	.word	INTVAR_X
+	.word	INTVAR_Z
+	.word	FLTVAR_PI
+
 
 ; large integer constants
 INT_m8388608	.byte	$80, $00, $00

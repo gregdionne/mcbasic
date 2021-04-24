@@ -9329,7 +9329,6 @@ val_fr1_sr1			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss

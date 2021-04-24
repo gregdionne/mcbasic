@@ -159,7 +159,6 @@ startdata
 	.byte	$ff, $ff, $e0, $cc, $cd ; -31.2
 enddata
 
-symstart
 
 ; block started by symbol
 bss

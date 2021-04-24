@@ -749,8 +749,10 @@ extend
 	ldab	,x
 	inx
 	stx	nxtinst
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	rts
 getaddr
 	ldd	curinst
@@ -782,8 +784,10 @@ extbyte
 	ldab	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 extword
@@ -794,8 +798,10 @@ extword
 	ldd	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 byteext
@@ -806,8 +812,10 @@ byteext
 	ldab	1,x
 	pshb
 	ldab	2,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 wordext
@@ -818,8 +826,10 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 immstr
@@ -2217,24 +2227,39 @@ to_ip_pb			; numCalls = 2
 startdata
 enddata
 
-; Bytecode equates
+; Bytecode symbol lookup table
 
-bytecode_FLT_0p03999	.equ	FLT_0p03999-symstart
-bytecode_FLT_0p99920	.equ	FLT_0p99920-symstart
+bytecode_FLT_0p03999	.equ	0
+bytecode_FLT_0p99920	.equ	1
 
-bytecode_INTVAR_LO	.equ	INTVAR_LO-symstart
-bytecode_INTVAR_R	.equ	INTVAR_R-symstart
-bytecode_INTVAR_X	.equ	INTVAR_X-symstart
-bytecode_INTVAR_Y	.equ	INTVAR_Y-symstart
-bytecode_FLTVAR_A	.equ	FLTVAR_A-symstart
-bytecode_FLTVAR_B	.equ	FLTVAR_B-symstart
-bytecode_FLTVAR_C	.equ	FLTVAR_C-symstart
-bytecode_FLTVAR_DC	.equ	FLTVAR_DC-symstart
-bytecode_FLTVAR_DS	.equ	FLTVAR_DS-symstart
-bytecode_FLTVAR_S	.equ	FLTVAR_S-symstart
-bytecode_FLTVAR_ST	.equ	FLTVAR_ST-symstart
+bytecode_INTVAR_LO	.equ	2
+bytecode_INTVAR_R	.equ	3
+bytecode_INTVAR_X	.equ	4
+bytecode_INTVAR_Y	.equ	5
+bytecode_FLTVAR_A	.equ	6
+bytecode_FLTVAR_B	.equ	7
+bytecode_FLTVAR_C	.equ	8
+bytecode_FLTVAR_DC	.equ	9
+bytecode_FLTVAR_DS	.equ	10
+bytecode_FLTVAR_S	.equ	11
+bytecode_FLTVAR_ST	.equ	12
 
-symstart
+symtbl
+	.word	FLT_0p03999
+	.word	FLT_0p99920
+
+	.word	INTVAR_LO
+	.word	INTVAR_R
+	.word	INTVAR_X
+	.word	INTVAR_Y
+	.word	FLTVAR_A
+	.word	FLTVAR_B
+	.word	FLTVAR_C
+	.word	FLTVAR_DC
+	.word	FLTVAR_DS
+	.word	FLTVAR_S
+	.word	FLTVAR_ST
+
 
 ; fixed-point constants
 FLT_0p03999	.byte	$00, $00, $00, $0a, $3d

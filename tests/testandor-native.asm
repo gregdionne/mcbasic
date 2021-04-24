@@ -494,7 +494,6 @@ error
 startdata
 enddata
 
-symstart
 
 ; fixed-point constants
 FLT_0p00999	.byte	$00, $00, $00, $02, $8f

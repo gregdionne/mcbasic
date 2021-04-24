@@ -2163,7 +2163,6 @@ to_fp_pb			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; fixed-point constants
 FLT_0p00999	.byte	$00, $00, $00, $02, $8f

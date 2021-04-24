@@ -8330,8 +8330,10 @@ extend
 	ldab	,x
 	inx
 	stx	nxtinst
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	rts
 getaddr
 	ldd	curinst
@@ -8363,8 +8365,10 @@ extbyte
 	ldab	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 extword
@@ -8375,8 +8379,10 @@ extword
 	ldd	2,x
 	pshb
 	ldab	1,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 byteext
@@ -8387,8 +8393,10 @@ byteext
 	ldab	1,x
 	pshb
 	ldab	2,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 wordext
@@ -8399,8 +8407,10 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
-	ldx	#symstart
+	ldx	#symtbl
 	abx
+	abx
+	ldx	,x
 	pulb
 	rts
 immstr
@@ -11196,69 +11206,129 @@ to_ip_pw			; numCalls = 3
 startdata
 enddata
 
-; Bytecode equates
+; Bytecode symbol lookup table
 
 
-bytecode_INTVAR_B	.equ	INTVAR_B-symstart
-bytecode_INTVAR_C	.equ	INTVAR_C-symstart
-bytecode_INTVAR_D	.equ	INTVAR_D-symstart
-bytecode_INTVAR_E	.equ	INTVAR_E-symstart
-bytecode_INTVAR_F	.equ	INTVAR_F-symstart
-bytecode_INTVAR_G	.equ	INTVAR_G-symstart
-bytecode_INTVAR_G1	.equ	INTVAR_G1-symstart
-bytecode_INTVAR_G2	.equ	INTVAR_G2-symstart
-bytecode_INTVAR_H	.equ	INTVAR_H-symstart
-bytecode_INTVAR_I	.equ	INTVAR_I-symstart
-bytecode_INTVAR_J	.equ	INTVAR_J-symstart
-bytecode_INTVAR_K	.equ	INTVAR_K-symstart
-bytecode_INTVAR_L	.equ	INTVAR_L-symstart
-bytecode_INTVAR_LC	.equ	INTVAR_LC-symstart
-bytecode_INTVAR_LV	.equ	INTVAR_LV-symstart
-bytecode_INTVAR_M	.equ	INTVAR_M-symstart
-bytecode_INTVAR_MC	.equ	INTVAR_MC-symstart
-bytecode_INTVAR_MN	.equ	INTVAR_MN-symstart
-bytecode_INTVAR_N	.equ	INTVAR_N-symstart
-bytecode_INTVAR_NT	.equ	INTVAR_NT-symstart
-bytecode_INTVAR_NX	.equ	INTVAR_NX-symstart
-bytecode_INTVAR_NY	.equ	INTVAR_NY-symstart
-bytecode_INTVAR_O	.equ	INTVAR_O-symstart
-bytecode_INTVAR_P	.equ	INTVAR_P-symstart
-bytecode_INTVAR_Q	.equ	INTVAR_Q-symstart
-bytecode_INTVAR_S	.equ	INTVAR_S-symstart
-bytecode_INTVAR_T	.equ	INTVAR_T-symstart
-bytecode_INTVAR_U	.equ	INTVAR_U-symstart
-bytecode_INTVAR_V	.equ	INTVAR_V-symstart
-bytecode_INTVAR_W	.equ	INTVAR_W-symstart
-bytecode_INTVAR_Y	.equ	INTVAR_Y-symstart
-bytecode_INTVAR_Z	.equ	INTVAR_Z-symstart
-bytecode_INTVAR_ZZ	.equ	INTVAR_ZZ-symstart
-bytecode_FLTVAR_A	.equ	FLTVAR_A-symstart
-bytecode_FLTVAR_X	.equ	FLTVAR_X-symstart
-bytecode_FLTVAR_Z1	.equ	FLTVAR_Z1-symstart
-bytecode_STRVAR_A	.equ	STRVAR_A-symstart
-bytecode_STRVAR_I	.equ	STRVAR_I-symstart
-bytecode_INTARR_A	.equ	INTARR_A-symstart
-bytecode_INTARR_B	.equ	INTARR_B-symstart
-bytecode_INTARR_C	.equ	INTARR_C-symstart
-bytecode_INTARR_D	.equ	INTARR_D-symstart
-bytecode_INTARR_E	.equ	INTARR_E-symstart
-bytecode_INTARR_F	.equ	INTARR_F-symstart
-bytecode_INTARR_G	.equ	INTARR_G-symstart
-bytecode_INTARR_H	.equ	INTARR_H-symstart
-bytecode_INTARR_I	.equ	INTARR_I-symstart
-bytecode_INTARR_K	.equ	INTARR_K-symstart
-bytecode_INTARR_M	.equ	INTARR_M-symstart
-bytecode_INTARR_N	.equ	INTARR_N-symstart
-bytecode_INTARR_T	.equ	INTARR_T-symstart
-bytecode_INTARR_U	.equ	INTARR_U-symstart
-bytecode_INTARR_V	.equ	INTARR_V-symstart
-bytecode_INTARR_W	.equ	INTARR_W-symstart
-bytecode_INTARR_W2	.equ	INTARR_W2-symstart
-bytecode_INTARR_X	.equ	INTARR_X-symstart
-bytecode_INTARR_Y	.equ	INTARR_Y-symstart
-bytecode_FLTARR_P	.equ	FLTARR_P-symstart
+bytecode_INTVAR_B	.equ	0
+bytecode_INTVAR_C	.equ	1
+bytecode_INTVAR_D	.equ	2
+bytecode_INTVAR_E	.equ	3
+bytecode_INTVAR_F	.equ	4
+bytecode_INTVAR_G	.equ	5
+bytecode_INTVAR_G1	.equ	6
+bytecode_INTVAR_G2	.equ	7
+bytecode_INTVAR_H	.equ	8
+bytecode_INTVAR_I	.equ	9
+bytecode_INTVAR_J	.equ	10
+bytecode_INTVAR_K	.equ	11
+bytecode_INTVAR_L	.equ	12
+bytecode_INTVAR_LC	.equ	13
+bytecode_INTVAR_LV	.equ	14
+bytecode_INTVAR_M	.equ	15
+bytecode_INTVAR_MC	.equ	16
+bytecode_INTVAR_MN	.equ	17
+bytecode_INTVAR_N	.equ	18
+bytecode_INTVAR_NT	.equ	19
+bytecode_INTVAR_NX	.equ	20
+bytecode_INTVAR_NY	.equ	21
+bytecode_INTVAR_O	.equ	22
+bytecode_INTVAR_P	.equ	23
+bytecode_INTVAR_Q	.equ	24
+bytecode_INTVAR_S	.equ	25
+bytecode_INTVAR_T	.equ	26
+bytecode_INTVAR_U	.equ	27
+bytecode_INTVAR_V	.equ	28
+bytecode_INTVAR_W	.equ	29
+bytecode_INTVAR_Y	.equ	30
+bytecode_INTVAR_Z	.equ	31
+bytecode_INTVAR_ZZ	.equ	32
+bytecode_FLTVAR_A	.equ	33
+bytecode_FLTVAR_X	.equ	34
+bytecode_FLTVAR_Z1	.equ	35
+bytecode_STRVAR_A	.equ	36
+bytecode_STRVAR_I	.equ	37
+bytecode_INTARR_A	.equ	38
+bytecode_INTARR_B	.equ	39
+bytecode_INTARR_C	.equ	40
+bytecode_INTARR_D	.equ	41
+bytecode_INTARR_E	.equ	42
+bytecode_INTARR_F	.equ	43
+bytecode_INTARR_G	.equ	44
+bytecode_INTARR_H	.equ	45
+bytecode_INTARR_I	.equ	46
+bytecode_INTARR_K	.equ	47
+bytecode_INTARR_M	.equ	48
+bytecode_INTARR_N	.equ	49
+bytecode_INTARR_T	.equ	50
+bytecode_INTARR_U	.equ	51
+bytecode_INTARR_V	.equ	52
+bytecode_INTARR_W	.equ	53
+bytecode_INTARR_W2	.equ	54
+bytecode_INTARR_X	.equ	55
+bytecode_INTARR_Y	.equ	56
+bytecode_FLTARR_P	.equ	57
 
-symstart
+symtbl
+
+	.word	INTVAR_B
+	.word	INTVAR_C
+	.word	INTVAR_D
+	.word	INTVAR_E
+	.word	INTVAR_F
+	.word	INTVAR_G
+	.word	INTVAR_G1
+	.word	INTVAR_G2
+	.word	INTVAR_H
+	.word	INTVAR_I
+	.word	INTVAR_J
+	.word	INTVAR_K
+	.word	INTVAR_L
+	.word	INTVAR_LC
+	.word	INTVAR_LV
+	.word	INTVAR_M
+	.word	INTVAR_MC
+	.word	INTVAR_MN
+	.word	INTVAR_N
+	.word	INTVAR_NT
+	.word	INTVAR_NX
+	.word	INTVAR_NY
+	.word	INTVAR_O
+	.word	INTVAR_P
+	.word	INTVAR_Q
+	.word	INTVAR_S
+	.word	INTVAR_T
+	.word	INTVAR_U
+	.word	INTVAR_V
+	.word	INTVAR_W
+	.word	INTVAR_Y
+	.word	INTVAR_Z
+	.word	INTVAR_ZZ
+	.word	FLTVAR_A
+	.word	FLTVAR_X
+	.word	FLTVAR_Z1
+	.word	STRVAR_A
+	.word	STRVAR_I
+	.word	INTARR_A
+	.word	INTARR_B
+	.word	INTARR_C
+	.word	INTARR_D
+	.word	INTARR_E
+	.word	INTARR_F
+	.word	INTARR_G
+	.word	INTARR_H
+	.word	INTARR_I
+	.word	INTARR_K
+	.word	INTARR_M
+	.word	INTARR_N
+	.word	INTARR_T
+	.word	INTARR_U
+	.word	INTARR_V
+	.word	INTARR_W
+	.word	INTARR_W2
+	.word	INTARR_X
+	.word	INTARR_Y
+	.word	FLTARR_P
+
 
 ; block started by symbol
 bss

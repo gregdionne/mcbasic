@@ -968,7 +968,6 @@ strinit_sr1_ss			; numCalls = 1
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss

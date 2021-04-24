@@ -242,7 +242,6 @@ error
 startdata
 enddata
 
-symstart
 
 ; block started by symbol
 bss
