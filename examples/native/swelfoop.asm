@@ -1089,13 +1089,13 @@ LINE_1200
 
 LINE_1210
 
-	; FOR T=1 TO 4000
+	; FOR T=1 TO 10000
 
 	ldx	#INTVAR_T
 	ldab	#1
 	jsr	for_ix_pb
 
-	ldd	#4000
+	ldd	#10000
 	jsr	to_ip_pw
 
 	; NEXT

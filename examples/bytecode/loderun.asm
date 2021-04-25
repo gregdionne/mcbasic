@@ -1,4 +1,4 @@
-; Assembly for loderun35.bas
+; Assembly for loderun.bas
 ; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
@@ -89,7 +89,7 @@ program
 
 	.byte	bytecode_clear
 
-LINE_1
+LINE_0
 
 	; CLS
 
@@ -104,6 +104,25 @@ LINE_1
 
 	.byte	bytecode_goto_ix
 	.word	LINE_90
+
+LINE_1
+
+	; FOR ZZ=1 TO Z1
+
+	.byte	bytecode_for_ix_pb
+	.byte	bytecode_INTVAR_ZZ
+	.byte	1
+
+	.byte	bytecode_to_ip_ix
+	.byte	bytecode_FLTVAR_Z1
+
+	; NEXT
+
+	.byte	bytecode_next
+
+	; RETURN
+
+	.byte	bytecode_return
 
 LINE_2
 
@@ -451,6 +470,11 @@ LINE_9
 
 	.byte	bytecode_poke_ix_ir1
 	.byte	bytecode_FLTVAR_A
+
+	; GOSUB 1
+
+	.byte	bytecode_gosub_ix
+	.word	LINE_1
 
 LINE_10
 
@@ -905,34 +929,10 @@ LINE_20
 
 LINE_21
 
-	; FOR ZZ=1 TO Z1
+	; GOSUB 83
 
-	.byte	bytecode_for_ix_pb
-	.byte	bytecode_INTVAR_ZZ
-	.byte	1
-
-	.byte	bytecode_to_ip_ix
-	.byte	bytecode_FLTVAR_Z1
-
-	; NEXT
-
-	.byte	bytecode_next
-
-	; M=K(PEEK(K) AND PEEK(2))
-
-	.byte	bytecode_peek_ir1_ix
-	.byte	bytecode_INTVAR_K
-
-	.byte	bytecode_peek_ir2_pb
-	.byte	2
-
-	.byte	bytecode_and_ir1_ir1_ir2
-
-	.byte	bytecode_arrval1_ir1_ix
-	.byte	bytecode_INTARR_K
-
-	.byte	bytecode_ld_ix_ir1
-	.byte	bytecode_INTVAR_M
+	.byte	bytecode_gosub_ix
+	.word	LINE_83
 
 	; ON M GOSUB 25,8,5,8,8,27,80
 
@@ -2824,11 +2824,11 @@ LINE_57
 	.byte	bytecode_INTVAR_LC
 	.byte	0
 
-	; MN=3
+	; MN=5
 
 	.byte	bytecode_ld_ix_pb
 	.byte	bytecode_INTVAR_MN
-	.byte	3
+	.byte	5
 
 	; S=0
 
@@ -2941,11 +2941,67 @@ LINE_61
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_S
 
+	; MN+=1
+
+	.byte	bytecode_add_ix_ix_pb
+	.byte	bytecode_INTVAR_MN
+	.byte	1
+
+	; PRINT @480, "LIVES=";STR$(MN);" ";
+
+	.byte	bytecode_prat_pw
+	.word	480
+
+	.byte	bytecode_pr_ss
+	.text	6, "LIVES="
+
+	.byte	bytecode_str_sr1_ix
+	.byte	bytecode_INTVAR_MN
+
+	.byte	bytecode_pr_sr1
+
+	.byte	bytecode_pr_ss
+	.text	1, " "
+
+	; RETURN
+
+	.byte	bytecode_return
+
+LINE_65
+
+	; CLS
+
+	.byte	bytecode_cls
+
+	; PRINT "  mc-lode runner by jim gerrie"
+
+	.byte	bytecode_pr_ss
+	.text	31, "  mc-lode runner by jim gerrie\r"
+
+LINE_66
+
+	; PRINT "        and greg dionne"
+
+	.byte	bytecode_pr_ss
+	.text	24, "        and greg dionne\r"
+
 	; RETURN
 
 	.byte	bytecode_return
 
 LINE_70
+
+	; GOSUB 65
+
+	.byte	bytecode_gosub_ix
+	.word	LINE_65
+
+	; PRINT
+
+	.byte	bytecode_pr_ss
+	.text	1, "\r"
+
+LINE_71
 
 	; PRINT "YOU COMPLETED";STR$(LC*10);"% OF THE"
 
@@ -2965,10 +3021,18 @@ LINE_70
 	.byte	bytecode_pr_ss
 	.text	9, "% OF THE\r"
 
-	; PRINT "LEVELS OF MC-LODE RUNNER"
+	; PRINT "SCREENS AT LEVEL";STR$(Z2);" "
 
 	.byte	bytecode_pr_ss
-	.text	25, "LEVELS OF MC-LODE RUNNER\r"
+	.text	16, "SCREENS AT LEVEL"
+
+	.byte	bytecode_str_sr1_fx
+	.byte	bytecode_FLTVAR_Z2
+
+	.byte	bytecode_pr_sr1
+
+	.byte	bytecode_pr_ss
+	.text	2, " \r"
 
 	; END
 
@@ -2999,6 +3063,228 @@ LINE_82
 
 	.byte	bytecode_ld_ip_pb
 	.byte	1
+
+	; RETURN
+
+	.byte	bytecode_return
+
+LINE_83
+
+	; M=0
+
+	.byte	bytecode_ld_ix_pb
+	.byte	bytecode_INTVAR_M
+	.byte	0
+
+	; IF PEEK(2) AND NOT PEEK(16949) AND 1 THEN
+
+	.byte	bytecode_peek_ir1_pb
+	.byte	2
+
+	.byte	bytecode_peek_ir2_pw
+	.word	16949
+
+	.byte	bytecode_com_ir2_ir2
+
+	.byte	bytecode_and_ir1_ir1_ir2
+
+	.byte	bytecode_and_ir1_ir1_pb
+	.byte	1
+
+	.byte	bytecode_jmpeq_ir1_ix
+	.word	LINE_84
+
+	; M=K(68)
+
+	.byte	bytecode_ld_ir1_pb
+	.byte	68
+
+	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_INTARR_K
+
+	.byte	bytecode_ld_ix_ir1
+	.byte	bytecode_INTVAR_M
+
+	; RETURN
+
+	.byte	bytecode_return
+
+LINE_84
+
+	; IF PEEK(2) AND NOT PEEK(16946) AND 1 THEN
+
+	.byte	bytecode_peek_ir1_pb
+	.byte	2
+
+	.byte	bytecode_peek_ir2_pw
+	.word	16946
+
+	.byte	bytecode_com_ir2_ir2
+
+	.byte	bytecode_and_ir1_ir1_ir2
+
+	.byte	bytecode_and_ir1_ir1_pb
+	.byte	1
+
+	.byte	bytecode_jmpeq_ir1_ix
+	.word	LINE_85
+
+	; M=K(65)
+
+	.byte	bytecode_ld_ir1_pb
+	.byte	65
+
+	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_INTARR_K
+
+	.byte	bytecode_ld_ix_ir1
+	.byte	bytecode_INTVAR_M
+
+	; RETURN
+
+	.byte	bytecode_return
+
+LINE_85
+
+	; IF PEEK(2) AND NOT PEEK(16948) AND 4 THEN
+
+	.byte	bytecode_peek_ir1_pb
+	.byte	2
+
+	.byte	bytecode_peek_ir2_pw
+	.word	16948
+
+	.byte	bytecode_com_ir2_ir2
+
+	.byte	bytecode_and_ir1_ir1_ir2
+
+	.byte	bytecode_and_ir1_ir1_pb
+	.byte	4
+
+	.byte	bytecode_jmpeq_ir1_ix
+	.word	LINE_86
+
+	; M=K(83)
+
+	.byte	bytecode_ld_ir1_pb
+	.byte	83
+
+	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_INTARR_K
+
+	.byte	bytecode_ld_ix_ir1
+	.byte	bytecode_INTVAR_M
+
+	; RETURN
+
+	.byte	bytecode_return
+
+LINE_86
+
+	; IF PEEK(2) AND NOT PEEK(16952) AND 4 THEN
+
+	.byte	bytecode_peek_ir1_pb
+	.byte	2
+
+	.byte	bytecode_peek_ir2_pw
+	.word	16952
+
+	.byte	bytecode_com_ir2_ir2
+
+	.byte	bytecode_and_ir1_ir1_ir2
+
+	.byte	bytecode_and_ir1_ir1_pb
+	.byte	4
+
+	.byte	bytecode_jmpeq_ir1_ix
+	.word	LINE_87
+
+	; M=K(87)
+
+	.byte	bytecode_ld_ir1_pb
+	.byte	87
+
+	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_INTARR_K
+
+	.byte	bytecode_ld_ix_ir1
+	.byte	bytecode_INTVAR_M
+
+	; RETURN
+
+	.byte	bytecode_return
+
+LINE_87
+
+	; IF PEEK(2) AND NOT PEEK(16949) AND 32 THEN
+
+	.byte	bytecode_peek_ir1_pb
+	.byte	2
+
+	.byte	bytecode_peek_ir2_pw
+	.word	16949
+
+	.byte	bytecode_com_ir2_ir2
+
+	.byte	bytecode_and_ir1_ir1_ir2
+
+	.byte	bytecode_and_ir1_ir1_pb
+	.byte	32
+
+	.byte	bytecode_jmpeq_ir1_ix
+	.word	LINE_88
+
+	; M=K(44)
+
+	.byte	bytecode_ld_ir1_pb
+	.byte	44
+
+	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_INTARR_K
+
+	.byte	bytecode_ld_ix_ir1
+	.byte	bytecode_INTVAR_M
+
+	; RETURN
+
+	.byte	bytecode_return
+
+LINE_88
+
+	; IF PEEK(2) AND NOT PEEK(16951) AND 32 THEN
+
+	.byte	bytecode_peek_ir1_pb
+	.byte	2
+
+	.byte	bytecode_peek_ir2_pw
+	.word	16951
+
+	.byte	bytecode_com_ir2_ir2
+
+	.byte	bytecode_and_ir1_ir1_ir2
+
+	.byte	bytecode_and_ir1_ir1_pb
+	.byte	32
+
+	.byte	bytecode_jmpeq_ir1_ix
+	.word	LINE_89
+
+	; M=K(46)
+
+	.byte	bytecode_ld_ir1_pb
+	.byte	46
+
+	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_INTARR_K
+
+	.byte	bytecode_ld_ix_ir1
+	.byte	bytecode_INTVAR_M
+
+	; RETURN
+
+	.byte	bytecode_return
+
+LINE_89
 
 	; RETURN
 
@@ -3164,17 +3450,10 @@ LINE_100
 
 	.byte	bytecode_cls
 
-	; PRINT "  mc-lode runner by jim gerrie"
+	; GOSUB 65
 
-	.byte	bytecode_pr_ss
-	.text	31, "  mc-lode runner by jim gerrie\r"
-
-LINE_110
-
-	; PRINT "        and greg dionne"
-
-	.byte	bytecode_pr_ss
-	.text	24, "        and greg dionne\r"
+	.byte	bytecode_gosub_ix
+	.word	LINE_65
 
 LINE_120
 
@@ -3273,7 +3552,7 @@ LINE_198
 	.byte	bytecode_pr_ss
 	.text	0, ""
 
-	; INPUT "LEVEL (1-3)"; Z1
+	; INPUT "LEVEL (1-3)"; Z2
 
 	.byte	bytecode_pr_ss
 	.text	11, "LEVEL (1-3)"
@@ -3281,22 +3560,41 @@ LINE_198
 	.byte	bytecode_input
 
 	.byte	bytecode_readbuf_fx
-	.byte	bytecode_FLTVAR_Z1
+	.byte	bytecode_FLTVAR_Z2
 
 	.byte	bytecode_ignxtra
 
+	; WHEN (Z2<1) OR (Z2>3) GOTO 198
+
+	.byte	bytecode_ld_fr1_fx
+	.byte	bytecode_FLTVAR_Z2
+
+	.byte	bytecode_ldlt_ir1_fr1_pb
+	.byte	1
+
+	.byte	bytecode_ld_ir2_pb
+	.byte	3
+
+	.byte	bytecode_ldlt_ir2_ir2_fx
+	.byte	bytecode_FLTVAR_Z2
+
+	.byte	bytecode_or_ir1_ir1_ir2
+
+	.byte	bytecode_jmpne_ir1_ix
+	.word	LINE_198
+
 LINE_199
 
-	; Z1=450-(Z1*50)
+	; Z1=500-(Z2*100)
 
 	.byte	bytecode_ld_ir1_pw
-	.word	450
+	.word	500
 
 	.byte	bytecode_ld_fr2_fx
-	.byte	bytecode_FLTVAR_Z1
+	.byte	bytecode_FLTVAR_Z2
 
 	.byte	bytecode_mul_fr2_fr2_pb
-	.byte	50
+	.byte	100
 
 	.byte	bytecode_sub_fr1_ir1_fr2
 
@@ -4242,11 +4540,11 @@ LINE_860
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_A
 
-	; MN=3
+	; MN=5
 
 	.byte	bytecode_ld_ix_pb
 	.byte	bytecode_INTVAR_MN
-	.byte	3
+	.byte	5
 
 	; RETURN
 
@@ -4438,25 +4736,22 @@ LINE_902
 	.byte	bytecode_pr_ss
 	.text	11, "GAME OVER.\r"
 
-	; GOTO 70
+	; GOTO 71
 
 	.byte	bytecode_goto_ix
-	.word	LINE_70
+	.word	LINE_71
 
 LINE_904
 
-	; ON MN GOTO 905,905,905
+	; WHEN MN<1 GOTO 55
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_MN
 
-	.byte	bytecode_ongoto_ir1_is
-	.byte	3
-	.word	LINE_905, LINE_905, LINE_905
+	.byte	bytecode_ldlt_ir1_ir1_pb
+	.byte	1
 
-	; GOTO 55
-
-	.byte	bytecode_goto_ix
+	.byte	bytecode_jmpne_ir1_ix
 	.word	LINE_55
 
 LINE_905
@@ -8053,103 +8348,109 @@ bytecode_add_ir2_ir2_ir3	.equ	7
 bytecode_add_ir2_ir2_pb	.equ	8
 bytecode_add_ix_ix_pb	.equ	9
 bytecode_and_ir1_ir1_ir2	.equ	10
-bytecode_arrdim1_ir1_ix	.equ	11
-bytecode_arrdim2_ir1_fx	.equ	12
-bytecode_arrdim2_ir1_ix	.equ	13
-bytecode_arrref1_ir1_ix	.equ	14
-bytecode_arrref2_ir1_fx	.equ	15
-bytecode_arrref2_ir1_ix	.equ	16
-bytecode_arrval1_ir1_ix	.equ	17
-bytecode_arrval1_ir2_ix	.equ	18
-bytecode_arrval1_ir3_ix	.equ	19
-bytecode_arrval2_ir1_fx	.equ	20
-bytecode_arrval2_ir1_ix	.equ	21
-bytecode_clear	.equ	22
-bytecode_cls	.equ	23
-bytecode_clsn_pb	.equ	24
-bytecode_for_fx_pb	.equ	25
-bytecode_for_ix_pb	.equ	26
-bytecode_for_ix_pw	.equ	27
-bytecode_gosub_ix	.equ	28
-bytecode_goto_ix	.equ	29
-bytecode_ignxtra	.equ	30
-bytecode_inkey_sr1	.equ	31
-bytecode_input	.equ	32
-bytecode_irnd_ir1_pb	.equ	33
-bytecode_jmpeq_ir1_ix	.equ	34
-bytecode_jmpne_ir1_ix	.equ	35
-bytecode_jsrne_ir1_ix	.equ	36
-bytecode_ld_fp_fr1	.equ	37
-bytecode_ld_fr1_fx	.equ	38
-bytecode_ld_fr2_fx	.equ	39
-bytecode_ld_fx_fr1	.equ	40
-bytecode_ld_ip_ir1	.equ	41
-bytecode_ld_ip_nb	.equ	42
-bytecode_ld_ip_pb	.equ	43
-bytecode_ld_ir1_ix	.equ	44
-bytecode_ld_ir1_pb	.equ	45
-bytecode_ld_ir1_pw	.equ	46
-bytecode_ld_ir2_ix	.equ	47
-bytecode_ld_ir2_pb	.equ	48
-bytecode_ld_ir3_ix	.equ	49
-bytecode_ld_ix_ir1	.equ	50
-bytecode_ld_ix_pb	.equ	51
-bytecode_ld_ix_pw	.equ	52
-bytecode_ld_sr1_ss	.equ	53
-bytecode_ld_sr1_sx	.equ	54
-bytecode_ld_sx_sr1	.equ	55
-bytecode_ldeq_ir1_ir1_ir2	.equ	56
-bytecode_ldeq_ir1_ir1_ix	.equ	57
-bytecode_ldeq_ir1_ir1_pb	.equ	58
-bytecode_ldeq_ir1_sr1_ss	.equ	59
-bytecode_ldeq_ir2_ir2_ir3	.equ	60
-bytecode_ldeq_ir2_ir2_ix	.equ	61
-bytecode_ldeq_ir2_ir2_pb	.equ	62
-bytecode_ldge_ir1_ir1_pw	.equ	63
-bytecode_ldlt_ir1_ir1_ir2	.equ	64
-bytecode_ldlt_ir1_ir1_ix	.equ	65
-bytecode_ldne_ir1_ir1_ix	.equ	66
-bytecode_ldne_ir1_sr1_ss	.equ	67
-bytecode_mul_fr2_fr2_pb	.equ	68
-bytecode_mul_ir1_ir1_pb	.equ	69
-bytecode_neg_ir1_ir1	.equ	70
-bytecode_next	.equ	71
-bytecode_ongosub_ir1_is	.equ	72
-bytecode_ongoto_ir1_is	.equ	73
-bytecode_or_ir1_ir1_ir2	.equ	74
-bytecode_peek_ir1_ir1	.equ	75
-bytecode_peek_ir1_ix	.equ	76
-bytecode_peek_ir1_pb	.equ	77
-bytecode_peek_ir2_pb	.equ	78
-bytecode_poke_ir1_ix	.equ	79
-bytecode_poke_ir1_pb	.equ	80
-bytecode_poke_ix_ir1	.equ	81
-bytecode_poke_ix_pb	.equ	82
-bytecode_poke_pw_ir1	.equ	83
-bytecode_pr_sr1	.equ	84
-bytecode_pr_ss	.equ	85
-bytecode_pr_sx	.equ	86
-bytecode_prat_pb	.equ	87
-bytecode_prat_pw	.equ	88
-bytecode_progbegin	.equ	89
-bytecode_progend	.equ	90
-bytecode_readbuf_fx	.equ	91
-bytecode_return	.equ	92
-bytecode_rnd_fr1_ir1	.equ	93
-bytecode_shift_ir1_ir1_pb	.equ	94
-bytecode_sound_ir1_ir2	.equ	95
-bytecode_str_sr1_ir1	.equ	96
-bytecode_str_sr1_ix	.equ	97
-bytecode_sub_fr1_ir1_fr2	.equ	98
-bytecode_sub_ip_ip_pb	.equ	99
-bytecode_sub_ir1_ir1_ir2	.equ	100
-bytecode_sub_ir1_ir1_pb	.equ	101
-bytecode_sub_ir2_ir2_pb	.equ	102
-bytecode_sub_ix_ix_pb	.equ	103
-bytecode_to_fp_pb	.equ	104
-bytecode_to_ip_ix	.equ	105
-bytecode_to_ip_pb	.equ	106
-bytecode_to_ip_pw	.equ	107
+bytecode_and_ir1_ir1_pb	.equ	11
+bytecode_arrdim1_ir1_ix	.equ	12
+bytecode_arrdim2_ir1_fx	.equ	13
+bytecode_arrdim2_ir1_ix	.equ	14
+bytecode_arrref1_ir1_ix	.equ	15
+bytecode_arrref2_ir1_fx	.equ	16
+bytecode_arrref2_ir1_ix	.equ	17
+bytecode_arrval1_ir1_ix	.equ	18
+bytecode_arrval1_ir2_ix	.equ	19
+bytecode_arrval1_ir3_ix	.equ	20
+bytecode_arrval2_ir1_fx	.equ	21
+bytecode_arrval2_ir1_ix	.equ	22
+bytecode_clear	.equ	23
+bytecode_cls	.equ	24
+bytecode_clsn_pb	.equ	25
+bytecode_com_ir2_ir2	.equ	26
+bytecode_for_fx_pb	.equ	27
+bytecode_for_ix_pb	.equ	28
+bytecode_for_ix_pw	.equ	29
+bytecode_gosub_ix	.equ	30
+bytecode_goto_ix	.equ	31
+bytecode_ignxtra	.equ	32
+bytecode_inkey_sr1	.equ	33
+bytecode_input	.equ	34
+bytecode_irnd_ir1_pb	.equ	35
+bytecode_jmpeq_ir1_ix	.equ	36
+bytecode_jmpne_ir1_ix	.equ	37
+bytecode_jsrne_ir1_ix	.equ	38
+bytecode_ld_fp_fr1	.equ	39
+bytecode_ld_fr1_fx	.equ	40
+bytecode_ld_fr2_fx	.equ	41
+bytecode_ld_fx_fr1	.equ	42
+bytecode_ld_ip_ir1	.equ	43
+bytecode_ld_ip_nb	.equ	44
+bytecode_ld_ip_pb	.equ	45
+bytecode_ld_ir1_ix	.equ	46
+bytecode_ld_ir1_pb	.equ	47
+bytecode_ld_ir1_pw	.equ	48
+bytecode_ld_ir2_ix	.equ	49
+bytecode_ld_ir2_pb	.equ	50
+bytecode_ld_ir3_ix	.equ	51
+bytecode_ld_ix_ir1	.equ	52
+bytecode_ld_ix_pb	.equ	53
+bytecode_ld_ix_pw	.equ	54
+bytecode_ld_sr1_ss	.equ	55
+bytecode_ld_sr1_sx	.equ	56
+bytecode_ld_sx_sr1	.equ	57
+bytecode_ldeq_ir1_ir1_ir2	.equ	58
+bytecode_ldeq_ir1_ir1_ix	.equ	59
+bytecode_ldeq_ir1_ir1_pb	.equ	60
+bytecode_ldeq_ir1_sr1_ss	.equ	61
+bytecode_ldeq_ir2_ir2_ir3	.equ	62
+bytecode_ldeq_ir2_ir2_ix	.equ	63
+bytecode_ldeq_ir2_ir2_pb	.equ	64
+bytecode_ldge_ir1_ir1_pw	.equ	65
+bytecode_ldlt_ir1_fr1_pb	.equ	66
+bytecode_ldlt_ir1_ir1_ir2	.equ	67
+bytecode_ldlt_ir1_ir1_ix	.equ	68
+bytecode_ldlt_ir1_ir1_pb	.equ	69
+bytecode_ldlt_ir2_ir2_fx	.equ	70
+bytecode_ldne_ir1_ir1_ix	.equ	71
+bytecode_ldne_ir1_sr1_ss	.equ	72
+bytecode_mul_fr2_fr2_pb	.equ	73
+bytecode_mul_ir1_ir1_pb	.equ	74
+bytecode_neg_ir1_ir1	.equ	75
+bytecode_next	.equ	76
+bytecode_ongosub_ir1_is	.equ	77
+bytecode_ongoto_ir1_is	.equ	78
+bytecode_or_ir1_ir1_ir2	.equ	79
+bytecode_peek_ir1_ir1	.equ	80
+bytecode_peek_ir1_pb	.equ	81
+bytecode_peek_ir2_pb	.equ	82
+bytecode_peek_ir2_pw	.equ	83
+bytecode_poke_ir1_ix	.equ	84
+bytecode_poke_ir1_pb	.equ	85
+bytecode_poke_ix_ir1	.equ	86
+bytecode_poke_ix_pb	.equ	87
+bytecode_poke_pw_ir1	.equ	88
+bytecode_pr_sr1	.equ	89
+bytecode_pr_ss	.equ	90
+bytecode_pr_sx	.equ	91
+bytecode_prat_pb	.equ	92
+bytecode_prat_pw	.equ	93
+bytecode_progbegin	.equ	94
+bytecode_progend	.equ	95
+bytecode_readbuf_fx	.equ	96
+bytecode_return	.equ	97
+bytecode_rnd_fr1_ir1	.equ	98
+bytecode_shift_ir1_ir1_pb	.equ	99
+bytecode_sound_ir1_ir2	.equ	100
+bytecode_str_sr1_fx	.equ	101
+bytecode_str_sr1_ir1	.equ	102
+bytecode_str_sr1_ix	.equ	103
+bytecode_sub_fr1_ir1_fr2	.equ	104
+bytecode_sub_ip_ip_pb	.equ	105
+bytecode_sub_ir1_ir1_ir2	.equ	106
+bytecode_sub_ir1_ir1_pb	.equ	107
+bytecode_sub_ir2_ir2_pb	.equ	108
+bytecode_sub_ix_ix_pb	.equ	109
+bytecode_to_fp_pb	.equ	110
+bytecode_to_ip_ix	.equ	111
+bytecode_to_ip_pb	.equ	112
+bytecode_to_ip_pw	.equ	113
 
 catalog
 	.word	add_fr1_fr1_ix
@@ -8163,6 +8464,7 @@ catalog
 	.word	add_ir2_ir2_pb
 	.word	add_ix_ix_pb
 	.word	and_ir1_ir1_ir2
+	.word	and_ir1_ir1_pb
 	.word	arrdim1_ir1_ix
 	.word	arrdim2_ir1_fx
 	.word	arrdim2_ir1_ix
@@ -8177,6 +8479,7 @@ catalog
 	.word	clear
 	.word	cls
 	.word	clsn_pb
+	.word	com_ir2_ir2
 	.word	for_fx_pb
 	.word	for_ix_pb
 	.word	for_ix_pw
@@ -8216,8 +8519,11 @@ catalog
 	.word	ldeq_ir2_ir2_ix
 	.word	ldeq_ir2_ir2_pb
 	.word	ldge_ir1_ir1_pw
+	.word	ldlt_ir1_fr1_pb
 	.word	ldlt_ir1_ir1_ir2
 	.word	ldlt_ir1_ir1_ix
+	.word	ldlt_ir1_ir1_pb
+	.word	ldlt_ir2_ir2_fx
 	.word	ldne_ir1_ir1_ix
 	.word	ldne_ir1_sr1_ss
 	.word	mul_fr2_fr2_pb
@@ -8228,9 +8534,9 @@ catalog
 	.word	ongoto_ir1_is
 	.word	or_ir1_ir1_ir2
 	.word	peek_ir1_ir1
-	.word	peek_ir1_ix
 	.word	peek_ir1_pb
 	.word	peek_ir2_pb
+	.word	peek_ir2_pw
 	.word	poke_ir1_ix
 	.word	poke_ir1_pb
 	.word	poke_ix_ir1
@@ -8248,6 +8554,7 @@ catalog
 	.word	rnd_fr1_ir1
 	.word	shift_ir1_ir1_pb
 	.word	sound_ir1_ir2
+	.word	str_sr1_fx
 	.word	str_sr1_ir1
 	.word	str_sr1_ix
 	.word	sub_fr1_ir1_fr2
@@ -9893,7 +10200,7 @@ add_ir2_ir2_pb			; numCalls = 7
 	stab	r2
 	rts
 
-add_ix_ix_pb			; numCalls = 6
+add_ix_ix_pb			; numCalls = 7
 	.module	modadd_ix_ix_pb
 	jsr	extbyte
 	clra
@@ -9904,7 +10211,7 @@ add_ix_ix_pb			; numCalls = 6
 	stab	0,x
 	rts
 
-and_ir1_ir1_ir2			; numCalls = 4
+and_ir1_ir1_ir2			; numCalls = 9
 	.module	modand_ir1_ir1_ir2
 	jsr	noargs
 	ldd	r2+1
@@ -9914,6 +10221,15 @@ and_ir1_ir1_ir2			; numCalls = 4
 	ldab	r2
 	andb	r1
 	stab	r1
+	rts
+
+and_ir1_ir1_pb			; numCalls = 6
+	.module	modand_ir1_ir1_pb
+	jsr	getbyte
+	andb	r1+2
+	clra
+	std	r1+1
+	staa	r1
 	rts
 
 arrdim1_ir1_ix			; numCalls = 17
@@ -10017,7 +10333,7 @@ arrref2_ir1_ix			; numCalls = 8
 	std	letptr
 	rts
 
-arrval1_ir1_ix			; numCalls = 76
+arrval1_ir1_ix			; numCalls = 81
 	.module	modarrval1_ir1_ix
 	jsr	extend
 	ldd	r1+1
@@ -10119,7 +10435,7 @@ _start
 	stx	dataptr
 	rts
 
-cls			; numCalls = 3
+cls			; numCalls = 4
 	.module	modcls
 	jsr	noargs
 	jmp	R_CLS
@@ -10128,6 +10444,14 @@ clsn_pb			; numCalls = 1
 	.module	modclsn_pb
 	jsr	getbyte
 	jmp	R_CLSN
+
+com_ir2_ir2			; numCalls = 6
+	.module	modcom_ir2_ir2
+	jsr	noargs
+	com	r2+2
+	com	r2+1
+	com	r2
+	rts
 
 for_fx_pb			; numCalls = 1
 	.module	modfor_fx_pb
@@ -10157,7 +10481,7 @@ for_ix_pw			; numCalls = 2
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 22
+gosub_ix			; numCalls = 26
 	.module	modgosub_ix
 	pulx
 	jsr	getaddr
@@ -10169,7 +10493,7 @@ gosub_ix			; numCalls = 22
 	stx	nxtinst
 	jmp	mainloop
 
-goto_ix			; numCalls = 31
+goto_ix			; numCalls = 30
 	.module	modgoto_ix
 	jsr	getaddr
 	stx	nxtinst
@@ -10222,7 +10546,7 @@ irnd_ir1_pb			; numCalls = 3
 	stab	r1
 	rts
 
-jmpeq_ir1_ix			; numCalls = 11
+jmpeq_ir1_ix			; numCalls = 17
 	.module	modjmpeq_ir1_ix
 	jsr	getaddr
 	ldd	r1+1
@@ -10233,7 +10557,7 @@ jmpeq_ir1_ix			; numCalls = 11
 _rts
 	rts
 
-jmpne_ir1_ix			; numCalls = 9
+jmpne_ir1_ix			; numCalls = 11
 	.module	modjmpne_ir1_ix
 	jsr	getaddr
 	ldd	r1+1
@@ -10275,7 +10599,7 @@ ld_fp_fr1			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 1
+ld_fr1_fx			; numCalls = 2
 	.module	modld_fr1_fx
 	jsr	extend
 	ldd	3,x
@@ -10345,7 +10669,7 @@ ld_ir1_ix			; numCalls = 152
 	stab	r1
 	rts
 
-ld_ir1_pb			; numCalls = 205
+ld_ir1_pb			; numCalls = 211
 	.module	modld_ir1_pb
 	jsr	getbyte
 	stab	r1+2
@@ -10370,7 +10694,7 @@ ld_ir2_ix			; numCalls = 55
 	stab	r2
 	rts
 
-ld_ir2_pb			; numCalls = 33
+ld_ir2_pb			; numCalls = 34
 	.module	modld_ir2_pb
 	jsr	getbyte
 	stab	r2+2
@@ -10387,7 +10711,7 @@ ld_ir3_ix			; numCalls = 4
 	stab	r3
 	rts
 
-ld_ix_ir1			; numCalls = 23
+ld_ix_ir1			; numCalls = 28
 	.module	modld_ix_ir1
 	jsr	extend
 	ldd	r1+1
@@ -10396,7 +10720,7 @@ ld_ix_ir1			; numCalls = 23
 	stab	0,x
 	rts
 
-ld_ix_pb			; numCalls = 76
+ld_ix_pb			; numCalls = 77
 	.module	modld_ix_pb
 	jsr	extbyte
 	stab	2,x
@@ -10547,6 +10871,20 @@ ldge_ir1_ir1_pw			; numCalls = 2
 	stab	r1
 	rts
 
+ldlt_ir1_fr1_pb			; numCalls = 1
+	.module	modldlt_ir1_fr1_pb
+	jsr	getbyte
+	clra
+	std	tmp1
+	ldd	r1+1
+	subd	tmp1
+	ldab	r1
+	sbcb	#0
+	jsr	getlt
+	std	r1+1
+	stab	r1
+	rts
+
 ldlt_ir1_ir1_ir2			; numCalls = 2
 	.module	modldlt_ir1_ir1_ir2
 	jsr	noargs
@@ -10569,6 +10907,35 @@ ldlt_ir1_ir1_ix			; numCalls = 1
 	jsr	getlt
 	std	r1+1
 	stab	r1
+	rts
+
+ldlt_ir1_ir1_pb			; numCalls = 1
+	.module	modldlt_ir1_ir1_pb
+	jsr	getbyte
+	clra
+	std	tmp1
+	ldd	r1+1
+	subd	tmp1
+	ldab	r1
+	sbcb	#0
+	jsr	getlt
+	std	r1+1
+	stab	r1
+	rts
+
+ldlt_ir2_ir2_fx			; numCalls = 1
+	.module	modldlt_ir2_ir2_fx
+	jsr	extend
+	ldd	#0
+	subd	3,x
+	ldd	r2+1
+	sbcb	2,x
+	sbca	1,x
+	ldab	r2
+	sbcb	0,x
+	jsr	getlt
+	std	r2+1
+	stab	r2
 	rts
 
 ldne_ir1_ir1_ix			; numCalls = 1
@@ -10760,7 +11127,7 @@ _fail
 	stx	nxtinst
 	jmp	mainloop
 
-ongoto_ir1_is			; numCalls = 15
+ongoto_ir1_is			; numCalls = 14
 	.module	modongoto_ir1_is
 	ldx	curinst
 	inx
@@ -10783,7 +11150,7 @@ _fail
 	stx	nxtinst
 	rts
 
-or_ir1_ir1_ir2			; numCalls = 2
+or_ir1_ir1_ir2			; numCalls = 3
 	.module	modor_ir1_ir1_ir2
 	jsr	noargs
 	ldd	r2+1
@@ -10805,17 +11172,7 @@ peek_ir1_ir1			; numCalls = 16
 	std	r1
 	rts
 
-peek_ir1_ix			; numCalls = 1
-	.module	modpeek_ir1_ix
-	jsr	extend
-	ldx	1,x
-	jsr	peek
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
-peek_ir1_pb			; numCalls = 1
+peek_ir1_pb			; numCalls = 7
 	.module	modpeek_ir1_pb
 	jsr	getbyte
 	clra
@@ -10827,13 +11184,24 @@ peek_ir1_pb			; numCalls = 1
 	std	r1
 	rts
 
-peek_ir2_pb			; numCalls = 2
+peek_ir2_pb			; numCalls = 1
 	.module	modpeek_ir2_pb
 	jsr	getbyte
 	clra
 	std	tmp1
 	ldx	tmp1
 	ldab	,x
+	stab	r2+2
+	ldd	#0
+	std	r2
+	rts
+
+peek_ir2_pw			; numCalls = 6
+	.module	modpeek_ir2_pw
+	jsr	getword
+	std	tmp1
+	ldx	tmp1
+	jsr	peek
 	stab	r2+2
 	ldd	#0
 	std	r2
@@ -10878,7 +11246,7 @@ poke_pw_ir1			; numCalls = 2
 	stab	,x
 	rts
 
-pr_sr1			; numCalls = 2
+pr_sr1			; numCalls = 4
 	.module	modpr_sr1
 	jsr	noargs
 	ldab	r1
@@ -10890,7 +11258,7 @@ pr_sr1			; numCalls = 2
 _rts
 	rts
 
-pr_ss			; numCalls = 169
+pr_ss			; numCalls = 173
 	.module	modpr_ss
 	ldx	curinst
 	inx
@@ -10922,7 +11290,7 @@ prat_pb			; numCalls = 4
 	std	M_CRSR
 	rts
 
-prat_pw			; numCalls = 4
+prat_pw			; numCalls = 5
 	.module	modprat_pw
 	jsr	getword
 	jmp	prat
@@ -10991,7 +11359,7 @@ readbuf_fx			; numCalls = 1
 _rts
 	rts
 
-return			; numCalls = 31
+return			; numCalls = 40
 	.module	modreturn
 	pulx
 	tsx
@@ -11051,6 +11419,21 @@ sound_ir1_ir2			; numCalls = 22
 	ldab	r2+2
 	jmp	R_SOUND
 
+str_sr1_fx			; numCalls = 1
+	.module	modstr_sr1_fx
+	jsr	extend
+	ldd	1,x
+	std	tmp2
+	ldab	0,x
+	stab	tmp1+1
+	ldd	3,x
+	std	tmp3
+	jsr	strflt
+	std	r1+1
+	ldab	tmp1
+	stab	r1
+	rts
+
 str_sr1_ir1			; numCalls = 1
 	.module	modstr_sr1_ir1
 	jsr	noargs
@@ -11066,7 +11449,7 @@ str_sr1_ir1			; numCalls = 1
 	stab	r1
 	rts
 
-str_sr1_ix			; numCalls = 1
+str_sr1_ix			; numCalls = 2
 	.module	modstr_sr1_ix
 	jsr	extend
 	ldd	1,x
@@ -11245,28 +11628,29 @@ bytecode_INTVAR_ZZ	.equ	32
 bytecode_FLTVAR_A	.equ	33
 bytecode_FLTVAR_X	.equ	34
 bytecode_FLTVAR_Z1	.equ	35
-bytecode_STRVAR_A	.equ	36
-bytecode_STRVAR_I	.equ	37
-bytecode_INTARR_A	.equ	38
-bytecode_INTARR_B	.equ	39
-bytecode_INTARR_C	.equ	40
-bytecode_INTARR_D	.equ	41
-bytecode_INTARR_E	.equ	42
-bytecode_INTARR_F	.equ	43
-bytecode_INTARR_G	.equ	44
-bytecode_INTARR_H	.equ	45
-bytecode_INTARR_I	.equ	46
-bytecode_INTARR_K	.equ	47
-bytecode_INTARR_M	.equ	48
-bytecode_INTARR_N	.equ	49
-bytecode_INTARR_T	.equ	50
-bytecode_INTARR_U	.equ	51
-bytecode_INTARR_V	.equ	52
-bytecode_INTARR_W	.equ	53
-bytecode_INTARR_W2	.equ	54
-bytecode_INTARR_X	.equ	55
-bytecode_INTARR_Y	.equ	56
-bytecode_FLTARR_P	.equ	57
+bytecode_FLTVAR_Z2	.equ	36
+bytecode_STRVAR_A	.equ	37
+bytecode_STRVAR_I	.equ	38
+bytecode_INTARR_A	.equ	39
+bytecode_INTARR_B	.equ	40
+bytecode_INTARR_C	.equ	41
+bytecode_INTARR_D	.equ	42
+bytecode_INTARR_E	.equ	43
+bytecode_INTARR_F	.equ	44
+bytecode_INTARR_G	.equ	45
+bytecode_INTARR_H	.equ	46
+bytecode_INTARR_I	.equ	47
+bytecode_INTARR_K	.equ	48
+bytecode_INTARR_M	.equ	49
+bytecode_INTARR_N	.equ	50
+bytecode_INTARR_T	.equ	51
+bytecode_INTARR_U	.equ	52
+bytecode_INTARR_V	.equ	53
+bytecode_INTARR_W	.equ	54
+bytecode_INTARR_W2	.equ	55
+bytecode_INTARR_X	.equ	56
+bytecode_INTARR_Y	.equ	57
+bytecode_FLTARR_P	.equ	58
 
 symtbl
 
@@ -11306,6 +11690,7 @@ symtbl
 	.word	FLTVAR_A
 	.word	FLTVAR_X
 	.word	FLTVAR_Z1
+	.word	FLTVAR_Z2
 	.word	STRVAR_A
 	.word	STRVAR_I
 	.word	INTARR_A
@@ -11370,6 +11755,7 @@ INTVAR_ZZ	.block	3
 FLTVAR_A	.block	5
 FLTVAR_X	.block	5
 FLTVAR_Z1	.block	5
+FLTVAR_Z2	.block	5
 ; String Variables
 STRVAR_A	.block	3
 STRVAR_I	.block	3

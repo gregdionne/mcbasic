@@ -2576,9 +2576,9 @@ LINE_6032
 
 LINE_6033
 
-	; SOUND 5,2
+	; SOUND 189,2
 
-	ldab	#5
+	ldab	#189
 	jsr	ld_ir1_pb
 
 	ldab	#2
@@ -2586,9 +2586,9 @@ LINE_6033
 
 	jsr	sound_ir1_ir2
 
-	; SOUND 10,2
+	; SOUND 206,2
 
-	ldab	#10
+	ldab	#206
 	jsr	ld_ir1_pb
 
 	ldab	#2
@@ -2596,9 +2596,9 @@ LINE_6033
 
 	jsr	sound_ir1_ir2
 
-	; SOUND 15,2
+	; SOUND 181,2
 
-	ldab	#15
+	ldab	#181
 	jsr	ld_ir1_pb
 
 	ldab	#2
@@ -2606,9 +2606,9 @@ LINE_6033
 
 	jsr	sound_ir1_ir2
 
-	; SOUND 20,2
+	; SOUND 229,2
 
-	ldab	#20
+	ldab	#229
 	jsr	ld_ir1_pb
 
 	ldab	#2
@@ -2616,9 +2616,9 @@ LINE_6033
 
 	jsr	sound_ir1_ir2
 
-	; SOUND 25,2
+	; SOUND 215,2
 
-	ldab	#25
+	ldab	#215
 	jsr	ld_ir1_pb
 
 	ldab	#2
@@ -2626,19 +2626,19 @@ LINE_6033
 
 	jsr	sound_ir1_ir2
 
-	; SOUND 30,5
+	; SOUND 242,6
 
-	ldab	#30
+	ldab	#242
 	jsr	ld_ir1_pb
 
-	ldab	#5
+	ldab	#6
 	jsr	ld_ir2_pb
 
 	jsr	sound_ir1_ir2
 
-	; SOUND 20,3
+	; SOUND 229,3
 
-	ldab	#20
+	ldab	#229
 	jsr	ld_ir1_pb
 
 	ldab	#3
@@ -2646,9 +2646,9 @@ LINE_6033
 
 	jsr	sound_ir1_ir2
 
-	; SOUND 30,3
+	; SOUND 242,3
 
-	ldab	#30
+	ldab	#242
 	jsr	ld_ir1_pb
 
 	ldab	#3
@@ -2656,9 +2656,9 @@ LINE_6033
 
 	jsr	sound_ir1_ir2
 
-	; SOUND 20,3
+	; SOUND 229,3
 
-	ldab	#20
+	ldab	#229
 	jsr	ld_ir1_pb
 
 	ldab	#3
@@ -2666,9 +2666,9 @@ LINE_6033
 
 	jsr	sound_ir1_ir2
 
-	; SOUND 30,3
+	; SOUND 242,3
 
-	ldab	#30
+	ldab	#242
 	jsr	ld_ir1_pb
 
 	ldab	#3
@@ -2676,9 +2676,9 @@ LINE_6033
 
 	jsr	sound_ir1_ir2
 
-	; SOUND 20,1
+	; SOUND 229,1
 
-	ldab	#20
+	ldab	#229
 	jsr	ld_ir1_pb
 
 	ldab	#1
@@ -2710,14 +2710,14 @@ LINE_6040
 	jsr	pr_ss
 	.text	3, "\x83\x80\x83"
 
-	; FOR Z=1 TO 100
+	; FOR Z=1 TO 400
 
 	ldx	#INTVAR_Z
 	ldab	#1
 	jsr	for_ix_pb
 
-	ldab	#100
-	jsr	to_ip_pb
+	ldd	#400
+	jsr	to_ip_pw
 
 	; NEXT Z
 
@@ -2741,14 +2741,14 @@ LINE_6041
 	jsr	pr_ss
 	.text	3, "\x89\x80\x86"
 
-	; FOR Z=1 TO 100
+	; FOR Z=1 TO 400
 
 	ldx	#INTVAR_Z
 	ldab	#1
 	jsr	for_ix_pb
 
-	ldab	#100
-	jsr	to_ip_pb
+	ldd	#400
+	jsr	to_ip_pw
 
 	; NEXT Z
 
@@ -5635,7 +5635,7 @@ to_ip_ix			; numCalls = 1
 	ldab	#11
 	jmp	to
 
-to_ip_pb			; numCalls = 7
+to_ip_pb			; numCalls = 5
 	.module	modto_ip_pb
 	stab	r1+2
 	ldd	#0
@@ -5644,11 +5644,20 @@ to_ip_pb			; numCalls = 7
 	ldab	#11
 	jmp	to
 
+to_ip_pw			; numCalls = 2
+	.module	modto_ip_pw
+	std	r1+1
+	ldd	#0
+	stab	r1
+	std	r1+3
+	ldab	#11
+	jmp	to
+
 ; data table
 startdata
-	.byte	23, 4, 20, 4, 23, 4
-	.byte	20, 4, 21, 4, 20, 4
-	.byte	18, 4, 16, 2, 1, 6
+	.byte	233, 4, 229, 4, 233, 4
+	.byte	229, 4, 231, 4, 229, 4
+	.byte	225, 4, 221, 2, 87, 8
 enddata
 
 
