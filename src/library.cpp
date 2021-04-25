@@ -1175,12 +1175,15 @@ std::string Library::mdStrEqx() {
   tasm.bne("_frts");
   tasm.tstb();
   tasm.beq("_frts");
-  tasm.sts("tmp3");
   tasm.ldx("1,x");
   tasm.jsr("strrel");
-  tasm.txs();
+  tasm.pshx();
   tasm.ldx("tmp2");
   tasm.jsr("strrel");
+  tasm.pulx();
+  tasm.sts("tmp3");
+  tasm.txs();
+  tasm.ldx("tmp2");
   tasm.label("_nxtchr");
   tasm.pula();
   tasm.cmpa(",x");

@@ -14093,12 +14093,15 @@ streqx
 	bne	_frts
 	tstb
 	beq	_frts
-	sts	tmp3
 	ldx	1,x
 	jsr	strrel
-	txs
+	pshx
 	ldx	tmp2
 	jsr	strrel
+	pulx
+	sts	tmp3
+	txs
+	ldx	tmp2
 _nxtchr
 	pula
 	cmpa	,x
