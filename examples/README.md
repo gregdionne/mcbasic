@@ -4,19 +4,15 @@ These are some example programs (with generated code) that can be used evaluate 
 ## Benchmark
 The files in the benchmark directory are small examples that can be run to compare the speed or performance against the MICROCOLOR BASIC interpreter.  See the README.md file in that directory to learn more about them.
 
-# Jim Gerrie's Programs
+## Jim Gerrie's Programs
 Most of the files in the native and bytecode directories are taken from talented and dedicated programmer Jim Gerrie.
 
-## Native Programs
-Files in the native directory were small enough to be compiled with the "-native" option.
+Files in the native directory were small enough to be compiled with the "-native" option.  Files in the bytecode directory were compiled without any options.
 
-## Bytecode Programs
-Files in the bytecode directory were compiled without any options.
-
-## External repositories
+### External repositories
 Jim has two repositories of BASIC programs for the MC-10.
 
-### Jim's main TRS-80 MC-10 repository.
+#### Jim's main TRS-80 MC-10 repository.
 Jim's main TRS-80 MC-10 repository (at https://github.com/jggames/trs80mc10) has perhaps a hundred or so programs for the MC-10 and is a mix of original and ported programs accumulated over the years.  Unless otherwise indicated, most of these programs will run quite well using the MICROCOLOR BASIC interpreter on the MC-10 with the 16K RAM Expansion.
 
 Many of these programs will run considerably faster when using the compiler.  Most programs don't need much work to convert.  Other programs need a little more work to be usable at the increased speed.
@@ -30,7 +26,7 @@ native/four.bas      | Puzzle/Four/FOUR2.TXT
 native/hurkle.bas    | Puzzle/Hurkle/HURKLE.TXT
 native/pentomin.bas  | Puzzle/Pentomin/PENTOMIN2.TXT
 
-### Jim Gerrie's Compiled Programs
+#### Jim Gerrie's Compiled Programs
 Jim also has made a dedicated repository of original and ported programs modified to for use with this compiler (at https://github.com/jggames/MCBasic).  While the files are replicated here, his latest official versions can be found there.  Some of these are ports of his earlier work that are tweaked to make the original program playable at the increased speed.
 
 Finished Ports       | Jim's source
@@ -49,7 +45,7 @@ bytecode/berzerk.bas | BERZERKcompiler30.TXT
 bytecode/mahjong.bas | NEWMAHJcompiler18.TXT
 bytecode/loderun.bas | LODERUNcompiler38.TXT
 
-## Ports that still need logic modification to be playable due to speed differences:
+### Ports that still need logic modification to be playable due to speed differences:
 
 Incomplete Ports       |  Jim's source
 ---------------------- | --------------------------------
@@ -59,4 +55,3 @@ native/elevator.bas    |  Arcade/Elevator/ELEVATOR19.TXT
 native/mcmine.bas      |  Puzzle/MCMine/MCMINE2.TXT
 
 The results of the compiled code are saved as .C10 files.  You may CLOADM them into your favorite MC-10 emulator.
-
