@@ -82,7 +82,7 @@ I'll eventually&#8309; bundle the assembler into the compiler as well, so this s
 
 &#179; Some extensions are used during the compilation stage (e.g. += and -= assignment increment/decrement operators and a WHEN..GOTO/GOSUB as a replacement for IF..GOTO/GOSUB ELSE). These extensions are internal and are not available for use in the source BASIC files.
 
-&#8308; Currently only the undocumented negate-with-carry instructions are used.  These instructions are similar to that of the MC6809's undocumented NGC instruction with direct addressing mode (opcode $02).  The MC6801 implements `NGCA` (opcode $42), `NGCB` (opcode $52), `NGC <offset>,X` (opcode $62), and `NGC <address>` (opcode $72).
+&#8308; Currently only the undocumented negate-with-carry instructions.  The MC6801 and MC6809 both implement `NGCA` (opcode $42), `NGCB` (opcode $52), `NGC <indexed>` (opcode $62), and `NGC <extended>` (opcode $72).  These permit negation of the "D" register in four cycles by issuing a `NEGB` (opcode $50) followed by `NGCA` (opcode $42).  They can also negate multi-byte numbers in-place.&#178;  Use caution when using the &#8209;undoc switch, as many 6801 emulators fail to implement these instructions correctly.
 
 &#8309; The code in this repository was written in brief spurts over the course of perhaps fifteen years.  It's been largely relegated to a minor side-project as time and interest have permitted.  Originally in K&R C, it was ported to ANSI C, then C++ (98).  I've given it just enough treatment to work in C++14, but alas, C++20 is out as of this writing!  It needs to be upgraded to comply with more modern programming guidelines.  But perhaps, like MICROCOLOR BASIC itself, some of this code may bring you back to a simpler era.  Enjoy!
 
