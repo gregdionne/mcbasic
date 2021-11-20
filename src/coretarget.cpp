@@ -95,6 +95,9 @@ std::string CoreTarget::generateMicroColorConstants() {
   tasm.equ("R_MCXID", "$FFDA", "ID location for MCX BASIC");
   tasm.blank();
 
+  tasm.comment("Equate(s) for MCBASIC constants");
+  tasm.equ("charpage", "$0100", "single-character string page.");
+  tasm.blank();
   return tasm.source();
 }
 

@@ -41,6 +41,9 @@ R_CLS	.equ	$FBD4	; clear screen with space character
 R_SOUND	.equ	$FFAB	; play sound with pitch in ACCA and duration in ACCB
 R_MCXID	.equ	$FFDA	; ID location for MCX BASIC
 
+; Equate(s) for MCBASIC constants
+charpage	.equ	$0100	; single-character string page.
+
 ; direct page registers
 	.org	$80
 strtcnt	.block	1
@@ -11063,14 +11066,20 @@ progbegin			; numCalls = 1
 	ldx	R_MCXID
 	cpx	#'h'*256+'C'
 	bne	_mcbasic
-	pulx
 	clrb
+	ldx	#charpage
+_again
+	stab	,x
+	inx
+	incb
+	bne	_again
+	pulx
 	pshb
 	pshb
 	pshb
 	stab	strtcnt
 	jmp	,x
-_reqmsg	.text	"?MICROCOLOR BASIC ROM REQUIRED"
+_reqmsg	.text	"?ORIGINAL MC-10 ROM REQUIRED"
 _mcbasic
 	ldx	#_reqmsg
 	ldab	#30
