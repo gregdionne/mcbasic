@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -95,7 +97,7 @@ program
 
 LINE_10
 
-	; PRINT "ENTER EXP AND INIT LOG ESTIMATE"
+	; PRINT "ENTER EXP AND INIT LOG ESTIMATE\r";
 
 	.byte	bytecode_pr_ss
 	.text	32, "ENTER EXP AND INIT LOG ESTIMATE\r"
@@ -130,7 +132,7 @@ LINE_50
 
 LINE_100
 
-	; PRINT "E=";STR$(E);" X=";STR$(X);" "
+	; PRINT "E=";STR$(E);" X=";STR$(X);" \r";
 
 	.byte	bytecode_pr_ss
 	.text	2, "E="
@@ -153,7 +155,7 @@ LINE_100
 
 LINE_105
 
-	; PRINT "E(X)=";STR$(EXP(X));" "
+	; PRINT "E(X)=";STR$(EXP(X));" \r";
 
 	.byte	bytecode_pr_ss
 	.text	5, "E(X)="
@@ -224,7 +226,7 @@ LINE_125
 
 LINE_130
 
-	; PRINT "X=";STR$(X);" E(X)=";STR$(EXP(X));" "
+	; PRINT "X=";STR$(X);" E(X)=";STR$(EXP(X));" \r";
 
 	.byte	bytecode_pr_ss
 	.text	2, "X="
@@ -260,7 +262,7 @@ LINE_140
 
 LINE_150
 
-	; PRINT "LOG(E)=";STR$(LOG(E));" "
+	; PRINT "LOG(E)=";STR$(LOG(E));" \r";
 
 	.byte	bytecode_pr_ss
 	.text	7, "LOG(E)="
@@ -1728,7 +1730,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3

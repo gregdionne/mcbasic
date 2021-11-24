@@ -43,7 +43,8 @@ void Library::makeFoundation() {
   foundation["mdstrrel"] = Lib{0, mdStrRel(), {}};
   foundation["mdstrtmp"] = Lib{0, mdStrTmp(), {}};
   foundation["mdstrdel"] = Lib{0, mdStrDel(), {"mdalloc"}};
-  foundation["mdstrval"] = Lib{0, mdStrVal(), {"mdnegtmp"}};
+  foundation["mdstrval"] =
+      Lib{0, mdStrVal(), {"mdnegtmp", "mdstrrel", "mddivflt"}};
   foundation["mdstreqs"] = Lib{0, mdStrEqs(), {"mdstrrel"}};
   foundation["mdstreqbs"] = Lib{0, mdStrEqbs(), {"mdstrrel"}};
   foundation["mdstreqx"] = Lib{0, mdStrEqx(), {"mdstrrel"}};
@@ -89,7 +90,7 @@ void Library::makeFoundation() {
   foundation["mdrsuword"] = Lib{0, mdRdSUWord(), {"mdrpuword"}};
   foundation["mdrssword"] = Lib{0, mdRdSSWord(), {"mdrpsword"}};
   foundation["mdrsnumbr"] = Lib{0, mdRdSNumbr(), {"mdrpnumbr"}};
-  foundation["mdrsstrng"] = Lib{0, mdRdSStrng(), {"mdrpstrng"}};
+  foundation["mdrsstrng"] = Lib{0, mdRdSStrng(), {"mdrpstrng", "mdstrdel"}};
   foundation["mdtonat"] = Lib{0, mdToNative(), {}};
   foundation["mdtonatgl"] = Lib{0, mdToNativeGenLines(), {}};
   foundation["mdtobc"] = Lib{0, mdToByteCode(), {}};
@@ -2824,10 +2825,10 @@ std::string Library::mdSin() {
     tasm.ngc("3,x");
   } else {
     tasm.bcs("_ngc1");
-    tasm.com("3,x");
+    tasm.neg("3,x");
     tasm.bra("_ngc2");
     tasm.label("_ngc1");
-    tasm.neg("3,x");
+    tasm.com("3,x");
     tasm.label("_ngc2");
   }
   tasm.sbcb("2,x");
@@ -2837,10 +2838,10 @@ std::string Library::mdSin() {
     tasm.ngc("0,x");
   } else {
     tasm.bcs("_ngc3");
-    tasm.com("0,x");
+    tasm.neg("0,x");
     tasm.rts();
     tasm.label("_ngc3");
-    tasm.neg("0,x");
+    tasm.com("0,x");
   }
   tasm.rts();
 
@@ -3380,7 +3381,7 @@ std::string Library::mdRdSUWord() {
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rsuword");
   tasm.jsr("strdel");
-  tasm.jsr("rnuword");
+  tasm.jsr("rpuword");
   tasm.ldd("#0");
   tasm.std("tmp3");
   tasm.jsr("strflt");
@@ -3398,7 +3399,7 @@ std::string Library::mdRdSSWord() {
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rssword");
   tasm.jsr("strdel");
-  tasm.jsr("rnsword");
+  tasm.jsr("rpsword");
   tasm.ldd("#0");
   tasm.std("tmp3");
   tasm.jsr("strflt");
@@ -3416,7 +3417,7 @@ std::string Library::mdRdSNumbr() {
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rsnumbr");
   tasm.jsr("strdel");
-  tasm.jsr("rnnumbr");
+  tasm.jsr("rpnumbr");
   tasm.jsr("strflt");
   tasm.std("1+argv");
   tasm.ldab("tmp1");
@@ -3462,7 +3463,9 @@ std::string Library::mdTo(bool byteCode, bool genLines) {
   tasm.comment("ENTRY:  ACCB  contains size of record");
   tasm.comment("        r1    contains stopping variable");
   tasm.comment("              and is always fixedpoint.");
-  tasm.comment("        r1+3  must contain zero if an integer.");
+  tasm.comment("        r1+3  must contain zero when both:");
+  tasm.comment("              1. loop var is integral.");
+  tasm.comment("              2. STEP is missing");
   tasm.label("to");
   tasm.clra();
   tasm.std("tmp3");

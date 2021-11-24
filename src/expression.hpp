@@ -1,6 +1,6 @@
 // Copyright (C) 2021 Greg Dionne
-
 // Distributed under MIT License
+
 #ifndef EXPRESSIONS_HPP
 #define EXPRESSIONS_HPP
 
@@ -61,6 +61,7 @@ class RightExpr;
 class MidExpr;
 class PointExpr;
 class InkeyExpr;
+class MemExpr;
 
 class ExprOp {
 public:
@@ -113,6 +114,7 @@ public:
   virtual void operate(MidExpr & /*expr*/) {}
   virtual void operate(PointExpr & /*expr*/) {}
   virtual void operate(InkeyExpr & /*expr*/) {}
+  virtual void operate(MemExpr & /*expr*/) {}
 };
 
 // define Expressions in the statement's AST
@@ -564,6 +566,11 @@ public:
 };
 
 class InkeyExpr : public StringExpr {
+public:
+  void operate(ExprOp *op) override { op->operate(*this); }
+};
+
+class MemExpr : public NumericExpr {
 public:
   void operate(ExprOp *op) override { op->operate(*this); }
 };

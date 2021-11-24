@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -1449,7 +1451,7 @@ LINE_1040
 	.byte	bytecode_INTVAR_M
 	.byte	0
 
-	; PRINT @0, "ÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄÄ";
+	; PRINT @0, "\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80";
 
 	.byte	bytecode_prat_pb
 	.byte	0
@@ -1502,7 +1504,7 @@ LINE_1050
 
 LINE_1060
 
-	; WHEN B$="" GOTO 1040
+	; WHEN B$="\x08" GOTO 1040
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_B
@@ -1795,7 +1797,7 @@ LINE_1190
 
 LINE_1200
 
-	; WHEN B$="" GOTO 1040
+	; WHEN B$="\x08" GOTO 1040
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_B
@@ -1927,7 +1929,7 @@ LINE_1260
 
 LINE_1270
 
-	; PRINT "SHUFFLING..."
+	; PRINT "SHUFFLING...\r";
 
 	.byte	bytecode_pr_ss
 	.text	13, "SHUFFLING...\r"
@@ -2004,7 +2006,7 @@ LINE_1300
 
 LINE_1301
 
-	; PRINT A$
+	; PRINT A$;"\r";
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -2070,7 +2072,7 @@ LINE_1340
 
 LINE_1341
 
-	; PRINT A$
+	; PRINT A$;"\r";
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -2091,14 +2093,14 @@ LINE_1341
 
 LINE_1342
 
-	; PRINT "ONE MOMENT..."
+	; PRINT "ONE MOMENT...\r";
 
 	.byte	bytecode_pr_ss
 	.text	14, "ONE MOMENT...\r"
 
 LINE_1350
 
-	; A$(1)="ˇˇ"
+	; A$(1)="\xFF\xFF"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	1
@@ -2111,7 +2113,7 @@ LINE_1350
 
 	.byte	bytecode_ld_sp_sr1
 
-	; A$(2)="üü"
+	; A$(2)="\x9F\x9F"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
@@ -2124,7 +2126,7 @@ LINE_1350
 
 	.byte	bytecode_ld_sp_sr1
 
-	; A$(3)="ØØ"
+	; A$(3)="\xAF\xAF"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	3
@@ -2137,7 +2139,7 @@ LINE_1350
 
 	.byte	bytecode_ld_sp_sr1
 
-	; A$(4)="èè"
+	; A$(4)="\x8F\x8F"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	4
@@ -2150,7 +2152,7 @@ LINE_1350
 
 	.byte	bytecode_ld_sp_sr1
 
-	; A$(5)="œœ"
+	; A$(5)="\xCF\xCF"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	5
@@ -2163,7 +2165,7 @@ LINE_1350
 
 	.byte	bytecode_ld_sp_sr1
 
-	; A$(6)="øø"
+	; A$(6)="\xBF\xBF"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	6
@@ -2273,7 +2275,7 @@ LINE_1390
 
 LINE_1391
 
-	; PRINT A$
+	; PRINT A$;"\r";
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -2321,7 +2323,7 @@ LINE_1410
 
 LINE_1411
 
-	; PRINT A$
+	; PRINT A$;"\r";
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -2456,7 +2458,7 @@ LINE_1450
 
 LINE_1451
 
-	; PRINT A$
+	; PRINT A$;"\r";
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -2464,7 +2466,7 @@ LINE_1451
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
@@ -2712,7 +2714,7 @@ LINE_1520
 
 LINE_1522
 
-	; IF A$="" THEN
+	; IF A$="\x08" THEN
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -2723,7 +2725,7 @@ LINE_1522
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_1523
 
-	; PRINT "ÄÄ";
+	; PRINT "\x08\x08\x80\x80";
 
 	.byte	bytecode_pr_ss
 	.text	4, "\x08\x08\x80\x80"
@@ -2746,7 +2748,7 @@ LINE_1522
 
 LINE_1523
 
-	; WHEN A$<>"" GOTO 1510
+	; WHEN A$<>"\r" GOTO 1510
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A
@@ -3114,7 +3116,7 @@ LINE_1626
 
 LINE_1630
 
-	; PRINT @448,
+	; PRINT @448, "\r";
 
 	.byte	bytecode_prat_pw
 	.word	448
@@ -3200,12 +3202,12 @@ LINE_1640
 
 	.byte	bytecode_next
 
-	; PRINT
+	; PRINT "\r";
 
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
 
-	; PRINT "THE COMPUTER IS THINKING..."
+	; PRINT "THE COMPUTER IS THINKING...\r";
 
 	.byte	bytecode_pr_ss
 	.text	28, "THE COMPUTER IS THINKING...\r"
@@ -7594,7 +7596,7 @@ LINE_3915
 
 LINE_3920
 
-	; PRINT
+	; PRINT "\r";
 
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
@@ -14601,7 +14603,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3
@@ -16404,7 +16408,19 @@ step_ip_ir1			; numCalls = 1
 	.module	modstep_ip_ir1
 	jsr	noargs
 	tsx
+	ldd	10,x
+	beq	_zero
 	ldab	r1
+	bpl	_nonzero
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+_zero
+	ldab	r1
+_nonzero
 	stab	10,x
 	ldd	r1+1
 	std	11,x

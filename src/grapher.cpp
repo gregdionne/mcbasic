@@ -224,6 +224,8 @@ void ExprGrapher::operate(PointExpr &e) {
 
 void ExprGrapher::operate(InkeyExpr & /*expr*/) { printtab(n, "INKEY$"); }
 
+void ExprGrapher::operate(MemExpr & /*expr*/) { printtab(n, "MEM"); }
+
 void StatementGrapher::operate(Rem &s) {
   printtab(n, "REM");
   printtab(n + 1, s.comment.c_str());
@@ -390,4 +392,9 @@ void StatementGrapher::operate(Sound &s) {
   printtab(n, "SOUND");
   indentOp(s.pitch, that);
   indentOp(s.duration, that);
+}
+
+void StatementGrapher::operate(Error &s) {
+  printtab(n, "ERROR");
+  indentOp(s.errorCode, that);
 }

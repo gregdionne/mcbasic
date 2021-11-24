@@ -5,6 +5,7 @@
 
 #include "isfloat.hpp"
 #include "program.hpp"
+#include "warner.hpp"
 
 // Promotes numeric symbol, <s>, to floating point
 // upon assignment for the following cases:
@@ -34,11 +35,11 @@ public:
   DataTable &dataTable;
   SymbolTable &symbolTable;
   IsFloat &isFloat;
-  bool Wfloat;
+  Warner &warner;
   int lineNumber;
   ExprFloatPromoter(bool &gf, DataTable &dt, SymbolTable &st, IsFloat &isf,
-                    bool wf)
-      : gotFloat(gf), dataTable(dt), symbolTable(st), isFloat(isf), Wfloat(wf) {
+                    Warner &wf)
+      : gotFloat(gf), dataTable(dt), symbolTable(st), isFloat(isf), warner(wf) {
   }
   bool makeFloat(std::vector<Symbol> &table, std::string &symbolName);
   void operate(NumericVariableExpr &e) override;
@@ -55,7 +56,7 @@ public:
   ExprOp *that;
   int lineNumber;
   StatementFloatPromoter(bool &gf, DataTable &dt, SymbolTable &st, IsFloat &isf,
-                         bool wf)
+                         Warner &wf)
       : gotFloat(gf), dataTable(dt), symbolTable(st), isFloat(isf),
         fe(gf, dt, st, isf, wf), that(&fe) {}
   void operate(If &s) override;
@@ -73,7 +74,7 @@ public:
   IsFloat isFloat;
   StatementFloatPromoter fs;
   StatementOp *that;
-  FloatPromoter(DataTable &dt, SymbolTable &st, bool wf)
+  FloatPromoter(DataTable &dt, SymbolTable &st, Warner wf)
       : gotFloat(false), dataTable(dt), symbolTable(st), isFloat(st),
         fs(gotFloat, dt, st, isFloat, wf), that(&fs) {}
   void operate(Program &p) override;

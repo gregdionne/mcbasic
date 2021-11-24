@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -442,7 +444,7 @@ LINE_9
 	ldx	#INTVAR_P
 	jsr	ld_ix_ir1
 
-	; PRINT @C, "Ÿ";
+	; PRINT @C, "\x9F";
 
 	ldx	#FLTVAR_C
 	jsr	prat_ix
@@ -3062,7 +3064,7 @@ LINE_2000
 
 	jsr	to_fp_ir1
 
-	; PRINT MID$(N$,T,1);"€";
+	; PRINT MID$(N$,T,1);"\x80";
 
 	ldx	#STRVAR_N
 	jsr	ld_sr1_sx
@@ -3091,7 +3093,7 @@ LINE_2000
 
 	jsr	next
 
-	; PRINT "";
+	; PRINT "\x08";
 
 	jsr	pr_ss
 	.text	1, "\x08"
@@ -3106,7 +3108,7 @@ LINE_2000
 
 LINE_2010
 
-	; PRINT "€";
+	; PRINT "\x80";
 
 	jsr	pr_ss
 	.text	1, "\x80"
@@ -3124,7 +3126,7 @@ LINE_2010
 
 	jsr	next
 
-	; PRINT "";
+	; PRINT "\x08";
 
 	jsr	pr_ss
 	.text	1, "\x08"
@@ -3172,7 +3174,7 @@ LINE_3000
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3197,7 +3199,7 @@ LINE_3005
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3217,7 +3219,7 @@ LINE_3010
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3237,7 +3239,7 @@ LINE_3020
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3257,7 +3259,7 @@ LINE_3030
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3277,7 +3279,7 @@ LINE_3040
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3302,7 +3304,7 @@ LINE_3050
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3322,17 +3324,17 @@ LINE_3060
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3352,7 +3354,7 @@ LINE_3065
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3372,7 +3374,7 @@ LINE_3070
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3392,7 +3394,7 @@ LINE_3080
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3412,7 +3414,7 @@ LINE_3090
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3432,7 +3434,7 @@ LINE_3100
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3452,7 +3454,7 @@ LINE_3110
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3472,7 +3474,7 @@ LINE_3120
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3492,7 +3494,7 @@ LINE_3130
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3512,7 +3514,7 @@ LINE_3140
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3532,7 +3534,7 @@ LINE_3150
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3552,7 +3554,7 @@ LINE_3160
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3572,7 +3574,7 @@ LINE_3170
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3592,7 +3594,7 @@ LINE_3180
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3612,12 +3614,12 @@ LINE_3190
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -5172,7 +5174,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3

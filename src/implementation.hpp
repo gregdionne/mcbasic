@@ -27,10 +27,13 @@ public:
   virtual std::string inherent(InstReturn &inst) = 0;
   virtual std::string inherent(InstStop &inst) = 0;
   virtual std::string inherent(InstCls &inst) = 0;
+  virtual std::string inherent(InstPrComma &inst) = 0;
   virtual std::string inherent(InstInputBuf &inst) = 0;
   virtual std::string inherent(InstIgnoreExtra &inst) = 0;
   virtual std::string inherent(InstRestore &inst) = 0;
   virtual std::string inherent(InstNext &inst) = 0;
+
+  virtual std::string posByte(InstError &inst) = 0;
 
   virtual std::string extInt(InstNextVar &inst) = 0;
   virtual std::string extFlt(InstNextVar &inst) = 0;
@@ -170,6 +173,7 @@ public:
   virtual std::string regStr_regStr_immStr(InstStrCat &inst) = 0;
 
   virtual std::string regStr(InstInkey &inst) = 0;
+  virtual std::string regInt(InstMem &inst) = 0;
 
   virtual std::string regInt_regInt(InstNeg &inst) = 0;
   virtual std::string regInt_extInt(InstNeg &inst) = 0;
@@ -381,6 +385,8 @@ public:
   virtual std::string ptrInt_negWord(InstTo &inst) = 0;
   virtual std::string ptrInt_regInt(InstTo &inst) = 0;
   virtual std::string ptrInt_extInt(InstTo &inst) = 0;
+  virtual std::string ptrInt_regFlt(InstTo &inst) = 0;
+  virtual std::string ptrInt_extFlt(InstTo &inst) = 0;
   virtual std::string ptrFlt_posByte(InstTo &inst) = 0;
   virtual std::string ptrFlt_negByte(InstTo &inst) = 0;
   virtual std::string ptrFlt_posWord(InstTo &inst) = 0;

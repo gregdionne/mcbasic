@@ -153,6 +153,8 @@ void ExprConstTabulator::operate(ArrayIndicesExpr &e) {
   }
 }
 
+void ExprConstTabulator::operate(PrintTabExpr &e) { e.tabstop->operate(this); }
+
 void ExprConstTabulator::operate(ShiftExpr &e) { e.expr->operate(this); }
 
 void ExprConstTabulator::operate(NegatedExpr &e) { e.expr->operate(this); }

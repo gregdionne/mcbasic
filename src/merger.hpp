@@ -52,6 +52,7 @@ public:
   void operate(PeekExpr &e) override;
   void operate(RelationalExpr &e) override;
   void operate(PointExpr &e) override;
+  void operate(PrintTabExpr &e) override;
 
   void merge(std::unique_ptr<NumericExpr> &expr);
   void merge(std::unique_ptr<StringExpr> &expr);

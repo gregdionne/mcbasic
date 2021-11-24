@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -77,28 +79,28 @@ argv	.block	10
 
 LINE_10
 
-	; PRINT "             HURKLE"
+	; PRINT "             HURKLE\r";
 
 	jsr	pr_ss
 	.text	20, "             HURKLE\r"
 
 LINE_20
 
-	; PRINT "     (C) CREATIVE COMPUTING"
+	; PRINT "     (C) CREATIVE COMPUTING\r";
 
 	jsr	pr_ss
 	.text	28, "     (C) CREATIVE COMPUTING\r"
 
 LINE_25
 
-	; PRINT "ADAPTED FOR MC-10 BY CHRIS HAVEL"
+	; PRINT "ADAPTED FOR MC-10 BY CHRIS HAVEL\r";
 
 	jsr	pr_ss
 	.text	33, "ADAPTED FOR MC-10 BY CHRIS HAVEL\r"
 
 LINE_30
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -121,14 +123,14 @@ LINE_120
 
 LINE_210
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_220
 
-	; PRINT "A HURKLE IS HIDING ON A";STR$(G);" BY";STR$(G);" "
+	; PRINT "A HURKLE IS HIDING ON A";STR$(G);" BY";STR$(G);" \r";
 
 	jsr	pr_ss
 	.text	23, "A HURKLE IS HIDING ON A"
@@ -151,35 +153,35 @@ LINE_220
 
 LINE_225
 
-	; PRINT "GRID. HOMEBASE ON THE GRID IS"
+	; PRINT "GRID. HOMEBASE ON THE GRID IS\r";
 
 	jsr	pr_ss
 	.text	30, "GRID. HOMEBASE ON THE GRID IS\r"
 
 LINE_230
 
-	; PRINT "POINT 0,0 AND ANY GRIDPOINT IS A"
+	; PRINT "POINT 0,0 AND ANY GRIDPOINT IS A\r";
 
 	jsr	pr_ss
 	.text	33, "POINT 0,0 AND ANY GRIDPOINT IS A\r"
 
 LINE_240
 
-	; PRINT "PAIR OF WHOLE NUMBERS SEPARATED"
+	; PRINT "PAIR OF WHOLE NUMBERS SEPARATED\r";
 
 	jsr	pr_ss
 	.text	32, "PAIR OF WHOLE NUMBERS SEPARATED\r"
 
 LINE_245
 
-	; PRINT "BY A COMMA. TRY TO GUESS THE"
+	; PRINT "BY A COMMA. TRY TO GUESS THE\r";
 
 	jsr	pr_ss
 	.text	29, "BY A COMMA. TRY TO GUESS THE\r"
 
 LINE_250
 
-	; PRINT "HURKLE'S GRIDPOINT. YOU GET";STR$(N);" "
+	; PRINT "HURKLE'S GRIDPOINT. YOU GET";STR$(N);" \r";
 
 	jsr	pr_ss
 	.text	27, "HURKLE'S GRIDPOINT. YOU GET"
@@ -194,35 +196,35 @@ LINE_250
 
 LINE_255
 
-	; PRINT "TRIES. AFTER EACH TRY, I WILL"
+	; PRINT "TRIES. AFTER EACH TRY, I WILL\r";
 
 	jsr	pr_ss
 	.text	30, "TRIES. AFTER EACH TRY, I WILL\r"
 
 LINE_260
 
-	; PRINT "TELL YOU THE APPROXIMATE"
+	; PRINT "TELL YOU THE APPROXIMATE\r";
 
 	jsr	pr_ss
 	.text	25, "TELL YOU THE APPROXIMATE\r"
 
 LINE_265
 
-	; PRINT "DIRECTION TO GO TO LOOK FOR THE"
+	; PRINT "DIRECTION TO GO TO LOOK FOR THE\r";
 
 	jsr	pr_ss
 	.text	32, "DIRECTION TO GO TO LOOK FOR THE\r"
 
 LINE_270
 
-	; PRINT "HURKLE."
+	; PRINT "HURKLE.\r";
 
 	jsr	pr_ss
 	.text	8, "HURKLE.\r"
 
 LINE_280
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -328,7 +330,7 @@ LINE_360
 
 LINE_370
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -344,14 +346,14 @@ LINE_380
 
 LINE_410
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_420
 
-	; PRINT "SORRY, THAT'S";STR$(N);" GUESSES."
+	; PRINT "SORRY, THAT'S";STR$(N);" GUESSES.\r";
 
 	jsr	pr_ss
 	.text	13, "SORRY, THAT'S"
@@ -366,7 +368,7 @@ LINE_420
 
 LINE_430
 
-	; PRINT "THE HURKLE IS AT ";STR$(A);" ,";STR$(B);" "
+	; PRINT "THE HURKLE IS AT ";STR$(A);" ,";STR$(B);" \r";
 
 	jsr	pr_ss
 	.text	17, "THE HURKLE IS AT "
@@ -389,28 +391,28 @@ LINE_430
 
 LINE_440
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_450
 
-	; PRINT "LET'S PLAY AGAIN. THE HURKLE IS"
+	; PRINT "LET'S PLAY AGAIN. THE HURKLE IS\r";
 
 	jsr	pr_ss
 	.text	32, "LET'S PLAY AGAIN. THE HURKLE IS\r"
 
 LINE_455
 
-	; PRINT "HIDING."
+	; PRINT "HIDING.\r";
 
 	jsr	pr_ss
 	.text	8, "HIDING.\r"
 
 LINE_460
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -428,14 +430,14 @@ LINE_500
 
 LINE_510
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_520
 
-	; PRINT "YOU FOUND HIM IN";STR$(K);" GUESSES!"
+	; PRINT "YOU FOUND HIM IN";STR$(K);" GUESSES!\r";
 
 	jsr	pr_ss
 	.text	16, "YOU FOUND HIM IN"
@@ -558,7 +560,7 @@ LINE_710
 
 LINE_720
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -1333,7 +1335,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3

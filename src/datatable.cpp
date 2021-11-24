@@ -18,13 +18,18 @@ void DataTable::testPurity() {
   maxValue = -std::numeric_limits<double>::infinity();
   for (const auto &entry : data) {
     try {
-      double d = std::stod(entry);
       pureStrings = false;
+      std::size_t pos;
+      double d = std::stod(entry, &pos);
+      pureNumeric &= pos == entry.length();
       if (d != static_cast<double>(static_cast<int>(d))) {
         pureInteger = false;
       }
       minValue = std::min(minValue, d);
       maxValue = std::max(maxValue, d);
+      if (minValue < -8388608 || maxValue > 8388607) {
+        pureNumeric = false;
+      }
     } catch (...) {
       pureNumeric = false;
     }

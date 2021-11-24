@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -82,7 +84,7 @@ LINE_0
 
 	jsr	cls
 
-	; PRINT "WAIT..."
+	; PRINT "WAIT...\r";
 
 	jsr	pr_ss
 	.text	8, "WAIT...\r"
@@ -382,7 +384,7 @@ LINE_9
 
 LINE_20
 
-	; I$="GENERATION: 0              À"
+	; I$="GENERATION: 0              \xC0"
 
 	jsr	ld_sr1_ss
 	.text	28, "GENERATION: 0              \xC0"
@@ -1162,7 +1164,7 @@ LINE_530
 
 	jsr	cls
 
-	; PRINT TAB(6);"JOHN CONWAY'S LIFE"
+	; PRINT TAB(6);"JOHN CONWAY'S LIFE\r";
 
 	ldab	#6
 	jsr	prtab_pb
@@ -1172,7 +1174,7 @@ LINE_530
 
 LINE_535
 
-	; PRINT TAB(8);"FOR THE MC-10"
+	; PRINT TAB(8);"FOR THE MC-10\r";
 
 	ldab	#8
 	jsr	prtab_pb
@@ -1180,7 +1182,7 @@ LINE_535
 	jsr	pr_ss
 	.text	14, "FOR THE MC-10\r"
 
-	; PRINT TAB(8);"BY JIM GERRIE"
+	; PRINT TAB(8);"BY JIM GERRIE\r";
 
 	ldab	#8
 	jsr	prtab_pb
@@ -1188,12 +1190,12 @@ LINE_535
 	jsr	pr_ss
 	.text	14, "BY JIM GERRIE\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "RUN THE R PENTOMINO (Y/N)?"
+	; PRINT "RUN THE R PENTOMINO (Y/N)?\r";
 
 	jsr	pr_ss
 	.text	27, "RUN THE R PENTOMINO (Y/N)?\r"
@@ -1307,12 +1309,12 @@ LINE_560
 
 LINE_565
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "RUN THE GLIDER (Y/N)?"
+	; PRINT "RUN THE GLIDER (Y/N)?\r";
 
 	jsr	pr_ss
 	.text	22, "RUN THE GLIDER (Y/N)?\r"
@@ -1777,7 +1779,7 @@ LINE_616
 	ldab	#30
 	jsr	to_ip_pb
 
-	; PRINT "€";
+	; PRINT "\x80";
 
 	jsr	pr_ss
 	.text	1, "\x80"
@@ -2859,7 +2861,9 @@ _panic
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3

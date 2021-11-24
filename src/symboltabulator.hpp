@@ -20,8 +20,12 @@ public:
   void operate(StringVariableExpr &e) override;
   void operate(NumericArrayExpr &e) override;
   void operate(StringArrayExpr &e) override;
-  static void addEntry(std::vector<Symbol> &table, std::string &symbolName,
-                       std::size_t numDims);
+  void addEntry(std::vector<Symbol> &table, std::string &symbolName,
+                std::size_t numDims);
+  void setLineNumber(int line) { lineNumber = line; }
+
+private:
+  int lineNumber;
 };
 
 class StatementSymbolTabulator : public StatementOp {
@@ -37,6 +41,13 @@ public:
   void operate(Let &s) override;
   void operate(For &s) override;
   void operate(Input &s) override;
+  void setLineNumber(int line) {
+    lineNumber = line;
+    ste.setLineNumber(line);
+  }
+
+private:
+  int lineNumber = 0;
 };
 
 class SymbolTabulator : public ProgramOp {

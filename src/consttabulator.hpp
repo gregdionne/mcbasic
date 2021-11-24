@@ -24,6 +24,7 @@ public:
   void operate(NumericConstantExpr &e) override;
   void operate(NumericArrayExpr &e) override;
   void operate(ArrayIndicesExpr &e) override;
+  void operate(PrintTabExpr &e) override;
   void operate(NegatedExpr &e) override;
   void operate(PowerExpr &e) override;
   void operate(IntegerDivisionExpr &e) override;

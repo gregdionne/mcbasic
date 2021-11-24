@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "constants.hpp"
 #include "expression.hpp"
 #include "symboltable.hpp"
 
@@ -38,6 +39,7 @@ class Set;
 class Reset;
 class Cls;
 class Sound;
+class Error;
 
 class StatementOp {
 public:
@@ -67,6 +69,7 @@ public:
   virtual void operate(Reset & /*statement*/) {}
   virtual void operate(Cls & /*statement*/) {}
   virtual void operate(Sound & /*statement*/) {}
+  virtual void operate(Error & /*statement*/) {}
 };
 
 // AST structure for statements
@@ -295,4 +298,10 @@ public:
   std::string statementName() override { return "SOUND"; }
 };
 
+class Error : public Statement {
+public:
+  std::unique_ptr<NumericExpr> errorCode;
+  void operate(StatementOp *op) override { op->operate(*this); }
+  std::string statementName() override { return "ERROR"; }
+};
 #endif

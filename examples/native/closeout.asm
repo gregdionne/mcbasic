@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -644,7 +646,7 @@ LINE_13
 	ldab	#3
 	jsr	ld_ip_pb
 
-	; LN$="àò®∏Ë¯"
+	; LN$="\x88\x98\xA8\xB8\xE8\xF8"
 
 	jsr	ld_sr1_ss
 	.text	6, "\x88\x98\xA8\xB8\xE8\xF8"
@@ -775,7 +777,7 @@ LINE_17
 
 LINE_18
 
-	; PRINT @SHIFT(J,5)+32, "‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹";
+	; PRINT @SHIFT(J,5)+32, "\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC";
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -797,7 +799,7 @@ LINE_19
 
 	jsr	next
 
-	; PRINT "Ä";
+	; PRINT "\x80";
 
 	jsr	pr_ss
 	.text	1, "\x80"
@@ -824,7 +826,7 @@ LINE_20
 
 	jsr	step_ip_ir1
 
-	; PRINT @I, "√";
+	; PRINT @I, "\xC3";
 
 	ldx	#INTVAR_I
 	jsr	prat_ix
@@ -832,7 +834,7 @@ LINE_20
 	jsr	pr_ss
 	.text	1, "\xC3"
 
-	; PRINT @I+21, "√";
+	; PRINT @I+21, "\xC3\xF0";
 
 	ldx	#INTVAR_I
 	jsr	ld_ir1_ix
@@ -996,7 +998,7 @@ LINE_24
 
 LINE_25
 
-	; PRINT @A+J, "√";
+	; PRINT @A+J, "\xC3";
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix
@@ -1023,7 +1025,7 @@ LINE_25
 	ldab	#1
 	jsr	sub_ix_ix_pb
 
-	; PRINT @375, "time"
+	; PRINT @375, "time\r";
 
 	ldd	#375
 	jsr	prat_pw
@@ -1735,7 +1737,7 @@ LINE_39
 
 LINE_40
 
-	; PRINT @247, STR$(T);" "
+	; PRINT @247, STR$(T);" \r";
 
 	ldab	#247
 	jsr	prat_pb
@@ -3204,7 +3206,7 @@ LINE_75
 	jsr	pr_ss
 	.text	6, "score:"
 
-	; PRINT @247, STR$(T);" "
+	; PRINT @247, STR$(T);" \r";
 
 	ldab	#247
 	jsr	prat_pb
@@ -3231,7 +3233,7 @@ LINE_76
 	jsr	pr_ss
 	.text	5, "high:"
 
-	; PRINT @311, STR$(HS);" "
+	; PRINT @311, STR$(HS);" \r";
 
 	ldd	#311
 	jsr	prat_pw
@@ -3424,7 +3426,7 @@ LINE_90
 	ldx	#FLTVAR_T
 	jsr	add_fx_fx_fr1
 
-	; PRINT @247, STR$(T);" "
+	; PRINT @247, STR$(T);" \r";
 
 	ldab	#247
 	jsr	prat_pb
@@ -3652,7 +3654,7 @@ LINE_310
 
 LINE_311
 
-	; PRINT @Q*J, "‹";
+	; PRINT @Q*J, "\xDC";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3687,7 +3689,7 @@ LINE_311
 	ldx	#LINE_312
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @(Q*J)+Q, "Ä";
+	; PRINT @(Q*J)+Q, "\x80";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3727,7 +3729,7 @@ LINE_312
 	ldx	#LINE_315
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @(Q*J)-Q, "Ä";
+	; PRINT @(Q*J)-Q, "\x80";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3790,7 +3792,7 @@ LINE_320
 
 LINE_321
 
-	; PRINT @(Q*J)+21, "‹";
+	; PRINT @(Q*J)+21, "\xDC";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3828,7 +3830,7 @@ LINE_321
 	ldx	#LINE_322
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @(Q*J)+21+Q, "Ä";
+	; PRINT @(Q*J)+21+Q, "\x80";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3871,7 +3873,7 @@ LINE_322
 	ldx	#LINE_325
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @(Q*J)+21-Q, "Ä";
+	; PRINT @(Q*J)+21-Q, "\x80";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3902,7 +3904,7 @@ LINE_400
 
 	jsr	cls
 
-	; PRINT TAB(12);"closeout!"
+	; PRINT TAB(12);"closeout!\r";
 
 	ldab	#12
 	jsr	prtab_pb
@@ -3912,7 +3914,7 @@ LINE_400
 
 LINE_410
 
-	; PRINT TAB(10);"BY L. L. BEH"
+	; PRINT TAB(10);"BY L. L. BEH\r";
 
 	ldab	#10
 	jsr	prtab_pb
@@ -3922,7 +3924,7 @@ LINE_410
 
 LINE_420
 
-	; PRINT TAB(6);"COMPUTE! MARCH 1983"
+	; PRINT TAB(6);"COMPUTE! MARCH 1983\r";
 
 	ldab	#6
 	jsr	prtab_pb
@@ -3932,75 +3934,75 @@ LINE_420
 
 LINE_430
 
-	; PRINT "  MC-10 EDITS JIM GERRIE 2020"
+	; PRINT "  MC-10 EDITS JIM GERRIE 2020\r";
 
 	jsr	pr_ss
 	.text	30, "  MC-10 EDITS JIM GERRIE 2020\r"
 
 LINE_435
 
-	; PRINT " USING MCBASIC BY GREG DIONNE"
+	; PRINT " USING MCBASIC BY GREG DIONNE\r";
 
 	jsr	pr_ss
 	.text	30, " USING MCBASIC BY GREG DIONNE\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_440
 
-	; PRINT "THE OBJECT OF 'CLOSEOUT' IS TO"
+	; PRINT "THE OBJECT OF 'CLOSEOUT' IS TO\r";
 
 	jsr	pr_ss
 	.text	31, "THE OBJECT OF 'CLOSEOUT' IS TO\r"
 
 LINE_441
 
-	; PRINT "SNATCH UP AS MANY SALE ITEMS"
+	; PRINT "SNATCH UP AS MANY SALE ITEMS\r";
 
 	jsr	pr_ss
 	.text	29, "SNATCH UP AS MANY SALE ITEMS\r"
 
 LINE_442
 
-	; PRINT "AS POSSIBLE WHILE EVADING THE"
+	; PRINT "AS POSSIBLE WHILE EVADING THE\r";
 
 	jsr	pr_ss
 	.text	30, "AS POSSIBLE WHILE EVADING THE\r"
 
 LINE_443
 
-	; PRINT "HOSTILE BARGAIN HUNTERS. IF"
+	; PRINT "HOSTILE BARGAIN HUNTERS. IF\r";
 
 	jsr	pr_ss
 	.text	28, "HOSTILE BARGAIN HUNTERS. IF\r"
 
 LINE_444
 
-	; PRINT "THEY GET TOO CLOSE, USE YOUR"
+	; PRINT "THEY GET TOO CLOSE, USE YOUR\r";
 
 	jsr	pr_ss
 	.text	29, "THEY GET TOO CLOSE, USE YOUR\r"
 
 LINE_445
 
-	; PRINT "'SHOVE' TO CHASE THEM BACK TO"
+	; PRINT "'SHOVE' TO CHASE THEM BACK TO\r";
 
 	jsr	pr_ss
 	.text	30, "'SHOVE' TO CHASE THEM BACK TO\r"
 
 LINE_446
 
-	; PRINT "THE TOP FLOOR. USE wasd TO MOVE"
+	; PRINT "THE TOP FLOOR. USE wasd TO MOVE\r";
 
 	jsr	pr_ss
 	.text	32, "THE TOP FLOOR. USE wasd TO MOVE\r"
 
 LINE_447
 
-	; PRINT "AND space TO SHOVE."
+	; PRINT "AND space TO SHOVE.\r";
 
 	jsr	pr_ss
 	.text	20, "AND space TO SHOVE.\r"
@@ -5484,7 +5486,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3
@@ -6894,7 +6898,19 @@ sound_ir1_ir2			; numCalls = 9
 step_ip_ir1			; numCalls = 7
 	.module	modstep_ip_ir1
 	tsx
+	ldd	10,x
+	beq	_zero
 	ldab	r1
+	bpl	_nonzero
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+_zero
+	ldab	r1
+_nonzero
 	stab	10,x
 	ldd	r1+1
 	std	11,x

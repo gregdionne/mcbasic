@@ -401,6 +401,28 @@ std::string NativeImplementation::ptrInt_extInt(InstTo &inst) {
   return tasm.source();
 }
 
+std::string NativeImplementation::ptrInt_regFlt(InstTo &inst) {
+  Assembler tasm;
+  inst.dependencies.insert(inst.generateLines ? "mdtobcgl" : "mdtobc");
+  tasm.ldab(inst.generateLines ? "#13" : "#11");
+  tasm.jmp("to");
+  return tasm.source();
+}
+
+std::string NativeImplementation::ptrInt_extFlt(InstTo &inst) {
+  Assembler tasm;
+  inst.dependencies.insert(inst.generateLines ? "mdtonatgl" : "mdtonat");
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("r1");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("r1+1");
+  tasm.ldd(inst.arg2->fract());
+  tasm.std("r1+3");
+  tasm.ldab(inst.generateLines ? "#13" : "#11");
+  tasm.jmp("to");
+  return tasm.source();
+}
+
 std::string NativeImplementation::ptrFlt_posByte(InstTo &inst) {
   Assembler tasm;
   inst.dependencies.insert(inst.generateLines ? "mdtonatgl" : "mdtonat");
@@ -474,6 +496,7 @@ std::string NativeImplementation::ptrFlt_extInt(InstTo &inst) {
   tasm.jmp("to");
   return tasm.source();
 }
+
 std::string NativeImplementation::ptrFlt_regFlt(InstTo &inst) {
   Assembler tasm;
   inst.dependencies.insert(inst.generateLines ? "mdtonatgl" : "mdtonat");
@@ -502,7 +525,21 @@ std::string NativeImplementation::ptrInt_regInt(InstStep &inst) {
   Assembler tasm;
   tasm.tsx();
 
+  tasm.ldd(std::to_string(offset) + ",x");
+  tasm.beq("_zero");
   tasm.ldab(inst.arg2->sbyte());
+  tasm.bpl("_nonzero");
+
+  tasm.ldd(std::to_string(offset - 2) + ",x");
+  tasm.addd("#1");
+  tasm.std(std::to_string(offset - 2) + ",x");
+  tasm.ldab(std::to_string(offset - 3) + ",x");
+  tasm.adcb("#0");
+  tasm.stab(std::to_string(offset - 3) + ",x");
+
+  tasm.label("_zero");
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.label("_nonzero");
   tasm.stab(std::to_string(offset) + ",x");
 
   tasm.ldd(inst.arg2->lword());

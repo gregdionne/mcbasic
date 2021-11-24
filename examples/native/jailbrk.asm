@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -2894,7 +2896,7 @@ LINE_150
 	ldab	#2
 	jsr	ld_ix_pb
 
-	; M$="^^^€€€€"
+	; M$="^^^\x80\x80\x80\x80"
 
 	jsr	ld_sr1_ss
 	.text	7, "^^^\x80\x80\x80\x80"
@@ -3314,7 +3316,7 @@ LINE_300
 	ldab	#3
 	jsr	ld_ix_pb
 
-	; PRINT @SHIFT(J,5)+6, "ïïïïïïïïïïïïïïïïïïï";
+	; PRINT @SHIFT(J,5)+6, "\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF";
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -3332,7 +3334,7 @@ LINE_300
 
 LINE_310
 
-	; PRINT @SHIFT(J+1,5)+6, "ï€€€€€€€€€€€€€€€€€ï";
+	; PRINT @SHIFT(J+1,5)+6, "\xEF\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xEF";
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -3353,7 +3355,7 @@ LINE_310
 
 LINE_320
 
-	; PRINT @SHIFT(J+2,5)+6, "ï€€€€€€€€€€€€€€€€€ï";
+	; PRINT @SHIFT(J+2,5)+6, "\xEF\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xEF";
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -3374,7 +3376,7 @@ LINE_320
 
 LINE_330
 
-	; PRINT @SHIFT(J+3,5)+6, "ïïïïïïïïïïïïïïïïïïï";
+	; PRINT @SHIFT(J+3,5)+6, "\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF";
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -3806,7 +3808,7 @@ LINE_1000
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT @480,
+	; PRINT @480, "\r";
 
 	ldd	#480
 	jsr	prat_pw
@@ -3821,7 +3823,7 @@ LINE_1000
 
 LINE_1010
 
-	; PRINT " BY ROLAND STOKES & JIM GERRIE"
+	; PRINT " BY ROLAND STOKES & JIM GERRIE\r";
 
 	jsr	pr_ss
 	.text	31, " BY ROLAND STOKES & JIM GERRIE\r"
@@ -3841,42 +3843,42 @@ LINE_1020
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_1030
 
-	; PRINT "YOU HAVE CAPTURED SOME EVIL"
+	; PRINT "YOU HAVE CAPTURED SOME EVIL\r";
 
 	jsr	pr_ss
 	.text	28, "YOU HAVE CAPTURED SOME EVIL\r"
 
 LINE_1040
 
-	; PRINT "ALIEN GENERALS. HOWEVER THEIR"
+	; PRINT "ALIEN GENERALS. HOWEVER THEIR\r";
 
 	jsr	pr_ss
 	.text	30, "ALIEN GENERALS. HOWEVER THEIR\r"
 
 LINE_1050
 
-	; PRINT "SOLDIERS ARE ATTEMPTING TO FREE"
+	; PRINT "SOLDIERS ARE ATTEMPTING TO FREE\r";
 
 	jsr	pr_ss
 	.text	32, "SOLDIERS ARE ATTEMPTING TO FREE\r"
 
 LINE_1060
 
-	; PRINT "THEM BY WARPING INTO THE AREA"
+	; PRINT "THEM BY WARPING INTO THE AREA\r";
 
 	jsr	pr_ss
 	.text	30, "THEM BY WARPING INTO THE AREA\r"
 
 LINE_1070
 
-	; PRINT "AND ATTACKING THE JAIL."
+	; PRINT "AND ATTACKING THE JAIL.\r";
 
 	jsr	pr_ss
 	.text	24, "AND ATTACKING THE JAIL.\r"
@@ -3896,49 +3898,49 @@ LINE_1080
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_1090
 
-	; PRINT "DEFEND THE JAIL. YOU CONTROL A"
+	; PRINT "DEFEND THE JAIL. YOU CONTROL A\r";
 
 	jsr	pr_ss
 	.text	31, "DEFEND THE JAIL. YOU CONTROL A\r"
 
 LINE_1100
 
-	; PRINT "MISSILE LAUNCHER WHICH CAN FIRE"
+	; PRINT "MISSILE LAUNCHER WHICH CAN FIRE\r";
 
 	jsr	pr_ss
 	.text	32, "MISSILE LAUNCHER WHICH CAN FIRE\r"
 
 LINE_1110
 
-	; PRINT "6 SHOTS AT A TIME. WHEN HIT,"
+	; PRINT "6 SHOTS AT A TIME. WHEN HIT,\r";
 
 	jsr	pr_ss
 	.text	29, "6 SHOTS AT A TIME. WHEN HIT,\r"
 
 LINE_1120
 
-	; PRINT "THE ENEMY WILL DIVE ON YOU."
+	; PRINT "THE ENEMY WILL DIVE ON YOU.\r";
 
 	jsr	pr_ss
 	.text	28, "THE ENEMY WILL DIVE ON YOU.\r"
 
 LINE_1130
 
-	; PRINT "HOLD THE GENERAL AS LONG AS YOU"
+	; PRINT "HOLD THE GENERAL AS LONG AS YOU\r";
 
 	jsr	pr_ss
 	.text	32, "HOLD THE GENERAL AS LONG AS YOU\r"
 
 LINE_1140
 
-	; PRINT "CAN BY KILLING SOLDIERS."
+	; PRINT "CAN BY KILLING SOLDIERS.\r";
 
 	jsr	pr_ss
 	.text	25, "CAN BY KILLING SOLDIERS.\r"
@@ -3950,17 +3952,17 @@ LINE_1150
 	ldx	#LINE_1500
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3980,71 +3982,71 @@ LINE_1200
 	ldx	#LINE_2000
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_1210
 
-	; PRINT "  A     = LEFT."
+	; PRINT "  A     = LEFT.\r";
 
 	jsr	pr_ss
 	.text	16, "  A     = LEFT.\r"
 
 LINE_1220
 
-	; PRINT "  D     = RIGHT."
+	; PRINT "  D     = RIGHT.\r";
 
 	jsr	pr_ss
 	.text	17, "  D     = RIGHT.\r"
 
 LINE_1230
 
-	; PRINT "  SPACE = FIRE."
+	; PRINT "  SPACE = FIRE.\r";
 
 	jsr	pr_ss
 	.text	16, "  SPACE = FIRE.\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_1240
 
-	; PRINT "EACH GENERAL SCORES 50."
+	; PRINT "EACH GENERAL SCORES 50.\r";
 
 	jsr	pr_ss
 	.text	24, "EACH GENERAL SCORES 50.\r"
 
 LINE_1250
 
-	; PRINT "EACH SOLDIER SCORES 20."
+	; PRINT "EACH SOLDIER SCORES 20.\r";
 
 	jsr	pr_ss
 	.text	24, "EACH SOLDIER SCORES 20.\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_1260
 
-	; PRINT "EACH GENERAL THAT IS KILLED"
+	; PRINT "EACH GENERAL THAT IS KILLED\r";
 
 	jsr	pr_ss
 	.text	28, "EACH GENERAL THAT IS KILLED\r"
 
 LINE_1270
 
-	; PRINT "WILL SWITCH YOU TO A NEW JAIL"
+	; PRINT "WILL SWITCH YOU TO A NEW JAIL\r";
 
 	jsr	pr_ss
 	.text	30, "WILL SWITCH YOU TO A NEW JAIL\r"
@@ -4058,17 +4060,17 @@ LINE_1280
 
 LINE_1290
 
-	; PRINT "YOU GET AN ADDED LIFE FOR EVERY"
+	; PRINT "YOU GET AN ADDED LIFE FOR EVERY\r";
 
 	jsr	pr_ss
 	.text	32, "YOU GET AN ADDED LIFE FOR EVERY\r"
 
-	; PRINT "NEW JAIL."
+	; PRINT "NEW JAIL.\r";
 
 	jsr	pr_ss
 	.text	10, "NEW JAIL.\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -4138,7 +4140,7 @@ LINE_1510
 
 LINE_1520
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -5300,7 +5302,9 @@ _panic
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3

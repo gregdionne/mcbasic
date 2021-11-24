@@ -56,14 +56,20 @@ Once you have your basic program, you may compile it via:
 
 Where [options] can be:
 
-Option         | Description
-------         | -----------
-&#8209;native  | use native instructions instead of creating bytecode.  This improves execution speed at the cost of increased codesize.  Many programs are too big to use native.
-&#8209;Wfloat  | warn when the compiler promotes variables to floating-point&#185;.   (default)  [-Wno-float to disable].
-&#8209;g       | generate debug instructions to provide the most recent line number when an error is encountered.
-&#8209;list    | output a BASIC&#179; program listing after optimizations.
-&#8209;undoc   | enable compilation with undocumented opcodes.&#8308;
-&#8209;&#8209; | treat subsequent arguments as file input (so you can compile a file that starts with "-", like "-filename.bas")
+Option            | Description
+----------------- | -----------
+&#8209;native     | use native instructions instead of creating bytecode.  This improves execution speed at the cost of increased codesize.  Many programs are too big to use native.
+&#8209;Wfloat     | warn when a variable is promoted floating-point&#185;.  (default)  [-Wno-float to disable].
+&#8209;Wduplicate | warn when a duplicate line number is seen.  (default)  [-Wno-duplicate to disable].
+&#8209;Wunreached | warn when statements cannot be reached.  (default)  [-Wno-unreached to disable].
+&#8209;Wuninit    | warn when a variable is used but never initialized anywhere.  (default)  [-Wno-uninit to disable].
+&#8209;Wbranch    | warn when conditional branches are pruned.  (default)  [-Wno-branch to disable].
+&#8209;g          | generate debug instructions to provide the most recent line number when an error is encountered.
+&#8209;list       | output a BASIC&#179; program listing after optimizations.
+&#8209;undoc      | enable compilation with undocumented opcodes.&#8308;
+&#8209;el         | allow empty line number specifications in ON, GO, and GOSUB statements.&#8309;
+&#8209;ul         | do not generate compilation errors on unlisted line numbers.&#8310;
+&#8209;&#8209;    | treat subsequent arguments as file input (so you can compile a file that starts with "-", like "-filename.bas")
 
 It will then generate an assembly file: <yourprogram.asm>.
 
@@ -72,7 +78,7 @@ You can then run your favorite assembler so long as it supports [Telemark](http:
 `tasm6801 <yourprogram.asm>`
 
 If you use [this](https://github.com/gregdionne/tasm6801) version, it will generate a .C10 suitable for loading in an emulator.
-I'll eventually&#8309; bundle the assembler into the compiler as well, so this step may be unnecessary in the future.
+I'll eventually&#8311; bundle the assembler into the compiler as well, so this step may be unnecessary in the future.
 
 ### Notes
 
@@ -84,5 +90,9 @@ I'll eventually&#8309; bundle the assembler into the compiler as well, so this s
 
 &#8308; Currently only the undocumented negate-with-carry instructions.  The MC6801 and MC6809 both implement `NGCA` (opcode $42), `NGCB` (opcode $52), `NGC <indexed>` (opcode $62), and `NGC <extended>` (opcode $72).  These permit negation of the "D" register in four cycles by issuing a `NEGB` (opcode $50) followed by `NGCA` (opcode $42).  They can also negate multi-byte numbers in-place.&#178;  Use caution when using the &#8209;undoc switch, as many 6801 emulators fail to implement these instructions correctly.
 
-&#8309; The code in this repository was written in brief spurts over the course of perhaps fifteen years.  It's been largely relegated to a minor side-project as time and interest have permitted.  Originally in K&R C, it was ported to ANSI C, then C++ (98).  I've given it just enough treatment to work in C++14, but alas, C++20 is out as of this writing!  It needs to be upgraded to comply with more modern programming guidelines.  But perhaps, like MICROCOLOR BASIC itself, some of this code may bring you back to a simpler era.  Enjoy!
+&#8309; A significant number of MC-10 programs exploited the fact that a missing line number after a GOTO, GOSUB, or ON..GOTO or ON..GOSUB statement implicitly resolved to line number zero (0) in MICROCOLOR BASIC.  This enabled compact ON..GOTO and ON..GOSUB statements where unused branch indices could be conveniently skipped (or sent to line 0).  For example, a programmer could write `ON X GOTO 100,200,,300,,,,400,:GOTO 500` to branch to lines 100, 200, 0, 300, 0, 0, 0, 400, and 0 for values of X from 1-9, respectively; and to line 500 for other values of X. 
+
+&#8310; A runtime `?UL ERROR` will be generated instead.  This is intended to be used in conjunction with the `-el` compiler flag.  Use `-g` to diagnose where these errors occur.
+
+&#8311; The code in this repository was written in brief spurts over the course of perhaps fifteen years.  It's been largely relegated to a minor side-project as time and interest have permitted.  Originally in K&R C, it was ported to ANSI C, then C++ (98).  I've given it just enough treatment to work in C++14, but alas, C++20 is out as of this writing!  It needs to be upgraded to comply with more modern programming guidelines.  But perhaps, like MICROCOLOR BASIC itself, some of this code may bring you back to a simpler era.  Enjoy!
 

@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -90,7 +92,7 @@ LINE_0
 	ldd	#49151
 	jsr	poke_pw_ir1
 
-	; PRINT "PLEASE WAIT..."
+	; PRINT "PLEASE WAIT...\r";
 
 	jsr	pr_ss
 	.text	15, "PLEASE WAIT...\r"
@@ -172,7 +174,7 @@ LINE_10
 
 LINE_20
 
-	; PRINT @100, "BY KENNETH REIGHARD, JR."
+	; PRINT @100, "BY KENNETH REIGHARD, JR.\r";
 
 	ldab	#100
 	jsr	prat_pb
@@ -182,7 +184,7 @@ LINE_20
 
 LINE_30
 
-	; PRINT @130, "MC-10 VERSION BY JIM GERRIE"
+	; PRINT @130, "MC-10 VERSION BY JIM GERRIE\r";
 
 	ldab	#130
 	jsr	prat_pb
@@ -192,7 +194,7 @@ LINE_30
 
 LINE_40
 
-	; PRINT @268, "1. EASY"
+	; PRINT @268, "1. EASY\r";
 
 	ldd	#268
 	jsr	prat_pw
@@ -200,7 +202,7 @@ LINE_40
 	jsr	pr_ss
 	.text	8, "1. EASY\r"
 
-	; PRINT @300, "2. MEDIUM"
+	; PRINT @300, "2. MEDIUM\r";
 
 	ldd	#300
 	jsr	prat_pw
@@ -208,7 +210,7 @@ LINE_40
 	jsr	pr_ss
 	.text	10, "2. MEDIUM\r"
 
-	; PRINT @332, "3. HARD"
+	; PRINT @332, "3. HARD\r";
 
 	ldd	#332
 	jsr	prat_pw
@@ -804,7 +806,7 @@ LINE_220
 
 LINE_230
 
-	; PRINT @495, STR$(L);" €";
+	; PRINT @495, STR$(L);" \x80";
 
 	ldd	#495
 	jsr	prat_pw
@@ -1069,7 +1071,7 @@ LINE_265
 
 LINE_270
 
-	; IF (QQ$="") AND (N(H,V)=0) AND (L>0) THEN
+	; IF (QQ$="\r") AND (N(H,V)=0) AND (L>0) THEN
 
 	ldx	#STRVAR_QQ
 	jsr	ld_sr1_sx
@@ -1158,7 +1160,7 @@ LINE_270
 
 LINE_272
 
-	; IF (QQ$="") AND (N(H,V)=1) THEN
+	; IF (QQ$="\r") AND (N(H,V)=1) THEN
 
 	ldx	#STRVAR_QQ
 	jsr	ld_sr1_sx
@@ -3405,7 +3407,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3

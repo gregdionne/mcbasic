@@ -63,6 +63,8 @@ public:
   std::string ptrInt_negWord(InstTo &inst) override;
   std::string ptrInt_regInt(InstTo &inst) override;
   std::string ptrInt_extInt(InstTo &inst) override;
+  std::string ptrInt_regFlt(InstTo &inst) override;
+  std::string ptrInt_extFlt(InstTo &inst) override;
   std::string ptrFlt_posByte(InstTo &inst) override;
   std::string ptrFlt_negByte(InstTo &inst) override;
   std::string ptrFlt_posWord(InstTo &inst) override;

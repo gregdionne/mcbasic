@@ -31,10 +31,13 @@ public:
   std::string inherent(InstReturn &inst) override;
   std::string inherent(InstStop &inst) override;
   std::string inherent(InstCls &inst) override;
+  std::string inherent(InstPrComma &inst) override;
   std::string inherent(InstInputBuf &inst) override;
   std::string inherent(InstIgnoreExtra &inst) override;
   std::string inherent(InstRestore &inst) override;
   std::string inherent(InstNext &inst) override;
+
+  std::string posByte(InstError &inst) override;
 
   std::string extInt(InstNextVar &inst) override;
   std::string extFlt(InstNextVar &inst) override;
@@ -170,6 +173,8 @@ public:
   std::string regStr_regStr_immStr(InstStrCat &inst) override;
 
   std::string regStr(InstInkey &inst) override;
+
+  std::string regInt(InstMem &inst) override;
 
   std::string regInt_regInt(InstNeg &inst) override;
   std::string regInt_extInt(InstNeg &inst) override;

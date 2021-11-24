@@ -3,6 +3,7 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 #include "fetch.hpp"
+#include "options.hpp"
 #include "program.hpp"
 
 //  This file was originally a K&R C file.
@@ -18,7 +19,8 @@
 
 class Parser {
 public:
-  Parser(int c, char *v[]) : in(c, v) {}
+  Parser(int c, char *v[], Options &opts)
+      : in(c, v), emptyLineNumbers(opts.el), unlistedLineNumbers(opts.ul) {}
   Program parse();
   fetch in;
 
@@ -83,12 +85,17 @@ private:
   Statement *getSound();
   Statement *unimplementedKeyword();
   Statement *getStatement();
+
+  Statement *getError(uint8_t errorCode);
   void getLine(Program &p);
-  void getEndLine(Program &p);
+  void getEndLines(Program &p);
 
   std::unique_ptr<NumericExpr> numeric(Expr *expr);
   std::unique_ptr<NumericExpr> numeric(Expr *(Parser::*expr)());
   std::unique_ptr<StringExpr> string(Expr *expr);
   std::unique_ptr<StringExpr> string(Expr *(Parser::*expr)());
+
+  bool emptyLineNumbers = false;
+  bool unlistedLineNumbers = false;
 };
 #endif

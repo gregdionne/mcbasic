@@ -27,6 +27,7 @@ void StatementDataPruner::operate(If &s) {
   while (it != s.consequent.end()) {
     if (boperate(it->get(), this)) {
       it = s.consequent.erase(it);
+      result = false;
     } else {
       ++it;
     }

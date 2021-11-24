@@ -51,6 +51,7 @@ class InstAsc;
 class InstLen;
 class InstChr;
 class InstInkey;
+class InstMem;
 class InstAdd;
 class InstSub;
 class InstMul;
@@ -108,6 +109,7 @@ class InstReset;
 class InstStop;
 class InstPoke;
 class InstSound;
+class InstError;
 class InstBegin;
 class InstEnd;
 
@@ -156,6 +158,7 @@ public:
   virtual std::string operate(InstLen &inst) = 0;
   virtual std::string operate(InstChr &inst) = 0;
   virtual std::string operate(InstInkey &inst) = 0;
+  virtual std::string operate(InstMem &inst) = 0;
   virtual std::string operate(InstAdd &inst) = 0;
   virtual std::string operate(InstSub &inst) = 0;
   virtual std::string operate(InstMul &inst) = 0;
@@ -213,6 +216,7 @@ public:
   virtual std::string operate(InstStop &inst) = 0;
   virtual std::string operate(InstPoke &inst) = 0;
   virtual std::string operate(InstSound &inst) = 0;
+  virtual std::string operate(InstError &inst) = 0;
   virtual std::string operate(InstBegin &inst) = 0;
   virtual std::string operate(InstEnd &inst) = 0;
 };
@@ -300,6 +304,8 @@ public:
   bool isPtrInt_posByte() const;
   bool isPtrInt_posWord() const;
   bool isPtrInt_regInt() const;
+  bool isPtrInt_regFlt() const;
+  bool isPtrInt_extFlt() const;
   bool isRegFlt_extFlt() const;
   bool isRegFlt_extInt() const;
   bool isRegFlt_extStr() const;
@@ -933,6 +939,17 @@ public:
   }
 };
 
+class InstMem : public Instruction {
+public:
+  explicit InstMem(std::unique_ptr<AddressMode> dest)
+      : Instruction("mem", std::move(dest)) {
+    resultInt();
+  }
+  std::string operate(InstructionOp *iop) override {
+    return iop->operate(*this);
+  }
+};
+
 // Binary (promote float)
 class InstAdd : public Instruction {
 public:
@@ -1237,7 +1254,7 @@ public:
 
 class InstPrComma : public Instruction {
 public:
-  InstPrComma() : Instruction("prtab") {}
+  InstPrComma() : Instruction("prcomma") {}
   std::string operate(InstructionOp *iop) override {
     return iop->operate(*this);
   }
@@ -1539,6 +1556,15 @@ class InstSound : public Instruction {
 public:
   InstSound(std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2)
       : Instruction("sound", std::move(am1), std::move(am2)) {}
+  std::string operate(InstructionOp *iop) override {
+    return iop->operate(*this);
+  }
+};
+
+class InstError : public Instruction {
+public:
+  explicit InstError(std::unique_ptr<AddressMode> am)
+      : Instruction("error", std::move(am)) {}
   std::string operate(InstructionOp *iop) override {
     return iop->operate(*this);
   }

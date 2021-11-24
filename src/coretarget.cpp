@@ -3,6 +3,7 @@
 #include "coretarget.hpp"
 #include "fixedpoint.hpp"
 #include "library.hpp"
+#include "strescape.hpp"
 
 std::string CoreTarget::generateAssembly(DataTable &dataTable,
                                          ConstTable &constTable,
@@ -53,6 +54,7 @@ std::string CoreTarget::generateMicroColorConstants() {
   tasm.comment("Direct page equates");
   tasm.equ("DP_LNUM", "$E2", "current line in BASIC");
   tasm.equ("DP_TABW", "$E4", "current tab width on console");
+  tasm.equ("DP_LTAB", "$E5", "current last tab column");
   tasm.equ("DP_LPOS", "$E6", "current line position on console");
   tasm.equ("DP_LWID", "$E7", "current line width of console");
   tasm.comment("");
@@ -72,6 +74,7 @@ std::string CoreTarget::generateMicroColorConstants() {
   tasm.equ("R_ERROR", "$E238", "generate error and restore direct mode");
   tasm.equ("R_BREAK", "$E266", "generate break and restore direct mode");
   tasm.equ("R_RESET", "$E3EE", "setup stack and disable CONT");
+  tasm.equ("R_ENTER", "$E766", "emit carriage return to console");
   tasm.equ("R_SPACE", "$E7B9", "emit \" \" to console");
   tasm.equ("R_QUEST", "$E7BC", "emit \"?\" to console");
   tasm.equ("R_REDO", "$E7C1", "emit \"?REDO\" to console");

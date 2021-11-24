@@ -1,5 +1,6 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
+#include "branchchecker.hpp"
 #include "bytecodetarget.hpp"
 #include "compiler.hpp"
 #include "nativetarget.hpp"
@@ -12,7 +13,8 @@ int main(int argc, char *argv[]) {
   Options opts;
   opts.init(argc, argv);
 
-  Parser parser(argc, argv);
+  Parser parser(argc, argv, opts);
+
   Writer out(argc, argv);
 
   do {
@@ -21,12 +23,16 @@ int main(int argc, char *argv[]) {
     }
 
     Program p = parser.parse();
-    p.sortlines();
+    p.sortLines();
+    p.removeDuplicateLines(opts.Wduplicate);
+
+    BranchChecker bc(opts.ul);
+    bc.operate(p);
 
     DataTable dataTable;
     SymbolTable symbolTable;
     ConstTable constTable;
-    Optimizer o(dataTable, symbolTable, constTable, opts.Wfloat, opts.list);
+    Optimizer o(dataTable, symbolTable, constTable, opts);
     o.optimize(p);
 
     InstQueue q;
@@ -38,11 +44,12 @@ int main(int argc, char *argv[]) {
             ? std::unique_ptr<Target>(std::make_unique<NativeTarget>())
             : std::unique_ptr<Target>(std::make_unique<ByteCodeTarget>());
 
+    out.openNext();
     out.writeHeader();
 
     out.writeString(
         target->generateAssembly(dataTable, constTable, symbolTable, q, opts));
 
     out.close();
-  } while (parser.in.openNext() && out.openNext());
+  } while (parser.in.openNext());
 }

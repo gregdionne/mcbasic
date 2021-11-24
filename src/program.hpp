@@ -29,7 +29,8 @@ class Program {
 public:
   std::vector<std::unique_ptr<Line>> lines;
   void operate(ProgramOp *op) { op->operate(*this); }
-  void sortlines();
+  void sortLines();
+  void removeDuplicateLines(bool warn);
 };
 
 #endif

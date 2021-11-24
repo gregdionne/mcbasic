@@ -8,9 +8,19 @@
 
 #include <cstddef>
 
-static const char *const validOps[] = {"-Wfloat", "-Wno-float", "-g", "-list",
-                                       "-native", "-undoc",     "--"};
-static const bool exclusive[] = {true, false, false, false, false, false};
+static const char *const validOps[] = {"-native",     "-g",
+                                       "-list",       "-el",
+                                       "-ul",         "-undoc",
+                                       "-Wfloat",     "-Wno-float",
+                                       "-Wduplicate", "-Wno-duplicate",
+                                       "-Wunreached", "-Wno-unreached",
+                                       "-Wuninit",    "Wno-uninit",
+                                       "-Wbranch",    "-Wno-branch",
+                                       "--"};
+
+static const bool exclusive[] = {false, false, false, false, false, false,
+                                 true,  false, true,  false, true,  false,
+                                 true,  false, true,  false};
 
 void usage(char *argv[]) {
   fprintf(stderr, "usage: %s ", argv[0]);
@@ -54,9 +64,19 @@ void Options::process(int argc, char *argv[]) {
     native |= strcmp(argv[argcnt], "-native") == 0;
     g |= strcmp(argv[argcnt], "-g") == 0;
     list |= strcmp(argv[argcnt], "-list") == 0;
+    el |= strcmp(argv[argcnt], "-el") == 0;
+    ul |= strcmp(argv[argcnt], "-ul") == 0;
+    undoc |= strcmp(argv[argcnt], "-undoc") == 0;
     Wfloat |= strcmp(argv[argcnt], "-Wfloat") == 0;
     Wfloat &= !(strcmp(argv[argcnt], "-Wno-float") == 0);
-    undoc |= strcmp(argv[argcnt], "-undoc") == 0;
+    Wduplicate |= strcmp(argv[argcnt], "-Wduplicate") == 0;
+    Wduplicate &= !(strcmp(argv[argcnt], "-Wno-duplicate") == 0);
+    Wunreached |= strcmp(argv[argcnt], "-Wunreached") == 0;
+    Wunreached &= !(strcmp(argv[argcnt], "-Wno-unreached") == 0);
+    Wuninit |= strcmp(argv[argcnt], "-Wuninit") == 0;
+    Wuninit &= !(strcmp(argv[argcnt], "-Wno-uninit") == 0);
+    Wbranch |= strcmp(argv[argcnt], "-Wbranch") == 0;
+    Wbranch &= !(strcmp(argv[argcnt], "-Wno-branch") == 0);
     argcnt++;
   }
 

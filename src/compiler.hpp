@@ -60,6 +60,7 @@ public:
   void operate(Reset &s) override;
   void operate(Cls &s) override;
   void operate(Sound &s) override;
+  void operate(Error &s) override;
   ConstTable &constTable;
   SymbolTable &symbolTable;
   DataTable &dataTable;
@@ -120,6 +121,7 @@ public:
   void operate(MidExpr &e) override;
   void operate(PointExpr &e) override;
   void operate(InkeyExpr &e) override;
+  void operate(MemExpr &e) override;
   ConstTable &constTable;
   SymbolTable &symbolTable;
   InstQueue &queue;

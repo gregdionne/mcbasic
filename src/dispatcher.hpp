@@ -74,6 +74,7 @@ public:
   std::string operate(InstLen &inst) override;
   std::string operate(InstChr &inst) override;
   std::string operate(InstInkey &inst) override;
+  std::string operate(InstMem &inst) override;
   std::string operate(InstAdd &inst) override;
   std::string operate(InstSub &inst) override;
   std::string operate(InstMul &inst) override;
@@ -131,6 +132,7 @@ public:
   std::string operate(InstStop &inst) override;
   std::string operate(InstPoke &inst) override;
   std::string operate(InstSound &inst) override;
+  std::string operate(InstError &inst) override;
   std::string operate(InstBegin &inst) override;
   std::string operate(InstEnd &inst) override;
 

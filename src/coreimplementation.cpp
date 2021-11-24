@@ -105,6 +105,13 @@ std::string CoreImplementation::inherent(InstEnd &inst) {
   return tasm.source();
 }
 
+std::string CoreImplementation::posByte(InstError &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.jmp("R_ERROR");
+  return tasm.source();
+}
+
 std::string CoreImplementation::inherent(InstStop &inst) {
   Assembler tasm;
   preamble(tasm, inst);
@@ -1911,6 +1918,18 @@ std::string CoreImplementation::regStr(InstInkey &inst) {
   tasm.bne("_rts");
   tasm.staa(inst.arg1->sbyte());
   tasm.label("_rts");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt(InstMem &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.sts("tmp1");
+  tasm.ldd("tmp1");
+  tasm.subd("strfree");
+  tasm.std(inst.arg1->lword());
+  tasm.clr(inst.arg1->sbyte());
   tasm.rts();
   return tasm.source();
 }
@@ -4988,6 +5007,29 @@ std::string CoreImplementation::immStr(InstPr &inst) {
   return unimplemented(inst);
 }
 
+std::string CoreImplementation::inherent(InstPrComma &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.jsr("R_MKTAB");
+  tasm.beq("_screen");
+  tasm.ldab("DP_LPOS");
+  tasm.cmpb("DP_LTAB");
+  tasm.blo("_nxttab");
+  tasm.jmp("R_ENTER");
+  tasm.label("_screen");
+  tasm.ldab("DP_LPOS");
+  tasm.label("_nxttab");
+  tasm.subb("DP_TABW");
+  tasm.bhs("_nxttab");
+  tasm.label("_nxtspc");
+  tasm.jsr("R_SPACE");
+  tasm.incb();
+  tasm.beq("_nxtspc");
+  tasm.label("_rts");
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string CoreImplementation::regStr(InstPr &inst) {
   inst.dependencies.insert("mdstrrel");
   inst.dependencies.insert("mdprint");
@@ -7730,7 +7772,7 @@ std::string CoreImplementation::regInt_regInt_posWord(InstIDiv &inst) {
   tasm.ldd("#0");
   tasm.stab("0+argv");
   tasm.std("3+argv");
-  tasm.std(inst.arg1->fract());
+  tasm.std(inst.arg1->sbyte() + "+3");
   tasm.ldx("#" + inst.arg1->sbyte());
   tasm.jmp("idivflt");
   return tasm.source();
@@ -7746,7 +7788,7 @@ std::string CoreImplementation::regInt_regInt_negWord(InstIDiv &inst) {
   tasm.stab("0+argv");
   tasm.tab();
   tasm.std("3+argv");
-  tasm.std(inst.arg1->fract());
+  tasm.std(inst.arg1->sbyte() + "+3");
   tasm.ldx("#" + inst.arg1->sbyte());
   tasm.jmp("idivflt");
   return tasm.source();

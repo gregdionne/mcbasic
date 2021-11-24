@@ -287,6 +287,12 @@ bool Instruction::isPtrInt_posWord() const {
 bool Instruction::isPtrInt_regInt() const {
   return arg1->isPtrInt() && arg2->isRegInt();
 }
+bool Instruction::isPtrInt_regFlt() const {
+  return arg1->isPtrInt() && arg2->isRegFlt();
+}
+bool Instruction::isPtrInt_extFlt() const {
+  return arg1->isPtrInt() && arg2->isExtFlt();
+}
 bool Instruction::isRegFlt_extFlt() const {
   return arg1->isRegFlt() && arg2->isExtFlt();
 }

@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -126,7 +128,7 @@ LINE_20
 	ldab	#0
 	jsr	clsn_pb
 
-	; PRINT @192, "    **** FOUR IN A ROW ****"
+	; PRINT @192, "    **** FOUR IN A ROW ****\r";
 
 	ldab	#192
 	jsr	prat_pb
@@ -134,7 +136,7 @@ LINE_20
 	jsr	pr_ss
 	.text	28, "    **** FOUR IN A ROW ****\r"
 
-	; PRINT @256, "        BY HAROLD SNYDER"
+	; PRINT @256, "        BY HAROLD SNYDER\r";
 
 	ldd	#256
 	jsr	prat_pw
@@ -177,7 +179,7 @@ LINE_22
 	ldab	#13
 	jsr	to_ip_pb
 
-	; E$=E$+"€"
+	; E$=E$+"\x80"
 
 	ldx	#STRVAR_E
 	jsr	strinit_sr1_sx
@@ -200,7 +202,7 @@ LINE_22
 	ldx	#STRVAR_C
 	jsr	ld_sx_sr1
 
-	; D$="€€"
+	; D$="\x80\x80"
 
 	jsr	ld_sr1_ss
 	.text	2, "\x80\x80"
@@ -210,7 +212,7 @@ LINE_22
 
 LINE_23
 
-	; X$="œ"
+	; X$="\x9C"
 
 	jsr	ld_sr1_ss
 	.text	1, "\x9C"
@@ -218,7 +220,7 @@ LINE_23
 	ldx	#STRVAR_X
 	jsr	ld_sx_sr1
 
-	; O$="¼"
+	; O$="\xBC"
 
 	jsr	ld_sr1_ss
 	.text	1, "\xBC"
@@ -226,7 +228,7 @@ LINE_23
 	ldx	#STRVAR_O
 	jsr	ld_sx_sr1
 
-	; H$="Œ"
+	; H$="\x8C"
 
 	jsr	ld_sr1_ss
 	.text	1, "\x8C"
@@ -317,12 +319,12 @@ LINE_28
 
 	jsr	cls
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "  DO YOU WANT INSTRUCTIONS Y/N"
+	; PRINT "  DO YOU WANT INSTRUCTIONS Y/N\r";
 
 	jsr	pr_ss
 	.text	31, "  DO YOU WANT INSTRUCTIONS Y/N\r"
@@ -373,46 +375,46 @@ LINE_36
 
 	jsr	cls
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "THIS GAME CONSISTS OF STACKING  MARKERS(THE COMPUTER PLAYS RED) ON THE BOARD UNTIL ONE OF THE"
+	; PRINT "THIS GAME CONSISTS OF STACKING  MARKERS(THE COMPUTER PLAYS RED) ON THE BOARD UNTIL ONE OF THE\r";
 
 	jsr	pr_ss
 	.text	94, "THIS GAME CONSISTS OF STACKING  MARKERS(THE COMPUTER PLAYS RED) ON THE BOARD UNTIL ONE OF THE\r"
 
 LINE_37
 
-	; PRINT "PLAYERS GETS FOUR IN A ROW.     THIS CAN BE DONE HORIZONTALLY,  VERTICALLY OR DIAGONALLY."
+	; PRINT "PLAYERS GETS FOUR IN A ROW.     THIS CAN BE DONE HORIZONTALLY,  VERTICALLY OR DIAGONALLY.\r";
 
 	jsr	pr_ss
 	.text	90, "PLAYERS GETS FOUR IN A ROW.     THIS CAN BE DONE HORIZONTALLY,  VERTICALLY OR DIAGONALLY.\r"
 
 LINE_38
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "      HIT ANY KEY TO START"
+	; PRINT "      HIT ANY KEY TO START\r";
 
 	jsr	pr_ss
 	.text	27, "      HIT ANY KEY TO START\r"
@@ -518,12 +520,12 @@ LINE_42
 
 	jsr	next
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "  DO YOU WANT TO GO FIRST Y/N"
+	; PRINT "  DO YOU WANT TO GO FIRST Y/N\r";
 
 	jsr	pr_ss
 	.text	30, "  DO YOU WANT TO GO FIRST Y/N\r"
@@ -603,12 +605,12 @@ LINE_50
 	jsr	pr_ss
 	.text	0, ""
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -618,7 +620,7 @@ LINE_50
 	ldab	#3
 	jsr	prtab_pb
 
-	; PRINT E$;E$
+	; PRINT E$;E$;"\r";
 
 	ldx	#STRVAR_E
 	jsr	pr_sx
@@ -680,7 +682,7 @@ LINE_50
 
 	jsr	next
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -705,7 +707,7 @@ LINE_51
 
 LINE_54
 
-	; PRINT @416, "        ** YOUR MOVE **"
+	; PRINT @416, "        ** YOUR MOVE **\r";
 
 	ldd	#416
 	jsr	prat_pw
@@ -772,7 +774,7 @@ LINE_58
 	ldx	#LINE_60
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @416, "     ILLEGAL MOVE,TRY AGAIN"
+	; PRINT @416, "     ILLEGAL MOVE,TRY AGAIN\r";
 
 	ldd	#416
 	jsr	prat_pw
@@ -780,7 +782,7 @@ LINE_58
 	jsr	pr_ss
 	.text	28, "     ILLEGAL MOVE,TRY AGAIN\r"
 
-	; PRINT @448, C$
+	; PRINT @448, C$;"\r";
 
 	ldd	#448
 	jsr	prat_pw
@@ -830,7 +832,7 @@ LINE_60
 	ldx	#LINE_62
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @416, "     ILLEGAL MOVE,TRY AGAIN"
+	; PRINT @416, "     ILLEGAL MOVE,TRY AGAIN\r";
 
 	ldd	#416
 	jsr	prat_pw
@@ -838,7 +840,7 @@ LINE_60
 	jsr	pr_ss
 	.text	28, "     ILLEGAL MOVE,TRY AGAIN\r"
 
-	; PRINT @448, C$
+	; PRINT @448, C$;"\r";
 
 	ldd	#448
 	jsr	prat_pw
@@ -909,7 +911,7 @@ LINE_62
 	ldx	#LINE_50
 	jsr	gosub_ix
 
-	; PRINT @416, "         ** THINKING **"
+	; PRINT @416, "         ** THINKING **\r";
 
 	ldd	#416
 	jsr	prat_pw
@@ -917,7 +919,7 @@ LINE_62
 	jsr	pr_ss
 	.text	24, "         ** THINKING **\r"
 
-	; PRINT @448, C$
+	; PRINT @448, C$;"\r";
 
 	ldd	#448
 	jsr	prat_pw
@@ -968,7 +970,7 @@ LINE_63
 
 LINE_64
 
-	; PRINT @416, "         ** YOU WIN **"
+	; PRINT @416, "         ** YOU WIN **\r";
 
 	ldd	#416
 	jsr	prat_pw
@@ -976,7 +978,7 @@ LINE_64
 	jsr	pr_ss
 	.text	23, "         ** YOU WIN **\r"
 
-	; PRINT @448, C$
+	; PRINT @448, C$;"\r";
 
 	ldd	#448
 	jsr	prat_pw
@@ -1486,7 +1488,7 @@ LINE_98
 
 LINE_100
 
-	; PRINT @416, "         ** TIE GAME **"
+	; PRINT @416, "         ** TIE GAME **\r";
 
 	ldd	#416
 	jsr	prat_pw
@@ -1511,7 +1513,7 @@ LINE_102
 
 LINE_104
 
-	; PRINT @448, "         MY MOVE WAS";STR$(M);" "
+	; PRINT @448, "         MY MOVE WAS";STR$(M);" \r";
 
 	ldd	#448
 	jsr	prat_pw
@@ -1611,7 +1613,7 @@ LINE_104
 
 LINE_106
 
-	; PRINT @416, "      ** COMPUTER WINS **"
+	; PRINT @416, "      ** COMPUTER WINS **\r";
 
 	ldd	#416
 	jsr	prat_pw
@@ -2381,7 +2383,7 @@ LINE_207
 	ldab	#32
 	jsr	poke_ir1_pb
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -3623,7 +3625,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3
@@ -4600,7 +4604,19 @@ sound_ir1_ir2			; numCalls = 4
 step_ip_ir1			; numCalls = 1
 	.module	modstep_ip_ir1
 	tsx
+	ldd	10,x
+	beq	_zero
 	ldab	r1
+	bpl	_nonzero
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+_zero
+	ldab	r1
+_nonzero
 	stab	10,x
 	ldd	r1+1
 	std	11,x

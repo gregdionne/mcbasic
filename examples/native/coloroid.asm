@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -1038,7 +1040,7 @@ LINE_2500
 
 LINE_2510
 
-	; PRINT @SHIFT(T,5)+18, RIGHT$(STR$(T),1)+"="+CHR$(SHIFT(T,4)+143)+"("+RIGHT$(M$,3)+")"
+	; PRINT @SHIFT(T,5)+18, RIGHT$(STR$(T),1)+"="+CHR$(SHIFT(T,4)+143)+"("+RIGHT$(M$,3)+")";"\r";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -1420,7 +1422,7 @@ LINE_2750
 	ldab	#1
 	jsr	add_ix_ix_pb
 
-	; PRINT @370, "YOU BEAT"
+	; PRINT @370, "YOU BEAT\r";
 
 	ldd	#370
 	jsr	prat_pw
@@ -1428,7 +1430,7 @@ LINE_2750
 	jsr	pr_ss
 	.text	9, "YOU BEAT\r"
 
-	; PRINT @402, "LEVEL";STR$(LV);"!"
+	; PRINT @402, "LEVEL";STR$(LV);"!\r";
 
 	ldd	#402
 	jsr	prat_pw
@@ -1471,7 +1473,7 @@ LINE_2750
 
 LINE_2760
 
-	; PRINT @434, "UPGRADE TO"
+	; PRINT @434, "UPGRADE TO\r";
 
 	ldd	#434
 	jsr	prat_pw
@@ -1493,7 +1495,7 @@ LINE_2760
 	ldx	#LINE_2765
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @466, RIGHT$(STR$(B+1),1);"X";RIGHT$(STR$(B+1),1);" (Y/N)?"
+	; PRINT @466, RIGHT$(STR$(B+1),1);"X";RIGHT$(STR$(B+1),1);" (Y/N)?\r";
 
 	ldd	#466
 	jsr	prat_pw
@@ -1537,7 +1539,7 @@ LINE_2760
 
 LINE_2765
 
-	; PRINT @466, RIGHT$(STR$(B+1),2);"X";RIGHT$(STR$(B+1),2);"?"
+	; PRINT @466, RIGHT$(STR$(B+1),2);"X";RIGHT$(STR$(B+1),2);"?\r";
 
 	ldd	#466
 	jsr	prat_pw
@@ -1672,7 +1674,7 @@ LINE_2785
 
 LINE_2790
 
-	; PRINT @242, "MOVES:";STR$(M);" "
+	; PRINT @242, "MOVES:";STR$(M);" \r";
 
 	ldab	#242
 	jsr	prat_pb
@@ -1694,7 +1696,7 @@ LINE_2790
 
 LINE_2800
 
-	; PRINT @18, " * COLOROID *"
+	; PRINT @18, " * COLOROID *\r";
 
 	ldab	#18
 	jsr	prat_pb
@@ -1704,7 +1706,7 @@ LINE_2800
 
 LINE_2810
 
-	; PRINT @306, "PAR:";STR$(PA(LV));" "
+	; PRINT @306, "PAR:";STR$(PA(LV));" \r";
 
 	ldd	#306
 	jsr	prat_pw
@@ -1746,7 +1748,7 @@ LINE_2820
 	ldx	#LINE_2825
 	jsr	jmpeq_ir1_ix
 
-	; PRINT RIGHT$(STR$(B),1);"X";RIGHT$(STR$(B),1)
+	; PRINT RIGHT$(STR$(B),1);"X";RIGHT$(STR$(B),1);"\r";
 
 	ldx	#INTVAR_B
 	jsr	str_sr1_ix
@@ -1777,7 +1779,7 @@ LINE_2820
 
 LINE_2825
 
-	; PRINT RIGHT$(STR$(B),2);"X";RIGHT$(STR$(B),2)
+	; PRINT RIGHT$(STR$(B),2);"X";RIGHT$(STR$(B),2);"\r";
 
 	ldx	#INTVAR_B
 	jsr	str_sr1_ix
@@ -1854,7 +1856,7 @@ LINE_2832
 	ldx	#STRVAR_M
 	jsr	ld_sx_sr1
 
-	; PRINT RIGHT$(M$,3)
+	; PRINT RIGHT$(M$,3);"\r";
 
 	ldx	#STRVAR_M
 	jsr	ld_sr1_sx
@@ -1882,7 +1884,7 @@ LINE_2840
 	ldab	#14
 	jsr	to_ip_pb
 
-	; PRINT @SHIFT(T,5)+18,
+	; PRINT @SHIFT(T,5)+18, "\r";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -1932,28 +1934,28 @@ LINE_3000
 
 LINE_3001
 
-	; PRINT "coloroid STARTS WITH A GRID OF "
+	; PRINT "coloroid STARTS WITH A GRID OF \r";
 
 	jsr	pr_ss
 	.text	32, "coloroid STARTS WITH A GRID OF \r"
 
 LINE_3022
 
-	; PRINT "MULTI-COLORED BLOCKS. THE GAME"
+	; PRINT "MULTI-COLORED BLOCKS. THE GAME\r";
 
 	jsr	pr_ss
 	.text	31, "MULTI-COLORED BLOCKS. THE GAME\r"
 
 LINE_3023
 
-	; PRINT "IS PLAYED FROM THE TOP LEFT."
+	; PRINT "IS PLAYED FROM THE TOP LEFT.\r";
 
 	jsr	pr_ss
 	.text	29, "IS PLAYED FROM THE TOP LEFT.\r"
 
 LINE_3025
 
-	; PRINT "CHOOSE A # TO CHANGE THE COLOR"
+	; PRINT "CHOOSE A # TO CHANGE THE COLOR\r";
 
 	jsr	pr_ss
 	.text	31, "CHOOSE A # TO CHANGE THE COLOR\r"
@@ -1981,7 +1983,7 @@ LINE_3028
 
 LINE_3029
 
-	; PRINT "TO THE TOP LEFT BLOCK, IT"
+	; PRINT "TO THE TOP LEFT BLOCK, IT\r";
 
 	jsr	pr_ss
 	.text	26, "TO THE TOP LEFT BLOCK, IT\r"
@@ -1995,42 +1997,42 @@ LINE_3031
 
 LINE_3032
 
-	; PRINT "BLOCK. AS YOU KEEP CHANGING THE"
+	; PRINT "BLOCK. AS YOU KEEP CHANGING THE\r";
 
 	jsr	pr_ss
 	.text	32, "BLOCK. AS YOU KEEP CHANGING THE\r"
 
 LINE_3033
 
-	; PRINT "GROUP OF BLOCKS, IT GROWS AND "
+	; PRINT "GROUP OF BLOCKS, IT GROWS AND \r";
 
 	jsr	pr_ss
 	.text	31, "GROUP OF BLOCKS, IT GROWS AND \r"
 
 LINE_3034
 
-	; PRINT "CONTINUES TO MERGE WITH ANY "
+	; PRINT "CONTINUES TO MERGE WITH ANY \r";
 
 	jsr	pr_ss
 	.text	29, "CONTINUES TO MERGE WITH ANY \r"
 
 LINE_3035
 
-	; PRINT "TOUCHING BLOCKS OF THE SAME"
+	; PRINT "TOUCHING BLOCKS OF THE SAME\r";
 
 	jsr	pr_ss
 	.text	28, "TOUCHING BLOCKS OF THE SAME\r"
 
 LINE_3036
 
-	; PRINT "COLOR. THE GOAL IS TO TURN THE"
+	; PRINT "COLOR. THE GOAL IS TO TURN THE\r";
 
 	jsr	pr_ss
 	.text	31, "COLOR. THE GOAL IS TO TURN THE\r"
 
 LINE_3037
 
-	; PRINT "WHOLE SCREEN TO A SINGLE COLOR."
+	; PRINT "WHOLE SCREEN TO A SINGLE COLOR.\r";
 
 	jsr	pr_ss
 	.text	32, "WHOLE SCREEN TO A SINGLE COLOR.\r"
@@ -3353,7 +3355,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3
@@ -4366,7 +4370,19 @@ sound_ir1_ir2			; numCalls = 3
 step_ip_ir1			; numCalls = 1
 	.module	modstep_ip_ir1
 	tsx
+	ldd	10,x
+	beq	_zero
 	ldab	r1
+	bpl	_nonzero
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+_zero
+	ldab	r1
+_nonzero
 	stab	10,x
 	ldd	r1+1
 	std	11,x

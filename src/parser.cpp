@@ -1,6 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "parser.hpp"
+#include "constants.hpp"
 
 #include "string.h"
 
@@ -63,6 +64,9 @@ bool Parser::matchEitherKeyword(const char *const k1, const char *const k2) {
 
 int Parser::getLineNumber() {
   in.skipWhitespace();
+  if (emptyLineNumbers && (in.iseol() || in.isChar(':'))) {
+    return 0;
+  }
   if (!in.isDecimalWord()) {
     in.die("line number expected");
   }
@@ -403,6 +407,7 @@ Expr *Parser::getFunction() {
          : skipKeyword("RIGHT$") ? getRightFunction()
          : skipKeyword("MID$")   ? getMidFunction()
          : skipKeyword("POINT")  ? getPointFunction()
+         : skipKeyword("MEM")    ? (new MemExpr())
          : skipKeyword("INKEY$") ? (new InkeyExpr())
                                  : unimplementedKeywordExpression();
 }
@@ -603,8 +608,11 @@ Statement *Parser::getPrint() {
   in.skipWhitespace();
   if (in.skipChar('@')) {
     print->at = numeric(&Parser::getOrExpression);
-    in.matchChar(',');
     in.skipWhitespace();
+    if (!in.iseol() && !in.isChar(':')) {
+      in.matchChar(',');
+      in.skipWhitespace();
+    }
   }
 
   bool needsCR = true;
@@ -664,6 +672,12 @@ Statement *Parser::getInput() {
 Statement *Parser::getEnd() {
   in.skipWhitespace();
   return new End();
+}
+
+Statement *Parser::getError(uint8_t errorCode) {
+  Error *error = new Error;
+  error->errorCode = std::make_unique<NumericConstantExpr>(errorCode);
+  return error;
 }
 
 Statement *Parser::getOn() {
@@ -884,11 +898,18 @@ void Parser::getLine(Program &p) {
   p.lines.emplace_back(line);
 }
 
-void Parser::getEndLine(Program &p) {
+void Parser::getEndLines(Program &p) {
   Line *line = new Line;
-  line->lineNumber = 65535;
+  line->lineNumber = constants::lastLineNumber;
   line->statements.emplace_back(getEnd());
   p.lines.emplace_back(line);
+
+  if (unlistedLineNumbers) {
+    line = new Line;
+    line->lineNumber = constants::unlistedLineNumber;
+    line->statements.emplace_back(getError(constants::ULError));
+    p.lines.emplace_back(line);
+  }
 }
 
 Program Parser::parse() {
@@ -896,6 +917,6 @@ Program Parser::parse() {
   while (in.getFileLine() != nullptr) {
     getLine(p);
   }
-  getEndLine(p);
+  getEndLines(p);
   return p;
 }

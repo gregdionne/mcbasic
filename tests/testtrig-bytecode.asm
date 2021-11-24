@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -236,7 +238,7 @@ LINE_120
 
 LINE_130
 
-	; PRINT STR$(X);" ";STR$(Y);" ";STR$(Y/X);" "
+	; PRINT STR$(X);" ";STR$(Y);" ";STR$(Y/X);" \r";
 
 	.byte	bytecode_str_sr1_fx
 	.byte	bytecode_FLTVAR_X
@@ -269,7 +271,7 @@ LINE_130
 
 LINE_140
 
-	; PRINT STR$(COS(TH));" ";STR$(SIN(TH));" ";STR$(TAN(TH));" "
+	; PRINT STR$(COS(TH));" ";STR$(SIN(TH));" ";STR$(TAN(TH));" \r";
 
 	.byte	bytecode_ld_fr1_fx
 	.byte	bytecode_FLTVAR_TH
@@ -1197,19 +1199,19 @@ _rsubm
 _rsub
 	neg	4,x
 	bcs	_ngc1
-	com	3,x
+	neg	3,x
 	bra	_ngc2
 _ngc1
-	neg	3,x
+	com	3,x
 _ngc2
 	sbcb	2,x
 	sbca	1,x
 	std	1,x
 	bcs	_ngc3
-	com	0,x
+	neg	0,x
 	rts
 _ngc3
-	neg	0,x
+	com	0,x
 	rts
 _tbl_pi1	.byte	$03,$24,$40
 _tbl_pi2	.byte	$01,$92,$20
@@ -1437,7 +1439,9 @@ tan
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3

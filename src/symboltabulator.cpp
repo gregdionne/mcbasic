@@ -11,6 +11,7 @@ void SymbolTabulator::operate(Program &p) {
 
 void SymbolTabulator::operate(Line &l) {
   for (auto &statement : l.statements) {
+    sts.setLineNumber(l.lineNumber);
     statement->operate(&sts);
   }
 }
@@ -51,8 +52,9 @@ void ExprSymbolTabulator::addEntry(std::vector<Symbol> &table,
       if (symbol.numDims == static_cast<int>(numDims)) {
         return;
       }
-      fprintf(stderr, "Dimension mismatch for array variable %s\n",
-              symbol.name.c_str());
+      fprintf(stderr,
+              "error: line %i: Dimension mismatch for array variable %s\n",
+              lineNumber, symbol.name.c_str());
       exit(1);
     }
   }

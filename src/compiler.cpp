@@ -48,7 +48,8 @@ void Compiler::operate(Program &p) {
 
 void Compiler::operate(Line &l) {
   queue.append(std::make_unique<InstLabel>(
-      std::make_unique<AddressModeLin>(l.lineNumber), generateLines));
+      std::make_unique<AddressModeLin>(l.lineNumber),
+      generateLines && l.lineNumber != constants::unlistedLineNumber));
   StatementCompiler that(constTable, symbolTable, dataTable, queue, firstLine,
                          itCurrentLine, generateLines);
   for (auto &statement : l.statements) {
@@ -448,6 +449,14 @@ void StatementCompiler::operate(Sound &s) {
 
   queue.append(std::make_unique<InstSound>(std::move(pitch.result),
                                            std::move(duration.result)));
+}
+
+void StatementCompiler::operate(Error &s) {
+  queue.append(std::make_unique<InstComment>(list(s)));
+  queue.clearRegisters();
+  ExprCompiler errorCode(constTable, symbolTable, queue);
+  s.errorCode->operate(&errorCode);
+  queue.append(std::make_unique<InstError>(std::move(errorCode.result)));
 }
 
 void ExprCompiler::operate(NumericConstantExpr &e) {
@@ -906,6 +915,12 @@ void ExprCompiler::operate(InkeyExpr & /*expr*/) {
   result =
       std::make_unique<AddressModeReg>(queue.allocRegister(), DataType::Str);
   result = queue.append(std::make_unique<InstInkey>(std::move(result)));
+}
+
+void ExprCompiler::operate(MemExpr & /*expr*/) {
+  result =
+      std::make_unique<AddressModeReg>(queue.allocRegister(), DataType::Int);
+  result = queue.append(std::make_unique<InstMem>(std::move(result)));
 }
 
 void ExprCompiler::operate(AdditiveExpr &e) {

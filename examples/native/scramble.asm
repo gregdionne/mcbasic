@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -2829,7 +2831,7 @@ LINE_62
 	ldab	#1
 	jsr	add_ix_ix_pb
 
-	; PRINT @O, "GET READY FOR MISSION";STR$(MN);" "
+	; PRINT @O, "GET READY FOR MISSION";STR$(MN);" \r";
 
 	ldx	#INTVAR_O
 	jsr	prat_ix
@@ -3943,7 +3945,7 @@ LINE_83
 	ldd	#49151
 	jsr	poke_pw_ir1
 
-	; PRINT "   MC-SCRAMBLE BY JIM GERRIE"
+	; PRINT "   MC-SCRAMBLE BY JIM GERRIE\r";
 
 	jsr	pr_ss
 	.text	29, "   MC-SCRAMBLE BY JIM GERRIE\r"
@@ -3974,80 +3976,80 @@ LINE_84
 
 	jsr	next
 
-	; PRINT "FLY YOUR AIRCRAFT '>' OVER THE"
+	; PRINT "FLY YOUR AIRCRAFT '>' OVER THE\r";
 
 	jsr	pr_ss
 	.text	31, "FLY YOUR AIRCRAFT '>' OVER THE\r"
 
-	; PRINT "MOUNTAINOUS TERRAIN SHOOTING"
+	; PRINT "MOUNTAINOUS TERRAIN SHOOTING\r";
 
 	jsr	pr_ss
 	.text	29, "MOUNTAINOUS TERRAIN SHOOTING\r"
 
 LINE_85
 
-	; PRINT "AT ANTI-AIRCRAFT EMPLACEMENTS"
+	; PRINT "AT ANTI-AIRCRAFT EMPLACEMENTS\r";
 
 	jsr	pr_ss
 	.text	30, "AT ANTI-AIRCRAFT EMPLACEMENTS\r"
 
-	; PRINT "'A' THAT WILL SHOOT BACK AT YOU"
+	; PRINT "'A' THAT WILL SHOOT BACK AT YOU\r";
 
 	jsr	pr_ss
 	.text	32, "'A' THAT WILL SHOOT BACK AT YOU\r"
 
-	; PRINT "UNLESS YOU DESTROY THEM WITH"
+	; PRINT "UNLESS YOU DESTROY THEM WITH\r";
 
 	jsr	pr_ss
 	.text	29, "UNLESS YOU DESTROY THEM WITH\r"
 
 LINE_86
 
-	; PRINT "YOUR GUNS 'SPACE BAR.'  USE"
+	; PRINT "YOUR GUNS 'SPACE BAR.'  USE\r";
 
 	jsr	pr_ss
 	.text	28, "YOUR GUNS 'SPACE BAR.'  USE\r"
 
-	; PRINT "GUNS OR BOMBS 'B' TO ATTACK THE"
+	; PRINT "GUNS OR BOMBS 'B' TO ATTACK THE\r";
 
 	jsr	pr_ss
 	.text	32, "GUNS OR BOMBS 'B' TO ATTACK THE\r"
 
-	; PRINT "FUEL EMPLACEMENTS 'Q' OF THE"
+	; PRINT "FUEL EMPLACEMENTS 'Q' OF THE\r";
 
 	jsr	pr_ss
 	.text	29, "FUEL EMPLACEMENTS 'Q' OF THE\r"
 
 LINE_87
 
-	; PRINT "ENEMY. YOU MUST ATTACK ENOUGH"
+	; PRINT "ENEMY. YOU MUST ATTACK ENOUGH\r";
 
 	jsr	pr_ss
 	.text	30, "ENEMY. YOU MUST ATTACK ENOUGH\r"
 
-	; PRINT "FUEL EMPLACEMENTS OR YOU WILL"
+	; PRINT "FUEL EMPLACEMENTS OR YOU WILL\r";
 
 	jsr	pr_ss
 	.text	30, "FUEL EMPLACEMENTS OR YOU WILL\r"
 
-	; PRINT "BE RE-CALLED FROM YOUR MISSION."
+	; PRINT "BE RE-CALLED FROM YOUR MISSION.\r";
 
 	jsr	pr_ss
 	.text	32, "BE RE-CALLED FROM YOUR MISSION.\r"
 
 LINE_88
 
-	; PRINT "NAVIGATE THE FINAL ONSLAUGHT,"
+	; PRINT "NAVIGATE THE FINAL ONSLAUGHT,\r";
 
 	jsr	pr_ss
 	.text	30, "NAVIGATE THE FINAL ONSLAUGHT,\r"
 
-	; PRINT "AND YOU WILL BE ASSIGNED NEW"
+	; PRINT "AND YOU WILL BE ASSIGNED NEW\r";
 
 	jsr	pr_ss
 	.text	29, "AND YOU WILL BE ASSIGNED NEW\r"
 
-	; PRINT "MISSIONS. 'A'=UP & 'Z'=DOWN."
+	; PRINT "MISSIONS. 'A'=UP & 'Z'=DOWN.\r";
 
 	jsr	pr_ss
 	.text	29, "MISSIONS. 'A'=UP & 'Z'=DOWN.\r"
@@ -4097,7 +4099,7 @@ LINE_90
 
 	jsr	ld_sp_sr1
 
-	; B$(2)="€"
+	; B$(2)="\x80"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -6310,7 +6312,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3
@@ -7759,7 +7763,19 @@ sound_ir1_ir2			; numCalls = 7
 step_ip_ir1			; numCalls = 3
 	.module	modstep_ip_ir1
 	tsx
+	ldd	10,x
+	beq	_zero
 	ldab	r1
+	bpl	_nonzero
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+_zero
+	ldab	r1
+_nonzero
 	stab	10,x
 	ldd	r1+1
 	std	11,x

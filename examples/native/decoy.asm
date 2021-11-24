@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -254,7 +256,7 @@ LINE_3
 
 	jsr	next
 
-	; PRINT @P+V+3, "éåååååååååå";
+	; PRINT @P+V+3, "\x8E\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C";
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -366,7 +368,7 @@ LINE_4
 	ldx	#INTVAR_T
 	jsr	ld_ix_ir1
 
-	; PRINT @T, "éåååååååååå";
+	; PRINT @T, "\x8E\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C";
 
 	ldx	#INTVAR_T
 	jsr	prat_ix
@@ -646,7 +648,7 @@ LINE_20
 
 	jsr	step_ip_ir1
 
-	; PRINT @E-V,
+	; PRINT @E-V, "\r";
 
 	ldx	#INTVAR_E
 	jsr	ld_ir1_ix
@@ -659,7 +661,7 @@ LINE_20
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT @E+U,
+	; PRINT @E+U, "\r";
 
 	ldx	#INTVAR_E
 	jsr	ld_ir1_ix
@@ -972,7 +974,7 @@ LINE_24
 
 	jsr	next
 
-	; PRINT @0, "»¿¬¿¬¿¿¿»¬¿»¿»¬¿¬»¿»¿¬¿¿¬¿¿¬»»¿¬";
+	; PRINT @0, "\xC8\xC0\xC2\xC0\xC2\xC0\xC0\xC0\xC8\xC2\xC0\xC8\xC0\xC8\xC2\xC0\xC2\xC8\xC0\xC8\xC0\xC2\xC0\xC0\xC2\xC0\xC0\xC2\xC8\xC8\xC0\xC2";
 
 	ldab	#0
 	jsr	prat_pb
@@ -1169,7 +1171,7 @@ LINE_100
 
 LINE_110
 
-	; PRINT @0, "»¿¬¿¬¿¿¿»¬¿»¿»¬¿¬»¿»¿¬¿¿¬¿¿¬»»¿¬";
+	; PRINT @0, "\xC8\xC0\xC2\xC0\xC2\xC0\xC0\xC0\xC8\xC2\xC0\xC8\xC0\xC8\xC2\xC0\xC2\xC8\xC0\xC8\xC0\xC2\xC0\xC0\xC2\xC0\xC0\xC2\xC8\xC8\xC0\xC2";
 
 	ldab	#0
 	jsr	prat_pb
@@ -1457,7 +1459,7 @@ LINE_135
 	jsr	pr_ss
 	.text	2, "  "
 
-	; PRINT @0, "»¿¬¿¬¿¿¿»¬¿»¿»¬¿¬»¿»¿¬¿¿¬¿¿¬»»¿¬";
+	; PRINT @0, "\xC8\xC0\xC2\xC0\xC2\xC0\xC0\xC0\xC8\xC2\xC0\xC8\xC0\xC8\xC2\xC0\xC2\xC8\xC0\xC8\xC0\xC2\xC0\xC0\xC2\xC0\xC0\xC2\xC8\xC8\xC0\xC2";
 
 	ldab	#0
 	jsr	prat_pb
@@ -1718,7 +1720,7 @@ LINE_300
 
 LINE_310
 
-	; PRINT @136, "FINAL SCORE ";STR$(SC);" "
+	; PRINT @136, "FINAL SCORE ";STR$(SC);" \r";
 
 	ldab	#136
 	jsr	prat_pb
@@ -1757,7 +1759,7 @@ LINE_320
 
 LINE_330
 
-	; PRINT @200, " HIGH SCORE ";STR$(HS);" "
+	; PRINT @200, " HIGH SCORE ";STR$(HS);" \r";
 
 	ldab	#200
 	jsr	prat_pb
@@ -1870,7 +1872,7 @@ LINE_960
 	ldab	#51
 	jsr	ld_ix_pb
 
-	; PRINT @0, "»¿¬¿¬¿¿¿»¬¿»¿»¬¿¬»¿»¿¬¿¿¬¿¿¬»»¿¬";
+	; PRINT @0, "\xC8\xC0\xC2\xC0\xC2\xC0\xC0\xC0\xC8\xC2\xC0\xC8\xC0\xC8\xC2\xC0\xC2\xC8\xC0\xC8\xC0\xC2\xC0\xC0\xC2\xC0\xC0\xC2\xC8\xC8\xC0\xC2";
 
 	ldab	#0
 	jsr	prat_pb
@@ -1966,7 +1968,7 @@ LINE_980
 
 LINE_1000
 
-	; A$="é"
+	; A$="\x8E"
 
 	jsr	ld_sr1_ss
 	.text	1, "\x8E"
@@ -1976,7 +1978,7 @@ LINE_1000
 
 LINE_1001
 
-	; B$="àîå"
+	; B$="\x88\x94\x8C"
 
 	jsr	ld_sr1_ss
 	.text	3, "\x88\x94\x8C"
@@ -1986,7 +1988,7 @@ LINE_1001
 
 LINE_1002
 
-	; C$="ãÉ"
+	; C$="\x8B\x83"
 
 	jsr	ld_sr1_ss
 	.text	2, "\x8B\x83"
@@ -1996,7 +1998,7 @@ LINE_1002
 
 LINE_1003
 
-	; D$(1)="            ˇˇ                  "
+	; D$(1)="            \xFF\xFF                  "
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -2011,7 +2013,7 @@ LINE_1003
 
 LINE_1004
 
-	; E$(1)="           ˇ``ˇ                 "
+	; E$(1)="           \xFF``\xFF                 "
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -2026,7 +2028,7 @@ LINE_1004
 
 LINE_1006
 
-	; D$(2)="                   ˇˇ           "
+	; D$(2)="                   \xFF\xFF           "
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -2041,7 +2043,7 @@ LINE_1006
 
 LINE_1007
 
-	; E$(2)="                  ˇ``ˇ          "
+	; E$(2)="                  \xFF``\xFF          "
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -2056,7 +2058,7 @@ LINE_1007
 
 LINE_1009
 
-	; D$(3)="     ˇˇ                ˇˇ       "
+	; D$(3)="     \xFF\xFF                \xFF\xFF       "
 
 	ldab	#3
 	jsr	ld_ir1_pb
@@ -2071,7 +2073,7 @@ LINE_1009
 
 LINE_1010
 
-	; E$(3)="    ˇˇ              ˇˇ      "
+	; E$(3)="    \xFF\x7F\x7F\xFF              \xFF\x7F\x7F\xFF      "
 
 	ldab	#3
 	jsr	ld_ir1_pb
@@ -2101,7 +2103,7 @@ LINE_1013
 
 LINE_1020
 
-	; M$="îúüîïüüîùüöòúêúúêêîúúúîòîúòîúîòî"
+	; M$="\x94\x9C\x9F\x94\x95\x9F\x9F\x94\x9D\x9F\x9A\x98\x9C\x90\x9C\x9C\x90\x90\x94\x9C\x9C\x9C\x94\x98\x94\x9C\x98\x94\x9C\x94\x98\x94"
 
 	jsr	ld_sr1_ss
 	.text	32, "\x94\x9C\x9F\x94\x95\x9F\x9F\x94\x9D\x9F\x9A\x98\x9C\x90\x9C\x9C\x90\x90\x94\x9C\x9C\x9C\x94\x98\x94\x9C\x98\x94\x9C\x94\x98\x94"
@@ -2355,68 +2357,68 @@ LINE_3000
 	ldx	#LINE_7
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_3020
 
-	; PRINT "USE WASD KEYS TO MOVE SHUTTLE,"
+	; PRINT "USE WASD KEYS TO MOVE SHUTTLE,\r";
 
 	jsr	pr_ss
 	.text	31, "USE WASD KEYS TO MOVE SHUTTLE,\r"
 
 LINE_3030
 
-	; PRINT "AND SPACE BAR TO FIRE."
+	; PRINT "AND SPACE BAR TO FIRE.\r";
 
 	jsr	pr_ss
 	.text	23, "AND SPACE BAR TO FIRE.\r"
 
 LINE_3040
 
-	; PRINT "YOU ARE TO FLY OVER A PART"
+	; PRINT "YOU ARE TO FLY OVER A PART\r";
 
 	jsr	pr_ss
 	.text	27, "YOU ARE TO FLY OVER A PART\r"
 
 LINE_3050
 
-	; PRINT "OF THE PLANET ZELTA WHILE OUR"
+	; PRINT "OF THE PLANET ZELTA WHILE OUR\r";
 
 	jsr	pr_ss
 	.text	30, "OF THE PLANET ZELTA WHILE OUR\r"
 
 LINE_3060
 
-	; PRINT "FIGHTERS ARE TO ATTACK ON"
+	; PRINT "FIGHTERS ARE TO ATTACK ON\r";
 
 	jsr	pr_ss
 	.text	26, "FIGHTERS ARE TO ATTACK ON\r"
 
 LINE_3070
 
-	; PRINT "THE OTHER SIDE OF THE PLANET."
+	; PRINT "THE OTHER SIDE OF THE PLANET.\r";
 
 	jsr	pr_ss
 	.text	30, "THE OTHER SIDE OF THE PLANET.\r"
 
 LINE_3080
 
-	; PRINT "YOU ARE THE DECOY FOR THEIR"
+	; PRINT "YOU ARE THE DECOY FOR THEIR\r";
 
 	jsr	pr_ss
 	.text	28, "YOU ARE THE DECOY FOR THEIR\r"
 
 LINE_3090
 
-	; PRINT "SHIPS AND GROUND FIRE..."
+	; PRINT "SHIPS AND GROUND FIRE...\r";
 
 	jsr	pr_ss
 	.text	25, "SHIPS AND GROUND FIRE...\r"
@@ -2436,21 +2438,21 @@ LINE_3100
 	ldx	#LINE_7
 	jsr	gosub_ix
 
-	; PRINT " DON'T LEAVE THE"
+	; PRINT " DON'T LEAVE THE\r";
 
 	jsr	pr_ss
 	.text	17, " DON'T LEAVE THE\r"
 
 LINE_3105
 
-	; PRINT "ATMOSPHERE."
+	; PRINT "ATMOSPHERE.\r";
 
 	jsr	pr_ss
 	.text	12, "ATMOSPHERE.\r"
 
 LINE_3110
 
-	; PRINT "GOOD LUCK... PRESS B TO BEGIN"
+	; PRINT "GOOD LUCK... PRESS B TO BEGIN\r";
 
 	jsr	pr_ss
 	.text	30, "GOOD LUCK... PRESS B TO BEGIN\r"
@@ -3463,7 +3465,9 @@ _null
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3
@@ -4639,7 +4643,19 @@ sound_ir1_ir2			; numCalls = 9
 step_ip_ir1			; numCalls = 2
 	.module	modstep_ip_ir1
 	tsx
+	ldd	10,x
+	beq	_zero
 	ldab	r1
+	bpl	_nonzero
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+_zero
+	ldab	r1
+_nonzero
 	stab	10,x
 	ldd	r1+1
 	std	11,x

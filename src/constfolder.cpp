@@ -25,6 +25,7 @@ bool ExprConstFolder::fold(std::unique_ptr<StringExpr> &expr) {
   if (expr->isConst(svalue)) {
     gotConst = true;
   } else {
+    gotConst = false;
     expr->operate(this);
     if (gotConst) {
       expr = std::make_unique<StringConstantExpr>(svalue);
@@ -194,7 +195,11 @@ void ExprConstFolder::operate(StringArrayExpr &e) {
   gotConst = false;
 }
 
-void ExprConstFolder::operate(PrintTabExpr & /*expr*/) { gotConst = false; }
+void ExprConstFolder::operate(PrintTabExpr &e) {
+  gotConst = false;
+  e.tabstop->operate(this);
+  gotConst = false;
+}
 
 void ExprConstFolder::operate(PrintSpaceExpr & /*expr*/) {
   svalue = " ";
@@ -340,7 +345,8 @@ void ExprConstFolder::operate(ValExpr &e) {
 
 void ExprConstFolder::operate(AscExpr &e) {
   if (fold(e.expr)) {
-    dvalue = svalue.length() > 0 ? static_cast<double>(*svalue.c_str()) : 0;
+    dvalue =
+        svalue.length() > 0 ? static_cast<unsigned char>(*svalue.c_str()) : 0;
   }
 }
 
@@ -457,6 +463,8 @@ void ExprConstFolder::operate(PointExpr &e) {
 }
 
 void ExprConstFolder::operate(InkeyExpr & /*expr*/) { gotConst = false; }
+
+void ExprConstFolder::operate(MemExpr & /*expr*/) { gotConst = false; }
 
 void ExprConstFolder::fold(std::vector<std::unique_ptr<NumericExpr>> &operands,
                            bool &enableFold, bool &folded, int &iOffset,

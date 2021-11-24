@@ -448,6 +448,32 @@ std::string ByteCodeImplementation::ptrInt_extInt(InstTo &inst) {
   return tasm.source();
 }
 
+std::string ByteCodeImplementation::ptrInt_regFlt(InstTo &inst) {
+  inst.dependencies.insert(inst.generateLines ? "mdtobcgl" : "mdtobc");
+
+  Assembler tasm;
+  tasm.jsr("noargs");
+  tasm.ldab(inst.generateLines ? "#13" : "#11");
+  tasm.jmp("to");
+  return tasm.source();
+}
+
+std::string ByteCodeImplementation::ptrInt_extFlt(InstTo &inst) {
+  inst.dependencies.insert(inst.generateLines ? "mdtobcgl" : "mdtobc");
+
+  Assembler tasm;
+  tasm.jsr("extend");
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("r1");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("r1+1");
+  tasm.ldd(inst.arg2->fract());
+  tasm.std("r1+3");
+  tasm.ldab(inst.generateLines ? "#13" : "#11");
+  tasm.jmp("to");
+  return tasm.source();
+}
+
 std::string ByteCodeImplementation::ptrFlt_posByte(InstTo &inst) {
   inst.dependencies.insert(inst.generateLines ? "mdtobcgl" : "mdtobc");
 
@@ -567,7 +593,21 @@ std::string ByteCodeImplementation::ptrInt_regInt(InstStep &inst) {
   tasm.jsr("noargs");
   tasm.tsx();
 
+  tasm.ldd(std::to_string(offset) + ",x"); // check if nonzero
+  tasm.beq("_zero");
   tasm.ldab(inst.arg2->sbyte());
+  tasm.bpl("_nonzero");
+
+  tasm.ldd(std::to_string(offset - 2) + ",x");
+  tasm.addd("#1");
+  tasm.std(std::to_string(offset - 2) + ",x");
+  tasm.ldab(std::to_string(offset - 3) + ",x");
+  tasm.adcb("#0");
+  tasm.stab(std::to_string(offset - 3) + ",x");
+
+  tasm.label("_zero");
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.label("_nonzero");
   tasm.stab(std::to_string(offset) + ",x");
 
   tasm.ldd(inst.arg2->lword());

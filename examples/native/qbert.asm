@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -4322,7 +4324,7 @@ LINE_1000
 
 LINE_1010
 
-	; X$(T+1,0)="îî"+CHR$(SHIFT(T,4)+141)
+	; X$(T+1,0)="\x94\x94"+CHR$(SHIFT(T,4)+141)
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -4411,7 +4413,7 @@ LINE_1010
 
 LINE_1020
 
-	; X$(T+1,1)=CHR$(SHIFT(T,4)+142)+"òò"
+	; X$(T+1,1)=CHR$(SHIFT(T,4)+142)+"\x98\x98"
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -4612,7 +4614,7 @@ LINE_1030
 
 LINE_1040
 
-	; A$(T+1,0)=CHR$(SHIFT(T,4)+140)+CHR$(SHIFT(T,4)+141)+"¯"
+	; A$(T+1,0)=CHR$(SHIFT(T,4)+140)+CHR$(SHIFT(T,4)+141)+"\xF8"
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -4657,7 +4659,7 @@ LINE_1040
 
 	jsr	ld_sp_sr1
 
-	; A$(T+1,1)="Ù"+CHR$(SHIFT(T,4)+142)+CHR$(SHIFT(T,4)+140)
+	; A$(T+1,1)="\xF4"+CHR$(SHIFT(T,4)+142)+CHR$(SHIFT(T,4)+140)
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -4816,7 +4818,7 @@ LINE_1045
 
 LINE_1050
 
-	; A$(T+1,2)=CHR$(SHIFT(T,4)+136)+"Ä"+CHR$(SHIFT(T,4)+141)
+	; A$(T+1,2)=CHR$(SHIFT(T,4)+136)+"\x80"+CHR$(SHIFT(T,4)+141)
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -4863,7 +4865,7 @@ LINE_1050
 
 LINE_1055
 
-	; B$(T+1,2)=CHR$(SHIFT(T,4)+130)+"Ä"+CHR$(SHIFT(T,4)+135)
+	; B$(T+1,2)=CHR$(SHIFT(T,4)+130)+"\x80"+CHR$(SHIFT(T,4)+135)
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -5119,7 +5121,7 @@ LINE_1090
 
 	jsr	ld_sp_sr1
 
-	; B$(8,0)="ååå"
+	; B$(8,0)="\x8C\x8C\x8C"
 
 	ldab	#8
 	jsr	ld_ir1_pb
@@ -5137,7 +5139,7 @@ LINE_1090
 
 LINE_1095
 
-	; Y$(1,0)="Ñàå"
+	; Y$(1,0)="\x84\x88\x8C"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -5199,7 +5201,7 @@ LINE_1110
 	ldab	#4
 	jsr	ld_ip_pb
 
-	; B$="Ä"
+	; B$="\x80"
 
 	jsr	ld_sr1_ss
 	.text	1, "\x80"
@@ -5252,7 +5254,7 @@ LINE_1120
 	ldab	#14
 	jsr	to_ip_pb
 
-	; BL$=BL$+"è"
+	; BL$=BL$+"\x8F"
 
 	ldx	#STRVAR_BL
 	jsr	strinit_sr1_sx
@@ -5602,12 +5604,12 @@ LINE_3030
 
 	jsr	cls
 
-	; PRINT "JIM LOVES HIS PATTY, BOO,"
+	; PRINT "JIM LOVES HIS PATTY, BOO,\r";
 
 	jsr	pr_ss
 	.text	26, "JIM LOVES HIS PATTY, BOO,\r"
 
-	; PRINT "CHUM AND NAY"
+	; PRINT "CHUM AND NAY\r";
 
 	jsr	pr_ss
 	.text	13, "CHUM AND NAY\r"
@@ -5806,7 +5808,7 @@ LINE_4000
 
 	jsr	cls
 
-	; PRINT @77, "q*bert"
+	; PRINT @77, "q*bert\r";
 
 	ldab	#77
 	jsr	prat_pb
@@ -5814,61 +5816,61 @@ LINE_4000
 	jsr	pr_ss
 	.text	7, "q*bert\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "  BY JIM GERRIE & GREG DIONNE"
+	; PRINT "  BY JIM GERRIE & GREG DIONNE\r";
 
 	jsr	pr_ss
 	.text	30, "  BY JIM GERRIE & GREG DIONNE\r"
 
 LINE_4010
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_4015
 
-	; PRINT " USE THE A,S,Z&X KEYS TO MOVE."
+	; PRINT " USE THE A,S,Z&X KEYS TO MOVE.\r";
 
 	jsr	pr_ss
 	.text	31, " USE THE A,S,Z&X KEYS TO MOVE.\r"
 
 LINE_4020
 
-	; PRINT " JUMP ON EACH SQUARE TO CHANGE"
+	; PRINT " JUMP ON EACH SQUARE TO CHANGE\r";
 
 	jsr	pr_ss
 	.text	31, " JUMP ON EACH SQUARE TO CHANGE\r"
 
 LINE_4030
 
-	; PRINT " ITS COLOR. YOU GET A FREE MAN"
+	; PRINT " ITS COLOR. YOU GET A FREE MAN\r";
 
 	jsr	pr_ss
 	.text	31, " ITS COLOR. YOU GET A FREE MAN\r"
 
 LINE_4040
 
-	; PRINT " EVERY 3 LEVELS. USE THE LIFTS"
+	; PRINT " EVERY 3 LEVELS. USE THE LIFTS\r";
 
 	jsr	pr_ss
 	.text	31, " EVERY 3 LEVELS. USE THE LIFTS\r"
 
 LINE_4050
 
-	; PRINT " TO KILL THE SNAKE=100. MOVE  "
+	; PRINT " TO KILL THE SNAKE=100. MOVE  \r";
 
 	jsr	pr_ss
 	.text	31, " TO KILL THE SNAKE=100. MOVE  \r"
 
 LINE_4060
 
-	; PRINT " QUICKLY FROM THE TOP SQUARE."
+	; PRINT " QUICKLY FROM THE TOP SQUARE.\r";
 
 	jsr	pr_ss
 	.text	30, " QUICKLY FROM THE TOP SQUARE.\r"
@@ -7420,7 +7422,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3
@@ -8636,7 +8640,19 @@ sound_ir1_ir2			; numCalls = 18
 step_ip_ir1			; numCalls = 7
 	.module	modstep_ip_ir1
 	tsx
+	ldd	10,x
+	beq	_zero
 	ldab	r1
+	bpl	_nonzero
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+_zero
+	ldab	r1
+_nonzero
 	stab	10,x
 	ldd	r1+1
 	std	11,x

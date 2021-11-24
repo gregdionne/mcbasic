@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -119,7 +121,7 @@ LINE_10
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_15
 
-	; PRINT "PASS"
+	; PRINT "PASS\r";
 
 	.byte	bytecode_pr_ss
 	.text	5, "PASS\r"
@@ -131,7 +133,7 @@ LINE_10
 
 LINE_15
 
-	; PRINT "FAIL"
+	; PRINT "FAIL\r";
 
 	.byte	bytecode_pr_ss
 	.text	5, "FAIL\r"
@@ -152,7 +154,7 @@ LINE_20
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_25
 
-	; PRINT "PASS"
+	; PRINT "PASS\r";
 
 	.byte	bytecode_pr_ss
 	.text	5, "PASS\r"
@@ -164,7 +166,7 @@ LINE_20
 
 LINE_25
 
-	; PRINT "FAIL"
+	; PRINT "FAIL\r";
 
 	.byte	bytecode_pr_ss
 	.text	5, "FAIL\r"
@@ -190,7 +192,7 @@ LINE_30
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_35
 
-	; PRINT "PASS"
+	; PRINT "PASS\r";
 
 	.byte	bytecode_pr_ss
 	.text	5, "PASS\r"
@@ -202,7 +204,7 @@ LINE_30
 
 LINE_35
 
-	; PRINT "FAIL"
+	; PRINT "FAIL\r";
 
 	.byte	bytecode_pr_ss
 	.text	5, "FAIL\r"
@@ -228,7 +230,7 @@ LINE_40
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_45
 
-	; PRINT "PASS"
+	; PRINT "PASS\r";
 
 	.byte	bytecode_pr_ss
 	.text	5, "PASS\r"
@@ -240,7 +242,7 @@ LINE_40
 
 LINE_45
 
-	; PRINT "FAIL"
+	; PRINT "FAIL\r";
 
 	.byte	bytecode_pr_ss
 	.text	5, "FAIL\r"

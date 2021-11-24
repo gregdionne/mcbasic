@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -3945,7 +3947,7 @@ LINE_800
 	ldab	#4
 	jsr	to_ip_pb
 
-	; SB$=SB$+"ŒŒŒƒƒƒ"
+	; SB$=SB$+"\x8C\x8C\x8C\x83\x83\x83"
 
 	ldx	#STRVAR_SB
 	jsr	strinit_sr1_sx
@@ -3958,7 +3960,7 @@ LINE_800
 
 LINE_801
 
-	; SW$=SW$+"ƒƒƒŒŒŒ"
+	; SW$=SW$+"\x83\x83\x83\x8C\x8C\x8C"
 
 	ldx	#STRVAR_SW
 	jsr	strinit_sr1_sx
@@ -4451,7 +4453,7 @@ LINE_940
 	.byte	9
 	.word	LINE_1100, LINE_1110, LINE_0, LINE_1120, LINE_1130, LINE_0, LINE_1140, LINE_0, LINE_1150
 
-	; PRINT @L, "€K€";
+	; PRINT @L, "\x80K\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4482,7 +4484,7 @@ LINE_941
 	.byte	9
 	.word	LINE_1100, LINE_1180, LINE_0, LINE_1190, LINE_1200, LINE_0, LINE_1210, LINE_0, LINE_1220
 
-	; PRINT @L, "€k€";
+	; PRINT @L, "\x80k\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4650,7 +4652,7 @@ LINE_1080
 
 LINE_1100
 
-	; PRINT @L, "€€€";
+	; PRINT @L, "\x80\x80\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4664,7 +4666,7 @@ LINE_1100
 
 LINE_1110
 
-	; PRINT @L, "€P€";
+	; PRINT @L, "\x80P\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4678,7 +4680,7 @@ LINE_1110
 
 LINE_1120
 
-	; PRINT @L, "€N€";
+	; PRINT @L, "\x80N\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4692,7 +4694,7 @@ LINE_1120
 
 LINE_1130
 
-	; PRINT @L, "€B€";
+	; PRINT @L, "\x80B\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4706,7 +4708,7 @@ LINE_1130
 
 LINE_1140
 
-	; PRINT @L, "€R€";
+	; PRINT @L, "\x80R\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4720,7 +4722,7 @@ LINE_1140
 
 LINE_1150
 
-	; PRINT @L, "€Q€";
+	; PRINT @L, "\x80Q\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4734,7 +4736,7 @@ LINE_1150
 
 LINE_1180
 
-	; PRINT @L, "€p€";
+	; PRINT @L, "\x80p\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4748,7 +4750,7 @@ LINE_1180
 
 LINE_1190
 
-	; PRINT @L, "€n€";
+	; PRINT @L, "\x80n\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4762,7 +4764,7 @@ LINE_1190
 
 LINE_1200
 
-	; PRINT @L, "€b€";
+	; PRINT @L, "\x80b\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4776,7 +4778,7 @@ LINE_1200
 
 LINE_1210
 
-	; PRINT @L, "€r€";
+	; PRINT @L, "\x80r\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4790,7 +4792,7 @@ LINE_1210
 
 LINE_1220
 
-	; PRINT @L, "€q€";
+	; PRINT @L, "\x80q\x80";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -7207,24 +7209,24 @@ LINE_2220
 	jsr	pr_ss
 	.text	32, "***COMMANDS DURING PLAYER'S MOVE"
 
-	; PRINT "  K - TO CASTLE KING SIDE"
+	; PRINT "  K - TO CASTLE KING SIDE\r";
 
 	jsr	pr_ss
 	.text	26, "  K - TO CASTLE KING SIDE\r"
 
 LINE_2221
 
-	; PRINT "  Q - TO CASTLE QUEEN SIDE"
+	; PRINT "  Q - TO CASTLE QUEEN SIDE\r";
 
 	jsr	pr_ss
 	.text	27, "  Q - TO CASTLE QUEEN SIDE\r"
 
-	; PRINT "  X - TO EXCHANGE BLACK/WHITE"
+	; PRINT "  X - TO EXCHANGE BLACK/WHITE\r";
 
 	jsr	pr_ss
 	.text	30, "  X - TO EXCHANGE BLACK/WHITE\r"
 
-	; PRINT "  S - TO LET COMPUTER SELF-PLAY"
+	; PRINT "  S - TO LET COMPUTER SELF-PLAY\r";
 
 	jsr	pr_ss
 	.text	32, "  S - TO LET COMPUTER SELF-PLAY\r"
@@ -7236,29 +7238,29 @@ LINE_2230
 	jsr	pr_ss
 	.text	32, "  M - TO modify THE BOARD, ENTER"
 
-	; PRINT "      THE SQUARE FOLLOWED BY:"
+	; PRINT "      THE SQUARE FOLLOWED BY:\r";
 
 	jsr	pr_ss
 	.text	30, "      THE SQUARE FOLLOWED BY:\r"
 
 LINE_2231
 
-	; PRINT "      -C, P OR E FOR COMPUTER,"
+	; PRINT "      -C, P OR E FOR COMPUTER,\r";
 
 	jsr	pr_ss
 	.text	31, "      -C, P OR E FOR COMPUTER,\r"
 
-	; PRINT "       PLAYER OR EMPTY"
+	; PRINT "       PLAYER OR EMPTY\r";
 
 	jsr	pr_ss
 	.text	23, "       PLAYER OR EMPTY\r"
 
-	; PRINT "      -S, P, N, B, Q OR K FOR"
+	; PRINT "      -S, P, N, B, Q OR K FOR\r";
 
 	jsr	pr_ss
 	.text	30, "      -S, P, N, B, Q OR K FOR\r"
 
-	; PRINT "       SQUARE, PAWN, ETC."
+	; PRINT "       SQUARE, PAWN, ETC.\r";
 
 	jsr	pr_ss
 	.text	26, "       SQUARE, PAWN, ETC.\r"
@@ -7270,7 +7272,7 @@ LINE_2240
 	jsr	pr_ss
 	.text	32, "      (E.G.'D4PP', 'A8ES', ECT.)"
 
-	; PRINT "  Z - TO ESCAPE modify"
+	; PRINT "  Z - TO ESCAPE modify\r";
 
 	jsr	pr_ss
 	.text	23, "  Z - TO ESCAPE modify\r"
@@ -7292,24 +7294,24 @@ LINE_2250
 	jsr	pr_ss
 	.text	32, "***COMMANDS DURING PLAYER'S MOVE"
 
-	; PRINT "   I - TO GET INSTRUCTIONS"
+	; PRINT "   I - TO GET INSTRUCTIONS\r";
 
 	jsr	pr_ss
 	.text	27, "   I - TO GET INSTRUCTIONS\r"
 
 LINE_2251
 
-	; PRINT "   L - TO CHANGE LEVEL OF PLAY"
+	; PRINT "   L - TO CHANGE LEVEL OF PLAY\r";
 
 	jsr	pr_ss
 	.text	31, "   L - TO CHANGE LEVEL OF PLAY\r"
 
-	; PRINT "   P - TO START NEW GAME"
+	; PRINT "   P - TO START NEW GAME\r";
 
 	jsr	pr_ss
 	.text	25, "   P - TO START NEW GAME\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -7321,19 +7323,19 @@ LINE_2260
 	jsr	pr_ss
 	.text	32, "***TO PROMOTE TO P, N, B, R OR Q"
 
-	; PRINT "   ENTER LETTER WHEN PROMPTED"
+	; PRINT "   ENTER LETTER WHEN PROMPTED\r";
 
 	jsr	pr_ss
 	.text	30, "   ENTER LETTER WHEN PROMPTED\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_2261
 
-	; PRINT "***TO MOVE, CAPTURE OR CAPTURE"
+	; PRINT "***TO MOVE, CAPTURE OR CAPTURE\r";
 
 	jsr	pr_ss
 	.text	31, "***TO MOVE, CAPTURE OR CAPTURE\r"
@@ -7343,19 +7345,19 @@ LINE_2261
 	jsr	pr_ss
 	.text	32, "   'EN PASSANT', SPECIFY FROM/TO"
 
-	; PRINT "   SQUARES(E.G. 'B1C3')"
+	; PRINT "   SQUARES(E.G. 'B1C3')\r";
 
 	jsr	pr_ss
 	.text	24, "   SQUARES(E.G. 'B1C3')\r"
 
 LINE_2270
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "***LEVELS OF PLAY ARE 1 THRU 24"
+	; PRINT "***LEVELS OF PLAY ARE 1 THRU 24\r";
 
 	jsr	pr_ss
 	.text	32, "***LEVELS OF PLAY ARE 1 THRU 24\r"
@@ -7371,12 +7373,12 @@ LINE_2275
 
 	jsr	cls
 
-	; PRINT "        ***C.4 CHESS***"
+	; PRINT "        ***C.4 CHESS***\r";
 
 	jsr	pr_ss
 	.text	24, "        ***C.4 CHESS***\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -7386,67 +7388,67 @@ LINE_2275
 	jsr	pr_ss
 	.text	32, "***COMPUTER ASSUMES MATE IF KING"
 
-	; PRINT "   IS LEFT IN check"
+	; PRINT "   IS LEFT IN check\r";
 
 	jsr	pr_ss
 	.text	20, "   IS LEFT IN check\r"
 
 LINE_2276
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "***IF entry error OR illegal"
+	; PRINT "***IF entry error OR illegal\r";
 
 	jsr	pr_ss
 	.text	29, "***IF entry error OR illegal\r"
 
 LINE_2277
 
-	; PRINT "   move APPEAR, ENTER CORRECTED"
+	; PRINT "   move APPEAR, ENTER CORRECTED\r";
 
 	jsr	pr_ss
 	.text	32, "   move APPEAR, ENTER CORRECTED\r"
 
-	; PRINT "   MOVE.  A MOVE MAY BE STARTED"
+	; PRINT "   MOVE.  A MOVE MAY BE STARTED\r";
 
 	jsr	pr_ss
 	.text	32, "   MOVE.  A MOVE MAY BE STARTED\r"
 
 LINE_2280
 
-	; PRINT "   OVER BY FORCING AN ERROR"
+	; PRINT "   OVER BY FORCING AN ERROR\r";
 
 	jsr	pr_ss
 	.text	28, "   OVER BY FORCING AN ERROR\r"
 
 LINE_2290
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "***YOU HAVE A CHOICE OF BLACK"
+	; PRINT "***YOU HAVE A CHOICE OF BLACK\r";
 
 	jsr	pr_ss
 	.text	30, "***YOU HAVE A CHOICE OF BLACK\r"
 
-	; PRINT "   OR WHITE.  YOU ARE ALWAYS"
+	; PRINT "   OR WHITE.  YOU ARE ALWAYS\r";
 
 	jsr	pr_ss
 	.text	29, "   OR WHITE.  YOU ARE ALWAYS\r"
 
 LINE_2291
 
-	; PRINT "   AT THE BOTTOM OF THE SCREEN"
+	; PRINT "   AT THE BOTTOM OF THE SCREEN\r";
 
 	jsr	pr_ss
 	.text	31, "   AT THE BOTTOM OF THE SCREEN\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -7513,12 +7515,12 @@ LINE_2330
 
 	jsr	cls
 
-	; PRINT "        ***C.4 CHESS***"
+	; PRINT "        ***C.4 CHESS***\r";
 
 	jsr	pr_ss
 	.text	24, "        ***C.4 CHESS***\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -9225,7 +9227,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3
@@ -10964,7 +10968,19 @@ shift_ir2_ir2_pb			; numCalls = 2
 step_ip_ir1			; numCalls = 7
 	.module	modstep_ip_ir1
 	tsx
+	ldd	10,x
+	beq	_zero
 	ldab	r1
+	bpl	_nonzero
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+_zero
+	ldab	r1
+_nonzero
 	stab	10,x
 	ldd	r1+1
 	std	11,x

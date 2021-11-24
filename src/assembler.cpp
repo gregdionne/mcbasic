@@ -1,24 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "assembler.hpp"
-
-std::string strescape(std::string const &in) {
-  std::string out;
-  const char *in_c = in.c_str();
-  const char *hex_digits = "0123456789ABCDEF";
-  unsigned char c;
-  while ((c = *in_c++) != 0) {
-    out += isprint(c) != 0 ? std::string(1, c)
-           : c == '\t'     ? std::string("\\t")
-           : c == '\n'     ? std::string("\\n")
-           : c == '\r'     ? std::string("\\r")
-           : c == '"'      ? std::string("\\\"")
-           : c == '\\'     ? std::string("\\\\")
-                           : std::string("\\x") + hex_digits[(c & 0xf0) >> 4] +
-                             hex_digits[c & 0x0f];
-  }
-  return out;
-}
+#include "strescape.hpp"
 
 std::string Assembler::source() { return buffer; }
 

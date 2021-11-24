@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -94,7 +96,7 @@ LINE_15
 	ldx	#FLTVAR_P
 	jsr	ld_fx_fr1
 
-	; PRINT STR$(P);" "
+	; PRINT STR$(P);" \r";
 
 	ldx	#FLTVAR_P
 	jsr	str_sr1_fx
@@ -106,7 +108,7 @@ LINE_15
 
 LINE_20
 
-	; PRINT STR$(VAL(A$));" "
+	; PRINT STR$(VAL(A$));" \r";
 
 	ldx	#STRVAR_A
 	jsr	val_fr1_sx
@@ -127,7 +129,7 @@ LINE_25
 
 LINE_30
 
-	; PRINT STR$(VAL(LEFT$(A$,8)));" "
+	; PRINT STR$(VAL(LEFT$(A$,8)));" \r";
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -153,7 +155,7 @@ LINE_35
 
 LINE_40
 
-	; PRINT STR$(VAL(LEFT$(A$,7)));" "
+	; PRINT STR$(VAL(LEFT$(A$,7)));" \r";
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -179,7 +181,7 @@ LINE_45
 
 LINE_50
 
-	; PRINT STR$(VAL(LEFT$(A$,6)));" "
+	; PRINT STR$(VAL(LEFT$(A$,6)));" \r";
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -205,7 +207,7 @@ LINE_55
 
 LINE_60
 
-	; PRINT STR$(VAL(LEFT$(A$,5)));" "
+	; PRINT STR$(VAL(LEFT$(A$,5)));" \r";
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -231,7 +233,7 @@ LINE_65
 
 LINE_70
 
-	; PRINT STR$(VAL(LEFT$(A$,4)));" "
+	; PRINT STR$(VAL(LEFT$(A$,4)));" \r";
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -257,7 +259,7 @@ LINE_75
 
 LINE_80
 
-	; PRINT STR$(VAL(LEFT$(A$,3)));" "
+	; PRINT STR$(VAL(LEFT$(A$,3)));" \r";
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
@@ -283,7 +285,7 @@ LINE_85
 
 LINE_90
 
-	; PRINT STR$(VAL(LEFT$(A$,2)));" "
+	; PRINT STR$(VAL(LEFT$(A$,2)));" \r";
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx

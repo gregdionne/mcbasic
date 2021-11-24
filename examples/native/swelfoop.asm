@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -1019,7 +1021,7 @@ LINE_1060
 
 LINE_1080
 
-	; PRINT TAB(2);"ORIGINALLY FOR VIDEOPAC C7420"
+	; PRINT TAB(2);"ORIGINALLY FOR VIDEOPAC C7420\r";
 
 	ldab	#2
 	jsr	prtab_pb
@@ -1045,24 +1047,24 @@ LINE_1140
 	ldx	#LINE_4030
 	jsr	gosub_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_1190
 
-	; PRINT TAB(4);"(C) 2012 GERTK@XS4ALL.NL"
+	; PRINT TAB(4);"(C) 2012 GERTK@XS4ALL.NL\r";
 
 	ldab	#4
 	jsr	prtab_pb
@@ -1070,19 +1072,19 @@ LINE_1190
 	jsr	pr_ss
 	.text	25, "(C) 2012 GERTK@XS4ALL.NL\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_1200
 
-	; PRINT TAB(4);"MC-10 MODS BY JIM GERRIE"
+	; PRINT TAB(4);"MC-10 MODS BY JIM GERRIE\r";
 
 	ldab	#4
 	jsr	prtab_pb
@@ -1113,105 +1115,105 @@ LINE_1230
 
 LINE_1260
 
-	; PRINT "SWELL FOOP IS A PUZZLE GAME."
+	; PRINT "SWELL FOOP IS A PUZZLE GAME.\r";
 
 	jsr	pr_ss
 	.text	29, "SWELL FOOP IS A PUZZLE GAME.\r"
 
 LINE_1280
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_1290
 
-	; PRINT "THE GOAL IS TO REMOVE AS MANY"
+	; PRINT "THE GOAL IS TO REMOVE AS MANY\r";
 
 	jsr	pr_ss
 	.text	30, "THE GOAL IS TO REMOVE AS MANY\r"
 
 LINE_1310
 
-	; PRINT "BLOCKS AS POSSIBLE IN AS FEW"
+	; PRINT "BLOCKS AS POSSIBLE IN AS FEW\r";
 
 	jsr	pr_ss
 	.text	29, "BLOCKS AS POSSIBLE IN AS FEW\r"
 
 LINE_1330
 
-	; PRINT "MOVES AS POSSIBLE."
+	; PRINT "MOVES AS POSSIBLE.\r";
 
 	jsr	pr_ss
 	.text	19, "MOVES AS POSSIBLE.\r"
 
 LINE_1340
 
-	; PRINT "BLOCKS ADJACENT TO EACH OTHER"
+	; PRINT "BLOCKS ADJACENT TO EACH OTHER\r";
 
 	jsr	pr_ss
 	.text	30, "BLOCKS ADJACENT TO EACH OTHER\r"
 
 LINE_1350
 
-	; PRINT "GET REMOVED AS A GROUP."
+	; PRINT "GET REMOVED AS A GROUP.\r";
 
 	jsr	pr_ss
 	.text	24, "GET REMOVED AS A GROUP.\r"
 
 LINE_1360
 
-	; PRINT "USE A,S,W,Z KEYS TO MOVE THE"
+	; PRINT "USE A,S,W,Z KEYS TO MOVE THE\r";
 
 	jsr	pr_ss
 	.text	29, "USE A,S,W,Z KEYS TO MOVE THE\r"
 
 LINE_1365
 
-	; PRINT "CURSOR AND <SPACE> TO SELECT."
+	; PRINT "CURSOR AND <SPACE> TO SELECT.\r";
 
 	jsr	pr_ss
 	.text	30, "CURSOR AND <SPACE> TO SELECT.\r"
 
 LINE_1370
 
-	; PRINT "THE REMAINING BLOCKS THEN"
+	; PRINT "THE REMAINING BLOCKS THEN\r";
 
 	jsr	pr_ss
 	.text	26, "THE REMAINING BLOCKS THEN\r"
 
 LINE_1390
 
-	; PRINT "COLLAPSE TO FILL IN THE GAPS"
+	; PRINT "COLLAPSE TO FILL IN THE GAPS\r";
 
 	jsr	pr_ss
 	.text	29, "COLLAPSE TO FILL IN THE GAPS\r"
 
 LINE_1400
 
-	; PRINT "AND NEW GROUPS ARE FORMED."
+	; PRINT "AND NEW GROUPS ARE FORMED.\r";
 
 	jsr	pr_ss
 	.text	27, "AND NEW GROUPS ARE FORMED.\r"
 
 LINE_1420
 
-	; PRINT "YOU CANNOT REMOVE SINGLE"
+	; PRINT "YOU CANNOT REMOVE SINGLE\r";
 
 	jsr	pr_ss
 	.text	25, "YOU CANNOT REMOVE SINGLE\r"
 
 LINE_1430
 
-	; PRINT "BLOCKS."
+	; PRINT "BLOCKS.\r";
 
 	jsr	pr_ss
 	.text	8, "BLOCKS.\r"
 
 LINE_1440
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -1230,7 +1232,7 @@ LINE_1480
 	ldx	#LINE_3570
 	jsr	gosub_ix
 
-	; WHEN I$<>"" GOTO 1480
+	; WHEN I$<>"\r" GOTO 1480
 
 	ldx	#STRVAR_I
 	jsr	ld_sr1_sx
@@ -2389,7 +2391,7 @@ LINE_3640
 
 LINE_4000
 
-	; PRINT @T, "ûúúûüûûúúûüüûüüü";
+	; PRINT @T, "\x9E\x9C\x9C\x9E\x9F\x9E\x9E\x9C\x9C\x9E\x9F\x9F\x9E\x9F\x9F\x9F";
 
 	ldx	#INTVAR_T
 	jsr	prat_ix
@@ -2399,7 +2401,7 @@ LINE_4000
 
 LINE_4010
 
-	; PRINT @T+32, "öúúöüööúüöüüöüüü";
+	; PRINT @T+32, "\x9A\x9C\x9C\x9A\x9F\x9A\x9A\x9C\x9F\x9A\x9F\x9F\x9A\x9F\x9F\x9F";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -2414,7 +2416,7 @@ LINE_4010
 
 LINE_4020
 
-	; PRINT @T+64, "ûúòöòòöúúöúúöúúü";
+	; PRINT @T+64, "\x9E\x9C\x98\x9A\x98\x98\x9A\x9C\x9C\x9A\x9C\x9C\x9A\x9C\x9C\x9F";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -2433,7 +2435,7 @@ LINE_4020
 
 LINE_4030
 
-	; PRINT @T+96, "üüúúùúúùúúùúúùüü";
+	; PRINT @T+96, "\x9F\x9F\x9C\x9C\x9D\x9C\x9C\x9D\x9C\x9C\x9D\x9C\x9C\x9D\x9F\x9F";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -2448,7 +2450,7 @@ LINE_4030
 
 LINE_4040
 
-	; PRINT @T+128, "üüîùüïüïïüïîúïüü";
+	; PRINT @T+128, "\x9F\x9F\x94\x9D\x9F\x95\x9F\x95\x95\x9F\x95\x94\x9C\x95\x9F\x9F";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -2463,7 +2465,7 @@ LINE_4040
 
 LINE_4050
 
-	; PRINT @T+160, "üüïüüîúïîúïïüüüü";
+	; PRINT @T+160, "\x9F\x9F\x95\x9F\x9F\x94\x9C\x95\x94\x9C\x95\x95\x9F\x9F\x9F\x9F";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -3554,7 +3556,9 @@ _panic
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3
@@ -4734,7 +4738,19 @@ sound_ir1_ir2			; numCalls = 5
 step_ip_ir1			; numCalls = 1
 	.module	modstep_ip_ir1
 	tsx
+	ldd	10,x
+	beq	_zero
 	ldab	r1
+	bpl	_nonzero
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+_zero
+	ldab	r1
+_nonzero
 	stab	10,x
 	ldd	r1+1
 	std	11,x

@@ -328,6 +328,11 @@ std::string Dispatcher::operate(InstInkey &inst) {
                                : implementation->unimplemented(inst);
 }
 
+std::string Dispatcher::operate(InstMem &inst) {
+  return inst.arg1->isRegInt() ? implementation->regInt(inst)
+                               : implementation->unimplemented(inst);
+}
+
 std::string Dispatcher::operate(InstAdd &inst) {
 
   return inst.isIndFlt_indFlt_regFlt()
@@ -975,7 +980,7 @@ std::string Dispatcher::operate(InstMidT &inst) {
 }
 
 std::string Dispatcher::operate(InstPrComma &inst) {
-  return implementation->unimplemented(inst);
+  return implementation->inherent(inst);
 }
 std::string Dispatcher::operate(InstPrSpace &inst) {
   return implementation->unimplemented(inst);
@@ -1028,6 +1033,8 @@ std::string Dispatcher::operate(InstTo &inst) {
          : inst.isPtrInt_negWord() ? implementation->ptrInt_negWord(inst)
          : inst.isPtrInt_regInt()  ? implementation->ptrInt_regInt(inst)
          : inst.isPtrInt_extInt()  ? implementation->ptrInt_extInt(inst)
+         : inst.isPtrInt_regFlt()  ? implementation->ptrInt_regFlt(inst)
+         : inst.isPtrInt_extFlt()  ? implementation->ptrInt_extFlt(inst)
          : inst.isPtrFlt_posByte() ? implementation->ptrFlt_posByte(inst)
          : inst.isPtrFlt_negByte() ? implementation->ptrFlt_negByte(inst)
          : inst.isPtrFlt_posWord() ? implementation->ptrFlt_posWord(inst)
@@ -1190,6 +1197,11 @@ std::string Dispatcher::operate(InstPoke &inst) {
 
 std::string Dispatcher::operate(InstSound &inst) {
   return inst.isRegInt_regInt() ? implementation->regInt_regInt(inst)
+                                : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstError &inst) {
+  return inst.arg1->isPosByte() ? implementation->posByte(inst)
                                 : implementation->unimplemented(inst);
 }
 

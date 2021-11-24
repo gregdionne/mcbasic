@@ -10,6 +10,12 @@ struct Options {
   bool g = false;
   bool list = false;
   bool Wfloat = true;
+  bool Wduplicate = true;
+  bool Wunreached = true;
+  bool Wuninit = true;
+  bool Wbranch = true;
+  bool el = false;
+  bool ul = false;
   bool undoc = false;
   int argcnt = 0;
 

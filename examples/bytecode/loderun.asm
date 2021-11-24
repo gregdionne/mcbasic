@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -2780,7 +2782,7 @@ LINE_54
 
 LINE_55
 
-	; PRINT @480, "PLAY AGAIN (y/n)?¯¯¯¯¯¯¯¯¯¯¯¯¯¯";
+	; PRINT @480, "PLAY AGAIN (y/n)?\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF";
 
 	.byte	bytecode_prat_pw
 	.word	480
@@ -2976,14 +2978,14 @@ LINE_65
 
 	.byte	bytecode_cls
 
-	; PRINT "  mc-lode runner by jim gerrie"
+	; PRINT "  mc-lode runner by jim gerrie\r";
 
 	.byte	bytecode_pr_ss
 	.text	31, "  mc-lode runner by jim gerrie\r"
 
 LINE_66
 
-	; PRINT "        and greg dionne"
+	; PRINT "        and greg dionne\r";
 
 	.byte	bytecode_pr_ss
 	.text	24, "        and greg dionne\r"
@@ -2999,14 +3001,14 @@ LINE_70
 	.byte	bytecode_gosub_ix
 	.word	LINE_65
 
-	; PRINT
+	; PRINT "\r";
 
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
 
 LINE_71
 
-	; PRINT "YOU COMPLETED";STR$(LC*10);"% OF THE"
+	; PRINT "YOU COMPLETED";STR$(LC*10);"% OF THE\r";
 
 	.byte	bytecode_pr_ss
 	.text	13, "YOU COMPLETED"
@@ -3024,7 +3026,7 @@ LINE_71
 	.byte	bytecode_pr_ss
 	.text	9, "% OF THE\r"
 
-	; PRINT "SCREENS AT LEVEL";STR$(Z2);" "
+	; PRINT "SCREENS AT LEVEL";STR$(Z2);" \r";
 
 	.byte	bytecode_pr_ss
 	.text	16, "SCREENS AT LEVEL"
@@ -3460,54 +3462,54 @@ LINE_100
 
 LINE_120
 
-	; PRINT "TO MOVE USE:"
+	; PRINT "TO MOVE USE:\r";
 
 	.byte	bytecode_pr_ss
 	.text	13, "TO MOVE USE:\r"
 
 LINE_130
 
-	; PRINT "    W"
+	; PRINT "    W\r";
 
 	.byte	bytecode_pr_ss
 	.text	6, "    W\r"
 
 LINE_140
 
-	; PRINT "  A  S  D"
+	; PRINT "  A  S  D\r";
 
 	.byte	bytecode_pr_ss
 	.text	10, "  A  S  D\r"
 
 LINE_155
 
-	; PRINT "              TO DIG USE: "
+	; PRINT "              TO DIG USE: \r";
 
 	.byte	bytecode_pr_ss
 	.text	27, "              TO DIG USE: \r"
 
 LINE_156
 
-	; PRINT "                 ,  ."
+	; PRINT "                 ,  .\r";
 
 	.byte	bytecode_pr_ss
 	.text	22, "                 ,  .\r"
 
 LINE_160
 
-	; PRINT "       FOR LEFT AND RIGHT HOLES"
+	; PRINT "       FOR LEFT AND RIGHT HOLES\r";
 
 	.byte	bytecode_pr_ss
 	.text	32, "       FOR LEFT AND RIGHT HOLES\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
 
 LINE_180
 
-	; PRINT "AFTER SCREEN IS DISPLAYED PRESS"
+	; PRINT "AFTER SCREEN IS DISPLAYED PRESS\r";
 
 	.byte	bytecode_pr_ss
 	.text	32, "AFTER SCREEN IS DISPLAYED PRESS\r"
@@ -3521,26 +3523,26 @@ LINE_190
 
 LINE_195
 
-	; PRINT "ONLY GIVE UP ONE GOLD WHEN THEY"
+	; PRINT "ONLY GIVE UP ONE GOLD WHEN THEY\r";
 
 	.byte	bytecode_pr_ss
 	.text	32, "ONLY GIVE UP ONE GOLD WHEN THEY\r"
 
 LINE_196
 
-	; PRINT "FALL IN PITS. THERE ARE 10"
+	; PRINT "FALL IN PITS. THERE ARE 10\r";
 
 	.byte	bytecode_pr_ss
 	.text	27, "FALL IN PITS. THERE ARE 10\r"
 
 LINE_197
 
-	; PRINT "SCREENS. ENTER=ABORT A SCREEN."
+	; PRINT "SCREENS. ENTER=ABORT A SCREEN.\r";
 
 	.byte	bytecode_pr_ss
 	.text	31, "SCREENS. ENTER=ABORT A SCREEN.\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
@@ -4535,7 +4537,7 @@ LINE_845
 
 LINE_860
 
-	; A$="¯¯¯"
+	; A$="\xAF\xAF\xAF"
 
 	.byte	bytecode_ld_sr1_ss
 	.text	3, "\xAF\xAF\xAF"
@@ -4734,7 +4736,7 @@ LINE_902
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_904
 
-	; PRINT "GAME OVER."
+	; PRINT "GAME OVER.\r";
 
 	.byte	bytecode_pr_ss
 	.text	11, "GAME OVER.\r"
@@ -5123,7 +5125,7 @@ LINE_1000
 	.byte	bytecode_INTVAR_V
 	.byte	8
 
-	; PRINT A$;"€€€€’€€€€€€€€€€€€Ü€€€€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x92\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5136,7 +5138,7 @@ LINE_1000
 
 LINE_1002
 
-	; PRINT A$;"¯¯¯¯¯¯Ü¯¯¯¯¯¯¯€€€Ü€€€€€€€€";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5149,7 +5151,7 @@ LINE_1002
 
 LINE_1003
 
-	; PRINT A$;"€€€€€€ÜÌÌÌÌÌÌÌÌÌÌÜ€€€€’€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\xDC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xDC\x80\x80\x80\x80\x92\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5162,7 +5164,7 @@ LINE_1003
 
 LINE_1004
 
-	; PRINT A$;"€€€€€€Ü€€€€¯¯Ü€€€¯¯¯¯¯¯Ü¯¯";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xAF\xAF\xDC\x80\x80\x80\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5175,7 +5177,7 @@ LINE_1004
 
 LINE_1005
 
-	; PRINT A$;"€€€€€€Ü€€€€¯¯Ü€€€€€€€€€Ü€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5188,7 +5190,7 @@ LINE_1005
 
 LINE_1006
 
-	; PRINT A$;"€€€€€€Ü€€€€¯¯Ü€€€€€€€’€Ü€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\x92\x80\xDC\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5201,7 +5203,7 @@ LINE_1006
 
 LINE_1007
 
-	; PRINT A$;"¯¯Ü¯¯¯¯€€€€¯¯¯¯¯¯¯¯Ü¯¯¯¯¯¯";A$;
+	; PRINT A$;"\xAF\xAF\xDC\xAF\xAF\xAF\xAF\x80\x80\x80\x80\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5214,7 +5216,7 @@ LINE_1007
 
 LINE_1008
 
-	; PRINT A$;"€€Ü€€€€€€€€€€€€€€€€Ü€€€€€€";A$;
+	; PRINT A$;"\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5227,7 +5229,7 @@ LINE_1008
 
 LINE_1009
 
-	; PRINT A$;"€€Ü€€€€€€€€€€€€€€€€Ü€€€€€€";A$;
+	; PRINT A$;"\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5240,7 +5242,7 @@ LINE_1009
 
 LINE_1010
 
-	; PRINT A$;"¯¯¯¯¯¯¯¯Ü¯¯¯¯¯¯¯¯¯¯Ü€€€€€€";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5253,7 +5255,7 @@ LINE_1010
 
 LINE_1011
 
-	; PRINT A$;"€€€€€€€€Ü€€€€€€€€€€Ü€€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5266,7 +5268,7 @@ LINE_1011
 
 LINE_1012
 
-	; PRINT A$;"€€€€€€’€ÜÌÌÌÌÌÌÌÌÌÌÜ€€’€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\x92\x80\xDC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xDC\x80\x80\x92\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5279,7 +5281,7 @@ LINE_1012
 
 LINE_1013
 
-	; PRINT A$;"€€€€Ü¯¯¯¯¯€€€€€€€€€¯¯¯¯¯¯Ü";A$;
+	; PRINT A$;"\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\x80\x80\x80\x80\x80\x80\x80\x80\x80\xAF\xAF\xAF\xAF\xAF\xAF\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5292,7 +5294,7 @@ LINE_1013
 
 LINE_1014
 
-	; PRINT A$;"€€€€Ü€€€€€€€€€€€’€€€€€€€€Ü";A$;
+	; PRINT A$;"\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x92\x80\x80\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5451,7 +5453,7 @@ LINE_1100
 	.byte	bytecode_INTVAR_V
 	.byte	8
 
-	; PRINT A$;"€€€’€€€€€€€€€€€€€€€€€€€€€Ü";A$;
+	; PRINT A$;"\x80\x80\x80\x92\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5464,7 +5466,7 @@ LINE_1100
 
 LINE_1102
 
-	; PRINT A$;"Ü¯¯ï¯¯Ü€€€€€€€€€€’€€€€€€€Ü";A$;
+	; PRINT A$;"\xDC\xAF\xAF\xEF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x92\x80\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5477,7 +5479,7 @@ LINE_1102
 
 LINE_1103
 
-	; PRINT A$;"Ü€€€€€Ü€€€€Ü¯¯¯¯¯¯¯¯Ü€’€€Ü";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x92\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5490,7 +5492,7 @@ LINE_1103
 
 LINE_1104
 
-	; PRINT A$;"Ü€’€€€Ü€€€€Ü€€€€€€€€Ü¯¯¯°Ü";A$;
+	; PRINT A$;"\xDC\x80\x92\x80\x80\x80\xDC\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xB0\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5503,7 +5505,7 @@ LINE_1104
 
 LINE_1105
 
-	; PRINT A$;"Üï¯ï¯ïÜ€€€€Ü€€€€€€€€Ü€€€€Ü";A$;
+	; PRINT A$;"\xDC\xEF\xAF\xEF\xAF\xEF\xDC\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5516,7 +5518,7 @@ LINE_1105
 
 LINE_1106
 
-	; PRINT A$;"Ü€€€€€ÜÌÌÌÌÜÌÌÌÌÌ€€€Ü€€€€Ü";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\xDC\xCC\xCC\xCC\xCC\xDC\xCC\xCC\xCC\xCC\xCC\x80\x80\x80\xDC\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5529,7 +5531,7 @@ LINE_1106
 
 LINE_1107
 
-	; PRINT A$;"Ü€€€€€Ü€€€€Ü€€€€Ü¯¯¯ïïïïïÜ";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xEF\xEF\xEF\xEF\xEF\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5542,7 +5544,7 @@ LINE_1107
 
 LINE_1108
 
-	; PRINT A$;"Ü€€€€€Ü€€€€Ü€’€€Ü€€€€€€€€Ü";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xDC\x80\x92\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5555,7 +5557,7 @@ LINE_1108
 
 LINE_1109
 
-	; PRINT A$;"Ü€€€€€Ü€’€€Ü¯¯¯¯Ü€€€€€€€€Ü";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\xDC\x80\x92\x80\x80\xDC\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5568,7 +5570,7 @@ LINE_1109
 
 LINE_1110
 
-	; PRINT A$;"ï¯¯¯ï¯¯ï¯¯ïÜ€€€€€€€€Ü¯¯Ü¯¯";A$;
+	; PRINT A$;"\xEF\xAF\xAF\xAF\xEF\xAF\xAF\xEF\xAF\xAF\xEF\xDC\x80\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xDC\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5581,7 +5583,7 @@ LINE_1110
 
 LINE_1111
 
-	; PRINT A$;"ï¯¯¯ï€€€€€€Ü€€€€€€€€Ü€€Ü€€";A$;
+	; PRINT A$;"\xEF\xAF\xAF\xAF\xEF\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\xDC\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5594,7 +5596,7 @@ LINE_1111
 
 LINE_1112
 
-	; PRINT A$;"ï’€€ï€€€€€€Ü€€ÌÌÌÌÌÌÜ€€Ü€’";A$;
+	; PRINT A$;"\xEF\x92\x80\x80\xEF\x80\x80\x80\x80\x80\x80\xDC\x80\x80\xCC\xCC\xCC\xCC\xCC\xCC\xDC\x80\x80\xDC\x80\x92";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5607,7 +5609,7 @@ LINE_1112
 
 LINE_1113
 
-	; PRINT A$;"ï¯¯¯ï¯¯¯Ü¯¯¯ïïï€€€€€Ü€¯¯¯¯";A$;
+	; PRINT A$;"\xEF\xAF\xAF\xAF\xEF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xEF\xEF\xEF\x80\x80\x80\x80\x80\xDC\x80\xAF\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5620,7 +5622,7 @@ LINE_1113
 
 LINE_1114
 
-	; PRINT A$;"€€€€€€€€Ü€€€€€€€€€€€Ü€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5779,7 +5781,7 @@ LINE_1200
 	.byte	bytecode_INTVAR_V
 	.byte	8
 
-	; PRINT A$;"ÌÌÌÌÌÌÌÌÌ€€€’€€€€€€€€€€€€Ü";A$;
+	; PRINT A$;"\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x80\x80\x80\x92\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5792,7 +5794,7 @@ LINE_1200
 
 LINE_1202
 
-	; PRINT A$;"Ü’€€€€€€Ü¯¯¯¯¯¯¯¯¯Ü€€€€€€Ü";A$;
+	; PRINT A$;"\xDC\x92\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5805,7 +5807,7 @@ LINE_1202
 
 LINE_1203
 
-	; PRINT A$;"¯¯¯¯Ü€€€Ü€€€€€€€€€Üïïïïïïï";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\xEF\xEF\xEF\xEF\xEF\xEF\xEF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5818,7 +5820,7 @@ LINE_1203
 
 LINE_1204
 
-	; PRINT A$;"€€€€Ü€€€Ü€€€€’€€€€Ü€€€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\xDC\x80\x80\x80\xDC\x80\x80\x80\x80\x92\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5831,7 +5833,7 @@ LINE_1204
 
 LINE_1205
 
-	; PRINT A$;"€€€€Ü¯¯¯¯¯Ü¯¯¯¯¯Ü¯¯€€€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5844,7 +5846,7 @@ LINE_1205
 
 LINE_1206
 
-	; PRINT A$;"€’€€Ü€€€€€Ü€€€€€Ü€€ÌÌ€€€€€";A$;
+	; PRINT A$;"\x80\x92\x80\x80\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\xCC\xCC\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5857,7 +5859,7 @@ LINE_1206
 
 LINE_1207
 
-	; PRINT A$;"¯¯¯Ü¯€€€€€Ü€€€€€Ü€€€€ÌÌ€€€";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xDC\xAF\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xCC\xCC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5870,7 +5872,7 @@ LINE_1207
 
 LINE_1208
 
-	; PRINT A$;"€€€Ü€€€€Ü¯¯¯¯¯Ü¯¯€€€€€€ÌÌ’";A$;
+	; PRINT A$;"\x80\x80\x80\xDC\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\x80\x80\x80\x80\x80\x80\xCC\xCC\x92";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5883,7 +5885,7 @@ LINE_1208
 
 LINE_1209
 
-	; PRINT A$;"€€€ÜÌÌÌÌÜ€€€€€Ü€€€€€€€€€€¯";A$;
+	; PRINT A$;"\x80\x80\x80\xDC\xCC\xCC\xCC\xCC\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5896,7 +5898,7 @@ LINE_1209
 
 LINE_1210
 
-	; PRINT A$;"€€€Ü€€€€€€Ü¯¯¯¯¯¯¯¯¯Ü€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5909,7 +5911,7 @@ LINE_1210
 
 LINE_1211
 
-	; PRINT A$;"€€€Ü€€€€€€Ü¯¯¯¯¯¯¯¯¯Ü€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5922,7 +5924,7 @@ LINE_1211
 
 LINE_1212
 
-	; PRINT A$;"¯¯Ü¯¯¯¯¯¯¯¯¯€€€’€€€¯¯¯¯¯Ü¯";A$;
+	; PRINT A$;"\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\x80\x80\x80\x92\x80\x80\x80\xAF\xAF\xAF\xAF\xAF\xDC\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5935,7 +5937,7 @@ LINE_1212
 
 LINE_1213
 
-	; PRINT A$;"¯¯Ü¯¯¯¯¯¯¯¯¯€Ü¯¯¯Ü€¯¯¯¯¯Ü¯";A$;
+	; PRINT A$;"\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\x80\xDC\xAF\xAF\xAF\xDC\x80\xAF\xAF\xAF\xAF\xAF\xDC\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -5948,7 +5950,7 @@ LINE_1213
 
 LINE_1214
 
-	; PRINT A$;"€€Ü€€€€€€€€€€Ü¯¯¯Ü€€€€€€Ü€";A$;
+	; PRINT A$;"\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\xDC\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6107,7 +6109,7 @@ LINE_1300
 	.byte	bytecode_INTVAR_V
 	.byte	8
 
-	; PRINT A$;"ÜÌÌÌÌÌÌÌÌÌÌ€€€€€€€€€€€€€€€";A$;
+	; PRINT A$;"\xDC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6120,7 +6122,7 @@ LINE_1300
 
 LINE_1302
 
-	; PRINT A$;"Ü€€€€Ü€€€€€¯€’€¯€€€€€Ü€€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\xAF\x80\x92\x80\xAF\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6133,7 +6135,7 @@ LINE_1302
 
 LINE_1303
 
-	; PRINT A$;"Ü’€€ÜÜÜ€€’€¯¯¯¯¯€’€€ÜÜÜ€€’";A$;
+	; PRINT A$;"\xDC\x92\x80\x80\xDC\xDC\xDC\x80\x80\x92\x80\xAF\xAF\xAF\xAF\xAF\x80\x92\x80\x80\xDC\xDC\xDC\x80\x80\x92";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6146,7 +6148,7 @@ LINE_1303
 
 LINE_1304
 
-	; PRINT A$;"€ÜÜ€€Ü€€ÜÜ€€€€€€€ÜÜ€€Ü€€ÜÜ";A$;
+	; PRINT A$;"\x80\xDC\xDC\x80\x80\xDC\x80\x80\xDC\xDC\x80\x80\x80\x80\x80\x80\x80\xDC\xDC\x80\x80\xDC\x80\x80\xDC\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6159,7 +6161,7 @@ LINE_1304
 
 LINE_1305
 
-	; PRINT A$;"€Ü€ÜÜÜÜÜ€Ü€€€€€€€Ü€ÜÜÜÜÜ€Ü";A$;
+	; PRINT A$;"\x80\xDC\x80\xDC\xDC\xDC\xDC\xDC\x80\xDC\x80\x80\x80\x80\x80\x80\x80\xDC\x80\xDC\xDC\xDC\xDC\xDC\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6172,7 +6174,7 @@ LINE_1305
 
 LINE_1306
 
-	; PRINT A$;"€Ü€€’€’€€Ü€€€Ü€€€Ü€€’€’€€Ü";A$;
+	; PRINT A$;"\x80\xDC\x80\x80\x92\x80\x92\x80\x80\xDC\x80\x80\x80\xDC\x80\x80\x80\xDC\x80\x80\x92\x80\x92\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6185,7 +6187,7 @@ LINE_1306
 
 LINE_1307
 
-	; PRINT A$;"Ü€Ü¯¯¯¯¯Ü€€€ÜÜÜ€€€Ü¯¯¯¯¯Ü€";A$;
+	; PRINT A$;"\xDC\x80\xDC\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\xDC\xDC\xDC\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xDC\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6198,7 +6200,7 @@ LINE_1307
 
 LINE_1308
 
-	; PRINT A$;"Ü€€ÜÜÜÜÜ€ÜÜ€€Ü€€ÜÜ€ÜÜÜÜÜ€€";A$;
+	; PRINT A$;"\xDC\x80\x80\xDC\xDC\xDC\xDC\xDC\x80\xDC\xDC\x80\x80\xDC\x80\x80\xDC\xDC\x80\xDC\xDC\xDC\xDC\xDC\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6211,7 +6213,7 @@ LINE_1308
 
 LINE_1309
 
-	; PRINT A$;"Ü€€€€€€€€Ü€ÜÜÜÜÜ€Ü€€€€€€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\xDC\xDC\xDC\xDC\xDC\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6224,7 +6226,7 @@ LINE_1309
 
 LINE_1310
 
-	; PRINT A$;"Ü€€€’€€€€Ü€€’€’€€Ü€€€€’€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x92\x80\x80\x80\x80\xDC\x80\x80\x92\x80\x92\x80\x80\xDC\x80\x80\x80\x80\x92\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6237,7 +6239,7 @@ LINE_1310
 
 LINE_1311
 
-	; PRINT A$;"Ü¯¯¯¯¯Ü€€€Ü¯¯¯¯¯Ü€€Ü¯¯¯¯¯¯";A$;
+	; PRINT A$;"\xDC\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6250,7 +6252,7 @@ LINE_1311
 
 LINE_1312
 
-	; PRINT A$;"Ü€€€€€Ü€€€€ÜÜÜÜÜ€€€Ü€€€€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xDC\xDC\xDC\xDC\xDC\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6263,7 +6265,7 @@ LINE_1312
 
 LINE_1313
 
-	; PRINT A$;"Ü€€€€€Ü€€€€€€€€€€€€Ü€€€€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6276,7 +6278,7 @@ LINE_1313
 
 LINE_1314
 
-	; PRINT A$;"Ü€€€€€Ü€€€€€€€’€€€€Ü€€€€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x92\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6435,7 +6437,7 @@ LINE_1400
 	.byte	bytecode_INTVAR_V
 	.byte	10
 
-	; PRINT A$;"€€€€€€€€ÜÌÌÌ€€€€€€’€€€€€Ü€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\x80\x80\xDC\xCC\xCC\xCC\x80\x80\x80\x80\x80\x80\x92\x80\x80\x80\x80\x80\xDC\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6448,7 +6450,7 @@ LINE_1400
 
 LINE_1402
 
-	; PRINT A$;"€€€€’€€€Ü€€€¯¯¯¯¯¯¯¯€€€€Ü€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x92\x80\x80\x80\xDC\x80\x80\x80\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\x80\x80\x80\x80\xDC\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6461,7 +6463,7 @@ LINE_1402
 
 LINE_1403
 
-	; PRINT A$;"¯¯¯¯¯¯¯¯¯¯Ü€€€€€€€€’€€€€Ü€";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x92\x80\x80\x80\x80\xDC\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6474,7 +6476,7 @@ LINE_1403
 
 LINE_1404
 
-	; PRINT A$;"€€€€€€€€€€Ü¯¯¯¯¯¯Ü¯¯¯¯Ü¯¯€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xDC\xAF\xAF\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6487,7 +6489,7 @@ LINE_1404
 
 LINE_1405
 
-	; PRINT A$;"€€€€€€€€€€Ü€€€€€€Ü€€€€Ü€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6500,7 +6502,7 @@ LINE_1405
 
 LINE_1406
 
-	; PRINT A$;"¯¯¯¯¯¯¯¯¯¯Ü€€€€€€Ü€€€€Ü€€’";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xDC\x80\x80\x92";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6513,7 +6515,7 @@ LINE_1406
 
 LINE_1407
 
-	; PRINT A$;"¯¯¯¯¯¯¯¯¯¯Ü¯¯¯¯¯¯¯ïï€€Ü¯¯¯";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xEF\xEF\x80\x80\xDC\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6526,7 +6528,7 @@ LINE_1407
 
 LINE_1408
 
-	; PRINT A$;"¯¯¯¯¯¯¯¯¯¯Ü€€€€€€€€€€€Ü€€€";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6539,7 +6541,7 @@ LINE_1408
 
 LINE_1409
 
-	; PRINT A$;"¯¯¯¯¯¯¯¯¯¯Ü€€€€€€’€ÌÌÌÜ€€€";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x92\x80\xCC\xCC\xCC\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6552,7 +6554,7 @@ LINE_1409
 
 LINE_1410
 
-	; PRINT A$;"¯¯€€€€€€¯¯Ü€€€€€€¯¯€€€Ü€€€";A$;
+	; PRINT A$;"\xAF\xAF\x80\x80\x80\x80\x80\x80\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\xAF\xAF\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6565,7 +6567,7 @@ LINE_1410
 
 LINE_1411
 
-	; PRINT A$;"¯¯€€’’€€¯¯Ü€€€€’€€€€€€Ü€€€";A$;
+	; PRINT A$;"\xAF\xAF\x80\x80\x92\x92\x80\x80\xAF\xAF\xDC\x80\x80\x80\x80\x92\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6578,7 +6580,7 @@ LINE_1411
 
 LINE_1412
 
-	; PRINT A$;"¯¯¯¯¯¯¯¯¯¯¯Ü¯¯¯¯¯¯Ü€€€Ü€€€";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6591,7 +6593,7 @@ LINE_1412
 
 LINE_1413
 
-	; PRINT A$;"€€€€€€€€€€€Ü€€€€€€¯¯¯¯¯¯¯Ü";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6604,7 +6606,7 @@ LINE_1413
 
 LINE_1414
 
-	; PRINT A$;"€€€€’€€€€€€Ü€€€€€€€€€€€€€Ü";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x92\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6741,7 +6743,7 @@ LINE_1500
 	.byte	bytecode_INTVAR_V
 	.byte	6
 
-	; PRINT A$;"€€€€€€€€€Ü€€€€€€€’€€€€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x92\x80\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6754,7 +6756,7 @@ LINE_1500
 
 LINE_1502
 
-	; PRINT A$;"¯¯¯€€€€€€Ü€€€€€€¯¯¯Ü¯¯¯¯¯¯";A$;
+	; PRINT A$;"\xAF\xAF\xAF\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6767,7 +6769,7 @@ LINE_1502
 
 LINE_1503
 
-	; PRINT A$;"€€€¯€€€€€Ü€€€€€¯¯€€Ü€€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\xAF\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\xAF\xAF\x80\x80\xDC\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6780,7 +6782,7 @@ LINE_1503
 
 LINE_1504
 
-	; PRINT A$;"€€€¯¯€€€€Ü€€€€¯¯€€€Ü€€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\xAF\xAF\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xAF\xAF\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6793,7 +6795,7 @@ LINE_1504
 
 LINE_1505
 
-	; PRINT A$;"’€€¯¯¯€€€Ü€€’¯¯¯€€€Ü€€€’€€";A$;
+	; PRINT A$;"\x92\x80\x80\xAF\xAF\xAF\x80\x80\x80\xDC\x80\x80\x92\xAF\xAF\xAF\x80\x80\x80\xDC\x80\x80\x80\x92\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6806,7 +6808,7 @@ LINE_1505
 
 LINE_1506
 
-	; PRINT A$;"¯¯Ü¯¯¯¯€€Ü€€¯¯¯¯Ü¯¯Ü¯¯¯¯¯¯";A$;
+	; PRINT A$;"\xAF\xAF\xDC\xAF\xAF\xAF\xAF\x80\x80\xDC\x80\x80\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6819,7 +6821,7 @@ LINE_1506
 
 LINE_1507
 
-	; PRINT A$;"€€Ü€€€¯¯€Ü€¯¯€€€Ü€€€€€€€€€";A$;
+	; PRINT A$;"\x80\x80\xDC\x80\x80\x80\xAF\xAF\x80\xDC\x80\xAF\xAF\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6832,7 +6834,7 @@ LINE_1507
 
 LINE_1508
 
-	; PRINT A$;"€€Ü’€€€¯¯Ü¯¯€€€€Ü€€€€’€€€€";A$;
+	; PRINT A$;"\x80\x80\xDC\x92\x80\x80\x80\xAF\xAF\xDC\xAF\xAF\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x92\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6845,7 +6847,7 @@ LINE_1508
 
 LINE_1509
 
-	; PRINT A$;"Ü¯¯¯Ü€€€€Ü€€€€€¯Ü¯Ü¯¯¯€€€€";A$;
+	; PRINT A$;"\xDC\xAF\xAF\xAF\xDC\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\xAF\xDC\xAF\xDC\xAF\xAF\xAF\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6858,7 +6860,7 @@ LINE_1509
 
 LINE_1510
 
-	; PRINT A$;"Ü€€€Ü€€€€€€€€€€€€€Ü€€€€€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6871,7 +6873,7 @@ LINE_1510
 
 LINE_1511
 
-	; PRINT A$;"Ü€€€Ü€€€€’€€€€€€€€Ü€€€€€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\xDC\x80\x80\x80\x80\x92\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6884,7 +6886,7 @@ LINE_1511
 
 LINE_1512
 
-	; PRINT A$;"Ü€€€Ü¯¯¯¯¯¯¯Ü¯¯¯¯¯Ü¯¯¯¯Ü¯¯";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xDC\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6897,7 +6899,7 @@ LINE_1512
 
 LINE_1513
 
-	; PRINT A$;"Ü€€€€€€€€€€€Ü€€€€€€€€€€Ü€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -6910,7 +6912,7 @@ LINE_1513
 
 LINE_1514
 
-	; PRINT A$;"Ü€€€€€€€€€€€Ü€€€€€€€€€€Ü€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7091,7 +7093,7 @@ LINE_1600
 	.byte	bytecode_INTVAR_V
 	.byte	6
 
-	; PRINT A$;"€Ü€€€€€€€€€€€€€€€€ÌÌÌÌÌÌÌÌ";A$;
+	; PRINT A$;"\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7104,7 +7106,7 @@ LINE_1600
 
 LINE_1602
 
-	; PRINT A$;"€Ü€€€€€€€€€€€€€€€€Ü€€€€€€Ü";A$;
+	; PRINT A$;"\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7117,7 +7119,7 @@ LINE_1602
 
 LINE_1603
 
-	; PRINT A$;"¯¯¯¯Ü¯€€€¯Ü¯¯¯€€€€Ü€€€€’€Ü";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xDC\xAF\x80\x80\x80\xAF\xDC\xAF\xAF\xAF\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x92\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7130,7 +7132,7 @@ LINE_1603
 
 LINE_1604
 
-	; PRINT A$;"€€€€Ü€€€€€Ü€€€€¯¯¯Ü¯¯¯¯¯¯¯";A$;
+	; PRINT A$;"\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7143,7 +7145,7 @@ LINE_1604
 
 LINE_1605
 
-	; PRINT A$;"€€€€Ü€€’€€Ü€€€€€€€Ü€€€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\xDC\x80\x80\x92\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7156,7 +7158,7 @@ LINE_1605
 
 LINE_1606
 
-	; PRINT A$;"¯¯¯¯Ü¯¯¯€€Ü€€€€€€€Ü€€€€€€€";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7169,7 +7171,7 @@ LINE_1606
 
 LINE_1607
 
-	; PRINT A$;"€€€€Ü€€€€€Ü€€€€€€€Ü€€€€€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7182,7 +7184,7 @@ LINE_1607
 
 LINE_1608
 
-	; PRINT A$;"€’€€Ü€€’€€Ü€€€€€€€Ü€€€€€€€";A$;
+	; PRINT A$;"\x80\x92\x80\x80\xDC\x80\x80\x92\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7195,7 +7197,7 @@ LINE_1608
 
 LINE_1609
 
-	; PRINT A$;"¯Ü¯¯¯¯¯¯¯¯¯¯¯Ü€€€€Ü€¯¯¯¯€Ü";A$;
+	; PRINT A$;"\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\xDC\x80\xAF\xAF\xAF\xAF\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7208,7 +7210,7 @@ LINE_1609
 
 LINE_1610
 
-	; PRINT A$;"€Ü€€€€€€€€€€€Ü€’€€Ü€¯¯¯¯€Ü";A$;
+	; PRINT A$;"\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x92\x80\x80\xDC\x80\xAF\xAF\xAF\xAF\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7221,7 +7223,7 @@ LINE_1610
 
 LINE_1611
 
-	; PRINT A$;"€Ü€€’€€€€€€€€ÜÌÌÌÌÜ€¯€’¯€Ü";A$;
+	; PRINT A$;"\x80\xDC\x80\x80\x92\x80\x80\x80\x80\x80\x80\x80\x80\xDC\xCC\xCC\xCC\xCC\xDC\x80\xAF\x80\x92\xAF\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7234,7 +7236,7 @@ LINE_1611
 
 LINE_1612
 
-	; PRINT A$;"¯¯¯¯¯¯Ü€€€€€€€€€€€Ü€¯¯¯¯¯Ü";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\xAF\xAF\xAF\xAF\xAF\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7247,7 +7249,7 @@ LINE_1612
 
 LINE_1613
 
-	; PRINT A$;"€€€€€€Ü€€€€€€€€€€€Ü€€€€€€Ü";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7260,7 +7262,7 @@ LINE_1613
 
 LINE_1614
 
-	; PRINT A$;"€€€€€€Ü€€€€€€€€€’€Ü€€€€€€Ü";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x92\x80\xDC\x80\x80\x80\x80\x80\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7441,7 +7443,7 @@ LINE_1700
 	.byte	bytecode_INTVAR_V
 	.byte	8
 
-	; PRINT A$;"€€€€€€’€€€€’€€€€€€€€€€Ü€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\x92\x80\x80\x80\x80\x92\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7454,7 +7456,7 @@ LINE_1700
 
 LINE_1702
 
-	; PRINT A$;"Ü¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯Ü€€€€€Ü€€€";A$;
+	; PRINT A$;"\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7467,7 +7469,7 @@ LINE_1702
 
 LINE_1703
 
-	; PRINT A$;"Ü€€€€€€€€€€€€’€€ÜÌÌÌÌÌÜ€€’";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x92\x80\x80\xDC\xCC\xCC\xCC\xCC\xCC\xDC\x80\x80\x92";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7480,7 +7482,7 @@ LINE_1703
 
 LINE_1704
 
-	; PRINT A$;"¯¯¯¯¯¯¯¯¯Ü¯¯¯¯¯¯¯€€€€€Ü¯¯¯";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7493,7 +7495,7 @@ LINE_1704
 
 LINE_1705
 
-	; PRINT A$;"¯¯¯¯¯¯¯¯ÜÜ€€€€€€€€€€€€Ü€€€";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7506,7 +7508,7 @@ LINE_1705
 
 LINE_1706
 
-	; PRINT A$;"¯¯¯¯¯¯¯ÜÜÌÌÌÌÌÌÜ€€€€€€Ü€€€";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xDC\xCC\xCC\xCC\xCC\xCC\xCC\xDC\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7519,7 +7521,7 @@ LINE_1706
 
 LINE_1707
 
-	; PRINT A$;"¯’€’¯¯ÜÜ€€€€€€€Ü€’€€€€Ü€€’";A$;
+	; PRINT A$;"\xAF\x92\x80\x92\xAF\xAF\xDC\xDC\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x92\x80\x80\x80\x80\xDC\x80\x80\x92";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7532,7 +7534,7 @@ LINE_1707
 
 LINE_1708
 
-	; PRINT A$;"¯¯¯¯¯ÜÜ€€€€Ü¯¯¯¯ïï¯¯¯¯Ü¯¯¯";A$;
+	; PRINT A$;"\xAF\xAF\xAF\xAF\xAF\xDC\xDC\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xEF\xEF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7545,7 +7547,7 @@ LINE_1708
 
 LINE_1709
 
-	; PRINT A$;"€€€€€Ü€€€€€Ü€€€€€€€€€€Ü€€€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7558,7 +7560,7 @@ LINE_1709
 
 LINE_1710
 
-	; PRINT A$;"€€€€€Ü€€€’€ÜÌÌÌÌÌÌÌÌÌÌÜ€€’";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x92\x80\xDC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xDC\x80\x80\x92";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7571,7 +7573,7 @@ LINE_1710
 
 LINE_1711
 
-	; PRINT A$;"Ü¯¯¯¯¯¯¯¯¯¯Ü€€’€€€€’€€Ü¯¯¯";A$;
+	; PRINT A$;"\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x92\x80\x80\x80\x80\x92\x80\x80\xDC\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7584,7 +7586,7 @@ LINE_1711
 
 LINE_1712
 
-	; PRINT A$;"Ü€€€€€€€€€€Ü€¯¯¯¯¯¯¯¯€Ü€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7597,7 +7599,7 @@ LINE_1712
 
 LINE_1713
 
-	; PRINT A$;"Ü€€€€€€€€€€Ü€€€€€€€€€€Ü€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7610,7 +7612,7 @@ LINE_1713
 
 LINE_1714
 
-	; PRINT A$;"Ü€€€€€€’€€€Ü€€€€€€’€€€Ü€€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\x80\x92\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x92\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7769,7 +7771,7 @@ LINE_1800
 	.byte	bytecode_INTVAR_V
 	.byte	8
 
-	; PRINT A$;"€€€€€€€€€€€€€€€€€€€€€€€€Ü€";A$;
+	; PRINT A$;"\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7782,7 +7784,7 @@ LINE_1800
 
 LINE_1802
 
-	; PRINT A$;"Ü¯¯¯¯¯¯¯¯¯¯Ü€€€€€’€€€’€€Ü€";A$;
+	; PRINT A$;"\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x92\x80\x80\x80\x92\x80\x80\xDC\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7795,7 +7797,7 @@ LINE_1802
 
 LINE_1803
 
-	; PRINT A$;"Ü€€€€€€€€€€Ü¯¯¯¯¯Ü€€¯¯Ü¯¯¯";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\xAF\xAF\xDC\xAF\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7808,7 +7810,7 @@ LINE_1803
 
 LINE_1804
 
-	; PRINT A$;"Ü€’€€€€€€’€Ü€€€€ïÜ€€€€Ü€€€";A$;
+	; PRINT A$;"\xDC\x80\x92\x80\x80\x80\x80\x80\x80\x92\x80\xDC\x80\x80\x80\x80\xEF\xDC\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7821,7 +7823,7 @@ LINE_1804
 
 LINE_1805
 
-	; PRINT A$;"Ü€¯€€¯¯¯€¯€Ü€’’€ïÜ€€€€Ü€€€";A$;
+	; PRINT A$;"\xDC\x80\xAF\x80\x80\xAF\xAF\xAF\x80\xAF\x80\xDC\x80\x92\x92\x80\xEF\xDC\x80\x80\x80\x80\xDC\x80\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7834,7 +7836,7 @@ LINE_1805
 
 LINE_1806
 
-	; PRINT A$;"Ü€¯€¯¯¯€€¯€Ü€ïï€ï¯¯¯¯¯¯¯¯ï";A$;
+	; PRINT A$;"\xDC\x80\xAF\x80\xAF\xAF\xAF\x80\x80\xAF\x80\xDC\x80\xEF\xEF\x80\xEF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xEF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7847,7 +7849,7 @@ LINE_1806
 
 LINE_1807
 
-	; PRINT A$;"Ü€¯€€¯¯¯€¯€Ü€ïï€€€€€€€€€ï’";A$;
+	; PRINT A$;"\xDC\x80\xAF\x80\x80\xAF\xAF\xAF\x80\xAF\x80\xDC\x80\xEF\xEF\x80\x80\x80\x80\x80\x80\x80\x80\x80\xEF\x92";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7860,7 +7862,7 @@ LINE_1807
 
 LINE_1808
 
-	; PRINT A$;"Ü€¯€¯¯¯€€¯€Ü€ïÌÌÌÌÌÌ€’€€ïÜ";A$;
+	; PRINT A$;"\xDC\x80\xAF\x80\xAF\xAF\xAF\x80\x80\xAF\x80\xDC\x80\xEF\xCC\xCC\xCC\xCC\xCC\xCC\x80\x92\x80\x80\xEF\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7873,7 +7875,7 @@ LINE_1808
 
 LINE_1809
 
-	; PRINT A$;"Ü€¯’€¯¯¯€¯€Ü€ï’€€€€€¯¯¯ÜïÜ";A$;
+	; PRINT A$;"\xDC\x80\xAF\x92\x80\xAF\xAF\xAF\x80\xAF\x80\xDC\x80\xEF\x92\x80\x80\x80\x80\x80\xAF\xAF\xAF\xDC\xEF\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7886,7 +7888,7 @@ LINE_1809
 
 LINE_1810
 
-	; PRINT A$;"Ü€¯¯¯¯¯€€¯€Ü€ïï€€€€€€€€Ü€Ü";A$;
+	; PRINT A$;"\xDC\x80\xAF\xAF\xAF\xAF\xAF\x80\x80\xAF\x80\xDC\x80\xEF\xEF\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\xDC";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7899,7 +7901,7 @@ LINE_1810
 
 LINE_1811
 
-	; PRINT A$;"Ü€¯¯¯¯¯¯¯¯€Ü€ïï€€€’€€€€Ü¯¯";A$;
+	; PRINT A$;"\xDC\x80\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\x80\xDC\x80\xEF\xEF\x80\x80\x80\x92\x80\x80\x80\x80\xDC\xAF\xAF";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7912,7 +7914,7 @@ LINE_1811
 
 LINE_1812
 
-	; PRINT A$;"Ü€€€€€€€€€€Ü€ïï€¯¯¯¯€€€Ü€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\xEF\xEF\x80\xAF\xAF\xAF\xAF\x80\x80\x80\xDC\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7925,7 +7927,7 @@ LINE_1812
 
 LINE_1813
 
-	; PRINT A$;"Üïïïïïïïï¯ïïïïï€€€€€€€€Ü€€";A$;
+	; PRINT A$;"\xDC\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xAF\xEF\xEF\xEF\xEF\xEF\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -7938,7 +7940,7 @@ LINE_1813
 
 LINE_1814
 
-	; PRINT A$;"Ü€€€€€€€€€€€€€€€€€€€€€€Ü€€";A$;
+	; PRINT A$;"\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80";A$;
 
 	.byte	bytecode_pr_sx
 	.byte	bytecode_STRVAR_A
@@ -8097,98 +8099,98 @@ LINE_1900
 	.byte	bytecode_INTVAR_V
 	.byte	8
 
-	; PRINT "¯€€€€€€€€€€€€€€€Ü€€€€€€€€€€€€€€¯";
+	; PRINT "\xAF\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xDC\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xAF"
 
 LINE_1902
 
-	; PRINT "¯€€€ÌÌÌÌÌ€€€€€€Ü¯Ü€€€€€€ÌÌÌÌÌ€€¯";
+	; PRINT "\xAF\x80\x80\x80\xCC\xCC\xCC\xCC\xCC\x80\x80\x80\x80\x80\x80\xDC\xAF\xDC\x80\x80\x80\x80\x80\x80\xCC\xCC\xCC\xCC\xCC\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\xCC\xCC\xCC\xCC\xCC\x80\x80\x80\x80\x80\x80\xDC\xAF\xDC\x80\x80\x80\x80\x80\x80\xCC\xCC\xCC\xCC\xCC\x80\x80\xAF"
 
 LINE_1903
 
-	; PRINT "¯€€€€€€€ÜÌÌÌÜ¯’Ü¯Ü’¯ÜÌÌÌÜ€€€€€€¯";
+	; PRINT "\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xCC\xCC\xCC\xDC\xAF\x92\xDC\xAF\xDC\x92\xAF\xDC\xCC\xCC\xCC\xDC\x80\x80\x80\x80\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xCC\xCC\xCC\xDC\xAF\x92\xDC\xAF\xDC\x92\xAF\xDC\xCC\xCC\xCC\xDC\x80\x80\x80\x80\x80\x80\xAF"
 
 LINE_1904
 
-	; PRINT "¯€€€Ü¯’¯Ü€€€Ü¯¯¯¯¯¯¯Ü€€€Ü¯’¯Ü€€¯";
+	; PRINT "\xAF\x80\x80\x80\xDC\xAF\x92\xAF\xDC\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\xDC\xAF\x92\xAF\xDC\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\xDC\xAF\x92\xAF\xDC\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\xDC\xAF\x92\xAF\xDC\x80\x80\xAF"
 
 LINE_1905
 
-	; PRINT "¯€€€Ü¯¯¯€€€€ÜÌÜ¯€¯ÜÌÜ€€€€¯¯¯Ü€€¯";
+	; PRINT "\xAF\x80\x80\x80\xDC\xAF\xAF\xAF\x80\x80\x80\x80\xDC\xCC\xDC\xAF\x80\xAF\xDC\xCC\xDC\x80\x80\x80\x80\xAF\xAF\xAF\xDC\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\xDC\xAF\xAF\xAF\x80\x80\x80\x80\xDC\xCC\xDC\xAF\x80\xAF\xDC\xCC\xDC\x80\x80\x80\x80\xAF\xAF\xAF\xDC\x80\x80\xAF"
 
 LINE_1906
 
-	; PRINT "¯€€€ÜÜ¯€€€€€€€Ü¯¯¯Ü€€€€€€€¯ÜÜ€€¯";
+	; PRINT "\xAF\x80\x80\x80\xDC\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\xDC\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\xDC\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\xDC\x80\x80\xAF"
 
 LINE_1907
 
-	; PRINT "¯€€€€Ü¯€€€€€€€Ü¯€¯Ü€€€€€€€¯Ü€€€¯";
+	; PRINT "\xAF\x80\x80\x80\x80\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\x80\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\x80\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\x80\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\x80\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\x80\x80\x80\xAF"
 
 LINE_1908
 
-	; PRINT "¯€€€€Ü¯€€€€€€€Ü¯¯¯Ü€€€€€€€¯Ü€€€¯";
+	; PRINT "\xAF\x80\x80\x80\x80\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\x80\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\x80\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\x80\x80\x80\xAF"
 
 LINE_1909
 
-	; PRINT "¯€€€€Ü¯€€€€€€€Ü¯€¯Ü€€€€€€€¯Ü€€€¯";
+	; PRINT "\xAF\x80\x80\x80\x80\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\x80\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\x80\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\x80\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\x80\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\x80\x80\x80\xAF"
 
 LINE_1910
 
-	; PRINT "¯€€€€Ü¯€€€€€€€Ü¯¯¯Ü€€€€€€€¯Ü€€€¯";
+	; PRINT "\xAF\x80\x80\x80\x80\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\x80\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\x80\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\x80\x80\x80\xAF"
 
 LINE_1911
 
-	; PRINT "¯€€€€Ü¯€€€€€€€Ü¯€¯Ü€€€€€€€¯Ü€€€¯";
+	; PRINT "\xAF\x80\x80\x80\x80\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\x80\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\x80\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\x80\xDC\xAF\x80\x80\x80\x80\x80\x80\x80\xDC\xAF\x80\xAF\xDC\x80\x80\x80\x80\x80\x80\x80\xAF\xDC\x80\x80\x80\xAF"
 
 LINE_1912
 
-	; PRINT "¯€€€€Ü¯¯¯¯¯¯¯¯Ü¯¯¯Ü¯¯¯¯¯¯¯¯Ü€€€¯";
+	; PRINT "\xAF\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x80\x80\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xDC\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xAF\xDC\x80\x80\x80\xAF"
 
 LINE_1913
 
-	; PRINT "¯€€’€Ü¯€€€’€€¯Ü€’€Ü¯€€’€€€¯Ü’€€¯";
+	; PRINT "\xAF\x80\x80\x92\x80\xDC\xAF\x80\x80\x80\x92\x80\x80\xAF\xDC\x80\x92\x80\xDC\xAF\x80\x80\x92\x80\x80\x80\xAF\xDC\x92\x80\x80\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\x80\x80\x92\x80\xDC\xAF\x80\x80\x80\x92\x80\x80\xAF\xDC\x80\x92\x80\xDC\xAF\x80\x80\x92\x80\x80\x80\xAF\xDC\x92\x80\x80\xAF"
 
 LINE_1914
 
-	; PRINT "¯ïïïïïïïïïïïïïïïïïïïïïïïïïïïïïï¯";
+	; PRINT "\xAF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xAF";
 
 	.byte	bytecode_pr_ss
 	.text	32, "\xAF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xAF"
@@ -10049,7 +10051,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3

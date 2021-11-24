@@ -147,6 +147,9 @@ public:
   std::string operate(InstInkey &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
+  std::string operate(InstMem &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
   std::string operate(InstAdd &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
@@ -316,6 +319,9 @@ public:
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstSound &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstError &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstBegin &inst) override {

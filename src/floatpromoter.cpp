@@ -71,16 +71,16 @@ bool ExprFloatPromoter::makeFloat(std::vector<Symbol> &table,
 }
 
 void ExprFloatPromoter::operate(NumericVariableExpr &e) {
-  if (makeFloat(symbolTable.numVarTable, e.varname) && Wfloat) {
-    fprintf(stderr, "Wfloat: variable \"%s\" promoted to float in line %i\n",
-            e.varname.c_str(), lineNumber);
+  if (makeFloat(symbolTable.numVarTable, e.varname)) {
+    warner.start(lineNumber);
+    warner.finish("variable \"%s\" promoted to float", e.varname.c_str());
   }
 }
 
 void ExprFloatPromoter::operate(NumericArrayExpr &e) {
-  if (makeFloat(symbolTable.numArrTable, e.varexp->varname) && Wfloat) {
-    fprintf(stderr,
-            "Wfloat: %lu-D array \"%s()\" promoted to float in line %i\n",
-            e.indices->operands.size(), e.varexp->varname.c_str(), lineNumber);
+  if (makeFloat(symbolTable.numArrTable, e.varexp->varname)) {
+    warner.start(lineNumber);
+    warner.finish("%lu-D array \"%s()\" promoted to float",
+                  e.indices->operands.size(), e.varexp->varname.c_str());
   }
 }

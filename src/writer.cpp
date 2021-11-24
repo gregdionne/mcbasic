@@ -12,10 +12,6 @@
 void Writer::init() {
   opts.init(argc, argv);
   argcnt = opts.argcnt;
-
-  if (!openNext()) {
-    usage(argv);
-  }
 }
 
 void Writer::close() { fclose(fp); }

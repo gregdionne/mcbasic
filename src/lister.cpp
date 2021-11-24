@@ -1,6 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "lister.hpp"
+#include "strescape.hpp"
 
 #include <stdarg.h>
 
@@ -64,7 +65,7 @@ void ExprLister::operate(NumericConstantExpr &e) {
 }
 
 void ExprLister::operate(StringConstantExpr &e) {
-  result = '"' + e.value + '"';
+  result = '"' + strescape(e.value) + '"';
 }
 
 void ExprLister::operate(NumericVariableExpr &e) { result = e.varname; }
@@ -247,6 +248,8 @@ void ExprLister::operate(PointExpr &e) {
 
 void ExprLister::operate(InkeyExpr & /*expr*/) { result = "INKEY$"; }
 
+void ExprLister::operate(MemExpr & /*expr*/) { result = "MEM"; }
+
 void StatementLister::operate(Rem &s) {
   result = "REM " + removeTrailing(s.comment, "\n");
 }
@@ -419,4 +422,8 @@ void StatementLister::operate(Cls &s) {
 
 void StatementLister::operate(Sound &s) {
   result = "SOUND " + list(s.pitch) + "," + list(s.duration);
+}
+
+void StatementLister::operate(Error &s) {
+  result = "ERROR " + list(s.errorCode);
 }

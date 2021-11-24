@@ -5,9 +5,6 @@
 
 #include <string>
 
-// make special characters suitable for tasm6801
-std::string strescape(std::string const &in);
-
 // Provide a convenient interface for 6801 assembly
 // - right now these simply write a string to an internal buffer
 //   intended to be output to an .asm file suitable for tasm6801

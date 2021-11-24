@@ -51,6 +51,7 @@ public:
   void operate(RelationalExpr &e) override;
   void operate(PointExpr &e) override;
   void operate(InkeyExpr &e) override;
+  void operate(MemExpr &e) override;
 
   bool gotConst;
   double dvalue;

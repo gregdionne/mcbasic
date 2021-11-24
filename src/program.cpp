@@ -4,12 +4,30 @@
 
 #include <algorithm>
 
-void Program::sortlines() {
+void Program::sortLines() {
   struct {
-    bool operator()(std::unique_ptr<Line> &a, std::unique_ptr<Line> &b) const {
+    bool operator()(const std::unique_ptr<Line> &a,
+                    const std::unique_ptr<Line> &b) const {
       return a->lineNumber < b->lineNumber;
     }
   } linecmp;
 
-  std::sort(lines.begin(), lines.end(), linecmp);
+  std::stable_sort(lines.begin(), lines.end(), linecmp);
+}
+
+void Program::removeDuplicateLines(bool warn) {
+  auto itLine = lines.begin();
+  if (itLine != lines.end()) {
+    auto itOldLine = itLine;
+    while (++itLine != lines.end()) {
+      if ((*itLine)->lineNumber == (*itOldLine)->lineNumber) {
+        if (warn) {
+          fprintf(stderr, "Warning: removed duplicate line %i\n",
+                  (*itOldLine)->lineNumber);
+        }
+        itLine = lines.erase(itOldLine);
+      }
+      itOldLine = itLine;
+    }
+  }
 }

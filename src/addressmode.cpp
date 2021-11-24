@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "addressmode.hpp"
-#include "assembler.hpp"
+#include "strescape.hpp"
 
 // TODO: modernize this with assembler
 

@@ -509,7 +509,7 @@ void ExprMerger::merge(NaryNumericExpr &e) {
       e.invoperands.insert(e.invoperands.end(),
                            std::make_move_iterator(subExp->operands.begin()),
                            std::make_move_iterator(subExp->operands.end()));
-      e.operands.insert(e.invoperands.end(),
+      e.operands.insert(e.operands.end(),
                         std::make_move_iterator(subExp->invoperands.begin()),
                         std::make_move_iterator(subExp->invoperands.end()));
       e.invoperands.erase(e.invoperands.begin() + i);
@@ -569,3 +569,5 @@ void ExprMerger::operate(RelationalExpr &e) {
   merge(e.lhs);
   merge(e.rhs);
 }
+
+void ExprMerger::operate(PrintTabExpr &e) { merge(e.tabstop); }

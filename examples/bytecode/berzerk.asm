@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -3887,7 +3889,7 @@ LINE_66
 
 	; DIM LV,EV,SC,EN,EX,BN,SR,HS,XX,YY,CX,CY,XC,YC,PC,RR,HT,I$,A$
 
-	; B$="€€"
+	; B$="\x80\x80"
 
 	.byte	bytecode_ld_sr1_ss
 	.text	2, "\x80\x80"
@@ -5834,7 +5836,7 @@ LINE_103
 	.byte	bytecode_clsn_pb
 	.byte	0
 
-	; PRINT @4, "THE ASTRO DATE IS 3200"
+	; PRINT @4, "THE ASTRO DATE IS 3200\r";
 
 	.byte	bytecode_prat_pb
 	.byte	4
@@ -5896,7 +5898,7 @@ LINE_103
 
 LINE_104
 
-	; PRINT @36, "AND YOU ARE THE LAST"
+	; PRINT @36, "AND YOU ARE THE LAST\r";
 
 	.byte	bytecode_prat_pb
 	.byte	36
@@ -5906,7 +5908,7 @@ LINE_104
 
 LINE_105
 
-	; PRINT @68, "SURVIVOR OF A SMALL GROUP"
+	; PRINT @68, "SURVIVOR OF A SMALL GROUP\r";
 
 	.byte	bytecode_prat_pb
 	.byte	68
@@ -5916,7 +5918,7 @@ LINE_105
 
 LINE_106
 
-	; PRINT @100, "OF EARTH PEOPLE WHO CAME"
+	; PRINT @100, "OF EARTH PEOPLE WHO CAME\r";
 
 	.byte	bytecode_prat_pb
 	.byte	100
@@ -5926,7 +5928,7 @@ LINE_106
 
 LINE_107
 
-	; PRINT @132, "TO EXPLORE THE PLANET"
+	; PRINT @132, "TO EXPLORE THE PLANET\r";
 
 	.byte	bytecode_prat_pb
 	.byte	132
@@ -5936,7 +5938,7 @@ LINE_107
 
 LINE_108
 
-	; PRINT @164, "MAZEON. SOON AFTER LANDING"
+	; PRINT @164, "MAZEON. SOON AFTER LANDING\r";
 
 	.byte	bytecode_prat_pb
 	.byte	164
@@ -5946,7 +5948,7 @@ LINE_108
 
 LINE_109
 
-	; PRINT @196, "YOU DISCOVERED THE PLANET"
+	; PRINT @196, "YOU DISCOVERED THE PLANET\r";
 
 	.byte	bytecode_prat_pb
 	.byte	196
@@ -5956,7 +5958,7 @@ LINE_109
 
 LINE_110
 
-	; PRINT @228, "IS A DARK UNINHABITABLE"
+	; PRINT @228, "IS A DARK UNINHABITABLE\r";
 
 	.byte	bytecode_prat_pb
 	.byte	228
@@ -5966,7 +5968,7 @@ LINE_110
 
 LINE_111
 
-	; PRINT @260, "PLACE. BUT BY THEN IT WAS"
+	; PRINT @260, "PLACE. BUT BY THEN IT WAS\r";
 
 	.byte	bytecode_prat_pw
 	.word	260
@@ -5976,7 +5978,7 @@ LINE_111
 
 LINE_112
 
-	; PRINT @292, "TOO LATE TO TURN BACK"
+	; PRINT @292, "TOO LATE TO TURN BACK\r";
 
 	.byte	bytecode_prat_pw
 	.word	292
@@ -5986,7 +5988,7 @@ LINE_112
 
 LINE_113
 
-	; PRINT @324, "BECAUSE YOUR SPACECRAFT"
+	; PRINT @324, "BECAUSE YOUR SPACECRAFT\r";
 
 	.byte	bytecode_prat_pw
 	.word	324
@@ -5996,7 +5998,7 @@ LINE_113
 
 LINE_114
 
-	; PRINT @356, "HAD BEEN DESTROYED BY THE"
+	; PRINT @356, "HAD BEEN DESTROYED BY THE\r";
 
 	.byte	bytecode_prat_pw
 	.word	356
@@ -6006,7 +6008,7 @@ LINE_114
 
 LINE_115
 
-	; PRINT @388, "AUTO-MAZEONS. NOW YOU ARE"
+	; PRINT @388, "AUTO-MAZEONS. NOW YOU ARE\r";
 
 	.byte	bytecode_prat_pw
 	.word	388
@@ -6016,7 +6018,7 @@ LINE_115
 
 LINE_116
 
-	; PRINT @420, "A PRISONER HERE."
+	; PRINT @420, "A PRISONER HERE.\r";
 
 	.byte	bytecode_prat_pw
 	.word	420
@@ -6043,28 +6045,28 @@ LINE_117
 	.byte	bytecode_clsn_pb
 	.byte	0
 
-	; PRINT "YOU ARE TRAPPED IN A MAZE"
+	; PRINT "YOU ARE TRAPPED IN A MAZE\r";
 
 	.byte	bytecode_pr_ss
 	.text	26, "YOU ARE TRAPPED IN A MAZE\r"
 
 LINE_118
 
-	; PRINT "WHERE EVEN THE WALLS ARE"
+	; PRINT "WHERE EVEN THE WALLS ARE\r";
 
 	.byte	bytecode_pr_ss
 	.text	25, "WHERE EVEN THE WALLS ARE\r"
 
 LINE_119
 
-	; PRINT "DEATH TO TOUCH. GRIM ROBOT"
+	; PRINT "DEATH TO TOUCH. GRIM ROBOT\r";
 
 	.byte	bytecode_pr_ss
 	.text	27, "DEATH TO TOUCH. GRIM ROBOT\r"
 
 LINE_120
 
-	; PRINT "THUGS STALK YOU RELENTLESSLY..."
+	; PRINT "THUGS STALK YOU RELENTLESSLY...\r";
 
 	.byte	bytecode_pr_ss
 	.text	32, "THUGS STALK YOU RELENTLESSLY...\r"
@@ -6179,7 +6181,7 @@ LINE_130
 
 LINE_131
 
-	; PRINT @352, "THE WHITE DOOR IS THE EXIT. YOU"
+	; PRINT @352, "THE WHITE DOOR IS THE EXIT. YOU\r";
 
 	.byte	bytecode_prat_pw
 	.word	352
@@ -6189,14 +6191,14 @@ LINE_131
 
 LINE_132
 
-	; PRINT "GET EXTRA HEALTH EVERY LEVEL"
+	; PRINT "GET EXTRA HEALTH EVERY LEVEL\r";
 
 	.byte	bytecode_pr_ss
 	.text	29, "GET EXTRA HEALTH EVERY LEVEL\r"
 
 LINE_133
 
-	; PRINT "CLEARED AND A LIFE EVERY 10."
+	; PRINT "CLEARED AND A LIFE EVERY 10.\r";
 
 	.byte	bytecode_pr_ss
 	.text	29, "CLEARED AND A LIFE EVERY 10.\r"
@@ -6908,12 +6910,12 @@ LINE_159
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_160
 
-	; PRINT
+	; PRINT "\r";
 
 	.byte	bytecode_pr_ss
 	.text	1, "\r"
 
-	; PRINT "DEDICATED TO P,M,C & N"
+	; PRINT "DEDICATED TO P,M,C & N\r";
 
 	.byte	bytecode_pr_ss
 	.text	23, "DEDICATED TO P,M,C & N\r"
@@ -9681,7 +9683,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3
@@ -11269,7 +11273,19 @@ step_ip_ir1			; numCalls = 2
 	.module	modstep_ip_ir1
 	jsr	noargs
 	tsx
+	ldd	10,x
+	beq	_zero
 	ldab	r1
+	bpl	_nonzero
+	ldd	8,x
+	addd	#1
+	std	8,x
+	ldab	7,x
+	adcb	#0
+	stab	7,x
+_zero
+	ldab	r1
+_nonzero
 	stab	10,x
 	ldd	r1+1
 	std	11,x

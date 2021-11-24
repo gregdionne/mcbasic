@@ -5,6 +5,7 @@
 
 #include "consttable.hpp"
 #include "datatable.hpp"
+#include "options.hpp"
 #include "program.hpp"
 #include "symboltable.hpp"
 
@@ -13,8 +14,8 @@
 
 class Optimizer {
 public:
-  Optimizer(DataTable &dt, SymbolTable &st, ConstTable &ct, bool &wf, bool &l)
-      : dataTable(dt), symbolTable(st), constTable(ct), Wfloat(wf), list(l) {}
+  Optimizer(DataTable &dt, SymbolTable &st, ConstTable &ct, Options &opts)
+      : dataTable(dt), symbolTable(st), constTable(ct), options(opts) {}
 
   void optimize(Program &p);
 
@@ -22,8 +23,7 @@ private:
   DataTable &dataTable;
   SymbolTable &symbolTable;
   ConstTable &constTable;
-  bool Wfloat;
-  bool list;
+  Options &options;
 };
 
 #endif

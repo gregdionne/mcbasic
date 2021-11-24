@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -128,12 +130,12 @@ LINE_101
 	ldx	#LINE_102
 	jsr	jmpeq_ir1_ix
 
-	; PRINT "BETWEEN 4 AND 30 "
+	; PRINT "BETWEEN 4 AND 30 \r";
 
 	jsr	pr_ss
 	.text	18, "BETWEEN 4 AND 30 \r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -145,12 +147,12 @@ LINE_101
 
 LINE_102
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -213,12 +215,12 @@ LINE_105
 	ldx	#LINE_106
 	jsr	jmpeq_ir1_ix
 
-	; PRINT "BETWEEN 4 AND 15 "
+	; PRINT "BETWEEN 4 AND 15 \r";
 
 	jsr	pr_ss
 	.text	18, "BETWEEN 4 AND 15 \r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -284,12 +286,12 @@ LINE_107
 
 LINE_120
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -348,12 +350,12 @@ LINE_200
 
 LINE_220
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT "PLEASE WAIT..."
+	; PRINT "PLEASE WAIT...\r";
 
 	jsr	pr_ss
 	.text	15, "PLEASE WAIT...\r"
@@ -2305,7 +2307,7 @@ LINE_5020
 
 LINE_5040
 
-	; PRINT "Ä";
+	; PRINT "\x80";
 
 	jsr	pr_ss
 	.text	1, "\x80"
@@ -2327,7 +2329,7 @@ LINE_5050
 	ldx	#LINE_5051
 	jsr	jmpne_ir1_ix
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -2380,107 +2382,107 @@ LINE_5070
 
 LINE_6000
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_6002
 
-	; PRINT "    ÄååååååååååååååÄ"
+	; PRINT "    \x80\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x80\r";
 
 	jsr	pr_ss
 	.text	21, "    \x80\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x80\r"
 
 LINE_6004
 
-	; PRINT "    ÄüüüüüüüüüüüüüüÄ"
+	; PRINT "    \x80\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x80\r";
 
 	jsr	pr_ss
 	.text	21, "    \x80\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x80\r"
 
 LINE_6006
 
-	; PRINT "     ÄüüüütheüüüüüÄ"
+	; PRINT "     \x80\x9F\x9F\x9F\x9Fthe\x9F\x9F\x9F\x9F\x9F\x80\r";
 
 	jsr	pr_ss
 	.text	20, "     \x80\x9F\x9F\x9F\x9Fthe\x9F\x9F\x9F\x9F\x9F\x80\r"
 
 LINE_6008
 
-	; PRINT "      ÄüüüüüüüüüüÄ"
+	; PRINT "      \x80\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x80\r";
 
 	jsr	pr_ss
 	.text	19, "      \x80\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x80\r"
 
 LINE_6010
 
-	; PRINT "       ÄüwinnerüÄ"
+	; PRINT "       \x80\x9Fwinner\x9F\x80\r";
 
 	jsr	pr_ss
 	.text	18, "       \x80\x9Fwinner\x9F\x80\r"
 
 LINE_6012
 
-	; PRINT "        ÄüüüüüüÄ"
+	; PRINT "        \x80\x9F\x9F\x9F\x9F\x9F\x9F\x80\r";
 
 	jsr	pr_ss
 	.text	17, "        \x80\x9F\x9F\x9F\x9F\x9F\x9F\x80\r"
 
 LINE_6014
 
-	; PRINT "         îúúúúò          ÄÄÄ"
+	; PRINT "         \x94\x9C\x9C\x9C\x9C\x98          \x80\x80\x80\r";
 
 	jsr	pr_ss
 	.text	29, "         \x94\x9C\x9C\x9C\x9C\x98          \x80\x80\x80\r"
 
 LINE_6016
 
-	; PRINT "           ïö            Ä1Ä"
+	; PRINT "           \x95\x9A            \x801\x80\r";
 
 	jsr	pr_ss
 	.text	29, "           \x95\x9A            \x801\x80\r"
 
 LINE_6018
 
-	; PRINT "           ïö         ÄÄÄÄÄÄÄÄÄ"
+	; PRINT "           \x95\x9A         \x80\x80\x80\x80\x80\x80\x80\x80\x80\r";
 
 	jsr	pr_ss
 	.text	32, "           \x95\x9A         \x80\x80\x80\x80\x80\x80\x80\x80\x80\r"
 
 LINE_6020
 
-	; PRINT "          ëóõí        Ä2ÄÄÄÄÄ3Ä"
+	; PRINT "          \x91\x97\x9B\x92        \x802\x80\x80\x80\x80\x803\x80\r";
 
 	jsr	pr_ss
 	.text	32, "          \x91\x97\x9B\x92        \x802\x80\x80\x80\x80\x803\x80\r"
@@ -2513,7 +2515,7 @@ LINE_6021
 
 LINE_6022
 
-	; PRINT "         ÄúúúúÄ"
+	; PRINT "         \x80\x9C\x9C\x9C\x9C\x80\r";
 
 	jsr	pr_ss
 	.text	16, "         \x80\x9C\x9C\x9C\x9C\x80\r"
@@ -2528,7 +2530,7 @@ LINE_6029
 
 LINE_6030
 
-	; PRINT @G, "‚";
+	; PRINT @G, "\xE2";
 
 	ldx	#INTVAR_G
 	jsr	prat_ix
@@ -2536,7 +2538,7 @@ LINE_6030
 	jsr	pr_ss
 	.text	1, "\xE2"
 
-	; PRINT @G+31, "âÄÜ";
+	; PRINT @G+31, "\x89\x80\x86";
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -2549,7 +2551,7 @@ LINE_6030
 	jsr	pr_ss
 	.text	3, "\x89\x80\x86"
 
-	; PRINT @G+64, "Ä";
+	; PRINT @G+64, "\x80";
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -2564,7 +2566,7 @@ LINE_6030
 
 LINE_6032
 
-	; PRINT @G+95, "â Ü";
+	; PRINT @G+95, "\x89 \x86";
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -2700,7 +2702,7 @@ LINE_6040
 	ldab	#20
 	jsr	to_ip_pb
 
-	; PRINT @G+31, "ÉÄÉ";
+	; PRINT @G+31, "\x83\x80\x83";
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -2731,7 +2733,7 @@ LINE_6040
 
 LINE_6041
 
-	; PRINT @G+31, "âÄÜ";
+	; PRINT @G+31, "\x89\x80\x86";
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -2810,7 +2812,7 @@ LINE_6055
 
 	jsr	cls
 
-	; PRINT @480, "B Y E ! !"
+	; PRINT @480, "B Y E ! !\r";
 
 	ldd	#480
 	jsr	prat_pw
@@ -2828,14 +2830,14 @@ LINE_7000
 
 LINE_7005
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_7010
 
-	; PRINT " ÅÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÇ"
+	; PRINT " \x81\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x82\r";
 
 	jsr	pr_ss
 	.text	32, " \x81\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x82\r"
@@ -2849,7 +2851,7 @@ LINE_7020
 
 LINE_7030
 
-	; PRINT " Ö        3D LABYRINTH        ä"
+	; PRINT " \x85        3D LABYRINTH        \x8A\r";
 
 	jsr	pr_ss
 	.text	32, " \x85        3D LABYRINTH        \x8A\r"
@@ -2861,7 +2863,7 @@ LINE_7030
 
 LINE_7040
 
-	; PRINT " Ñåååååååbyådieteråfryerååååååà"
+	; PRINT " \x84\x8C\x8C\x8C\x8C\x8C\x8C\x8Cby\x8Cdieter\x8Cfryer\x8C\x8C\x8C\x8C\x8C\x8C\x88\r";
 
 	jsr	pr_ss
 	.text	32, " \x84\x8C\x8C\x8C\x8C\x8C\x8C\x8Cby\x8Cdieter\x8Cfryer\x8C\x8C\x8C\x8C\x8C\x8C\x88\r"
@@ -2911,28 +2913,28 @@ LINE_7120
 
 	jsr	cls
 
-	; PRINT "THE GOAL OF THE GAME IS TO"
+	; PRINT "THE GOAL OF THE GAME IS TO\r";
 
 	jsr	pr_ss
 	.text	27, "THE GOAL OF THE GAME IS TO\r"
 
 LINE_7130
 
-	; PRINT "ESCAPE FROM THE LABYRINTH IN"
+	; PRINT "ESCAPE FROM THE LABYRINTH IN\r";
 
 	jsr	pr_ss
 	.text	29, "ESCAPE FROM THE LABYRINTH IN\r"
 
 LINE_7140
 
-	; PRINT "WHICH YOU NOW FIND YOURSELF."
+	; PRINT "WHICH YOU NOW FIND YOURSELF.\r";
 
 	jsr	pr_ss
 	.text	29, "WHICH YOU NOW FIND YOURSELF.\r"
 
 LINE_7150
 
-	; PRINT "USE THE KEYS <A>, <S>, AND <W>"
+	; PRINT "USE THE KEYS <A>, <S>, AND <W>\r";
 
 	jsr	pr_ss
 	.text	31, "USE THE KEYS <A>, <S>, AND <W>\r"
@@ -2946,40 +2948,40 @@ LINE_7160
 
 LINE_7170
 
-	; PRINT "THE <X> KEY SHOWS THE LABYRINTH"
+	; PRINT "THE <X> KEY SHOWS THE LABYRINTH\r";
 
 	jsr	pr_ss
 	.text	32, "THE <X> KEY SHOWS THE LABYRINTH\r"
 
 LINE_7190
 
-	; PRINT "FROM ABOVE. PRESS <X> AGAIN"
+	; PRINT "FROM ABOVE. PRESS <X> AGAIN\r";
 
 	jsr	pr_ss
 	.text	28, "FROM ABOVE. PRESS <X> AGAIN\r"
 
 LINE_7200
 
-	; PRINT "TO RETURN TO THE LABYRINTH."
+	; PRINT "TO RETURN TO THE LABYRINTH.\r";
 
 	jsr	pr_ss
 	.text	28, "TO RETURN TO THE LABYRINTH.\r"
 
 LINE_7210
 
-	; PRINT "A CROSS MARKS THE WAY OUT."
+	; PRINT "A CROSS MARKS THE WAY OUT.\r";
 
 	jsr	pr_ss
 	.text	27, "A CROSS MARKS THE WAY OUT.\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
 
 LINE_7220
 
-	; PRINT "have fun playing!"
+	; PRINT "have fun playing!\r";
 
 	jsr	pr_ss
 	.text	18, "have fun playing!\r"
@@ -3025,7 +3027,7 @@ LINE_7500
 	ldab	#3
 	jsr	to_ip_pb
 
-	; PRINT " Ö";TAB(30);"ä"
+	; PRINT " \x85";TAB(30);"\x8A\r";
 
 	jsr	pr_ss
 	.text	2, " \x85"
@@ -4286,7 +4288,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3

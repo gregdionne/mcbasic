@@ -1,7 +1,7 @@
 src      := src
 examples := examples
 tests    := tests
-targets  := $(examples) $(tests)
+targets  := $(examples) $(tests) $(quicktype)
 
 cleansrc      := $(addsuffix .clean, $(src))
 cleantargets  := $(addsuffix .clean, $(targets))

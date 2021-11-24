@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -188,7 +190,7 @@ LINE_80
 
 LINE_100
 
-	; PRINT STR$(A);" ?= 1 "
+	; PRINT STR$(A);" ?= 1 \r";
 
 	.byte	bytecode_str_sr1_ix
 	.byte	bytecode_INTVAR_A
@@ -200,7 +202,7 @@ LINE_100
 
 LINE_110
 
-	; PRINT STR$(B);" ?= 2 "
+	; PRINT STR$(B);" ?= 2 \r";
 
 	.byte	bytecode_str_sr1_ix
 	.byte	bytecode_INTVAR_B
@@ -212,7 +214,7 @@ LINE_110
 
 LINE_120
 
-	; PRINT STR$(C);" ?= 2 "
+	; PRINT STR$(C);" ?= 2 \r";
 
 	.byte	bytecode_str_sr1_fx
 	.byte	bytecode_FLTVAR_C
@@ -224,7 +226,7 @@ LINE_120
 
 LINE_130
 
-	; PRINT STR$(D);" ?= 8 "
+	; PRINT STR$(D);" ?= 8 \r";
 
 	.byte	bytecode_str_sr1_fx
 	.byte	bytecode_FLTVAR_D
@@ -236,7 +238,7 @@ LINE_130
 
 LINE_140
 
-	; PRINT STR$(E);" ?= 2 "
+	; PRINT STR$(E);" ?= 2 \r";
 
 	.byte	bytecode_str_sr1_fx
 	.byte	bytecode_FLTVAR_E
@@ -248,7 +250,7 @@ LINE_140
 
 LINE_150
 
-	; PRINT STR$(F);" ?= 0.25 "
+	; PRINT STR$(F);" ?= 0.25 \r";
 
 	.byte	bytecode_str_sr1_fx
 	.byte	bytecode_FLTVAR_F
@@ -260,7 +262,7 @@ LINE_150
 
 LINE_160
 
-	; PRINT STR$(G);" ?= 1 "
+	; PRINT STR$(G);" ?= 1 \r";
 
 	.byte	bytecode_str_sr1_ix
 	.byte	bytecode_INTVAR_G
@@ -272,7 +274,7 @@ LINE_160
 
 LINE_170
 
-	; PRINT STR$(H);" ?= 0.25 "
+	; PRINT STR$(H);" ?= 0.25 \r";
 
 	.byte	bytecode_str_sr1_fx
 	.byte	bytecode_FLTVAR_H

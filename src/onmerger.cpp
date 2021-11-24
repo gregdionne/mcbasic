@@ -13,25 +13,26 @@ void OnMerger::operate(Program &p) {
 }
 
 void OnMerger::operate(Line &l) {
-  auto oms = OnStatementMerger(itCurrentLine);
+  auto osm = OnStatementMerger(itCurrentLine, warner);
   auto it = l.statements.begin();
   while (it != l.statements.end()) {
-    (*it)->operate(&oms);
-    if (oms.needsReplacement) {
-      fprintf(stderr, "%s ", (*it)->statementName().c_str());
-      if (oms.replLine == -1) {
-        l.statements.erase(it);
-        fprintf(stderr, "deleted ");
+    osm.needsReplacement = false;
+    (*it)->operate(&osm);
+    if (osm.needsReplacement) {
+      warner.start((*itCurrentLine)->lineNumber);
+      warner.say("%s ", (*it)->statementName().c_str());
+      if (osm.replLine == -1) {
+        it = l.statements.erase(it);
+        warner.finish("removed.");
       } else {
         auto go = std::make_unique<Go>();
-        go->isSub = oms.isSub;
-        go->lineNumber = oms.replLine;
+        go->isSub = osm.isSub;
+        go->lineNumber = osm.replLine;
         *it = std::move(go);
-        fprintf(stderr, "replaced with %s %i ", (*it)->statementName().c_str(),
-                oms.replLine);
+        warner.finish("replaced with %s %i.", (*it)->statementName().c_str(),
+                      osm.replLine);
         ++it;
       }
-      fprintf(stderr, "in line %i\n", (*itCurrentLine)->lineNumber);
     } else {
       ++it;
     }
@@ -39,22 +40,27 @@ void OnMerger::operate(Line &l) {
 }
 
 void OnStatementMerger::operate(If &s) {
-  for (auto it = s.consequent.begin(); it != s.consequent.end(); ++it) {
+  auto it = s.consequent.begin();
+  while (it != s.consequent.end()) {
     needsReplacement = false;
     (*it)->operate(this);
     if (needsReplacement) {
-      fprintf(stderr, "%s replaced ", (*it)->statementName().c_str());
+      warner.start((*itCurrentLine)->lineNumber);
+      warner.say("%s ", (*it)->statementName().c_str());
       if (replLine == -1) {
-        s.consequent.erase(it);
+        it = s.consequent.erase(it);
+        warner.finish("removed.");
       } else {
         auto go = std::make_unique<Go>();
         go->isSub = isSub;
         go->lineNumber = replLine;
         *it = std::move(go);
-        fprintf(stderr, "with %s %i ", (*it)->statementName().c_str(),
-                replLine);
+        warner.finish("replaced with %s %i.", (*it)->statementName().c_str(),
+                      replLine);
+        ++it;
       }
-      fprintf(stderr, "in line %i\n", (*itCurrentLine)->lineNumber);
+    } else {
+      ++it;
     }
   }
 }

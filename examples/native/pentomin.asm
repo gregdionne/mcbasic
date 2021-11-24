@@ -6,6 +6,7 @@
 ; Direct page equates
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
+DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
 ; 
@@ -23,6 +24,7 @@ R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
 R_RESET	.equ	$E3EE	; setup stack and disable CONT
+R_ENTER	.equ	$E766	; emit carriage return to console
 R_SPACE	.equ	$E7B9	; emit " " to console
 R_QUEST	.equ	$E7BC	; emit "?" to console
 R_REDO	.equ	$E7C1	; emit "?REDO" to console
@@ -81,7 +83,7 @@ LINE_100
 
 	jsr	cls
 
-	; PRINT TAB(11);"PENTOMINOS"
+	; PRINT TAB(11);"PENTOMINOS\r";
 
 	ldab	#11
 	jsr	prtab_pb
@@ -89,7 +91,7 @@ LINE_100
 	jsr	pr_ss
 	.text	11, "PENTOMINOS\r"
 
-	; PRINT
+	; PRINT "\r";
 
 	jsr	pr_ss
 	.text	1, "\r"
@@ -494,7 +496,7 @@ LINE_1060
 
 LINE_1070
 
-	; PRINT @64, "CHOOSE:"
+	; PRINT @64, "CHOOSE:\r";
 
 	ldab	#64
 	jsr	prat_pb
@@ -513,7 +515,7 @@ LINE_1080
 	ldab	#6
 	jsr	to_ip_pb
 
-	; PRINT STR$(J);"  BY";STR$(60/J);" "
+	; PRINT STR$(J);"  BY";STR$(60/J);" \r";
 
 	ldx	#INTVAR_J
 	jsr	str_sr1_ix
@@ -623,7 +625,7 @@ LINE_1120
 	ldx	#FLTVAR_W1
 	jsr	to_ip_ix
 
-	; PRINT @SHIFT(Y+2,5)+X, "ß";
+	; PRINT @SHIFT(Y+2,5)+X, "\xDF";
 
 	ldx	#INTVAR_Y
 	jsr	ld_ir1_ix
@@ -709,7 +711,7 @@ LINE_2030
 
 LINE_2040
 
-	; PRINT @33, P$(P)
+	; PRINT @33, P$(P);"\r";
 
 	ldab	#33
 	jsr	prat_pb
@@ -1032,7 +1034,7 @@ LINE_2160
 
 LINE_2170
 
-	; PRINT @385, "SOLUTION"
+	; PRINT @385, "SOLUTION\r";
 
 	ldd	#385
 	jsr	prat_pw
@@ -1089,7 +1091,7 @@ LINE_2190
 	ldx	#LINE_2200
 	jsr	jmpeq_ir1_ix
 
-	; PRINT "THAT'S ALL"
+	; PRINT "THAT'S ALL\r";
 
 	jsr	pr_ss
 	.text	11, "THAT'S ALL\r"
@@ -1128,7 +1130,7 @@ LINE_2200
 	ldx	#INTVAR_Y
 	jsr	ld_ix_ir1
 
-	; C$="ß"
+	; C$="\xDF"
 
 	jsr	ld_sr1_ss
 	.text	1, "\xDF"
@@ -2545,7 +2547,9 @@ _tblten
 ; ENTRY:  ACCB  contains size of record
 ;         r1    contains stopping variable
 ;               and is always fixedpoint.
-;         r1+3  must contain zero if an integer.
+;         r1+3  must contain zero when both:
+;               1. loop var is integral.
+;               2. STEP is missing
 to
 	clra
 	std	tmp3

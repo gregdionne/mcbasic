@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "constants.hpp"
 #include "datatype.hpp"
 
 // Class that governs the various address modes for our Instruction set.
@@ -124,7 +125,11 @@ public:
   std::string operation() override { return isByte() ? "ldab" : "ldd"; }
   std::string operand() override { return "#" + std::to_string(word); }
   std::string directive() override { return isByte() ? ".byte" : ".word"; }
-  std::string doperand() override { return std::to_string(word); }
+  std::string doperand() override {
+    return std::to_string(word) + (isByte() && word < -128 ? "&$ff"
+                                   : word < -32768         ? "&$ffff"
+                                                           : "");
+  }
   std::string sbyte() override { return isNeg ? "#-1" : "#0"; }
   std::string lword() override { return "#" + std::to_string(word); }
   std::string fract() override { return "#0"; }
@@ -168,8 +173,10 @@ public:
   }
   bool isImmLbl() override { return true; }
   std::string symbol() const {
-    return lineNumber == 65535 ? std::string("LLAST")
-                               : "LINE_" + std::to_string(lineNumber);
+    return lineNumber == constants::lastLineNumber ? std::string("LLAST")
+           : lineNumber == constants::unlistedLineNumber
+               ? std::string("LUNLIST")
+               : "LINE_" + std::to_string(lineNumber);
   }
   int lineNumber;
 };

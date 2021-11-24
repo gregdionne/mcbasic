@@ -9,12 +9,16 @@
 #include "datatabulator.hpp"
 #include "floatpromoter.hpp"
 #include "gerriemanderer.hpp"
+#include "ifmerger.hpp"
 #include "lister.hpp"
 #include "merger.hpp"
 #include "onmerger.hpp"
 #include "reachchecker.hpp"
+#include "symbolpruner.hpp"
 #include "symboltabulator.hpp"
+#include "warner.hpp"
 #include "whenifier.hpp"
+#include "whenmerger.hpp"
 
 // for debug
 // #include "grapher.hpp"
@@ -26,15 +30,18 @@ void Optimizer::optimize(Program &p) {
   Whenifier w;
   w.operate(p);
 
+  // Grapher gr;
+  // gr.operate(p);
+
   ConstFolder cf;
   cf.operate(p);
 
   DataTabulator dt(dataTable);
   dt.operate(p);
 
-  dataTable.floatDiagnostic(Wfloat);
+  dataTable.floatDiagnostic(options.Wfloat);
 
-  if (!list) {
+  if (!options.list) {
     DataPruner dp;
     dp.operate(p);
   }
@@ -42,22 +49,30 @@ void Optimizer::optimize(Program &p) {
   SymbolTabulator st(symbolTable);
   st.operate(p);
 
-  FloatPromoter fp(dataTable, symbolTable, Wfloat);
+  SymbolPruner sp(symbolTable, options.Wuninit);
+  sp.operate(p);
+
+  FloatPromoter fp(dataTable, symbolTable, Warner(options.Wfloat, "Wfloat"));
   fp.operate(p);
 
   Merger m(symbolTable);
   m.operate(p);
 
-  //  Grapher gr;
-  //  gr.operate(p);
-
   cf.operate(p);
 
-  OnMerger om;
+  OnMerger om(Warner(options.Wbranch, "Wbranch"));
   om.operate(p);
 
-  ReachChecker rc;
-  rc.operate(p);
+  IfMerger im(Warner(options.Wbranch, "Wbranch"));
+  im.operate(p);
+
+  WhenMerger wm(Warner(options.Wbranch, "Wbranch"));
+  wm.operate(p);
+
+  if (options.Wunreached) {
+    ReachChecker rc;
+    rc.operate(p);
+  }
 
   Accumulizer a;
   a.operate(p);
@@ -66,7 +81,7 @@ void Optimizer::optimize(Program &p) {
   ConstTabulator ct(constTable);
   ct.operate(p);
 
-  if (list) {
+  if (options.list) {
     Lister l;
     l.operate(p);
     fprintf(stderr, "%s\n", l.result.c_str());
