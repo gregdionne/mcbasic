@@ -3889,7 +3889,7 @@ LINE_66
 
 	; DIM LV,EV,SC,EN,EX,BN,SR,HS,XX,YY,CX,CY,XC,YC,PC,RR,HT,I$,A$
 
-	; B$="\x80\x80"
+	; B$="€€"
 
 	.byte	bytecode_ld_sr1_ss
 	.text	2, "\x80\x80"

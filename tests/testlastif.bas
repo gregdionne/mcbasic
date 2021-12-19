@@ -1,0 +1,2 @@
+10 X=5
+20 IF X>0 THEN PRINT X : X=X-1 : GOTO 10

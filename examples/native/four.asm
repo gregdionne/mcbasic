@@ -179,7 +179,7 @@ LINE_22
 	ldab	#13
 	jsr	to_ip_pb
 
-	; E$=E$+"\x80"
+	; E$=E$+"€"
 
 	ldx	#STRVAR_E
 	jsr	strinit_sr1_sx
@@ -202,7 +202,7 @@ LINE_22
 	ldx	#STRVAR_C
 	jsr	ld_sx_sr1
 
-	; D$="\x80\x80"
+	; D$="€€"
 
 	jsr	ld_sr1_ss
 	.text	2, "\x80\x80"
@@ -212,7 +212,7 @@ LINE_22
 
 LINE_23
 
-	; X$="\x9C"
+	; X$="œ"
 
 	jsr	ld_sr1_ss
 	.text	1, "\x9C"
@@ -220,7 +220,7 @@ LINE_23
 	ldx	#STRVAR_X
 	jsr	ld_sx_sr1
 
-	; O$="\xBC"
+	; O$="¼"
 
 	jsr	ld_sr1_ss
 	.text	1, "\xBC"
@@ -228,7 +228,7 @@ LINE_23
 	ldx	#STRVAR_O
 	jsr	ld_sx_sr1
 
-	; H$="\x8C"
+	; H$="Œ"
 
 	jsr	ld_sr1_ss
 	.text	1, "\x8C"

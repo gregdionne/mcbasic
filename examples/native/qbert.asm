@@ -4324,7 +4324,7 @@ LINE_1000
 
 LINE_1010
 
-	; X$(T+1,0)="\x94\x94"+CHR$(SHIFT(T,4)+141)
+	; X$(T+1,0)="îî"+CHR$(SHIFT(T,4)+141)
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -4413,7 +4413,7 @@ LINE_1010
 
 LINE_1020
 
-	; X$(T+1,1)=CHR$(SHIFT(T,4)+142)+"\x98\x98"
+	; X$(T+1,1)=CHR$(SHIFT(T,4)+142)+"òò"
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -4614,7 +4614,7 @@ LINE_1030
 
 LINE_1040
 
-	; A$(T+1,0)=CHR$(SHIFT(T,4)+140)+CHR$(SHIFT(T,4)+141)+"\xF8"
+	; A$(T+1,0)=CHR$(SHIFT(T,4)+140)+CHR$(SHIFT(T,4)+141)+"¯"
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -4659,7 +4659,7 @@ LINE_1040
 
 	jsr	ld_sp_sr1
 
-	; A$(T+1,1)="\xF4"+CHR$(SHIFT(T,4)+142)+CHR$(SHIFT(T,4)+140)
+	; A$(T+1,1)="Ù"+CHR$(SHIFT(T,4)+142)+CHR$(SHIFT(T,4)+140)
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -4818,7 +4818,7 @@ LINE_1045
 
 LINE_1050
 
-	; A$(T+1,2)=CHR$(SHIFT(T,4)+136)+"\x80"+CHR$(SHIFT(T,4)+141)
+	; A$(T+1,2)=CHR$(SHIFT(T,4)+136)+"Ä"+CHR$(SHIFT(T,4)+141)
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -4865,7 +4865,7 @@ LINE_1050
 
 LINE_1055
 
-	; B$(T+1,2)=CHR$(SHIFT(T,4)+130)+"\x80"+CHR$(SHIFT(T,4)+135)
+	; B$(T+1,2)=CHR$(SHIFT(T,4)+130)+"Ä"+CHR$(SHIFT(T,4)+135)
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -5121,7 +5121,7 @@ LINE_1090
 
 	jsr	ld_sp_sr1
 
-	; B$(8,0)="\x8C\x8C\x8C"
+	; B$(8,0)="ååå"
 
 	ldab	#8
 	jsr	ld_ir1_pb
@@ -5139,7 +5139,7 @@ LINE_1090
 
 LINE_1095
 
-	; Y$(1,0)="\x84\x88\x8C"
+	; Y$(1,0)="Ñàå"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -5201,7 +5201,7 @@ LINE_1110
 	ldab	#4
 	jsr	ld_ip_pb
 
-	; B$="\x80"
+	; B$="Ä"
 
 	jsr	ld_sr1_ss
 	.text	1, "\x80"
@@ -5254,7 +5254,7 @@ LINE_1120
 	ldab	#14
 	jsr	to_ip_pb
 
-	; BL$=BL$+"\x8F"
+	; BL$=BL$+"è"
 
 	ldx	#STRVAR_BL
 	jsr	strinit_sr1_sx

@@ -3717,7 +3717,7 @@ LINE_1001
 
 LINE_1002
 
-	; V$="\x80\x80\x80\x80\xCF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF"
+	; V$="ÄÄÄÄœﬂﬂﬂﬂﬂﬂﬂﬂﬂ"
 
 	jsr	ld_sr1_ss
 	.text	14, "\x80\x80\x80\x80\xCF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF"
@@ -3725,7 +3725,7 @@ LINE_1002
 	ldx	#STRVAR_V
 	jsr	ld_sx_sr1
 
-	; W$="\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xCF\x80\x80\x80\x80\x80\x80\x80\xCF"
+	; W$="ﬂﬂﬂﬂﬂﬂﬂﬂﬂœÄÄÄÄÄÄÄœ"
 
 	jsr	ld_sr1_ss
 	.text	18, "\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xDF\xCF\x80\x80\x80\x80\x80\x80\x80\xCF"
@@ -3733,7 +3733,7 @@ LINE_1002
 	ldx	#STRVAR_W
 	jsr	ld_sx_sr1
 
-	; X$="\xCF\x80\x80\x80\x80\x80\x80\x80\xCF"
+	; X$="œÄÄÄÄÄÄÄœ"
 
 	jsr	ld_sr1_ss
 	.text	9, "\xCF\x80\x80\x80\x80\x80\x80\x80\xCF"
@@ -3741,7 +3741,7 @@ LINE_1002
 	ldx	#STRVAR_X
 	jsr	ld_sx_sr1
 
-	; Y$="\xCF\x80\x80\x80\x80\x80\x80\x80\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF"
+	; Y$="œÄÄÄÄÄÄÄœœœœœœœœœœ"
 
 	jsr	ld_sr1_ss
 	.text	18, "\xCF\x80\x80\x80\x80\x80\x80\x80\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF"
@@ -3749,7 +3749,7 @@ LINE_1002
 	ldx	#STRVAR_Y
 	jsr	ld_sx_sr1
 
-	; Z$="\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\x80\x80\x80"
+	; Z$="œœœœœœœœœœÄÄÄ"
 
 	jsr	ld_sr1_ss
 	.text	13, "\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\x80\x80\x80"
@@ -3849,7 +3849,7 @@ LINE_1004
 
 LINE_1011
 
-	; B$(1)="\xDF\xAF\xAF\xAF\xDF\xAF\xAF\xAF\xDF"
+	; B$(1)="ﬂØØØﬂØØØﬂ"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -3862,7 +3862,7 @@ LINE_1011
 
 	jsr	ld_sp_sr1
 
-	; B$(2)="\xDF\xBF\xBF\xBF\xDF\xAF\xAF\xAF\xDF"
+	; B$(2)="ﬂøøøﬂØØØﬂ"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -3875,7 +3875,7 @@ LINE_1011
 
 	jsr	ld_sp_sr1
 
-	; B$(3)="\xDF\xAF\xAF\xAF\xDF\xBF\xBF\xBF\xDF"
+	; B$(3)="ﬂØØØﬂøøøﬂ"
 
 	ldab	#3
 	jsr	ld_ir1_pb
@@ -3888,7 +3888,7 @@ LINE_1011
 
 	jsr	ld_sp_sr1
 
-	; B$(4)="\xDF\xD0\xD0\xD0\xDF\xAF\xAF\xAF\xDF"
+	; B$(4)="ﬂ–––ﬂØØØﬂ"
 
 	ldab	#4
 	jsr	ld_ir1_pb
@@ -3901,7 +3901,7 @@ LINE_1011
 
 	jsr	ld_sp_sr1
 
-	; B$(5)="\xDF\xAF\xAF\xAF\xDF\xD0\xD0\xD0\xDF"
+	; B$(5)="ﬂØØØﬂ–––ﬂ"
 
 	ldab	#5
 	jsr	ld_ir1_pb
@@ -3916,7 +3916,7 @@ LINE_1011
 
 LINE_1012
 
-	; C$(1)="\xDF\xAE\xAF\xAF\xDF\xAE\xAF\xAF\xDF"
+	; C$(1)="ﬂÆØØﬂÆØØﬂ"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -3929,7 +3929,7 @@ LINE_1012
 
 	jsr	ld_sp_sr1
 
-	; C$(2)="\xDF\xBE\xBF\xBF\xDF\xAE\xAF\xAF\xDF"
+	; C$(2)="ﬂæøøﬂÆØØﬂ"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -3942,7 +3942,7 @@ LINE_1012
 
 	jsr	ld_sp_sr1
 
-	; C$(3)="\xDF\xAE\xAF\xAF\xDF\xBE\xBF\xBF\xDF"
+	; C$(3)="ﬂÆØØﬂæøøﬂ"
 
 	ldab	#3
 	jsr	ld_ir1_pb
@@ -3955,7 +3955,7 @@ LINE_1012
 
 	jsr	ld_sp_sr1
 
-	; C$(4)="\xDF\xD0\xD0\xD0\xDF\xAE\xAF\xAF\xDF"
+	; C$(4)="ﬂ–––ﬂÆØØﬂ"
 
 	ldab	#4
 	jsr	ld_ir1_pb
@@ -3968,7 +3968,7 @@ LINE_1012
 
 	jsr	ld_sp_sr1
 
-	; C$(5)="\xDF\xAE\xAF\xAF\xDF\xD0\xD0\xD0\xDF"
+	; C$(5)="ﬂÆØØﬂ–––ﬂ"
 
 	ldab	#5
 	jsr	ld_ir1_pb
@@ -3983,7 +3983,7 @@ LINE_1012
 
 LINE_1013
 
-	; D$(1)="\xDF\xAF\xAF\xAF\xDF\xAF\xAF\xAF\xDF"
+	; D$(1)="ﬂØØØﬂØØØﬂ"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -3996,7 +3996,7 @@ LINE_1013
 
 	jsr	ld_sp_sr1
 
-	; D$(2)="\xDF\xBF\xBF\xBF\xDF\xAF\xAF\xAF\xDF"
+	; D$(2)="ﬂøøøﬂØØØﬂ"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -4009,7 +4009,7 @@ LINE_1013
 
 	jsr	ld_sp_sr1
 
-	; D$(3)="\xDF\xAF\xAF\xAF\xDF\xBF\xBF\xBF\xDF"
+	; D$(3)="ﬂØØØﬂøøøﬂ"
 
 	ldab	#3
 	jsr	ld_ir1_pb
@@ -4022,7 +4022,7 @@ LINE_1013
 
 	jsr	ld_sp_sr1
 
-	; D$(4)="\xDF\xD0\xD0\xD0\xDF\xAF\xAF\xAF\xDF"
+	; D$(4)="ﬂ–––ﬂØØØﬂ"
 
 	ldab	#4
 	jsr	ld_ir1_pb
@@ -4035,7 +4035,7 @@ LINE_1013
 
 	jsr	ld_sp_sr1
 
-	; D$(5)="\xDF\xAF\xAF\xAF\xDF\xD0\xD0\xD0\xDF"
+	; D$(5)="ﬂØØØﬂ–––ﬂ"
 
 	ldab	#5
 	jsr	ld_ir1_pb
@@ -4050,7 +4050,7 @@ LINE_1013
 
 LINE_1014
 
-	; B$(6)="\xDF\xD0\xD0\xD0roof\xDF"
+	; B$(6)="ﬂ–––roofﬂ"
 
 	ldab	#6
 	jsr	ld_ir1_pb
@@ -4063,7 +4063,7 @@ LINE_1014
 
 	jsr	ld_sp_sr1
 
-	; B$(7)="\xDF\xD0\xD0\xD0exit\xDF"
+	; B$(7)="ﬂ–––exitﬂ"
 
 	ldab	#7
 	jsr	ld_ir1_pb
@@ -4078,7 +4078,7 @@ LINE_1014
 
 LINE_1015
 
-	; C$(6)="\xDF\xD0\xD0\xCF\xDF\xDF\xDF\xDF\xDF"
+	; C$(6)="ﬂ––œﬂﬂﬂﬂﬂ"
 
 	ldab	#6
 	jsr	ld_ir1_pb
@@ -4091,7 +4091,7 @@ LINE_1015
 
 	jsr	ld_sp_sr1
 
-	; C$(7)="\xDF\xD0\xD0\xD0\xDF\xDF\xDF\xDF\xDF"
+	; C$(7)="ﬂ–––ﬂﬂﬂﬂﬂ"
 
 	ldab	#7
 	jsr	ld_ir1_pb
@@ -4106,7 +4106,7 @@ LINE_1015
 
 LINE_1016
 
-	; D$(6)="\xDF\xD0\xCF\xCF\xDF\xDF\xDF\xDF\xDF"
+	; D$(6)="ﬂ–œœﬂﬂﬂﬂﬂ"
 
 	ldab	#6
 	jsr	ld_ir1_pb
@@ -4119,7 +4119,7 @@ LINE_1016
 
 	jsr	ld_sp_sr1
 
-	; D$(7)="\xDF\xD0\xD0\xD0\xDF\xDF\xDF\xDF\xDF"
+	; D$(7)="ﬂ–––ﬂﬂﬂﬂﬂ"
 
 	ldab	#7
 	jsr	ld_ir1_pb
@@ -4134,7 +4134,7 @@ LINE_1016
 
 LINE_1020
 
-	; F$(0)="\xD0\xD0\xD0\xD0\xD0"
+	; F$(0)="–––––"
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -4147,7 +4147,7 @@ LINE_1020
 
 	jsr	ld_sp_sr1
 
-	; F$(1)="\xD0\xE5\xD0\xEA\xD0"
+	; F$(1)="–Â–Í–"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -4160,7 +4160,7 @@ LINE_1020
 
 	jsr	ld_sp_sr1
 
-	; F$(2)="\xEF\xDF\xDF\xDF\xEF"
+	; F$(2)="ÔﬂﬂﬂÔ"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -4175,7 +4175,7 @@ LINE_1020
 
 LINE_1021
 
-	; G$(0)="\xD0\xD0\xD0\xD0\xD0"
+	; G$(0)="–––––"
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -4188,7 +4188,7 @@ LINE_1021
 
 	jsr	ld_sp_sr1
 
-	; G$(1)="\xD0\xE5\xD0\xEA\xD0"
+	; G$(1)="–Â–Í–"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -4201,7 +4201,7 @@ LINE_1021
 
 	jsr	ld_sp_sr1
 
-	; G$(2)="\xEF\xDF\xEF\xDF\xEF"
+	; G$(2)="ÔﬂÔﬂÔ"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -4216,7 +4216,7 @@ LINE_1021
 
 LINE_1022
 
-	; H$(0)="\xD0\xD0\xD0\xD0\xD0"
+	; H$(0)="–––––"
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -4229,7 +4229,7 @@ LINE_1022
 
 	jsr	ld_sp_sr1
 
-	; H$(1)="\xD0\xE5\xD0\xEA\xD0"
+	; H$(1)="–Â–Í–"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -4242,7 +4242,7 @@ LINE_1022
 
 	jsr	ld_sp_sr1
 
-	; H$(2)="\xEF\xDF\xDF\xDF\xEF"
+	; H$(2)="ÔﬂﬂﬂÔ"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -4257,7 +4257,7 @@ LINE_1022
 
 LINE_1023
 
-	; I$(0)="\xD0\xD0\xD0\xD0\xD0"
+	; I$(0)="–––––"
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -4270,7 +4270,7 @@ LINE_1023
 
 	jsr	ld_sp_sr1
 
-	; I$(1)="\xD0\xE5\xD0\xEA\xD0"
+	; I$(1)="–Â–Í–"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -4283,7 +4283,7 @@ LINE_1023
 
 	jsr	ld_sp_sr1
 
-	; I$(2)="\xEF\xDF\xDF\xDF\xEF"
+	; I$(2)="ÔﬂﬂﬂÔ"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -4298,7 +4298,7 @@ LINE_1023
 
 LINE_1024
 
-	; J$(0)="\xD0\xD0\xD0\xD0\xD0"
+	; J$(0)="–––––"
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -4311,7 +4311,7 @@ LINE_1024
 
 	jsr	ld_sp_sr1
 
-	; J$(1)="\xD0\xE5\xD0\xEA\xD0"
+	; J$(1)="–Â–Í–"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -4324,7 +4324,7 @@ LINE_1024
 
 	jsr	ld_sp_sr1
 
-	; J$(2)="\xEC\xEC\xEC\xEC\xEC"
+	; J$(2)="ÏÏÏÏÏ"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -4339,7 +4339,7 @@ LINE_1024
 
 LINE_1030
 
-	; M$(0)="\xDF\x9F\xDF"
+	; M$(0)="ﬂüﬂ"
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -4354,7 +4354,7 @@ LINE_1030
 
 LINE_1031
 
-	; N$(0)="\xDF\xD4\xD1"
+	; N$(0)="ﬂ‘—"
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -4367,7 +4367,7 @@ LINE_1031
 
 	jsr	ld_sp_sr1
 
-	; N$(1)="\xDF\xDF\xDF"
+	; N$(1)="ﬂﬂﬂ"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -4382,7 +4382,7 @@ LINE_1031
 
 LINE_1032
 
-	; O$(0)="\xDE\xD6\xDF"
+	; O$(0)="ﬁ÷ﬂ"
 
 	ldab	#0
 	jsr	ld_ir1_pb
@@ -4395,7 +4395,7 @@ LINE_1032
 
 	jsr	ld_sp_sr1
 
-	; O$(1)="\xD8\xD2\x9D"
+	; O$(1)="ÿ“ù"
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -4410,7 +4410,7 @@ LINE_1032
 
 LINE_1033
 
-	; M$(2)="\xDF\x9F\xDF"
+	; M$(2)="ﬂüﬂ"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -4425,7 +4425,7 @@ LINE_1033
 
 LINE_1034
 
-	; N$(2)="\xD2\xD8\xDF"
+	; N$(2)="“ÿﬂ"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -4438,7 +4438,7 @@ LINE_1034
 
 	jsr	ld_sp_sr1
 
-	; N$(3)="\xDF\xDF\xDF"
+	; N$(3)="ﬂﬂﬂ"
 
 	ldab	#3
 	jsr	ld_ir1_pb
@@ -4453,7 +4453,7 @@ LINE_1034
 
 LINE_1035
 
-	; O$(2)="\xDF\xD9\xDD"
+	; O$(2)="ﬂŸ›"
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -4466,7 +4466,7 @@ LINE_1035
 
 	jsr	ld_sp_sr1
 
-	; O$(3)="\x9E\xD1\xD4"
+	; O$(3)="û—‘"
 
 	ldab	#3
 	jsr	ld_ir1_pb
@@ -4481,7 +4481,7 @@ LINE_1035
 
 LINE_1040
 
-	; M$(4)="\xDF\xFF\xDF"
+	; M$(4)="ﬂˇﬂ"
 
 	ldab	#4
 	jsr	ld_ir1_pb
@@ -4496,7 +4496,7 @@ LINE_1040
 
 LINE_1041
 
-	; N$(4)="\xD2\xD8\xDF"
+	; N$(4)="“ÿﬂ"
 
 	ldab	#4
 	jsr	ld_ir1_pb
@@ -4509,7 +4509,7 @@ LINE_1041
 
 	jsr	ld_sp_sr1
 
-	; N$(5)="\xDF\xDF\xDF"
+	; N$(5)="ﬂﬂﬂ"
 
 	ldab	#5
 	jsr	ld_ir1_pb
@@ -4524,7 +4524,7 @@ LINE_1041
 
 LINE_1042
 
-	; O$(4)="\xDF\xD9\xDD"
+	; O$(4)="ﬂŸ›"
 
 	ldab	#4
 	jsr	ld_ir1_pb
@@ -4537,7 +4537,7 @@ LINE_1042
 
 	jsr	ld_sp_sr1
 
-	; O$(5)="\xD8\xD2\xFD"
+	; O$(5)="ÿ“˝"
 
 	ldab	#5
 	jsr	ld_ir1_pb
@@ -4552,7 +4552,7 @@ LINE_1042
 
 LINE_1043
 
-	; M$(6)="\xDF\xFF\xDF"
+	; M$(6)="ﬂˇﬂ"
 
 	ldab	#6
 	jsr	ld_ir1_pb
@@ -4567,7 +4567,7 @@ LINE_1043
 
 LINE_1044
 
-	; N$(6)="\xDF\xD4\xD1"
+	; N$(6)="ﬂ‘—"
 
 	ldab	#6
 	jsr	ld_ir1_pb
@@ -4580,7 +4580,7 @@ LINE_1044
 
 	jsr	ld_sp_sr1
 
-	; N$(7)="\xDF\xDF\xDF"
+	; N$(7)="ﬂﬂﬂ"
 
 	ldab	#7
 	jsr	ld_ir1_pb
@@ -4595,7 +4595,7 @@ LINE_1044
 
 LINE_1045
 
-	; O$(6)="\xDE\xD6\xDF"
+	; O$(6)="ﬁ÷ﬂ"
 
 	ldab	#6
 	jsr	ld_ir1_pb
@@ -4608,7 +4608,7 @@ LINE_1045
 
 	jsr	ld_sp_sr1
 
-	; O$(7)="\xFE\xD1\xD4"
+	; O$(7)="˛—‘"
 
 	ldab	#7
 	jsr	ld_ir1_pb
@@ -5310,35 +5310,35 @@ LINE_2000
 
 LINE_2010
 
-	; PRINT "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0";
+	; PRINT "–––––––––––––œœœœœœœ––––––––––––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0"
 
 LINE_2020
 
-	; PRINT "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0";
+	; PRINT "–––––––––––––œ–––––œ––––––––––––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0"
 
 LINE_2030
 
-	; PRINT "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0";
+	; PRINT "–––––––––––––œ–––––Ø––––––––––––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0"
 
 LINE_2040
 
-	; PRINT "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0";
+	; PRINT "–––––––––––––œ–––––Ø––––––––––––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0"
 
 LINE_2050
 
-	; PRINT "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0";
+	; PRINT "–––––––––––––œ–––––Ø––––––––––––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0"
@@ -5356,21 +5356,21 @@ LINE_2050
 
 LINE_2060
 
-	; PRINT "\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0";
+	; PRINT "––––œœœœœœœœœœ–––––œœœœœœœœœœ–––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0"
 
 LINE_2070
 
-	; PRINT "\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0";
+	; PRINT "––––œœœœœœœœœœ––––œœœœœœœœœœœ–––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0"
 
 LINE_2080
 
-	; PRINT "\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0";
+	; PRINT "––––œœœœœœœœœœ–––œœœœœœœœœœœœ–––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xCF\xD0\xD0\xD0"
@@ -5522,7 +5522,7 @@ LINE_2200
 
 	jsr	sound_ir1_ir2
 
-	; PRINT @P, "\xD0\xD0\xD0";
+	; PRINT @P, "–––";
 
 	ldx	#INTVAR_P
 	jsr	prat_ix
@@ -5530,7 +5530,7 @@ LINE_2200
 	jsr	pr_ss
 	.text	3, "\xD0\xD0\xD0"
 
-	; PRINT @P+32, "\xD0\xD0\xD0";
+	; PRINT @P+32, "–––";
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -5543,7 +5543,7 @@ LINE_2200
 	jsr	pr_ss
 	.text	3, "\xD0\xD0\xD0"
 
-	; PRINT @P+64, "\xD0\xD0\xD0";
+	; PRINT @P+64, "–––";
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -5630,7 +5630,7 @@ LINE_3000
 	ldab	#6
 	jsr	clsn_pb
 
-	; PRINT @8, "elevator\xDFaction";
+	; PRINT @8, "elevatorﬂaction";
 
 	ldab	#8
 	jsr	prat_pb
@@ -5638,7 +5638,7 @@ LINE_3000
 	jsr	pr_ss
 	.text	15, "elevator\xDFaction"
 
-	; PRINT @45, "\xDA";
+	; PRINT @45, "⁄";
 
 	ldab	#45
 	jsr	prat_pb
@@ -5646,7 +5646,7 @@ LINE_3000
 	jsr	pr_ss
 	.text	1, "\xDA"
 
-	; PRINT @51, "\xD5";
+	; PRINT @51, "’";
 
 	ldab	#51
 	jsr	prat_pb
@@ -5661,84 +5661,84 @@ LINE_3000
 
 LINE_3005
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFUSE: awsz OR jikl TO\xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂUSE: awsz OR jikl TOﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFUSE: awsz OR jikl TO\xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3010
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFMOVE & space TO FIRE\xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂMOVE & space TO FIREﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFMOVE & space TO FIRE\xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3020
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFDOWN= CROUCH-- HIT  \xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂDOWN= CROUCH-- HIT  ﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFDOWN= CROUCH-- HIT  \xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3030
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFAGAIN TO CHANGE DIR.\xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂAGAIN TO CHANGE DIR.ﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFAGAIN TO CHANGE DIR.\xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3040
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFUP=STAND UP OR JUMP.\xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂUP=STAND UP OR JUMP.ﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFUP=STAND UP OR JUMP.\xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3060
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFNEW LIFE EVERY 50   \xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂNEW LIFE EVERY 50   ﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFNEW LIFE EVERY 50   \xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3070
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFPOINTS. 10 PTS FOR  \xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂPOINTS. 10 PTS FOR  ﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFPOINTS. 10 PTS FOR  \xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3080
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFEVERY AGENT KILLED. \xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂEVERY AGENT KILLED. ﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFEVERY AGENT KILLED. \xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3090
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFOPEN ALL RED DOORS, \xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂOPEN ALL RED DOORS, ﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFOPEN ALL RED DOORS, \xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3100
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFTHEN DESCEND TO 1ST \xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂTHEN DESCEND TO 1ST ﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFTHEN DESCEND TO 1ST \xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3110
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFFLOOR FOR BONUS AND \xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂFLOOR FOR BONUS AND ﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFFLOOR FOR BONUS AND \xDF\xDF\xDF\xDF\xDF\xDF"
 
 LINE_3130
 
-	; PRINT "\xDF\xDF\xDF\xDF\xDF\xDFYOUR NEXT MISSION...\xDF\xDF\xDF\xDF\xDF\xDF";
+	; PRINT "ﬂﬂﬂﬂﬂﬂYOUR NEXT MISSION...ﬂﬂﬂﬂﬂﬂ";
 
 	jsr	pr_ss
 	.text	32, "\xDF\xDF\xDF\xDF\xDF\xDFYOUR NEXT MISSION...\xDF\xDF\xDF\xDF\xDF\xDF"
@@ -5749,7 +5749,7 @@ LINE_3130
 
 LINE_3150
 
-	; PRINT @486, "level\xDFof\xDFplay";
+	; PRINT @486, "levelﬂofﬂplay";
 
 	ldd	#486
 	jsr	prat_pw
@@ -5882,21 +5882,21 @@ LINE_4000
 
 LINE_4030
 
-	; PRINT "\xD0\xD0\xD0\xD0\xD0\xD0HERON\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0";
+	; PRINT "––––––HERON––œ–––––Ø––––––––––––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xD0\xD0HERON\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0"
 
 LINE_4040
 
-	; PRINT "\xD0\xD0\xD0\xD0\xD0\xD0POINT\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0";
+	; PRINT "––––––POINT––œ–––––Ø––––––––––––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xD0\xD0POINT\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0"
 
 LINE_4050
 
-	; PRINT "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\x8A\xD0\x85\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0";
+	; PRINT "–––––––ä–Ö–––œ–––––Ø––––––––––––";
 
 	jsr	pr_ss
 	.text	32, "\xD0\xD0\xD0\xD0\xD0\xD0\xD0\x8A\xD0\x85\xD0\xD0\xD0\xCF\xD0\xD0\xD0\xD0\xD0\xAF\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0\xD0"

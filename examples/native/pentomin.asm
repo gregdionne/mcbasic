@@ -625,7 +625,7 @@ LINE_1120
 	ldx	#FLTVAR_W1
 	jsr	to_ip_ix
 
-	; PRINT @SHIFT(Y+2,5)+X, "\xDF";
+	; PRINT @SHIFT(Y+2,5)+X, "ß";
 
 	ldx	#INTVAR_Y
 	jsr	ld_ir1_ix
@@ -1130,7 +1130,7 @@ LINE_2200
 	ldx	#INTVAR_Y
 	jsr	ld_ix_ir1
 
-	; C$="\xDF"
+	; C$="ß"
 
 	jsr	ld_sr1_ss
 	.text	1, "\xDF"

@@ -35,16 +35,18 @@ Want to write your own program?
 ### MacOS (Darwin)
 
 Requires C++14.  Tested on Apple clang version 12.0.0 (clang-1200.0.32.28).
+The simple makefile should work on most systems.
 
-`c++ -std=c++14 *.cpp -o mcbasic`
+If you'd rather compile without make, navigate to the "src" directory and enter:
+`c++ -std=c++14 -I. */*.cpp -o ../mcbasic`
 
-or if you're comfortable with `make`, a sample Makefile is in the source directory.
+This should compile the program and put the executable in the parent directory.
 
 ### Windows 10
 
 Some attempt has been made to make the source compatible with Windows Visual Studio 2017.  What works is to follow the instructions [here](https://docs.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=vs-2019).  If the link fails, try searching the internet for "Walkthrough:  Compile a C program on the command line".
 
-`cl /EHsc *.cpp /link /out:mcbasic.exe`
+`cl /I. /EHsc *\*.cpp /link /out:mcbasic.exe`
 
 
 ## Usage

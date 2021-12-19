@@ -384,7 +384,7 @@ LINE_9
 
 LINE_20
 
-	; I$="GENERATION: 0              \xC0"
+	; I$="GENERATION: 0              À"
 
 	jsr	ld_sr1_ss
 	.text	28, "GENERATION: 0              \xC0"
@@ -1779,7 +1779,7 @@ LINE_616
 	ldab	#30
 	jsr	to_ip_pb
 
-	; PRINT "\x80";
+	; PRINT "€";
 
 	jsr	pr_ss
 	.text	1, "\x80"

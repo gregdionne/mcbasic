@@ -1255,9 +1255,9 @@ LINE_1500
 
 	; SC=0
 
-	ldx	#FLTVAR_SC
+	ldx	#INTVAR_SC
 	ldab	#0
-	jsr	ld_fx_pb
+	jsr	ld_ix_pb
 
 	; O=RND(3)
 
@@ -1868,8 +1868,8 @@ LINE_2200
 	ldab	#2
 	jsr	pow_ir1_ir1_pb
 
-	ldx	#FLTVAR_SC
-	jsr	add_fx_fx_ir1
+	ldx	#INTVAR_SC
+	jsr	add_ix_ix_ir1
 
 	; GOTO 1700
 
@@ -1886,7 +1886,7 @@ LINE_3020
 	jsr	pr_ss
 	.text	6, "SCORE:"
 
-	ldx	#FLTVAR_SC
+	ldx	#INTVAR_SC
 	jsr	str_sr1_ix
 
 	jsr	pr_sr1
@@ -1908,7 +1908,7 @@ LINE_3030
 	jsr	pr_ss
 	.text	5, "HIGH:"
 
-	ldx	#FLTVAR_HS
+	ldx	#INTVAR_HS
 	jsr	str_sr1_ix
 
 	jsr	pr_sr1
@@ -2174,9 +2174,9 @@ LINE_3420
 
 	; SC+=1000
 
-	ldx	#FLTVAR_SC
+	ldx	#INTVAR_SC
 	ldd	#1000
-	jsr	add_fx_fx_pw
+	jsr	add_ix_ix_pw
 
 	; PRINT @18, "bonus: 1000 ";
 
@@ -2235,22 +2235,22 @@ LINE_3500
 
 	; IF SC>HS THEN
 
-	ldx	#FLTVAR_HS
-	jsr	ld_fr1_fx
+	ldx	#INTVAR_HS
+	jsr	ld_ir1_ix
 
-	ldx	#FLTVAR_SC
-	jsr	ldlt_ir1_fr1_fx
+	ldx	#INTVAR_SC
+	jsr	ldlt_ir1_ir1_ix
 
 	ldx	#LINE_3510
 	jsr	jmpeq_ir1_ix
 
 	; HS=SC
 
-	ldx	#FLTVAR_SC
-	jsr	ld_fr1_fx
+	ldx	#INTVAR_SC
+	jsr	ld_ir1_ix
 
-	ldx	#FLTVAR_HS
-	jsr	ld_fx_fr1
+	ldx	#INTVAR_HS
+	jsr	ld_ix_ir1
 
 LINE_3510
 
@@ -2391,7 +2391,7 @@ LINE_3640
 
 LINE_4000
 
-	; PRINT @T, "\x9E\x9C\x9C\x9E\x9F\x9E\x9E\x9C\x9C\x9E\x9F\x9F\x9E\x9F\x9F\x9F";
+	; PRINT @T, "œœŸœœŸŸŸŸŸ";
 
 	ldx	#INTVAR_T
 	jsr	prat_ix
@@ -2401,7 +2401,7 @@ LINE_4000
 
 LINE_4010
 
-	; PRINT @T+32, "\x9A\x9C\x9C\x9A\x9F\x9A\x9A\x9C\x9F\x9A\x9F\x9F\x9A\x9F\x9F\x9F";
+	; PRINT @T+32, "šœœšŸššœŸšŸŸšŸŸŸ";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -2416,7 +2416,7 @@ LINE_4010
 
 LINE_4020
 
-	; PRINT @T+64, "\x9E\x9C\x98\x9A\x98\x98\x9A\x9C\x9C\x9A\x9C\x9C\x9A\x9C\x9C\x9F";
+	; PRINT @T+64, "œ˜š˜˜šœœšœœšœœŸ";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -2435,7 +2435,7 @@ LINE_4020
 
 LINE_4030
 
-	; PRINT @T+96, "\x9F\x9F\x9C\x9C\x9D\x9C\x9C\x9D\x9C\x9C\x9D\x9C\x9C\x9D\x9F\x9F";
+	; PRINT @T+96, "ŸŸœœœœœœœœŸŸ";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -2450,7 +2450,7 @@ LINE_4030
 
 LINE_4040
 
-	; PRINT @T+128, "\x9F\x9F\x94\x9D\x9F\x95\x9F\x95\x95\x9F\x95\x94\x9C\x95\x9F\x9F";
+	; PRINT @T+128, "ŸŸ”Ÿ•Ÿ••Ÿ•”œ•ŸŸ";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -2465,7 +2465,7 @@ LINE_4040
 
 LINE_4050
 
-	; PRINT @T+160, "\x9F\x9F\x95\x9F\x9F\x94\x9C\x95\x94\x9C\x95\x95\x9F\x9F\x9F\x9F";
+	; PRINT @T+160, "ŸŸ•ŸŸ”œ•”œ••ŸŸŸŸ";
 
 	ldx	#INTVAR_T
 	jsr	ld_ir1_ix
@@ -3665,28 +3665,9 @@ add_fr2_fr2_pb			; numCalls = 1
 	stab	r2
 	rts
 
-add_fx_fx_ir1			; numCalls = 1
-	.module	modadd_fx_fx_ir1
-	ldd	1,x
-	addd	r1+1
-	std	1,x
-	ldab	0,x
-	adcb	r1
-	stab	0,x
-	rts
-
 add_fx_fx_pb			; numCalls = 3
 	.module	modadd_fx_fx_pb
 	clra
-	addd	1,x
-	std	1,x
-	ldab	#0
-	adcb	0,x
-	stab	0,x
-	rts
-
-add_fx_fx_pw			; numCalls = 1
-	.module	modadd_fx_fx_pw
 	addd	1,x
 	std	1,x
 	ldab	#0
@@ -3724,7 +3705,7 @@ add_ir2_ir2_ix			; numCalls = 1
 	stab	r2
 	rts
 
-add_ix_ix_ir1			; numCalls = 1
+add_ix_ix_ir1			; numCalls = 2
 	.module	modadd_ix_ix_ir1
 	ldd	1,x
 	addd	r1+1
@@ -3737,6 +3718,15 @@ add_ix_ix_ir1			; numCalls = 1
 add_ix_ix_pb			; numCalls = 6
 	.module	modadd_ix_ix_pb
 	clra
+	addd	1,x
+	std	1,x
+	ldab	#0
+	adcb	0,x
+	stab	0,x
+	rts
+
+add_ix_ix_pw			; numCalls = 1
+	.module	modadd_ix_ix_pw
 	addd	1,x
 	std	1,x
 	ldab	#0
@@ -4049,7 +4039,7 @@ ld_fp_pb			; numCalls = 3
 	std	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 45
+ld_fr1_fx			; numCalls = 43
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -4069,7 +4059,7 @@ ld_fr2_fx			; numCalls = 3
 	stab	r2
 	rts
 
-ld_fx_fr1			; numCalls = 15
+ld_fx_fr1			; numCalls = 14
 	.module	modld_fx_fr1
 	ldd	r1+3
 	std	3,x
@@ -4079,7 +4069,7 @@ ld_fx_fr1			; numCalls = 15
 	stab	0,x
 	rts
 
-ld_fx_pb			; numCalls = 6
+ld_fx_pb			; numCalls = 5
 	.module	modld_fx_pb
 	stab	2,x
 	ldd	#0
@@ -4096,7 +4086,7 @@ ld_ip_ir1			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 41
+ld_ir1_ix			; numCalls = 43
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -4133,7 +4123,7 @@ ld_ir2_pb			; numCalls = 6
 	std	r2
 	rts
 
-ld_ix_ir1			; numCalls = 14
+ld_ix_ir1			; numCalls = 15
 	.module	modld_ix_ir1
 	ldd	r1+1
 	std	1,x
@@ -4141,7 +4131,7 @@ ld_ix_ir1			; numCalls = 14
 	stab	0,x
 	rts
 
-ld_ix_pb			; numCalls = 10
+ld_ix_pb			; numCalls = 11
 	.module	modld_ix_pb
 	stab	2,x
 	ldd	#0
@@ -4264,7 +4254,7 @@ ldlt_ir1_fr1_fr2			; numCalls = 1
 	stab	r1
 	rts
 
-ldlt_ir1_fr1_fx			; numCalls = 5
+ldlt_ir1_fr1_fx			; numCalls = 4
 	.module	modldlt_ir1_fr1_fx
 	ldd	r1+3
 	subd	3,x
@@ -4291,7 +4281,7 @@ ldlt_ir1_fr1_pb			; numCalls = 2
 	stab	r1
 	rts
 
-ldlt_ir1_ir1_ix			; numCalls = 5
+ldlt_ir1_ir1_ix			; numCalls = 6
 	.module	modldlt_ir1_ir1_ix
 	ldd	r1+1
 	subd	1,x
@@ -4899,25 +4889,25 @@ INTVAR_B	.block	3
 INTVAR_C	.block	3
 INTVAR_D	.block	3
 INTVAR_F	.block	3
+INTVAR_HS	.block	3
 INTVAR_M	.block	3
 INTVAR_MD	.block	3
 INTVAR_NC	.block	3
 INTVAR_O	.block	3
 INTVAR_PY	.block	3
 INTVAR_R	.block	3
+INTVAR_SC	.block	3
 INTVAR_T	.block	3
 INTVAR_Y	.block	3
 INTVAR_YD	.block	3
 INTVAR_Z	.block	3
 FLTVAR_A	.block	5
 FLTVAR_E	.block	5
-FLTVAR_HS	.block	5
 FLTVAR_L	.block	5
 FLTVAR_N	.block	5
 FLTVAR_PX	.block	5
 FLTVAR_Q	.block	5
 FLTVAR_S	.block	5
-FLTVAR_SC	.block	5
 FLTVAR_X	.block	5
 ; String Variables
 STRVAR_I	.block	3

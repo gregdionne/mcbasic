@@ -646,7 +646,7 @@ LINE_13
 	ldab	#3
 	jsr	ld_ip_pb
 
-	; LN$="\x88\x98\xA8\xB8\xE8\xF8"
+	; LN$="àò®∏Ë¯"
 
 	jsr	ld_sr1_ss
 	.text	6, "\x88\x98\xA8\xB8\xE8\xF8"
@@ -777,7 +777,7 @@ LINE_17
 
 LINE_18
 
-	; PRINT @SHIFT(J,5)+32, "\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC\xDC";
+	; PRINT @SHIFT(J,5)+32, "‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹‹";
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -799,7 +799,7 @@ LINE_19
 
 	jsr	next
 
-	; PRINT "\x80";
+	; PRINT "Ä";
 
 	jsr	pr_ss
 	.text	1, "\x80"
@@ -826,7 +826,7 @@ LINE_20
 
 	jsr	step_ip_ir1
 
-	; PRINT @I, "\xC3";
+	; PRINT @I, "√";
 
 	ldx	#INTVAR_I
 	jsr	prat_ix
@@ -834,7 +834,7 @@ LINE_20
 	jsr	pr_ss
 	.text	1, "\xC3"
 
-	; PRINT @I+21, "\xC3\xF0";
+	; PRINT @I+21, "√";
 
 	ldx	#INTVAR_I
 	jsr	ld_ir1_ix
@@ -998,7 +998,7 @@ LINE_24
 
 LINE_25
 
-	; PRINT @A+J, "\xC3";
+	; PRINT @A+J, "√";
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix
@@ -3654,7 +3654,7 @@ LINE_310
 
 LINE_311
 
-	; PRINT @Q*J, "\xDC";
+	; PRINT @Q*J, "‹";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3689,7 +3689,7 @@ LINE_311
 	ldx	#LINE_312
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @(Q*J)+Q, "\x80";
+	; PRINT @(Q*J)+Q, "Ä";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3729,7 +3729,7 @@ LINE_312
 	ldx	#LINE_315
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @(Q*J)-Q, "\x80";
+	; PRINT @(Q*J)-Q, "Ä";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3792,7 +3792,7 @@ LINE_320
 
 LINE_321
 
-	; PRINT @(Q*J)+21, "\xDC";
+	; PRINT @(Q*J)+21, "‹";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3830,7 +3830,7 @@ LINE_321
 	ldx	#LINE_322
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @(Q*J)+21+Q, "\x80";
+	; PRINT @(Q*J)+21+Q, "Ä";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3873,7 +3873,7 @@ LINE_322
 	ldx	#LINE_325
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @(Q*J)+21-Q, "\x80";
+	; PRINT @(Q*J)+21-Q, "Ä";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix

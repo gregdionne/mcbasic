@@ -1451,7 +1451,7 @@ LINE_1040
 	.byte	bytecode_INTVAR_M
 	.byte	0
 
-	; PRINT @0, "\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80";
+	; PRINT @0, "€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€€";
 
 	.byte	bytecode_prat_pb
 	.byte	0
@@ -2100,7 +2100,7 @@ LINE_1342
 
 LINE_1350
 
-	; A$(1)="\xFF\xFF"
+	; A$(1)="ÿÿ"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	1
@@ -2113,7 +2113,7 @@ LINE_1350
 
 	.byte	bytecode_ld_sp_sr1
 
-	; A$(2)="\x9F\x9F"
+	; A$(2)="ŸŸ"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
@@ -2126,7 +2126,7 @@ LINE_1350
 
 	.byte	bytecode_ld_sp_sr1
 
-	; A$(3)="\xAF\xAF"
+	; A$(3)="¯¯"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	3
@@ -2139,7 +2139,7 @@ LINE_1350
 
 	.byte	bytecode_ld_sp_sr1
 
-	; A$(4)="\x8F\x8F"
+	; A$(4)=""
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	4
@@ -2152,7 +2152,7 @@ LINE_1350
 
 	.byte	bytecode_ld_sp_sr1
 
-	; A$(5)="\xCF\xCF"
+	; A$(5)="ÏÏ"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	5
@@ -2165,7 +2165,7 @@ LINE_1350
 
 	.byte	bytecode_ld_sp_sr1
 
-	; A$(6)="\xBF\xBF"
+	; A$(6)="¿¿"
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	6
@@ -2725,7 +2725,7 @@ LINE_1522
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_1523
 
-	; PRINT "\x08\x08\x80\x80";
+	; PRINT "\x08\x08€€";
 
 	.byte	bytecode_pr_ss
 	.text	4, "\x08\x08\x80\x80"

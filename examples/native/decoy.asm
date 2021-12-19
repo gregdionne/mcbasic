@@ -256,7 +256,7 @@ LINE_3
 
 	jsr	next
 
-	; PRINT @P+V+3, "\x8E\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C";
+	; PRINT @P+V+3, "ŒŒŒŒŒŒŒŒŒŒ";
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -368,7 +368,7 @@ LINE_4
 	ldx	#INTVAR_T
 	jsr	ld_ix_ir1
 
-	; PRINT @T, "\x8E\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C";
+	; PRINT @T, "ŒŒŒŒŒŒŒŒŒŒ";
 
 	ldx	#INTVAR_T
 	jsr	prat_ix
@@ -974,7 +974,7 @@ LINE_24
 
 	jsr	next
 
-	; PRINT @0, "\xC8\xC0\xC2\xC0\xC2\xC0\xC0\xC0\xC8\xC2\xC0\xC8\xC0\xC8\xC2\xC0\xC2\xC8\xC0\xC8\xC0\xC2\xC0\xC0\xC2\xC0\xC0\xC2\xC8\xC8\xC0\xC2";
+	; PRINT @0, "ÈÀÂÀÂÀÀÀÈÂÀÈÀÈÂÀÂÈÀÈÀÂÀÀÂÀÀÂÈÈÀÂ";
 
 	ldab	#0
 	jsr	prat_pb
@@ -1171,7 +1171,7 @@ LINE_100
 
 LINE_110
 
-	; PRINT @0, "\xC8\xC0\xC2\xC0\xC2\xC0\xC0\xC0\xC8\xC2\xC0\xC8\xC0\xC8\xC2\xC0\xC2\xC8\xC0\xC8\xC0\xC2\xC0\xC0\xC2\xC0\xC0\xC2\xC8\xC8\xC0\xC2";
+	; PRINT @0, "ÈÀÂÀÂÀÀÀÈÂÀÈÀÈÂÀÂÈÀÈÀÂÀÀÂÀÀÂÈÈÀÂ";
 
 	ldab	#0
 	jsr	prat_pb
@@ -1459,7 +1459,7 @@ LINE_135
 	jsr	pr_ss
 	.text	2, "  "
 
-	; PRINT @0, "\xC8\xC0\xC2\xC0\xC2\xC0\xC0\xC0\xC8\xC2\xC0\xC8\xC0\xC8\xC2\xC0\xC2\xC8\xC0\xC8\xC0\xC2\xC0\xC0\xC2\xC0\xC0\xC2\xC8\xC8\xC0\xC2";
+	; PRINT @0, "ÈÀÂÀÂÀÀÀÈÂÀÈÀÈÂÀÂÈÀÈÀÂÀÀÂÀÀÂÈÈÀÂ";
 
 	ldab	#0
 	jsr	prat_pb
@@ -1872,7 +1872,7 @@ LINE_960
 	ldab	#51
 	jsr	ld_ix_pb
 
-	; PRINT @0, "\xC8\xC0\xC2\xC0\xC2\xC0\xC0\xC0\xC8\xC2\xC0\xC8\xC0\xC8\xC2\xC0\xC2\xC8\xC0\xC8\xC0\xC2\xC0\xC0\xC2\xC0\xC0\xC2\xC8\xC8\xC0\xC2";
+	; PRINT @0, "ÈÀÂÀÂÀÀÀÈÂÀÈÀÈÂÀÂÈÀÈÀÂÀÀÂÀÀÂÈÈÀÂ";
 
 	ldab	#0
 	jsr	prat_pb
@@ -1968,7 +1968,7 @@ LINE_980
 
 LINE_1000
 
-	; A$="\x8E"
+	; A$=""
 
 	jsr	ld_sr1_ss
 	.text	1, "\x8E"
@@ -1978,7 +1978,7 @@ LINE_1000
 
 LINE_1001
 
-	; B$="\x88\x94\x8C"
+	; B$="ˆ”Œ"
 
 	jsr	ld_sr1_ss
 	.text	3, "\x88\x94\x8C"
@@ -1988,7 +1988,7 @@ LINE_1001
 
 LINE_1002
 
-	; C$="\x8B\x83"
+	; C$="‹ƒ"
 
 	jsr	ld_sr1_ss
 	.text	2, "\x8B\x83"
@@ -1998,7 +1998,7 @@ LINE_1002
 
 LINE_1003
 
-	; D$(1)="            \xFF\xFF                  "
+	; D$(1)="            ÿÿ                  "
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -2013,7 +2013,7 @@ LINE_1003
 
 LINE_1004
 
-	; E$(1)="           \xFF``\xFF                 "
+	; E$(1)="           ÿ``ÿ                 "
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -2028,7 +2028,7 @@ LINE_1004
 
 LINE_1006
 
-	; D$(2)="                   \xFF\xFF           "
+	; D$(2)="                   ÿÿ           "
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -2043,7 +2043,7 @@ LINE_1006
 
 LINE_1007
 
-	; E$(2)="                  \xFF``\xFF          "
+	; E$(2)="                  ÿ``ÿ          "
 
 	ldab	#2
 	jsr	ld_ir1_pb
@@ -2058,7 +2058,7 @@ LINE_1007
 
 LINE_1009
 
-	; D$(3)="     \xFF\xFF                \xFF\xFF       "
+	; D$(3)="     ÿÿ                ÿÿ       "
 
 	ldab	#3
 	jsr	ld_ir1_pb
@@ -2073,7 +2073,7 @@ LINE_1009
 
 LINE_1010
 
-	; E$(3)="    \xFF\x7F\x7F\xFF              \xFF\x7F\x7F\xFF      "
+	; E$(3)="    ÿ\x7F\x7Fÿ              ÿ\x7F\x7Fÿ      "
 
 	ldab	#3
 	jsr	ld_ir1_pb
@@ -2103,7 +2103,7 @@ LINE_1013
 
 LINE_1020
 
-	; M$="\x94\x9C\x9F\x94\x95\x9F\x9F\x94\x9D\x9F\x9A\x98\x9C\x90\x9C\x9C\x90\x90\x94\x9C\x9C\x9C\x94\x98\x94\x9C\x98\x94\x9C\x94\x98\x94"
+	; M$="”œŸ”•ŸŸ”Ÿš˜œœœ”œœœ”˜”œ˜”œ”˜”"
 
 	jsr	ld_sr1_ss
 	.text	32, "\x94\x9C\x9F\x94\x95\x9F\x9F\x94\x9D\x9F\x9A\x98\x9C\x90\x9C\x9C\x90\x90\x94\x9C\x9C\x9C\x94\x98\x94\x9C\x98\x94\x9C\x94\x98\x94"

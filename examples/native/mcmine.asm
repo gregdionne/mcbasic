@@ -806,7 +806,7 @@ LINE_220
 
 LINE_230
 
-	; PRINT @495, STR$(L);" \x80";
+	; PRINT @495, STR$(L);" €";
 
 	ldd	#495
 	jsr	prat_pw

@@ -3947,7 +3947,7 @@ LINE_800
 	ldab	#4
 	jsr	to_ip_pb
 
-	; SB$=SB$+"\x8C\x8C\x8C\x83\x83\x83"
+	; SB$=SB$+"ŒŒŒƒƒƒ"
 
 	ldx	#STRVAR_SB
 	jsr	strinit_sr1_sx
@@ -3960,7 +3960,7 @@ LINE_800
 
 LINE_801
 
-	; SW$=SW$+"\x83\x83\x83\x8C\x8C\x8C"
+	; SW$=SW$+"ƒƒƒŒŒŒ"
 
 	ldx	#STRVAR_SW
 	jsr	strinit_sr1_sx
@@ -4453,7 +4453,7 @@ LINE_940
 	.byte	9
 	.word	LINE_1100, LINE_1110, LINE_0, LINE_1120, LINE_1130, LINE_0, LINE_1140, LINE_0, LINE_1150
 
-	; PRINT @L, "\x80K\x80";
+	; PRINT @L, "€K€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4484,7 +4484,7 @@ LINE_941
 	.byte	9
 	.word	LINE_1100, LINE_1180, LINE_0, LINE_1190, LINE_1200, LINE_0, LINE_1210, LINE_0, LINE_1220
 
-	; PRINT @L, "\x80k\x80";
+	; PRINT @L, "€k€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4652,7 +4652,7 @@ LINE_1080
 
 LINE_1100
 
-	; PRINT @L, "\x80\x80\x80";
+	; PRINT @L, "€€€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4666,7 +4666,7 @@ LINE_1100
 
 LINE_1110
 
-	; PRINT @L, "\x80P\x80";
+	; PRINT @L, "€P€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4680,7 +4680,7 @@ LINE_1110
 
 LINE_1120
 
-	; PRINT @L, "\x80N\x80";
+	; PRINT @L, "€N€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4694,7 +4694,7 @@ LINE_1120
 
 LINE_1130
 
-	; PRINT @L, "\x80B\x80";
+	; PRINT @L, "€B€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4708,7 +4708,7 @@ LINE_1130
 
 LINE_1140
 
-	; PRINT @L, "\x80R\x80";
+	; PRINT @L, "€R€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4722,7 +4722,7 @@ LINE_1140
 
 LINE_1150
 
-	; PRINT @L, "\x80Q\x80";
+	; PRINT @L, "€Q€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4736,7 +4736,7 @@ LINE_1150
 
 LINE_1180
 
-	; PRINT @L, "\x80p\x80";
+	; PRINT @L, "€p€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4750,7 +4750,7 @@ LINE_1180
 
 LINE_1190
 
-	; PRINT @L, "\x80n\x80";
+	; PRINT @L, "€n€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4764,7 +4764,7 @@ LINE_1190
 
 LINE_1200
 
-	; PRINT @L, "\x80b\x80";
+	; PRINT @L, "€b€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4778,7 +4778,7 @@ LINE_1200
 
 LINE_1210
 
-	; PRINT @L, "\x80r\x80";
+	; PRINT @L, "€r€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix
@@ -4792,7 +4792,7 @@ LINE_1210
 
 LINE_1220
 
-	; PRINT @L, "\x80q\x80";
+	; PRINT @L, "€q€";
 
 	ldx	#INTVAR_L
 	jsr	prat_ix

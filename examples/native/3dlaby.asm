@@ -2307,7 +2307,7 @@ LINE_5020
 
 LINE_5040
 
-	; PRINT "\x80";
+	; PRINT "Ä";
 
 	jsr	pr_ss
 	.text	1, "\x80"
@@ -2419,70 +2419,70 @@ LINE_6000
 
 LINE_6002
 
-	; PRINT "    \x80\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x80\r";
+	; PRINT "    ÄååååååååååååååÄ\r";
 
 	jsr	pr_ss
 	.text	21, "    \x80\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x8C\x80\r"
 
 LINE_6004
 
-	; PRINT "    \x80\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x80\r";
+	; PRINT "    ÄüüüüüüüüüüüüüüÄ\r";
 
 	jsr	pr_ss
 	.text	21, "    \x80\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x80\r"
 
 LINE_6006
 
-	; PRINT "     \x80\x9F\x9F\x9F\x9Fthe\x9F\x9F\x9F\x9F\x9F\x80\r";
+	; PRINT "     ÄüüüütheüüüüüÄ\r";
 
 	jsr	pr_ss
 	.text	20, "     \x80\x9F\x9F\x9F\x9Fthe\x9F\x9F\x9F\x9F\x9F\x80\r"
 
 LINE_6008
 
-	; PRINT "      \x80\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x80\r";
+	; PRINT "      ÄüüüüüüüüüüÄ\r";
 
 	jsr	pr_ss
 	.text	19, "      \x80\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x9F\x80\r"
 
 LINE_6010
 
-	; PRINT "       \x80\x9Fwinner\x9F\x80\r";
+	; PRINT "       ÄüwinnerüÄ\r";
 
 	jsr	pr_ss
 	.text	18, "       \x80\x9Fwinner\x9F\x80\r"
 
 LINE_6012
 
-	; PRINT "        \x80\x9F\x9F\x9F\x9F\x9F\x9F\x80\r";
+	; PRINT "        ÄüüüüüüÄ\r";
 
 	jsr	pr_ss
 	.text	17, "        \x80\x9F\x9F\x9F\x9F\x9F\x9F\x80\r"
 
 LINE_6014
 
-	; PRINT "         \x94\x9C\x9C\x9C\x9C\x98          \x80\x80\x80\r";
+	; PRINT "         îúúúúò          ÄÄÄ\r";
 
 	jsr	pr_ss
 	.text	29, "         \x94\x9C\x9C\x9C\x9C\x98          \x80\x80\x80\r"
 
 LINE_6016
 
-	; PRINT "           \x95\x9A            \x801\x80\r";
+	; PRINT "           ïö            Ä1Ä\r";
 
 	jsr	pr_ss
 	.text	29, "           \x95\x9A            \x801\x80\r"
 
 LINE_6018
 
-	; PRINT "           \x95\x9A         \x80\x80\x80\x80\x80\x80\x80\x80\x80\r";
+	; PRINT "           ïö         ÄÄÄÄÄÄÄÄÄ\r";
 
 	jsr	pr_ss
 	.text	32, "           \x95\x9A         \x80\x80\x80\x80\x80\x80\x80\x80\x80\r"
 
 LINE_6020
 
-	; PRINT "          \x91\x97\x9B\x92        \x802\x80\x80\x80\x80\x803\x80\r";
+	; PRINT "          ëóõí        Ä2ÄÄÄÄÄ3Ä\r";
 
 	jsr	pr_ss
 	.text	32, "          \x91\x97\x9B\x92        \x802\x80\x80\x80\x80\x803\x80\r"
@@ -2515,7 +2515,7 @@ LINE_6021
 
 LINE_6022
 
-	; PRINT "         \x80\x9C\x9C\x9C\x9C\x80\r";
+	; PRINT "         ÄúúúúÄ\r";
 
 	jsr	pr_ss
 	.text	16, "         \x80\x9C\x9C\x9C\x9C\x80\r"
@@ -2530,7 +2530,7 @@ LINE_6029
 
 LINE_6030
 
-	; PRINT @G, "\xE2";
+	; PRINT @G, "‚";
 
 	ldx	#INTVAR_G
 	jsr	prat_ix
@@ -2538,7 +2538,7 @@ LINE_6030
 	jsr	pr_ss
 	.text	1, "\xE2"
 
-	; PRINT @G+31, "\x89\x80\x86";
+	; PRINT @G+31, "âÄÜ";
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -2551,7 +2551,7 @@ LINE_6030
 	jsr	pr_ss
 	.text	3, "\x89\x80\x86"
 
-	; PRINT @G+64, "\x80";
+	; PRINT @G+64, "Ä";
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -2566,7 +2566,7 @@ LINE_6030
 
 LINE_6032
 
-	; PRINT @G+95, "\x89 \x86";
+	; PRINT @G+95, "â Ü";
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -2702,7 +2702,7 @@ LINE_6040
 	ldab	#20
 	jsr	to_ip_pb
 
-	; PRINT @G+31, "\x83\x80\x83";
+	; PRINT @G+31, "ÉÄÉ";
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -2733,7 +2733,7 @@ LINE_6040
 
 LINE_6041
 
-	; PRINT @G+31, "\x89\x80\x86";
+	; PRINT @G+31, "âÄÜ";
 
 	ldx	#INTVAR_G
 	jsr	ld_ir1_ix
@@ -2837,7 +2837,7 @@ LINE_7005
 
 LINE_7010
 
-	; PRINT " \x81\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x82\r";
+	; PRINT " ÅÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÇ\r";
 
 	jsr	pr_ss
 	.text	32, " \x81\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x83\x82\r"
@@ -2851,7 +2851,7 @@ LINE_7020
 
 LINE_7030
 
-	; PRINT " \x85        3D LABYRINTH        \x8A\r";
+	; PRINT " Ö        3D LABYRINTH        ä\r";
 
 	jsr	pr_ss
 	.text	32, " \x85        3D LABYRINTH        \x8A\r"
@@ -2863,7 +2863,7 @@ LINE_7030
 
 LINE_7040
 
-	; PRINT " \x84\x8C\x8C\x8C\x8C\x8C\x8C\x8Cby\x8Cdieter\x8Cfryer\x8C\x8C\x8C\x8C\x8C\x8C\x88\r";
+	; PRINT " Ñåååååååbyådieteråfryerååååååà\r";
 
 	jsr	pr_ss
 	.text	32, " \x84\x8C\x8C\x8C\x8C\x8C\x8C\x8Cby\x8Cdieter\x8Cfryer\x8C\x8C\x8C\x8C\x8C\x8C\x88\r"
@@ -3027,7 +3027,7 @@ LINE_7500
 	ldab	#3
 	jsr	to_ip_pb
 
-	; PRINT " \x85";TAB(30);"\x8A\r";
+	; PRINT " Ö";TAB(30);"ä\r";
 
 	jsr	pr_ss
 	.text	2, " \x85"

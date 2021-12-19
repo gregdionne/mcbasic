@@ -6,7 +6,7 @@ SRCS := $(shell find . -name \*.cpp -or -name \*.c -or -name \*.s)
 OBJS := $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
-CPPFLAGS ?= -MMD -MP -std=c++14 -Wall -Wextra -ferror-limit=4
+CPPFLAGS ?= -MMD -MP -std=c++14 -O3 -Wall -Wextra -ferror-limit=4 -I.
 
 #$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 $(TARGET_EXEC): $(OBJS)

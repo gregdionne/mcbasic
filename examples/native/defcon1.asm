@@ -444,7 +444,7 @@ LINE_9
 	ldx	#INTVAR_P
 	jsr	ld_ix_ir1
 
-	; PRINT @C, "\x9F";
+	; PRINT @C, "Ÿ";
 
 	ldx	#FLTVAR_C
 	jsr	prat_ix
@@ -3064,7 +3064,7 @@ LINE_2000
 
 	jsr	to_fp_ir1
 
-	; PRINT MID$(N$,T,1);"\x80";
+	; PRINT MID$(N$,T,1);"€";
 
 	ldx	#STRVAR_N
 	jsr	ld_sr1_sx
@@ -3108,7 +3108,7 @@ LINE_2000
 
 LINE_2010
 
-	; PRINT "\x80";
+	; PRINT "€";
 
 	jsr	pr_ss
 	.text	1, "\x80"

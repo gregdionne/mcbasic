@@ -4099,7 +4099,7 @@ LINE_90
 
 	jsr	ld_sp_sr1
 
-	; B$(2)="\x80"
+	; B$(2)="€"
 
 	ldab	#2
 	jsr	ld_ir1_pb

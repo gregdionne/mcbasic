@@ -2896,7 +2896,7 @@ LINE_150
 	ldab	#2
 	jsr	ld_ix_pb
 
-	; M$="^^^\x80\x80\x80\x80"
+	; M$="^^^€€€€"
 
 	jsr	ld_sr1_ss
 	.text	7, "^^^\x80\x80\x80\x80"
@@ -3316,7 +3316,7 @@ LINE_300
 	ldab	#3
 	jsr	ld_ix_pb
 
-	; PRINT @SHIFT(J,5)+6, "\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF";
+	; PRINT @SHIFT(J,5)+6, "οοοοοοοοοοοοοοοοοοο";
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -3334,7 +3334,7 @@ LINE_300
 
 LINE_310
 
-	; PRINT @SHIFT(J+1,5)+6, "\xEF\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xEF";
+	; PRINT @SHIFT(J+1,5)+6, "ο€€€€€€€€€€€€€€€€€ο";
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -3355,7 +3355,7 @@ LINE_310
 
 LINE_320
 
-	; PRINT @SHIFT(J+2,5)+6, "\xEF\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\x80\xEF";
+	; PRINT @SHIFT(J+2,5)+6, "ο€€€€€€€€€€€€€€€€€ο";
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
@@ -3376,7 +3376,7 @@ LINE_320
 
 LINE_330
 
-	; PRINT @SHIFT(J+3,5)+6, "\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF\xEF";
+	; PRINT @SHIFT(J+3,5)+6, "οοοοοοοοοοοοοοοοοοο";
 
 	ldx	#INTVAR_J
 	jsr	ld_ir1_ix
