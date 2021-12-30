@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
 DP_LTAB	.equ	$E5	; current last tab column
@@ -53,22 +54,22 @@ strbuf	.block	2
 strend	.block	2
 strfree	.block	2
 strstop	.block	2
-dataptr	.block	2
 inptptr	.block	2
 redoptr	.block	2
 letptr	.block	2
 	.org	$a3
+tmp1	.block	2
+tmp2	.block	2
+tmp3	.block	2
+tmp4	.block	2
+tmp5	.block	2
+	.org	$af
 r1	.block	5
 r2	.block	5
 rend
 rvseed	.block	2
 curinst	.block	2
 nxtinst	.block	2
-tmp1	.block	2
-tmp2	.block	2
-tmp3	.block	2
-tmp4	.block	2
-tmp5	.block	2
 argv	.block	10
 
 	.org	M_CODE
@@ -544,7 +545,7 @@ _start
 	ldx	#$8FFF
 	stx	strstop
 	ldx	#startdata
-	stx	dataptr
+	stx	DP_DATA
 	rts
 
 goto_ix			; numCalls = 1

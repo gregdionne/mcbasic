@@ -12,7 +12,7 @@ void IfFolder::operate(Program &p) {
 }
 
 void IfFolder::operate(Line &l) {
-  auto iff = IfStatementFolder(l.lineNumber, warner);
+  auto iff = IfStatementFolder(l.lineNumber, announcer);
   iff.fold(l.statements);
 }
 
@@ -49,10 +49,10 @@ void IfStatementFolder::fold(
     needsReplacement = false;
     (*it)->mutate(this);
     if (needsReplacement) {
-      warner.start(lineNumber);
-      warner.finish("%s %s.", (*it)->statementName().c_str(),
-                    replacement.empty() ? "entirely optimized away"
-                                        : "replaced with consequent");
+      announcer.start(lineNumber);
+      announcer.finish("%s %s.", (*it)->statementName().c_str(),
+                       replacement.empty() ? "entirely optimized away"
+                                           : "replaced with consequent");
       auto numInserted = replacement.end() - replacement.begin();
       it = statements.insert(statements.erase(it),
                              std::make_move_iterator(replacement.begin()),

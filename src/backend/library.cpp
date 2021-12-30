@@ -3190,7 +3190,7 @@ std::string Library::mdRdPUByte() {
   tasm.comment("EXIT:  int in tmp1+1 and tmp2");
   tasm.label("rpubyte");
   tasm.pshx();
-  tasm.ldx("dataptr");
+  tasm.ldx("DP_DATA");
   tasm.cpx("#enddata");
   tasm.blo("_ok");
   tasm.ldab("#OD_ERROR");
@@ -3198,7 +3198,7 @@ std::string Library::mdRdPUByte() {
   tasm.label("_ok");
   tasm.ldaa(",x");
   tasm.inx();
-  tasm.stx("dataptr");
+  tasm.stx("DP_DATA");
   tasm.staa("tmp2+1");
   tasm.ldd("#0");
   tasm.std("tmp1+1");
@@ -3214,7 +3214,7 @@ std::string Library::mdRdPSByte() {
   tasm.comment("EXIT:  flt in tmp1+1, tmp2, tmp3");
   tasm.label("rpsbyte");
   tasm.pshx();
-  tasm.ldx("dataptr");
+  tasm.ldx("DP_DATA");
   tasm.cpx("#enddata");
   tasm.blo("_ok");
   tasm.ldab("#OD_ERROR");
@@ -3222,7 +3222,7 @@ std::string Library::mdRdPSByte() {
   tasm.label("_ok");
   tasm.ldaa(",x");
   tasm.inx();
-  tasm.stx("dataptr");
+  tasm.stx("DP_DATA");
   tasm.staa("tmp2+1");
   tasm.clrb();
   tasm.stab("tmp3");
@@ -3242,7 +3242,7 @@ std::string Library::mdRdPUWord() {
   tasm.comment("EXIT:  flt in tmp1+1, tmp2, tmp3");
   tasm.label("rpuword");
   tasm.pshx();
-  tasm.ldx("dataptr");
+  tasm.ldx("DP_DATA");
   tasm.cpx("#enddata");
   tasm.blo("_ok");
   tasm.ldab("#OD_ERROR");
@@ -3251,7 +3251,7 @@ std::string Library::mdRdPUWord() {
   tasm.ldd(",x");
   tasm.inx();
   tasm.inx();
-  tasm.stx("dataptr");
+  tasm.stx("DP_DATA");
   tasm.std("tmp2");
   tasm.ldd("#0");
   tasm.std("tmp3");
@@ -3267,7 +3267,7 @@ std::string Library::mdRdPSWord() {
   tasm.comment("EXIT:  flt in tmp1+1, tmp2, tmp3");
   tasm.label("rpsword");
   tasm.pshx();
-  tasm.ldx("dataptr");
+  tasm.ldx("DP_DATA");
   tasm.cpx("#enddata");
   tasm.blo("_ok");
   tasm.ldab("#OD_ERROR");
@@ -3276,7 +3276,7 @@ std::string Library::mdRdPSWord() {
   tasm.ldd(",x");
   tasm.inx();
   tasm.inx();
-  tasm.stx("dataptr");
+  tasm.stx("DP_DATA");
   tasm.std("tmp2");
   tasm.clrb();
   tasm.stab("tmp3");
@@ -3295,7 +3295,7 @@ std::string Library::mdRdPNumbr() {
   tasm.comment("EXIT:  flt in tmp1+1, tmp2, tmp3");
   tasm.label("rpnumbr");
   tasm.pshx();
-  tasm.ldx("dataptr");
+  tasm.ldx("DP_DATA");
   tasm.cpx("#enddata");
   tasm.blo("_ok");
   tasm.ldab("#OD_ERROR");
@@ -3309,7 +3309,7 @@ std::string Library::mdRdPNumbr() {
   tasm.std("tmp3");
   tasm.ldab("#5");
   tasm.abx();
-  tasm.stx("dataptr");
+  tasm.stx("DP_DATA");
   tasm.pulx();
   tasm.rts();
   return tasm.source();
@@ -3321,7 +3321,7 @@ std::string Library::mdRdPStrng() {
   tasm.comment("EXIT:  data string descriptor in tmp1+1, tmp2");
   tasm.label("rpstrng");
   tasm.pshx();
-  tasm.ldx("dataptr");
+  tasm.ldx("DP_DATA");
   tasm.cpx("#enddata");
   tasm.blo("_ok");
   tasm.ldab("#OD_ERROR");
@@ -3332,7 +3332,7 @@ std::string Library::mdRdPStrng() {
   tasm.inx();
   tasm.stx("tmp2");
   tasm.abx();
-  tasm.stx("dataptr");
+  tasm.stx("DP_DATA");
   tasm.pulx();
   tasm.rts();
   return tasm.source();

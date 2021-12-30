@@ -13,7 +13,7 @@ void Gerriemanderer::operate(Program &p) {
 }
 
 void Gerriemanderer::operate(Line &l) {
-  StatementGerriemanderer gms;
+  StatementGerriemanderer gms(announcer, l.lineNumber);
   gms.gerriemander(l.statements);
 }
 
@@ -25,6 +25,8 @@ std::unique_ptr<Statement> StatementGerriemanderer::mutate(If &s) {
 std::unique_ptr<Statement> StatementGerriemanderer::mutate(On &s) {
   ExprIsGerrieatric isGerrieatric;
   if (s.branchTable.size() == 1 && s.branchIndex->inspect(&isGerrieatric)) {
+    announcer.start(lineNumber);
+    announcer.finish("%s gerriemandered", s.statementName().c_str());
     ExprGerriemanderer gme;
     auto when = std::make_unique<When>();
     when->isSub = s.isSub;

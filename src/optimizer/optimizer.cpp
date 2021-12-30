@@ -17,7 +17,7 @@
 #include "reachchecker.hpp"
 #include "symboltable/symbolpruner.hpp"
 #include "symboltable/symboltabulator.hpp"
-#include "utils/warner.hpp"
+#include "utils/announcer.hpp"
 #include "whenfolder.hpp"
 #include "whenifier.hpp"
 
@@ -31,10 +31,10 @@ void Optimizer::optimize(Program &p) {
   BranchValidator bv(options.ul);
   bv.operate(p);
 
-  Gerriemanderer gm;
+  Gerriemanderer gm(Announcer(options.v, "verbose"));
   gm.operate(p);
 
-  Whenifier w;
+  Whenifier w(Announcer(options.v, "verbose"));
   w.operate(p);
 
   ConstFolder cf;
@@ -56,7 +56,7 @@ void Optimizer::optimize(Program &p) {
   SymbolPruner sp(symbolTable, options.Wuninit);
   sp.operate(p);
 
-  FloatPromoter fp(dataTable, symbolTable, Warner(options.Wfloat, "Wfloat"));
+  FloatPromoter fp(dataTable, symbolTable, Announcer(options.Wfloat, "Wfloat"));
   fp.operate(p);
 
   Merger m(symbolTable);
@@ -64,13 +64,13 @@ void Optimizer::optimize(Program &p) {
 
   cf.operate(p);
 
-  OnFolder of(Warner(options.Wbranch, "Wbranch"));
+  OnFolder of(Announcer(options.Wbranch, "Wbranch"));
   of.operate(p);
 
-  IfFolder ifld(Warner(options.Wbranch, "Wbranch"));
+  IfFolder ifld(Announcer(options.Wbranch, "Wbranch"));
   ifld.operate(p);
 
-  WhenFolder wf(Warner(options.Wbranch, "Wbranch"));
+  WhenFolder wf(Announcer(options.Wbranch, "Wbranch"));
   wf.operate(p);
 
   if (options.Wunreached) {
@@ -78,7 +78,7 @@ void Optimizer::optimize(Program &p) {
     rc.operate(p);
   }
 
-  Accumulizer a;
+  Accumulizer a(Announcer(options.v, "verbose"));
   a.operate(p);
   m.operate(p);
 

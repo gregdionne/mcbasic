@@ -8,6 +8,7 @@ struct Options {
   // bool ftrapv = false;
   bool native = false;
   bool g = false;
+  bool v = false;
   bool list = false;
   bool Wfloat = true;
   bool Wduplicate = true;

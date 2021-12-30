@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ast/lister.hpp"
 #include "isequal.hpp"
 
 void Accumulizer::operate(Program &p) {
@@ -13,7 +14,7 @@ void Accumulizer::operate(Program &p) {
 }
 
 void Accumulizer::operate(Line &l) {
-  StatementAccumulizer accumulizer;
+  StatementAccumulizer accumulizer(announcer, l.lineNumber);
   accumulizer.accumulize(l.statements);
 }
 
@@ -32,10 +33,16 @@ std::unique_ptr<Statement> StatementAccumulizer::mutate(Let &s) {
          ++itOp) {
       if ((*itOp)->inspect(&isEqual)) {
         addExpr->operands.erase(itOp);
+        ExprLister el;
+        s.lhs->soak(&el);
+        announcer.start(lineNumber);
+        announcer.say("%s assignment replaced with ", el.result.c_str());
         if (addExpr->operands.empty()) {
           std::swap(addExpr->operands, addExpr->invoperands);
+          announcer.finish("-=");
           return std::make_unique<Dec>(std::move(s.lhs), std::move(s.rhs));
         } else {
+          announcer.finish("+=");
           return std::make_unique<Inc>(std::move(s.lhs), std::move(s.rhs));
         }
       }

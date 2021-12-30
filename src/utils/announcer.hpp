@@ -5,9 +5,9 @@
 
 #include <string>
 
-class Warner {
+class Announcer {
 public:
-  Warner(bool w, const char *f) : warn(w), flag(f) {}
+  Announcer(bool w, const char *f) : warn(w), flag(f) {}
 
   void start(int lineNumber) const;
   void say(const char *formatstr, ...) const;

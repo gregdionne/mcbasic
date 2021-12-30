@@ -46,7 +46,7 @@ std::string CoreImplementation::inherent(InstClear &inst) {
   tasm.ldx("#$8FFF");
   tasm.stx("strstop");
   tasm.ldx("#startdata");
-  tasm.stx("dataptr");
+  tasm.stx("DP_DATA");
   tasm.rts();
   return tasm.source();
 }
@@ -5493,7 +5493,7 @@ std::string CoreImplementation::inherent(InstRestore &inst) {
   Assembler tasm;
   preamble(tasm, inst);
   tasm.ldx("#startdata");
-  tasm.stx("dataptr");
+  tasm.stx("DP_DATA");
   tasm.rts();
   return tasm.source();
 }

@@ -12,7 +12,7 @@ void OnFolder::operate(Program &p) {
 }
 
 void OnFolder::operate(Line &l) {
-  auto osf = OnStatementFolder(l.lineNumber, warner);
+  auto osf = OnStatementFolder(l.lineNumber, announcer);
   osf.fold(l.statements);
 }
 
@@ -41,15 +41,15 @@ void OnStatementFolder::fold(
   auto it = statements.begin();
   while (it != statements.end()) {
     if (auto statement = (*it)->mutate(this)) {
-      warner.start(lineNumber);
-      warner.say("%s ", (*it)->statementName().c_str());
+      announcer.start(lineNumber);
+      announcer.say("%s ", (*it)->statementName().c_str());
       auto *go = dynamic_cast<Go *>(statement.get());
       if (go == nullptr || go->lineNumber == -1) {
         it = statements.erase(it);
-        warner.finish("removed.");
+        announcer.finish("removed.");
       } else {
-        warner.finish("replaced with %s %i.", go->statementName().c_str(),
-                      go->lineNumber);
+        announcer.finish("replaced with %s %i.", go->statementName().c_str(),
+                         go->lineNumber);
         *it = std::move(statement);
         ++it;
       }

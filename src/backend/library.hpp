@@ -31,20 +31,21 @@ public:
   // implementation calls
   std::map<std::string, Lib> calls;
 
-  // calls from within the library
-  std::map<std::string, Lib> foundation;
-
   // required library modules
   std::map<std::string, std::string> modules;
-
-  // queue reference
-  InstQueue &queue;
 
   // make calls (by bytecode or native coder)
   void assemble(InstructionOp *implementation);
 
 private:
-  bool undoc;
+  // queue reference
+  const InstQueue &queue;
+
+  // flag to allow undoc opcodes
+  const bool undoc;
+
+  // calls from within the library
+  std::map<std::string, Lib> foundation;
 
   void makeFoundation();
   void addDependencies(std::set<std::string> &dependencies);

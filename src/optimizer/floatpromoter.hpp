@@ -7,7 +7,7 @@
 #include "ast/nullstatementmutator.hpp"
 #include "ast/program.hpp"
 #include "isfloat.hpp"
-#include "utils/warner.hpp"
+#include "utils/announcer.hpp"
 
 // Promotes numeric symbol, <s>, to floating point
 // upon assignment for the following cases:
@@ -37,12 +37,12 @@ public:
   DataTable &dataTable;
   SymbolTable &symbolTable;
   IsFloat &isFloat;
-  Warner &warner;
+  Announcer &announcer;
   int lineNumber;
   ExprFloatPromoter(bool &gf, DataTable &dt, SymbolTable &st, IsFloat &isf,
-                    Warner &wf)
-      : gotFloat(gf), dataTable(dt), symbolTable(st), isFloat(isf), warner(wf) {
-  }
+                    Announcer &wf)
+      : gotFloat(gf), dataTable(dt), symbolTable(st), isFloat(isf),
+        announcer(wf) {}
   bool makeFloat(std::vector<Symbol> &table, std::string &symbolName);
   void mutate(NumericVariableExpr &e) override;
   void mutate(NumericArrayExpr &e) override;
@@ -58,7 +58,7 @@ public:
   ExprMutator<void, void> *that;
   int lineNumber;
   StatementFloatPromoter(bool &gf, DataTable &dt, SymbolTable &st, IsFloat &isf,
-                         Warner &wf)
+                         Announcer &wf)
       : gotFloat(gf), dataTable(dt), symbolTable(st), isFloat(isf),
         fe(gf, dt, st, isf, wf), that(&fe) {}
   void mutate(If &s) override;
@@ -76,7 +76,7 @@ public:
   IsFloat isFloat;
   StatementFloatPromoter fs;
   NullStatementMutator *that;
-  FloatPromoter(DataTable &dt, SymbolTable &st, Warner wf)
+  FloatPromoter(DataTable &dt, SymbolTable &st, Announcer wf)
       : gotFloat(false), dataTable(dt), symbolTable(st), isFloat(st),
         fs(gotFloat, dt, st, isFloat, wf), that(&fs) {}
   void operate(Program &p) override;

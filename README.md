@@ -71,6 +71,7 @@ Option            | Description
 &#8209;undoc      | enable compilation with undocumented opcodes.&#8308;
 &#8209;el         | allow empty line number specifications in ON, GO, and GOSUB statements.&#8309;
 &#8209;ul         | do not generate compilation errors on unlisted line numbers.&#8310;
+&#8209;v          | be verbose when optimizing.
 &#8209;&#8209;    | treat subsequent arguments as file input (so you can compile a file that starts with "-", like "-filename.bas")
 
 It will then generate an assembly file: <yourprogram.asm>.

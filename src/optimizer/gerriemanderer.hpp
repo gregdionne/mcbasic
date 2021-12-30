@@ -6,6 +6,7 @@
 #include "ast/nullexprtransmutator.hpp"
 #include "ast/nullstatementtransmutator.hpp"
 #include "ast/program.hpp"
+#include "utils/announcer.hpp"
 
 // searches for "gerrieatric expressions" of the following forms:
 //   Form 1:  ON  -boolean    GOTO/GOSUB label : statements
@@ -32,6 +33,8 @@ private:
 
 class StatementGerriemanderer : public NullStatementTransmutator {
 public:
+  StatementGerriemanderer(const Announcer &a, int linenum)
+      : announcer(a), lineNumber(linenum) {}
   std::unique_ptr<Statement> mutate(If &s) override;
   std::unique_ptr<Statement> mutate(On &s) override;
 
@@ -39,12 +42,18 @@ public:
 
 private:
   using NullStatementTransmutator::mutate;
+  const Announcer &announcer;
+  const int lineNumber;
 };
 
 class Gerriemanderer : public ProgramOp {
 public:
+  explicit Gerriemanderer(const Announcer &&a) : announcer(a) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
+
+private:
+  Announcer announcer;
 };
 
 #endif

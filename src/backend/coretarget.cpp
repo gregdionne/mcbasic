@@ -22,23 +22,26 @@ std::string CoreTarget::generateDirectPage(InstQueue &queue) {
   tasm.block("strend", "2");
   tasm.block("strfree", "2");
   tasm.block("strstop", "2");
-  tasm.block("dataptr", "2");
   tasm.block("inptptr", "2");
   tasm.block("redoptr", "2");
   tasm.block("letptr", "2");
 
-  tasm.org("$a3"); // we want to leave $93-4 alone
+  // leave $93-A2 alone for clean BASIC return
+  tasm.org("$a3");
+  tasm.block("tmp1", "2");
+  tasm.block("tmp2", "2");
+  tasm.block("tmp3", "2");
+  tasm.block("tmp4", "2");
+  tasm.block("tmp5", "2");
+
+  // Some MC-10 programs modify DP_DATA, so we resume at $AF
+  tasm.org("$af");
   for (int i = 1; i <= queue.maxRegisterCount; i++) {
     tasm.block("r" + std::to_string(i), "5");
   }
   tasm.label("rend");
   tasm.block("rvseed", "2");
   extendDirectPage(tasm);
-  tasm.block("tmp1", "2");
-  tasm.block("tmp2", "2");
-  tasm.block("tmp3", "2");
-  tasm.block("tmp4", "2");
-  tasm.block("tmp5", "2");
   tasm.block("argv", "10");
   tasm.blank();
   return generateMicroColorConstants() + tasm.source();
@@ -51,6 +54,7 @@ std::string CoreTarget::generateMicroColorConstants() {
   tasm.comment("");
 
   tasm.comment("Direct page equates");
+  tasm.equ("DP_DATA", "$AD", "pointer to where READ gets next value");
   tasm.equ("DP_LNUM", "$E2", "current line in BASIC");
   tasm.equ("DP_TABW", "$E4", "current tab width on console");
   tasm.equ("DP_LTAB", "$E5", "current last tab column");

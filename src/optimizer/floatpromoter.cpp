@@ -72,15 +72,15 @@ bool ExprFloatPromoter::makeFloat(std::vector<Symbol> &table,
 
 void ExprFloatPromoter::mutate(NumericVariableExpr &e) {
   if (makeFloat(symbolTable.numVarTable, e.varname)) {
-    warner.start(lineNumber);
-    warner.finish("variable \"%s\" promoted to float", e.varname.c_str());
+    announcer.start(lineNumber);
+    announcer.finish("variable \"%s\" promoted to float", e.varname.c_str());
   }
 }
 
 void ExprFloatPromoter::mutate(NumericArrayExpr &e) {
   if (makeFloat(symbolTable.numArrTable, e.varexp->varname)) {
-    warner.start(lineNumber);
-    warner.finish("%lu-D array \"%s()\" promoted to float",
-                  e.indices->operands.size(), e.varexp->varname.c_str());
+    announcer.start(lineNumber);
+    announcer.finish("%lu-D array \"%s()\" promoted to float",
+                     e.indices->operands.size(), e.varexp->varname.c_str());
   }
 }

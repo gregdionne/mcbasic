@@ -9,7 +9,7 @@ void Whenifier::operate(Program &p) {
 }
 
 void Whenifier::operate(Line &l) {
-  auto gls = StatementWhenifier();
+  auto gls = StatementWhenifier(announcer, l.lineNumber);
   gls.whenify(l.statements);
 }
 
@@ -17,6 +17,10 @@ std::unique_ptr<Statement> StatementWhenifier::mutate(If &s) {
 
   if (s.consequent.size() == 1) {
     if (auto *go = dynamic_cast<Go *>(s.consequent.back().get())) {
+      announcer.start(lineNumber);
+      announcer.finish("trailing IF..%s replaced with WHEN..%s",
+                       go->statementName().c_str(),
+                       go->statementName().c_str());
       auto when = std::make_unique<When>();
       when->isSub = go->isSub;
       when->predicate = std::move(s.predicate);

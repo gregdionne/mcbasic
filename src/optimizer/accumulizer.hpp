@@ -5,6 +5,7 @@
 
 #include "ast/nullstatementtransmutator.hpp"
 #include "ast/program.hpp"
+#include "utils/announcer.hpp"
 
 // perform transformations:
 //    Let X = X + expression -> X += expression
@@ -14,14 +15,17 @@
 
 class Accumulizer : public ProgramOp {
 public:
-  Accumulizer() = default;
+  explicit Accumulizer(const Announcer &&a) : announcer(a) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
   std::unique_ptr<Statement> accumulant;
+  const Announcer announcer;
 };
 
 class StatementAccumulizer : public NullStatementTransmutator {
 public:
+  StatementAccumulizer(const Announcer &a, int linenum)
+      : announcer(a), lineNumber(linenum) {}
   std::unique_ptr<Statement> mutate(If &s) override;
   std::unique_ptr<Statement> mutate(Let &s) override;
 
@@ -29,6 +33,8 @@ public:
 
 private:
   using NullStatementTransmutator::mutate;
+  const Announcer &announcer;
+  const int lineNumber;
 };
 
 #endif

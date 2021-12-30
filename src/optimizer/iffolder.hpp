@@ -5,13 +5,14 @@
 
 #include "ast/nullstatementmutator.hpp"
 #include "ast/program.hpp"
-#include "utils/warner.hpp"
+#include "utils/announcer.hpp"
 
 // removes IF..THEN statements with constant argument
 
 class IfStatementFolder : public NullStatementMutator {
 public:
-  IfStatementFolder(int linenum, Warner &w) : lineNumber(linenum), warner(w) {}
+  IfStatementFolder(int linenum, const Announcer &w)
+      : lineNumber(linenum), announcer(w) {}
   void mutate(If &s) override;
 
   using NullStatementMutator::mutate;
@@ -19,18 +20,18 @@ public:
   void fold(std::vector<std::unique_ptr<Statement>> &statements);
 
   const int lineNumber;
-  Warner &warner;
+  const Announcer &announcer;
   bool needsReplacement = false;
   std::vector<std::unique_ptr<Statement>> replacement;
 };
 
 class IfFolder : public ProgramOp {
 public:
-  explicit IfFolder(Warner w) : warner(w) {}
+  explicit IfFolder(Announcer &&w) : announcer(w) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 
-  Warner warner;
+  const Announcer announcer;
   std::vector<std::unique_ptr<Line>>::iterator itCurrentLine;
 };
 
