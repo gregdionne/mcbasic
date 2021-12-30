@@ -14,7 +14,9 @@
 //
 //  It will then need to be modernized again in another ten years.
 
-#include <stdio.h>
+#include <cstdio>
+#include <cstdarg>
+
 class fetch {
 public:
   char buf[BUFSIZ];
@@ -38,6 +40,7 @@ public:
   char *getFileLine();
   char *getLine();
   void spitLine();
+  void sputter(const char *formatstr, va_list &vl);
   void sputter(const char *formatstr, ...);
   void die(const char *formatstr, ...);
   void expandTabs(int n);

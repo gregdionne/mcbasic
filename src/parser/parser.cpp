@@ -940,6 +940,58 @@ std::unique_ptr<Statement> Parser::getSound() {
   return sound;
 }
 
+std::unique_ptr<Statement> Parser::getExec() {
+  if (!enableMachineCode) {
+    in.sputter(
+        "error: machine code invocation without '-mcode' compiler flag.");
+    fprintf(stderr, "\n");
+    fprintf(stderr, "Sic hunt dracones!\n\n");
+    fprintf(stderr, "Most MICROCOLOR BASIC programs that use machine code "
+                    "assume the use of the MICROCOLOR BASIC interpreter.\n");
+    fprintf(stderr, "These programs often:\n");
+    fprintf(stderr, " - expect the BASIC code to reside within its original "
+                    "memory location.\n");
+    fprintf(stderr, " - expect variables to be formatted identically to "
+                    "MICROCOLOR BASIC.\n");
+    fprintf(
+        stderr,
+        " - expect variables to be present in a specific memory location.\n");
+    fprintf(stderr, " - expect certain areas of memory to be free for use.\n");
+    fprintf(stderr, "\n");
+    fprintf(
+        stderr,
+        "EXEC will (usually) work with the compiler if the machine code it invokes:\n");
+    fprintf(
+        stderr,
+        " - does not assume the MICROCOLOR BASIC interpreter is running.\n");
+    fprintf(stderr, " - is located well beyond the string storage area.\n");
+    fprintf(stderr,
+        " - does not clobber direct page registers used by the compiler.\n\n");
+    fprintf(
+        stderr,
+        "Also, to allow repeated invocation of a compiled program via EXEC, "
+        "a design decision was made to:\n");
+    fprintf(stderr,
+            " - prevent EXEC from clobbering the default EXEC address.\n");
+    fprintf(stderr, " - always require EXEC calls to provide an address.\n");
+    fprintf(stderr, "\n");
+    fprintf(stderr,
+            "Should you still wish to traverse these treacherous waters...\n");
+    fprintf(stderr, "you can enable machine code by adding the '-mcode' "
+                    "command line option.\n\n");
+    exit(0);
+  }
+
+  auto exec = std::make_unique<Exec>();
+  in.skipWhitespace();
+  if (in.iseol() || in.isChar(':')) {
+    in.die("the compiler requires an address when invoking EXEC");
+  }
+
+  exec->address = numeric(&Parser::getOrExpression);
+  return exec;
+}
+
 std::unique_ptr<Statement> Parser::unimplementedKeyword() {
   in.die("unimplemented keyword: \"%s\"", keywords[in.keyID]);
   return std::unique_ptr<Statement>();
@@ -976,6 +1028,7 @@ std::unique_ptr<Statement> Parser::getStatement() {
          : skipKeyword("RESET")      ? getReset()
          : skipKeyword("CLS")        ? getCls()
          : skipKeyword("SOUND")      ? getSound()
+         : skipKeyword("EXEC")       ? getExec()
                                      : unimplementedKeyword();
 }
 
@@ -990,6 +1043,7 @@ void Parser::getLine(Program &p) {
 
   while (!in.iseol()) {
     line->statements.emplace_back(getStatement());
+    in.skipWhitespace();
     if (!in.iseol()) {
       in.matchChar(':');
     }

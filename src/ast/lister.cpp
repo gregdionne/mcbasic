@@ -430,6 +430,11 @@ void StatementLister::absorb(const Sound &s) {
   result = "SOUND " + list(s.pitch) + "," + list(s.duration);
 }
 
+void StatementLister::absorb(const Exec &s) {
+  result = "EXEC";
+  result += " " + list(s.address);
+}
+
 void StatementLister::absorb(const Error &s) {
   result = "ERROR " + list(s.errorCode);
 }

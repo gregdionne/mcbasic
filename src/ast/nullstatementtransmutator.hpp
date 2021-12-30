@@ -86,6 +86,9 @@ public:
   virtual std::unique_ptr<Statement> mutate(Sound & /*s*/) {
     return std::unique_ptr<Statement>();
   }
+  virtual std::unique_ptr<Statement> mutate(Exec & /*s*/) {
+    return std::unique_ptr<Statement>();
+  }
   virtual std::unique_ptr<Statement> mutate(Error & /*s*/) {
     return std::unique_ptr<Statement>();
   }

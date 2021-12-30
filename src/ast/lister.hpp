@@ -89,6 +89,7 @@ public:
   void absorb(const Reset &s) override;
   void absorb(const Cls &s) override;
   void absorb(const Sound &s) override;
+  void absorb(const Exec &s) override;
   void absorb(const Error &s) override;
   std::string result;
   bool generatePredicates{true};

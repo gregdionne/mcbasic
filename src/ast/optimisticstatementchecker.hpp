@@ -33,6 +33,7 @@ public:
   virtual bool inspect(const Reset & /*s*/) const { return true; }
   virtual bool inspect(const Cls & /*s*/) const { return true; }
   virtual bool inspect(const Sound & /*s*/) const { return true; }
+  virtual bool inspect(const Exec & /*s*/) const { return true; }
   virtual bool inspect(const Error & /*s*/) const { return true; }
 };
 

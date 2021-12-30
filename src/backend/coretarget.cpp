@@ -25,6 +25,7 @@ std::string CoreTarget::generateDirectPage(InstQueue &queue) {
   tasm.block("inptptr", "2");
   tasm.block("redoptr", "2");
   tasm.block("letptr", "2");
+  tasm.block("rvseed", "2");
 
   // leave $93-A2 alone for clean BASIC return
   tasm.org("$a3");
@@ -40,7 +41,6 @@ std::string CoreTarget::generateDirectPage(InstQueue &queue) {
     tasm.block("r" + std::to_string(i), "5");
   }
   tasm.label("rend");
-  tasm.block("rvseed", "2");
   extendDirectPage(tasm);
   tasm.block("argv", "10");
   tasm.blank();

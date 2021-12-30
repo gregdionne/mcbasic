@@ -431,6 +431,11 @@ public:
   std::string regInt(InstClsN &inst) override;
   std::string extInt(InstClsN &inst) override;
 
+  std::string posByte(InstExec &inst) override;
+  std::string posWord(InstExec &inst) override;
+  std::string regInt(InstExec &inst) override;
+  std::string extInt(InstExec &inst) override;
+
   std::string extFlt(InstReadBuf &inst) override;
   std::string indFlt(InstReadBuf &inst) override;
   std::string extStr(InstReadBuf &inst) override;

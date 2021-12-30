@@ -5333,6 +5333,53 @@ std::string CoreImplementation::extInt(InstClsN &inst) {
   return tasm.source();
 }
 
+std::string CoreImplementation::posByte(InstExec &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.clra();
+  tasm.std("tmp1");
+  tasm.ldx("tmp1");
+  tasm.jmp(",x");
+  return tasm.source();
+}
+
+std::string CoreImplementation::posWord(InstExec &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.std("tmp1");
+  tasm.ldx("tmp1");
+  tasm.jmp(",x");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt(InstExec &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.tst(inst.arg1->sbyte());
+  tasm.bne("_fcerror");
+  tasm.ldd(inst.arg1->lword());
+  tasm.std("tmp1");
+  tasm.ldx("tmp1");
+  tasm.jmp(",x");
+  tasm.label("_fcerror");
+  tasm.ldab("#FC_ERROR");
+  tasm.jmp("error");
+  return tasm.source();
+}
+
+std::string CoreImplementation::extInt(InstExec &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd(inst.arg1->sbyte());
+  tasm.bne("_fcerror");
+  tasm.ldab(inst.arg1->lbyte());
+  tasm.jmp("R_CLSN");
+  tasm.label("_fcerror");
+  tasm.ldab("#FC_ERROR");
+  tasm.jmp("error");
+  return tasm.source();
+}
+
 std::string CoreImplementation::inherent(InstInputBuf &inst) {
   return unimplemented(inst);
 }

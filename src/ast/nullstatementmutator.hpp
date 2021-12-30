@@ -33,6 +33,7 @@ public:
   virtual void mutate(Reset & /*s*/) override {}
   virtual void mutate(Cls & /*s*/) override {}
   virtual void mutate(Sound & /*s*/) override {}
+  virtual void mutate(Exec & /*s*/) override {}
   virtual void mutate(Error & /*s*/) override {}
 };
 

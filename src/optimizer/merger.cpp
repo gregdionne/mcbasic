@@ -382,6 +382,8 @@ void StatementMerger::mutate(Sound &s) {
   merger.merge(s.duration);
 }
 
+void StatementMerger::mutate(Exec &s) { merger.merge(s.address); }
+
 // string expressions...
 void ExprMerger::mutate(StringArrayExpr &e) { e.indices->mutate(this); }
 

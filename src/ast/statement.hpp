@@ -37,6 +37,7 @@ class Set;
 class Reset;
 class Cls;
 class Sound;
+class Exec;
 class Error;
 
 // StatementMutater
@@ -70,6 +71,7 @@ public:
   virtual T mutate(Reset & /*s*/) = 0;
   virtual T mutate(Cls & /*s*/) = 0;
   virtual T mutate(Sound & /*s*/) = 0;
+  virtual T mutate(Exec & /*s*/) = 0;
   virtual T mutate(Error & /*s*/) = 0;
 };
 
@@ -104,6 +106,7 @@ public:
   virtual T inspect(const Reset & /*s*/) const = 0;
   virtual T inspect(const Cls & /*s*/) const = 0;
   virtual T inspect(const Sound & /*s*/) const = 0;
+  virtual T inspect(const Exec & /*s*/) const = 0;
   virtual T inspect(const Error & /*s*/) const = 0;
 };
 
@@ -138,6 +141,7 @@ public:
   virtual T absorb(const Reset & /*s*/) = 0;
   virtual T absorb(const Cls & /*s*/) = 0;
   virtual T absorb(const Sound & /*s*/) = 0;
+  virtual T absorb(const Exec & /*s*/) = 0;
   virtual T absorb(const Error & /*s*/) = 0;
 };
 
@@ -363,6 +367,12 @@ public:
   std::unique_ptr<NumericExpr> pitch;
   std::unique_ptr<NumericExpr> duration;
   std::string statementName() const override { return "SOUND"; }
+};
+
+class Exec : public OperableStatement<Exec> {
+public:
+  std::unique_ptr<NumericExpr> address;
+  std::string statementName() const override { return "EXEC"; }
 };
 
 class Error : public OperableStatement<Error> {

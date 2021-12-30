@@ -321,6 +321,9 @@ public:
   std::string operate(InstSound &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
+  std::string operate(InstExec &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
   std::string operate(InstError &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }

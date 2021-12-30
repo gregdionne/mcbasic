@@ -95,6 +95,7 @@ public:
   void mutate(Reset &s) override;
   void mutate(Cls &s) override;
   void mutate(Sound &s) override;
+  void mutate(Exec &s) override;
 
   void mutate(Rem &) override {}
   void mutate(Go &) override {}

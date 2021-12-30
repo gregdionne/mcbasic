@@ -109,6 +109,7 @@ class InstReset;
 class InstStop;
 class InstPoke;
 class InstSound;
+class InstExec;
 class InstError;
 class InstBegin;
 class InstEnd;
@@ -216,6 +217,7 @@ public:
   virtual std::string operate(InstStop &inst) = 0;
   virtual std::string operate(InstPoke &inst) = 0;
   virtual std::string operate(InstSound &inst) = 0;
+  virtual std::string operate(InstExec &inst) = 0;
   virtual std::string operate(InstError &inst) = 0;
   virtual std::string operate(InstBegin &inst) = 0;
   virtual std::string operate(InstEnd &inst) = 0;
@@ -1323,6 +1325,12 @@ class InstSound : public OperableInstruction<InstSound> {
 public:
   InstSound(std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2)
       : OperableInstruction("sound", std::move(am1), std::move(am2)) {}
+};
+
+class InstExec : public OperableInstruction<InstExec> {
+public:
+  explicit InstExec(std::unique_ptr<AddressMode> am)
+      : OperableInstruction("execn", std::move(am)) {}
 };
 
 class InstError : public OperableInstruction<InstError> {

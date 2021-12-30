@@ -20,7 +20,8 @@
 class Parser {
 public:
   Parser(int c, char *v[], Options &opts)
-      : in(c, v), emptyLineNumbers(opts.el), unlistedLineNumbers(opts.ul) {}
+      : in(c, v), emptyLineNumbers(opts.el), unlistedLineNumbers(opts.ul),
+        enableMachineCode(opts.mcode) {}
   Program parse();
   fetch in;
 
@@ -108,6 +109,7 @@ private:
   std::unique_ptr<Statement> getReset();
   std::unique_ptr<Statement> getCls();
   std::unique_ptr<Statement> getSound();
+  std::unique_ptr<Statement> getExec();
   std::unique_ptr<Statement> unimplementedKeyword();
   std::unique_ptr<Statement> getStatement();
 
@@ -117,5 +119,6 @@ private:
 
   bool emptyLineNumbers = false;
   bool unlistedLineNumbers = false;
+  bool enableMachineCode = false;
 };
 #endif

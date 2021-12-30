@@ -33,6 +33,7 @@ public:
   virtual void inspect(const Reset & /*s*/) const override {}
   virtual void inspect(const Cls & /*s*/) const override {}
   virtual void inspect(const Sound & /*s*/) const override {}
+  virtual void inspect(const Exec & /*s*/) const override {}
   virtual void inspect(const Error & /*s*/) const override {}
 };
 

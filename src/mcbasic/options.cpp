@@ -8,28 +8,20 @@
 
 #include <cstddef>
 
-static const char *const validOps[] = {"-native",
-                                       "-g",
-                                       "-list",
-                                       "-el",
-                                       "-ul",
-                                       "-undoc",
-                                       "-v",
-                                       "-Wfloat",
-                                       "-Wno-float",
-                                       "-Wduplicate",
-                                       "-Wno-duplicate",
-                                       "-Wunreached",
-                                       "-Wno-unreached",
-                                       "-Wuninit",
-                                       "Wno-uninit",
-                                       "-Wbranch",
-                                       "-Wno-branch",
+static const char *const validOps[] = {"-native",     "-g",
+                                       "-list",       "-el",
+                                       "-ul",         "-mcode",
+                                       "-undoc",      "-v",
+                                       "-Wfloat",     "-Wno-float",
+                                       "-Wduplicate", "-Wno-duplicate",
+                                       "-Wunreached", "-Wno-unreached",
+                                       "-Wuninit",    "Wno-uninit",
+                                       "-Wbranch",    "-Wno-branch",
                                        "--"};
 
 static const bool exclusive[] = {false, false, false, false, false, false,
-                                 false, true,  false, true,  false, true,
-                                 false, true,  false, true,  false};
+                                 false, false, true,  false, true,  false,
+                                 true,  false, true,  false, true,  false};
 
 void usage(char *argv[]) {
   fprintf(stderr, "usage: %s ", argv[0]);
@@ -76,6 +68,7 @@ void Options::process(int argc, char *argv[]) {
     el |= strcmp(argv[argcnt], "-el") == 0;
     ul |= strcmp(argv[argcnt], "-ul") == 0;
     v |= strcmp(argv[argcnt], "-v") == 0;
+    mcode |= strcmp(argv[argcnt], "-mcode") == 0;
     undoc |= strcmp(argv[argcnt], "-undoc") == 0;
     Wfloat |= strcmp(argv[argcnt], "-Wfloat") == 0;
     Wfloat &= !(strcmp(argv[argcnt], "-Wno-float") == 0);

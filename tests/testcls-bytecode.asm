@@ -57,6 +57,7 @@ strstop	.block	2
 inptptr	.block	2
 redoptr	.block	2
 letptr	.block	2
+rvseed	.block	2
 	.org	$a3
 tmp1	.block	2
 tmp2	.block	2
@@ -66,7 +67,6 @@ tmp5	.block	2
 	.org	$af
 r1	.block	5
 rend
-rvseed	.block	2
 curinst	.block	2
 nxtinst	.block	2
 argv	.block	10

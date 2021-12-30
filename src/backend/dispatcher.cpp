@@ -1200,6 +1200,14 @@ std::string Dispatcher::operate(InstSound &inst) {
                                 : implementation->unimplemented(inst);
 }
 
+std::string Dispatcher::operate(InstExec &inst) {
+  return inst.arg1->isPosByte()   ? implementation->posByte(inst)
+         : inst.arg1->isPosWord() ? implementation->posWord(inst)
+         : inst.arg1->isRegInt()  ? implementation->regInt(inst)
+         : inst.arg1->isExtInt()  ? implementation->extInt(inst)
+                                  : implementation->unimplemented(inst);
+}
+
 std::string Dispatcher::operate(InstError &inst) {
   return inst.arg1->isPosByte() ? implementation->posByte(inst)
                                 : implementation->unimplemented(inst);

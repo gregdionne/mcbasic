@@ -430,6 +430,11 @@ void StatementViewer::absorb(const Sound &s) {
   indentOp(s.duration, that);
 }
 
+void StatementViewer::absorb(const Exec &s) {
+  printtab(n, "EXEC");
+  indentOp(s.address, that);
+}
+
 void StatementViewer::absorb(const Error &s) {
   printtab(n, "ERROR");
   indentOp(s.errorCode, that);

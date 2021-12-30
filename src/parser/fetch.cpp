@@ -51,9 +51,7 @@ void fetch::spitLine() {
   }
 }
 
-void fetch::sputter(const char *formatstr, ...) {
-  va_list vl;
-  va_start(vl, formatstr);
+void fetch::sputter(const char *formatstr, va_list &vl) {
 
   if ((linenum != 0) && (argcnt != 0) && argfile < argc) {
     int len = fprintf(stderr, "%s(%i): ", argv[argfile], linenum);
@@ -67,10 +65,18 @@ void fetch::sputter(const char *formatstr, ...) {
   fprintf(stderr, "\n");
 }
 
+void fetch::sputter(const char *formatstr, ...) {
+  va_list vl;
+  va_start(vl, formatstr);
+  sputter(formatstr, vl);
+  va_end(vl);
+}
+
 void fetch::die(const char *formatstr, ...) {
   va_list vl;
   va_start(vl, formatstr);
   sputter(formatstr, vl);
+  va_end(vl);
   exit(1);
 }
 

@@ -322,3 +322,5 @@ void StatementSymbolPruner::mutate(Sound &s) {
   numPrune(s.pitch, that);
   numPrune(s.duration, that);
 }
+
+void StatementSymbolPruner::mutate(Exec &s) { numPrune(s.address, that); }

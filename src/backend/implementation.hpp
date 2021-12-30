@@ -432,6 +432,11 @@ public:
   virtual std::string regInt(InstClsN &inst) = 0;
   virtual std::string extInt(InstClsN &inst) = 0;
 
+  virtual std::string posByte(InstExec &inst) = 0;
+  virtual std::string posWord(InstExec &inst) = 0;
+  virtual std::string regInt(InstExec &inst) = 0;
+  virtual std::string extInt(InstExec &inst) = 0;
+
   virtual std::string extFlt(InstReadBuf &inst) = 0;
   virtual std::string indFlt(InstReadBuf &inst) = 0;
   virtual std::string extStr(InstReadBuf &inst) = 0;

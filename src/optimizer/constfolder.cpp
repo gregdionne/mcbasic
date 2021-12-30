@@ -187,6 +187,8 @@ void StatementConstFolder::mutate(Sound &s) {
   cfe.fold(s.duration);
 }
 
+void StatementConstFolder::mutate(Exec &s) { cfe.fold(s.address); }
+
 // fetchers...
 std::string ExprConstFolder::fetchConst(StringExpr &e) {
   gotConst = false;

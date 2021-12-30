@@ -82,6 +82,7 @@ public:
   void inspect(const Reset &s) const override;
   void inspect(const Cls &s) const override;
   void inspect(const Sound &s) const override;
+  void inspect(const Exec &s) const override;
 
 private:
   using NullStatementInspector::inspect;

@@ -27,7 +27,7 @@ Want to write your own program?
 ## Unimplemented keywords
 * CLOAD*, CSAVE*, LIST, CONT
 * LLIST, LPRINT  
-* USR(), VARPTR(), EXEC, CLOADM
+* USR(), VARPTR(), CLOADM
 
 
 ## Compilation
@@ -71,6 +71,7 @@ Option            | Description
 &#8209;undoc      | enable compilation with undocumented opcodes.&#8308;
 &#8209;el         | allow empty line number specifications in ON, GO, and GOSUB statements.&#8309;
 &#8209;ul         | do not generate compilation errors on unlisted line numbers.&#8310;
+&#8209;mcode      | enable use of machine code (i.e. EXEC).&#8311;
 &#8209;v          | be verbose when optimizing.
 &#8209;&#8209;    | treat subsequent arguments as file input (so you can compile a file that starts with "-", like "-filename.bas")
 
@@ -81,7 +82,7 @@ You can then run your favorite assembler so long as it supports [Telemark](http:
 `tasm6801 <yourprogram.asm>`
 
 If you use [this](https://github.com/gregdionne/tasm6801) version, it will generate a .C10 suitable for loading in an emulator.
-I'll eventually&#8311; bundle the assembler into the compiler as well, so this step may be unnecessary in the future.
+I'll eventually&#8312; bundle the assembler into the compiler as well, so this step may be unnecessary in the future.
 
 ### Notes
 
@@ -97,5 +98,7 @@ I'll eventually&#8311; bundle the assembler into the compiler as well, so this s
 
 &#8310; A runtime `?UL ERROR` will be generated instead.  This is intended to be used in conjunction with the `-el` compiler flag.  Use `-g` to diagnose where these errors occur.
 
-&#8311; The code in this repository was written in brief spurts over the course of perhaps fifteen years.  It's been largely relegated to a minor side-project as time and interest have permitted.  Originally in K&R C, it was ported to ANSI C, then C++ (98).  I've given it just enough treatment to work in C++14, but alas, C++20 is out as of this writing!  It needs to be upgraded to comply with more modern programming guidelines.  But perhaps, like MICROCOLOR BASIC itself, some of this code may bring you back to a simpler era.  Enjoy!
+&#8311; As a precaution against unexpected behavior, the `-mcode` compiler flag is required for use with EXEC.  EXEC will only work with the compiler if the machine code it invokes does not assume the MICROCOLOR BASIC interpreter is running or modify direct page variables needed by the compiler to function.  Sic hunt dracones!
+
+&#8312; The code in this repository was written in brief spurts over the course of perhaps fifteen years.  It's been largely relegated to a minor side-project as time and interest have permitted.  Originally in K&R C, it was ported to ANSI C, then C++ (98).  I've given it just enough treatment to work in C++14, but alas, C++20 is out as of this writing!  It needs to be upgraded to comply with more modern programming guidelines.  But perhaps, like MICROCOLOR BASIC itself, some of this code may bring you back to a simpler era.  Enjoy!
 

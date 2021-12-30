@@ -453,6 +453,15 @@ void StatementCompiler::absorb(const Sound &s) {
                                            std::move(duration.result)));
 }
 
+void StatementCompiler::absorb(const Exec &s) {
+  queue.append(std::make_unique<InstComment>(list(s)));
+  queue.clearRegisters();
+  ExprCompiler address(constTable, symbolTable, queue);
+  s.address->soak(&address);
+  address.result->castToInt();
+  queue.append(std::make_unique<InstExec>(std::move(address.result)));
+}
+
 void StatementCompiler::absorb(const Error &s) {
   queue.append(std::make_unique<InstComment>(list(s)));
   queue.clearRegisters();

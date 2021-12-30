@@ -132,6 +132,7 @@ public:
   std::string operate(InstStop &inst) override;
   std::string operate(InstPoke &inst) override;
   std::string operate(InstSound &inst) override;
+  std::string operate(InstExec &inst) override;
   std::string operate(InstError &inst) override;
   std::string operate(InstBegin &inst) override;
   std::string operate(InstEnd &inst) override;

@@ -17,6 +17,7 @@ void Announcer::say(const char *formatstr, ...) const {
   if (warn) {
     va_start(vl, formatstr);
     vfprintf(stderr, formatstr, vl);
+    va_end(vl);
   }
 }
 
@@ -26,5 +27,6 @@ void Announcer::finish(const char *formatstr, ...) const {
     va_start(vl, formatstr);
     vfprintf(stderr, formatstr, vl);
     fprintf(stderr, "\n");
+    va_end(vl);
   }
 }

@@ -10,14 +10,15 @@ struct Options {
   bool g = false;
   bool v = false;
   bool list = false;
+  bool el = false;
+  bool ul = false;
+  bool mcode = false;
+  bool undoc = false;
   bool Wfloat = true;
   bool Wduplicate = true;
   bool Wunreached = true;
   bool Wuninit = true;
   bool Wbranch = true;
-  bool el = false;
-  bool ul = false;
-  bool undoc = false;
   int argcnt = 0;
 
   // check option list, generate usage if invalid options detected

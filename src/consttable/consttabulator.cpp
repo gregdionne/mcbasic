@@ -107,6 +107,10 @@ void StatementConstTabulator::inspect(const Sound &s) const {
   s.duration->inspect(that);
 }
 
+void StatementConstTabulator::inspect(const Exec &s) const {
+  s.address->inspect(that);
+}
+
 void ExprConstTabulator::inspect(const StringConstantExpr & /*e*/) const {
   // constTable.add(e.value);
 }
