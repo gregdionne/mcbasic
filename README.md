@@ -44,12 +44,17 @@ This should compile the program and put the executable in the parent directory.
 
 ### Windows 10
 
-Some attempt has been made to make the source compatible with Windows Visual Studio 2017.  What works is to follow the instructions [here](https://docs.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line?view=vs-2019).  If the link fails, try searching the internet for "Walkthrough:  Compile a C program on the command line".
+Some attempt has been made to make the source compatible with Windows Visual Studio 2017.  What works is to launch the Visual Studio "developer command prompt" by following the instructions [here](https://docs.microsoft.com/en-us/cpp/build/walkthrough-compile-a-c-program-on-the-command-line).  If the link fails, try searching the internet for "Walkthrough:  Compile a C program on the command line".
 
-`cl /I. /EHsc *\*.cpp /link /out:mcbasic.exe`
+Once you have the developer command prompt open, navigate to the "src" directory of mcbasic, then run the `vscompile.bat` script by typing:
 
+`vscompile`
+
+You should see `mcbasic.exe` created in the src directory.
 
 ## Usage
+
+You should be comfortable using either a shell program (in linux) or a command prompt (in Windows) and know how to place the executable on your path.  Once it is on your path, you may invoke it like any other command line utility.
 
 Save your BASIC program as a text file.  You may use any extension (e.g. ".txt" ".bas")
 Once you have your basic program, you may compile it via:
