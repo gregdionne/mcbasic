@@ -84,6 +84,7 @@ public:
 private:
   FILE *fp;
   void init();
+  char *efgets(char *buf, int n, FILE *fp);
   void expandTabs(char *b, int m, int n);
 };
 #endif

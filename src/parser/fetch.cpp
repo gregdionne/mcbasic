@@ -96,8 +96,46 @@ bool fetch::openNext() {
   return false;
 }
 
+// convert CR or CRLF terminations to LF
+char *fetch::efgets(char *str, int bufsiz, FILE *stream) {
+  int c = getc(stream);
+  if (c == EOF) {
+    return nullptr;
+  }
+
+  int n=0;
+  while (c != EOF && c != '\n' && c != '\r' && n < bufsiz-1) {
+    str[n++] = static_cast<char>(c);
+    c = getc(stream);
+  }
+
+  if (c == EOF) {
+    str[n] = '\0';
+    return str;
+  }
+
+  if (n == bufsiz-1) {
+    ungetc(c, stream);
+    str[n] = '\0';
+    return str;
+  }
+
+  str[n++] = '\n';
+  str[n] = '\0';
+
+  // if a CR-LF, discard the LF.
+  if (c=='\r') {
+    c = getc(stream);
+    if (c != '\n') {
+      ungetc(c, stream);
+    }
+  }
+
+  return str;
+}
+
 char *fetch::getFileLine() {
-  while (fgets(buf, BUFSIZ, fp) == nullptr) {
+  if (efgets(buf, BUFSIZ, fp) == nullptr) {
     fclose(fp);
     linenum = 0;
     return nullptr;
@@ -112,7 +150,7 @@ char *fetch::getFileLine() {
 }
 
 char *fetch::getLine() {
-  while (fgets(buf, BUFSIZ, fp) == nullptr) {
+  while (efgets(buf, BUFSIZ, fp) == nullptr) {
     fclose(fp);
     linenum = 0;
     if (!openNext()) {
