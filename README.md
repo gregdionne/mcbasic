@@ -1,5 +1,5 @@
 # mcbasic
-A cross-compiler for MICROCOLOR BASIC 1.0 which runs on a stock TRS-80 MC-10 or on James Tamer's "Virtual MC-10" which runs on Windows and bundles a shareware Telemark cross-assembler.
+A cross-compiler for MICROCOLOR BASIC 1.0 which runs on a stock TRS-80 MC-10 (preferably with the 16K adaptor).
 
 ## Requirements
 * A real "stock" TRS-80 MC-10 or an emulator like the "Virtual MC-10"
@@ -10,6 +10,7 @@ A cross-compiler for MICROCOLOR BASIC 1.0 which runs on a stock TRS-80 MC-10 or 
 Don't have James' Virtual MC-10?  You really should if you have Microsoft Windows.  Don't have Windows?
 * You'll find a tasm6801 repository [here](https://github.com/gregdionne/tasm6801)
 * You'll find a modified version of Mike Tinnes' JavaScript emulator [here](https://github.com/gregdionne/mc-10)
+* You can also select the MC-10 from Ciaran Anscomb's XRoar emulator [here](https://www.6809.org.uk/xroar/online/)
 
 Don't have a MICROCOLOR BASIC program?
 * Have a look at Jim Gerrie's TRS-80 MC-10 amazing repository [here](https://github.com/jggames/trs80mc10)
