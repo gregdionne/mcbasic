@@ -103,8 +103,8 @@ char *fetch::efgets(char *str, int bufsiz, FILE *stream) {
     return nullptr;
   }
 
-  int n=0;
-  while (c != EOF && c != '\n' && c != '\r' && n < bufsiz-1) {
+  int n = 0;
+  while (c != EOF && c != '\n' && c != '\r' && n < bufsiz - 1) {
     str[n++] = static_cast<char>(c);
     c = getc(stream);
   }
@@ -114,7 +114,7 @@ char *fetch::efgets(char *str, int bufsiz, FILE *stream) {
     return str;
   }
 
-  if (n == bufsiz-1) {
+  if (n == bufsiz - 1) {
     ungetc(c, stream);
     str[n] = '\0';
     return str;
@@ -124,7 +124,7 @@ char *fetch::efgets(char *str, int bufsiz, FILE *stream) {
   str[n] = '\0';
 
   // if a CR-LF, discard the LF.
-  if (c=='\r') {
+  if (c == '\r') {
     c = getc(stream);
     if (c != '\n') {
       ungetc(c, stream);

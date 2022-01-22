@@ -6770,7 +6770,7 @@ LINE_3000
 	.byte	bytecode_to_ip_pb
 	.byte	15
 
-	; L(X,Y,Z)=INT(VAL(MID$(L$(Z,Y),X,1)))
+	; L(X,Y,Z)=VAL(MID$(L$(Z,Y),X,1))
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -6966,7 +6966,7 @@ LINE_3100
 	.byte	bytecode_to_ip_pb
 	.byte	15
 
-	; L(X,Y,Z)=INT(VAL(MID$(L$(Z,Y),X,1)))
+	; L(X,Y,Z)=VAL(MID$(L$(Z,Y),X,1))
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X

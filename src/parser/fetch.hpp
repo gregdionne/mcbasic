@@ -14,8 +14,8 @@
 //
 //  It will then need to be modernized again in another ten years.
 
-#include <cstdio>
 #include <cstdarg>
+#include <cstdio>
 
 class fetch {
 public:

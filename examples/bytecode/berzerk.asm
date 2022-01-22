@@ -3959,7 +3959,7 @@ LINE_67
 	.byte	bytecode_to_ip_pb
 	.byte	4
 
-	; I=INT(VAL(MID$(A$,X,1)))
+	; I=VAL(MID$(A$,X,1))
 
 	.byte	bytecode_ld_sr1_sx
 	.byte	bytecode_STRVAR_A

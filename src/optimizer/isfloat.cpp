@@ -3,8 +3,12 @@
 #include "isfloat.hpp"
 #include "constinspector.hpp"
 #include "consttable/fixedpoint.hpp"
+#include "ischar.hpp"
 
-bool IsFloat::inspect(const ValExpr & /*expr*/) const { return true; }
+bool IsFloat::inspect(const ValExpr &e) const {
+  IsChar isChar;
+  return !e.expr->inspect(&isChar);
+}
 
 bool IsFloat::inspect(const AbsExpr &e) const { return e.expr->inspect(this); }
 

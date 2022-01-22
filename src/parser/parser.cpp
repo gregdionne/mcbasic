@@ -958,14 +958,14 @@ std::unique_ptr<Statement> Parser::getExec() {
         " - expect variables to be present in a specific memory location.\n");
     fprintf(stderr, " - expect certain areas of memory to be free for use.\n");
     fprintf(stderr, "\n");
-    fprintf(
-        stderr,
-        "EXEC will (usually) work with the compiler if the machine code it invokes:\n");
+    fprintf(stderr, "EXEC will (usually) work with the compiler if the machine "
+                    "code it invokes:\n");
     fprintf(
         stderr,
         " - does not assume the MICROCOLOR BASIC interpreter is running.\n");
     fprintf(stderr, " - is located well beyond the string storage area.\n");
-    fprintf(stderr,
+    fprintf(
+        stderr,
         " - does not clobber direct page registers used by the compiler.\n\n");
     fprintf(
         stderr,

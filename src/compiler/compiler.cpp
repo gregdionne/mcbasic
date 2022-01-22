@@ -1,8 +1,9 @@
-// Copyright (C) 2021 Greg Dionne
+// Copyright (C) 2021-2022 Greg Dionne
 // Distributed under MIT License
 #include "compiler.hpp"
 #include "ast/lister.hpp"
 #include "optimizer/constinspector.hpp"
+#include "optimizer/ischar.hpp"
 
 #include <utility>
 
@@ -820,6 +821,11 @@ void ExprCompiler::absorb(const ValExpr &e) {
   auto dest = queue.alloc(result->clone());
   result = queue.append(
       std::make_unique<InstVal>(std::move(dest), std::move(result)));
+
+  IsChar isChar;
+  if (e.expr->inspect(&isChar)) {
+    result->castToInt();
+  }
 }
 
 void ExprCompiler::absorb(const AscExpr &e) {
