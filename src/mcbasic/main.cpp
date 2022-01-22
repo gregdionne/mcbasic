@@ -17,9 +17,7 @@ int main(int argc, char *argv[]) {
   Writer out(argc, argv);
 
   do {
-    if (opts.Wfloat || opts.list) {
-      fprintf(stderr, "Compiling %s...\n", argv[parser.in.argfile]);
-    }
+    fprintf(stderr, "Compiling %s...\n", argv[parser.in.argfile]);
 
     Program p = parser.parse();
     p.sortLines();
