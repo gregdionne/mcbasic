@@ -678,6 +678,12 @@ std::string Dispatcher::operate(InstIDiv5 &inst) {
                                   : implementation->unimplemented(inst);
 }
 
+std::string Dispatcher::operate(InstIDiv5S &inst) {
+  return inst.isRegInt_regInt_posByte()
+             ? implementation->regInt_regInt_posByte(inst)
+             : implementation->unimplemented(inst);
+}
+
 std::string Dispatcher::operate(InstPow &inst) {
   return inst.isRegFlt_regFlt_regFlt()
              ? implementation->regFlt_regFlt_regFlt(inst)

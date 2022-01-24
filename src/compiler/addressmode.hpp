@@ -123,7 +123,7 @@ public:
 
   std::string modeStr() override { return "imm"; }
   std::string operation() override { return isByte() ? "ldab" : "ldd"; }
-  std::string operand() override { return "#" + std::to_string(word); }
+  std::string operand() override { return "#" + doperand(); }
   std::string directive() override { return isByte() ? ".byte" : ".word"; }
   std::string doperand() override {
     return std::to_string(word) + (isByte() && word < -128 ? "&$ff"
@@ -131,7 +131,7 @@ public:
                                                            : "");
   }
   std::string sbyte() override { return isNeg ? "#-1" : "#0"; }
-  std::string lword() override { return "#" + std::to_string(word); }
+  std::string lword() override { return "#" + doperand(); }
   std::string fract() override { return "#0"; }
   std::string hfrac() override { return "#0"; }
   std::string lfrac() override { return "#0"; }

@@ -611,6 +611,8 @@ public:
   std::string regInt_regInt_posWord(InstIDiv &inst) override;
   std::string regInt_regInt_negWord(InstIDiv &inst) override;
 
+  std::string regInt_regInt_posByte(InstIDiv5S &inst) override;
+
   std::string regInt_regInt(InstIDiv3 &inst) override;
   std::string regInt_extInt(InstIDiv3 &inst) override;
   std::string regInt_regInt(InstIDiv5 &inst) override;

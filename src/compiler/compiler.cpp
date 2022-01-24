@@ -5,6 +5,7 @@
 #include "optimizer/constinspector.hpp"
 #include "optimizer/ischar.hpp"
 
+#include <array>
 #include <utility>
 
 template <typename T> static inline std::string list(T &t) {
@@ -31,6 +32,20 @@ static inline std::unique_ptr<Instruction> makeInst(Args &&...args) {
 template <typename T, typename... Args>
 static inline std::unique_ptr<Instruction> makeInstMove(Args &&...args) {
   return makeInst<T>(std::move<Args>(args)...);
+}
+
+// Used to determine if we can use IntDiv5S
+static bool is5Smooth(int n) {
+
+  static std::array<int, 3> p{2, 3, 5};
+
+  for (std::size_t i = 0; i < p.size(); ++i) {
+    while (n % p[i] == 0) {
+      n /= p[i];
+    }
+  }
+
+  return n == 1;
 }
 
 void Compiler::operate(Program &p) {
@@ -1010,6 +1025,11 @@ void ExprCompiler::absorb(const IntegerDivisionExpr &e) {
     auto dest = queue.alloc(result->clone());
     result = queue.append(*c == 3 ? makeInstMove<InstIDiv3>(dest, result)
                                   : makeInstMove<InstIDiv5>(dest, result));
+  } else if (!result->isFloat() && c && *c < 256 && is5Smooth(*c)) {
+    auto reg = queue.load(std::move(result));
+    e.divisor->soak(this);
+    result = queue.append(std::make_unique<InstIDiv5S>(
+        reg->clone(), reg->clone(), std::move(result)));
   } else {
     auto reg = queue.load(std::move(result));
     queue.reserve(1);

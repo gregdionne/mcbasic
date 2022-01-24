@@ -91,6 +91,7 @@ private:
   static std::string mdIModByte();
   static std::string mdIDivByte();
   static std::string mdIDiv35();
+  static std::string mdIDiv5S();
   static std::string mdPowIntN();
   static std::string mdPowFltN();
   static std::string mdPowFlt();

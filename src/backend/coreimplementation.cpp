@@ -7917,6 +7917,16 @@ std::string CoreImplementation::regInt_regInt(InstIDiv5 &inst) {
   return tasm.source();
 }
 
+std::string CoreImplementation::regInt_regInt_posByte(InstIDiv5S &inst) {
+  inst.dependencies.insert("mdidiv5s");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("idiv5s");
+  return tasm.source();
+}
+
 std::string CoreImplementation::regFlt_regFlt_regFlt(InstPow &inst) {
   inst.dependencies.insert("mdpowflt");
 

@@ -617,6 +617,8 @@ public:
   virtual std::string regInt_regInt(InstIDiv5 &inst) = 0;
   virtual std::string regInt_extInt(InstIDiv5 &inst) = 0;
 
+  virtual std::string regInt_regInt_posByte(InstIDiv5S &inst) = 0;
+
   virtual std::string regFlt_regFlt_regFlt(InstPow &inst) = 0;
   virtual std::string regFlt_regFlt_extFlt(InstPow &inst) = 0;
   virtual std::string regFlt_regFlt_regInt(InstPow &inst) = 0;

@@ -37,6 +37,7 @@ void Library::makeFoundation() {
   foundation["mdidivb"] = Lib{0, mdIDivByte(), {}};
   foundation["mdimodb"] = Lib{0, mdIModByte(), {}};
   foundation["mdidiv35"] = Lib{0, mdIDiv35(), {"mdidivb", "mdimodb"}};
+  foundation["mdidiv5s"] = Lib{0, mdIDiv5S(), {"mdidiv35"}};
   foundation["mdstrflt"] =
       Lib{0, mdStrFlt(), {"mddivflt", "mdnegtmp", "mdimodb", "mdidivb"}};
   foundation["mdstrprm"] = Lib{0, mdStrPrm(), {"mdstrdel"}};
@@ -841,6 +842,71 @@ std::string Library::mdIDiv35() {
   tasm.label("_dodiv");
   tasm.pulb();
   tasm.jmp("idivb");
+  return tasm.source();
+}
+
+std::string Library::mdIDiv5S() {
+  Assembler tasm;
+  tasm.comment("fast divide when divisor is '5-smooth'");
+  tasm.comment("(i.e. having factors only of 2, 3, 5)");
+  tasm.comment("ENTRY: X holds dividend");
+  tasm.comment("       ACCB holds divisor");
+  tasm.comment("EXIT:  INT(X/ACCB) in X");
+  tasm.comment("  tmp1-tmp4 used for storage");
+  tasm.label("idiv5s");
+  tasm.incomment("div by factors of 2?");
+  tasm.bitb("#1");
+  tasm.bne("_odd");
+  tasm.lsrb();
+  tasm.asr(",x");
+  tasm.ror("1,x");
+  tasm.ror("2,x");
+  tasm.bra("idiv5s");
+
+  tasm.label("_odd");
+  tasm.cmpb("#1");
+  tasm.beq("_rts");
+
+  tasm.stab("tmp1");
+  tasm.ldab(",x");
+  tasm.stab("tmp1+1");
+  tasm.ldd("1,x");
+  tasm.std("tmp2");
+
+  tasm.label("_do3");
+  tasm.ldab("tmp1");
+  tasm.label("_by3");
+  tasm.ldaa("#$AB");
+  tasm.mul();
+  tasm.cmpb("#$55");
+  tasm.bhi("_do5");
+  tasm.stab("tmp1");
+  tasm.ldd("#$AA03");
+  tasm.jsr("idiv35");
+  tasm.ldab("tmp1");
+  tasm.cmpb("#1");
+  tasm.beq("_store");
+  tasm.bra("_by3");
+
+  tasm.label("_do5");
+  tasm.ldab("tmp1");
+  tasm.label("_by5");
+  tasm.ldaa("#$CD");
+  tasm.mul();
+  tasm.stab("tmp1");
+  tasm.ldd("#$CC05");
+  tasm.jsr("idiv35");
+  tasm.ldab("tmp1");
+  tasm.cmpb("#1");
+  tasm.bne("_by5");
+  tasm.label("_store");
+  tasm.ldab("tmp1+1");
+  tasm.stab(",x");
+  tasm.ldd("tmp2");
+  tasm.std("1,x");
+  tasm.label("_rts");
+  tasm.rts();
+
   return tasm.source();
 }
 

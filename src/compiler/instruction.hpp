@@ -59,6 +59,7 @@ class InstDiv;
 class InstIDiv;
 class InstIDiv3;
 class InstIDiv5;
+class InstIDiv5S;
 class InstPow;
 class InstLdEq;
 class InstLdNe;
@@ -167,6 +168,7 @@ public:
   virtual std::string operate(InstIDiv &inst) = 0;
   virtual std::string operate(InstIDiv3 &inst) = 0;
   virtual std::string operate(InstIDiv5 &inst) = 0;
+  virtual std::string operate(InstIDiv5S &inst) = 0;
   virtual std::string operate(InstPow &inst) = 0;
   virtual std::string operate(InstLdEq &inst) = 0;
   virtual std::string operate(InstLdNe &inst) = 0;
@@ -922,6 +924,16 @@ public:
   InstIDiv(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
            std::unique_ptr<AddressMode> am2)
       : OperableInstruction("idiv", std::move(dest), std::move(am1),
+                            std::move(am2)) {
+    resultInt();
+  }
+};
+
+class InstIDiv5S : public OperableInstruction<InstIDiv5S> {
+public:
+  InstIDiv5S(std::unique_ptr<AddressMode> dest,
+             std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2)
+      : OperableInstruction("idiv5s", std::move(dest), std::move(am1),
                             std::move(am2)) {
     resultInt();
   }
