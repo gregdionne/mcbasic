@@ -73,6 +73,7 @@ std::string CoreTarget::generateMicroColorConstants() {
   tasm.comment("");
 
   tasm.comment("ROM equates");
+  tasm.equ("R_MCXBT", "$E047", "MCX BASIC 3.x target ('10' for an MC-10)");
   tasm.equ("R_BKMSG", "$E1C1", "'BREAK' string location");
   tasm.equ("R_ERROR", "$E238", "generate error and restore direct mode");
   tasm.equ("R_BREAK", "$E266", "generate break and restore direct mode");
@@ -102,7 +103,7 @@ std::string CoreTarget::generateMicroColorConstants() {
   tasm.blank();
 
   tasm.comment("Equate(s) for MCBASIC constants");
-  tasm.equ("charpage", "$0100", "single-character string page.");
+  tasm.equ("charpage", "$1B00", "single-character string page.");
   tasm.blank();
   return tasm.source();
 }

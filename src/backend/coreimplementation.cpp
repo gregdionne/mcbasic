@@ -58,7 +58,11 @@ std::string CoreImplementation::inherent(InstBegin &inst) {
   preamble(tasm, inst);
   tasm.ldx("R_MCXID");
   tasm.cpx("#'h'*256+'C'");
+  tasm.beq("_ok");
+  tasm.ldx("R_MCXBT");
+  tasm.cpx("#'1'*256+'0'");
   tasm.bne("_mcbasic");
+  tasm.label("_ok");
   tasm.clrb();
   tasm.ldx("#charpage");
   tasm.label("_again");
@@ -72,7 +76,7 @@ std::string CoreImplementation::inherent(InstBegin &inst) {
   tasm.pshb();
   tasm.stab("strtcnt");
   tasm.jmp(",x");
-  tasm.labelText("_reqmsg", "\"?ORIGINAL MC-10 ROM REQUIRED\"");
+  tasm.labelText("_reqmsg", "\"?UNSUPPORTED ROM\"");
   tasm.label("_mcbasic");
   tasm.ldx("#_reqmsg");
   tasm.ldab("#30");
@@ -1907,7 +1911,7 @@ std::string CoreImplementation::regStr_regStr_immStr(InstStrCat &inst) {
 std::string CoreImplementation::regStr(InstInkey &inst) {
   Assembler tasm;
   preamble(tasm, inst);
-  tasm.ldd("#$0101");
+  tasm.ldd("#$0100+(charpage>>8)");
   tasm.std(inst.arg1->sbyte());
   tasm.ldaa("M_IKEY");
   tasm.bne("_gotkey");
@@ -2725,7 +2729,7 @@ std::string CoreImplementation::regInt_extStr(InstLen &inst) {
 std::string CoreImplementation::regStr_regInt(InstChr &inst) {
   Assembler tasm;
   preamble(tasm, inst);
-  tasm.ldd("#$0101");
+  tasm.ldd("#$0100+(charpage>>8)");
   tasm.std(inst.arg1->sbyte());
   tasm.rts();
   return tasm.source();
@@ -2736,7 +2740,7 @@ std::string CoreImplementation::regStr_extInt(InstChr &inst) {
   preamble(tasm, inst);
   tasm.ldab(inst.arg2->lbyte());
   tasm.stab(inst.arg1->lbyte());
-  tasm.ldd("#$0101");
+  tasm.ldd("#$0100+(charpage>>8)");
   tasm.std(inst.arg1->sbyte());
   tasm.rts();
   return tasm.source();

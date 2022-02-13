@@ -1,5 +1,5 @@
 # mcbasic
-A cross-compiler for MICROCOLOR BASIC 1.0 which runs on a stock TRS-80 MC-10 (preferably with the 16K adaptor).
+A cross-compiler for MICROCOLOR BASIC 1.0 which runs on a stock TRS-80 MC-10 (preferably with the 16K adaptor or Darren Atkinson's MCX-32SD).
 
 ## Requirements
 * A real "stock" TRS-80 MC-10 or an emulator like the "Virtual MC-10"
@@ -21,7 +21,7 @@ Want to write your own program?
 * You'll find a language reference manual [here](https://colorcomputerarchive.com/repo/MC-10/Documents/Manuals/Hardware/MC-10%20Operation%20and%20Language%20Reference%20Manual/MC-10%20Operation%20and%20Language%20Reference%20Manual%20(Tandy).pdf).
 
 ## Limitations
-* Darren Atkinson's MCX-BASIC ROM is not yet supported.
+* Darren Atkinson's MCX-128 is not yet supported.
 * Scientific E notation is not yet supported
 * BREAK interruption is not supported
 
@@ -87,8 +87,11 @@ You can then run your favorite assembler so long as it supports [Telemark](http:
 
 `tasm6801 <yourprogram.asm>`
 
-If you use [this](https://github.com/gregdionne/tasm6801) version, it will generate a .C10 suitable for loading in an emulator.
+If you use [this](https://github.com/gregdionne/tasm6801) version, it will generate a .C10 suitable for loading in an emulator via CLOADM.
 I'll eventually&#8312; bundle the assembler into the compiler as well, so this step may be unnecessary in the future.
+
+For playback into a real TRS-80 MC-10 you can try compiling Cirian Anscomb's [cas2wav](https://www.6809.org.uk/dragon/cas2wav-0.8.tar.gz) program to convert a .C10 to .WAV
+I'll eventually&#8312; bundle .WAV creation into the assembler as well, so this step may be also unnecessary in the future.
 
 ### Notes
 

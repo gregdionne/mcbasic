@@ -542,12 +542,11 @@ std::string Library::mdStrPrm() {
 
   // single-char
   tasm.label("_char");
-  tasm.ldaa("#1");
-  tasm.ldx("1+argv");
+  tasm.ldx("1+argv"); // fetch char
   tasm.ldab(",x");
   // fallthrough
   tasm.label("_null");
-  tasm.ldaa("#1");
+  tasm.ldaa("#charpage>>8");
   tasm.std("1+argv");
   // fallthrough
   tasm.label("_const");

@@ -21,6 +21,7 @@ M_MSTR	.equ	$4334	; buffer for small string moves
 M_CODE	.equ	$4346	; start of program space
 ; 
 ; ROM equates
+R_MCXBT	.equ	$E047	; MCX BASIC 3.x target ('10' for an MC-10)
 R_BKMSG	.equ	$E1C1	; 'BREAK' string location
 R_ERROR	.equ	$E238	; generate error and restore direct mode
 R_BREAK	.equ	$E266	; generate break and restore direct mode
@@ -45,7 +46,7 @@ R_SOUND	.equ	$FFAB	; play sound with pitch in ACCA and duration in ACCB
 R_MCXID	.equ	$FFDA	; ID location for MCX BASIC
 
 ; Equate(s) for MCBASIC constants
-charpage	.equ	$0100	; single-character string page.
+charpage	.equ	$1B00	; single-character string page.
 
 ; direct page registers
 	.org	$80
@@ -498,7 +499,11 @@ progbegin			; numCalls = 1
 	jsr	noargs
 	ldx	R_MCXID
 	cpx	#'h'*256+'C'
+	beq	_ok
+	ldx	R_MCXBT
+	cpx	#'1'*256+'0'
 	bne	_mcbasic
+_ok
 	clrb
 	ldx	#charpage
 _again
@@ -512,7 +517,7 @@ _again
 	pshb
 	stab	strtcnt
 	jmp	,x
-_reqmsg	.text	"?ORIGINAL MC-10 ROM REQUIRED"
+_reqmsg	.text	"?UNSUPPORTED ROM"
 _mcbasic
 	ldx	#_reqmsg
 	ldab	#30
