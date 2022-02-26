@@ -276,7 +276,7 @@ std::string ByteCodeImplementation::regStr_regStr_immStr(InstStrCat &inst) {
   tasm.abx();
   tasm.stx("nxtinst");
   tasm.pulx();
-  tasm.jmp("strtmp");
+  tasm.jmp("strcat");
   tasm.label("_lserror");
   tasm.ldab("#LS_ERROR");
   tasm.jmp("error");

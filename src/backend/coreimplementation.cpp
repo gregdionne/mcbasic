@@ -1874,7 +1874,7 @@ std::string CoreImplementation::regStr_regStr_regStr(InstStrCat &inst) {
   tasm.stab(inst.arg1->sbyte());
   tasm.ldab(inst.arg3->sbyte());
   tasm.ldx(inst.arg3->lword());
-  tasm.jmp("strtmp");
+  tasm.jmp("strcat");
   tasm.label("_lserror");
   tasm.ldab("#LS_ERROR");
   tasm.jmp("error");
@@ -1897,7 +1897,7 @@ std::string CoreImplementation::regStr_regStr_extStr(InstStrCat &inst) {
   tasm.stab(inst.arg1->sbyte());
   tasm.ldab(inst.arg3->sbyte());
   tasm.ldx(inst.arg3->lword());
-  tasm.jmp("strtmp");
+  tasm.jmp("strcat");
   tasm.label("_lserror");
   tasm.ldab("#LS_ERROR");
   tasm.jmp("error");

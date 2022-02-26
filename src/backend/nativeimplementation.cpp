@@ -238,7 +238,7 @@ std::string NativeImplementation::regStr_regStr_immStr(InstStrCat &inst) {
   tasm.stab(inst.arg1->sbyte());
   tasm.ldab(",x");
   tasm.inx();
-  tasm.jsr("strtmp");
+  tasm.jsr("strcat");
   tasm.pulx();
   tasm.ldab(",x");
   tasm.abx();

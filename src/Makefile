@@ -6,7 +6,14 @@ SRCS := $(shell find . -name \*.cpp -or -name \*.c -or -name \*.s)
 OBJS := $(SRCS:%.cpp=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
-CPPFLAGS ?= -MMD -MP -std=c++14 -O3 -Wall -Wextra -ferror-limit=4 -I.
+CXXFLAGS ?= -MMD -MP -std=c++14 -O3 -Wall -Wextra -I.
+
+# assume clang if on darwin
+ifeq ($(OSTYPE),darwin)
+ ifeq ($(CXX),c++)
+  CXXFLAGS += -ferror-limit=4
+ endif
+endif
 
 #$(BUILD_DIR)/$(TARGET_EXEC): $(OBJS)
 $(TARGET_EXEC): $(OBJS)
@@ -15,7 +22,7 @@ $(TARGET_EXEC): $(OBJS)
 # c++ source
 $(BUILD_DIR)/%.o: %.cpp
 	$(MKDIR_P) $(dir $@)
-	$(CXX) $(CPPFLAGS) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 
 .PHONY: clean

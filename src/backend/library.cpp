@@ -415,6 +415,7 @@ std::string Library::mdStrTmp() {
   tasm.comment("EXIT:  D holds new string pointer");
   tasm.label("strtmp");
   tasm.inc("strtcnt");
+  tasm.label("strcat");
   tasm.tstb();
   tasm.beq("_null");
   tasm.sts("tmp1");

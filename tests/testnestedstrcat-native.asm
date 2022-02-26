@@ -525,6 +525,7 @@ _panic
 ; EXIT:  D holds new string pointer
 strtmp
 	inc	strtcnt
+strcat
 	tstb
 	beq	_null
 	sts	tmp1
@@ -787,7 +788,7 @@ strcat_sr1_sr1_sr2			; numCalls = 1
 	stab	r1
 	ldab	r2
 	ldx	r2+1
-	jmp	strtmp
+	jmp	strcat
 _lserror
 	ldab	#LS_ERROR
 	jmp	error
@@ -805,7 +806,7 @@ strcat_sr2_sr2_sr3			; numCalls = 1
 	stab	r2
 	ldab	r3
 	ldx	r3+1
-	jmp	strtmp
+	jmp	strcat
 _lserror
 	ldab	#LS_ERROR
 	jmp	error

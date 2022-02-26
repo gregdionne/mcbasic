@@ -3447,6 +3447,7 @@ _panic
 ; EXIT:  D holds new string pointer
 strtmp
 	inc	strtcnt
+strcat
 	tstb
 	beq	_null
 	sts	tmp1
@@ -4657,7 +4658,7 @@ strcat_sr1_sr1_ss			; numCalls = 1
 	stab	r1
 	ldab	,x
 	inx
-	jsr	strtmp
+	jsr	strcat
 	pulx
 	ldab	,x
 	abx
