@@ -17,8 +17,7 @@ public:
   void inspect(const If &s) const override;
 
   using NullStatementInspector::inspect;
-  void
-  validate(const std::vector<std::unique_ptr<Statement>> &statements) const;
+  void validate(const std::vector<up<Statement>> &statements) const;
 
 private:
   int lineNumber;

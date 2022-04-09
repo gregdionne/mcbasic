@@ -33,16 +33,16 @@ struct InstQueue {
 
   // append virtual instruction to the queue.
   // return the result (address mode)
-  std::unique_ptr<AddressMode> append(std::unique_ptr<Instruction> inst);
+  up<AddressMode> append(up<Instruction> inst);
 
   // allocate a new register on the stack
-  std::unique_ptr<AddressMode> alloc(std::unique_ptr<AddressMode> result);
+  up<AddressMode> alloc(up<AddressMode> result);
 
   // perform a virtual LD on the provided result if not already in a register
-  std::unique_ptr<AddressMode> load(std::unique_ptr<AddressMode> result);
+  up<AddressMode> load(up<AddressMode> result);
 
   // instruction queue
-  std::vector<std::unique_ptr<Instruction>> queue;
+  std::vector<up<Instruction>> queue;
 
   // active register
   int registerCount{0};

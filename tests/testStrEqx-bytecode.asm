@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -152,10 +153,8 @@ LINE_50
 
 	; PRINT STR$(X$=Y$);" \r";
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldeq_ir1_sx_sd
 	.byte	bytecode_STRVAR_X
-
-	.byte	bytecode_ldeq_ir1_sr1_sx
 	.byte	bytecode_STRVAR_Y
 
 	.byte	bytecode_str_sr1_ir1
@@ -179,10 +178,8 @@ LINE_70
 
 	; PRINT STR$(Z$=X$);" \r";
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldeq_ir1_sx_sd
 	.byte	bytecode_STRVAR_Z
-
-	.byte	bytecode_ldeq_ir1_sr1_sx
 	.byte	bytecode_STRVAR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -216,10 +213,8 @@ LINE_100
 
 	; PRINT STR$(X$=Y$);" \r";
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldeq_ir1_sx_sd
 	.byte	bytecode_STRVAR_X
-
-	.byte	bytecode_ldeq_ir1_sr1_sx
 	.byte	bytecode_STRVAR_Y
 
 	.byte	bytecode_str_sr1_ir1
@@ -241,7 +236,7 @@ bytecode_ld_sr1_ss	.equ	1
 bytecode_ld_sr1_sx	.equ	2
 bytecode_ld_sx_sr1	.equ	3
 bytecode_ldeq_ir1_sr1_ss	.equ	4
-bytecode_ldeq_ir1_sr1_sx	.equ	5
+bytecode_ldeq_ir1_sx_sd	.equ	5
 bytecode_pr_sr1	.equ	6
 bytecode_pr_ss	.equ	7
 bytecode_progbegin	.equ	8
@@ -254,7 +249,7 @@ catalog
 	.word	ld_sr1_sx
 	.word	ld_sx_sr1
 	.word	ldeq_ir1_sr1_ss
-	.word	ldeq_ir1_sr1_sx
+	.word	ldeq_ir1_sx_sd
 	.word	pr_sr1
 	.word	pr_ss
 	.word	progbegin
@@ -407,6 +402,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -1139,7 +1172,7 @@ ld_sr1_ss			; numCalls = 5
 	stx	nxtinst
 	rts
 
-ld_sr1_sx			; numCalls = 5
+ld_sr1_sx			; numCalls = 2
 	.module	modld_sr1_sx
 	jsr	extend
 	ldd	1,x
@@ -1169,13 +1202,15 @@ ldeq_ir1_sr1_ss			; numCalls = 2
 	stab	r1
 	rts
 
-ldeq_ir1_sr1_sx			; numCalls = 3
-	.module	modldeq_ir1_sr1_sx
-	jsr	extend
-	ldab	r1
+ldeq_ir1_sx_sd			; numCalls = 3
+	.module	modldeq_ir1_sx_sd
+	jsr	extdex
+	std	tmp3
+	ldab	0,x
 	stab	tmp1+1
-	ldd	r1+1
+	ldd	1,x
 	std	tmp2
+	ldx	tmp3
 	jsr	streqx
 	jsr	geteq
 	std	r1+1

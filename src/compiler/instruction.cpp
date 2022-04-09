@@ -4,7 +4,7 @@
 
 // ELPTR = ARRAYREF STARTREG, ARRDESC, COUNT
 void InstArrayRef1::arrayArg() {
-  result = std::make_unique<AddressModeInd>(arg2->dataType, "letptr");
+  result = makeup<AddressModeInd>(arg2->dataType, "letptr");
 }
 
 // STARTREG = ARRAYVAL STARTREG, ARRDESC, COUNT
@@ -15,7 +15,7 @@ void InstArrayVal1::arrayArg() {
 
 // ELPTR = ARRAYREF STARTREG, ARRDESC, COUNT
 void InstArrayRef2::arrayArg() {
-  result = std::make_unique<AddressModeInd>(arg2->dataType, "letptr");
+  result = makeup<AddressModeInd>(arg2->dataType, "letptr");
 }
 
 // STARTREG = ARRAYVAL STARTREG, ARRDESC, COUNT
@@ -26,7 +26,7 @@ void InstArrayVal2::arrayArg() {
 
 // ELPTR = ARRAYREF STARTREG, ARRDESC, COUNT
 void InstArrayRef3::arrayArg() {
-  result = std::make_unique<AddressModeInd>(arg2->dataType, "letptr");
+  result = makeup<AddressModeInd>(arg2->dataType, "letptr");
 }
 
 // STARTREG = ARRAYVAL STARTREG, ARRDESC, COUNT
@@ -37,7 +37,7 @@ void InstArrayVal3::arrayArg() {
 
 // ELPTR = ARRAYREF STARTREG, ARRDESC, COUNT
 void InstArrayRef4::arrayArg() {
-  result = std::make_unique<AddressModeInd>(arg2->dataType, "letptr");
+  result = makeup<AddressModeInd>(arg2->dataType, "letptr");
 }
 
 // STARTREG = ARRAYVAL STARTREG, ARRDESC, COUNT
@@ -48,7 +48,7 @@ void InstArrayVal4::arrayArg() {
 
 // ELPTR = ARRAYREF STARTREG, ARRDESC, COUNT
 void InstArrayRef5::arrayArg() {
-  result = std::make_unique<AddressModeInd>(arg2->dataType, "letptr");
+  result = makeup<AddressModeInd>(arg2->dataType, "letptr");
 }
 
 // STARTREG = ARRAYVAL STARTREG, ARRDESC, COUNT
@@ -59,7 +59,7 @@ void InstArrayVal5::arrayArg() {
 
 // ELPTR = ARRAYREF STARTREG, ARRDESC, COUNT
 void InstArrayRef::arrayArg() {
-  result = std::make_unique<AddressModeInd>(arg2->dataType, "letptr");
+  result = makeup<AddressModeInd>(arg2->dataType, "letptr");
 }
 
 // STARTREG = ARRAYVAL STARTREG, ARRDESC, COUNT
@@ -109,7 +109,7 @@ void Instruction::resultStr() {
 }
 
 void Instruction::resultPtr() {
-  result = std::make_unique<AddressModePtr>(arg1->dataType, arg1->suffix());
+  result = makeup<AddressModePtr>(arg1->dataType, arg1->suffix());
 }
 
 void Instruction::resultPromoteFlt() {
@@ -142,6 +142,11 @@ std::string Instruction::callLabel() const {
 
   return lbl;
 }
+
+bool Instruction::isIndFlt() const { return arg1->isIndFlt(); }
+bool Instruction::isIndInt() const { return arg1->isIndInt(); }
+bool Instruction::isExtFlt() const { return arg1->isExtFlt(); }
+bool Instruction::isExtInt() const { return arg1->isExtInt(); }
 
 bool Instruction::isExtFlt_extFlt() const {
   return arg1->isExtFlt() && arg2->isExtFlt();
@@ -187,6 +192,18 @@ bool Instruction::isExtStr_immStr() const {
 }
 bool Instruction::isExtStr_regStr() const {
   return arg1->isExtStr() && arg2->isRegStr();
+}
+bool Instruction::isDexFlt_extFlt() const {
+  return arg1->isDexFlt() && arg2->isExtFlt();
+}
+bool Instruction::isDexFlt_extInt() const {
+  return arg1->isDexFlt() && arg2->isExtInt();
+}
+bool Instruction::isDexInt_extInt() const {
+  return arg1->isDexInt() && arg2->isExtInt();
+}
+bool Instruction::isDexStr_extStr() const {
+  return arg1->isDexStr() && arg2->isExtStr();
 }
 bool Instruction::isIndFlt_indFlt() const {
   return arg1->isIndFlt() && arg2->isIndFlt();
@@ -521,6 +538,30 @@ bool Instruction::isRegFlt_regInt_regFlt() const {
 }
 bool Instruction::isRegFlt_regInt_regInt() const {
   return arg1->isRegFlt() && arg2->isRegInt() && arg3->isRegInt();
+}
+bool Instruction::isRegFlt_extFlt_dexFlt() const {
+  return arg1->isRegFlt() && arg2->isExtFlt() && arg3->isDexFlt();
+}
+bool Instruction::isRegFlt_extFlt_dexInt() const {
+  return arg1->isRegFlt() && arg2->isExtFlt() && arg3->isDexInt();
+}
+bool Instruction::isRegFlt_extInt_dexFlt() const {
+  return arg1->isRegFlt() && arg2->isExtInt() && arg3->isDexFlt();
+}
+bool Instruction::isRegInt_extInt_dexInt() const {
+  return arg1->isRegInt() && arg2->isExtInt() && arg3->isDexInt();
+}
+bool Instruction::isRegInt_extFlt_dexFlt() const {
+  return arg1->isRegInt() && arg2->isExtFlt() && arg3->isDexFlt();
+}
+bool Instruction::isRegInt_extFlt_dexInt() const {
+  return arg1->isRegInt() && arg2->isExtFlt() && arg3->isDexInt();
+}
+bool Instruction::isRegInt_extInt_dexFlt() const {
+  return arg1->isRegInt() && arg2->isExtInt() && arg3->isDexFlt();
+}
+bool Instruction::isRegInt_extStr_dexStr() const {
+  return arg1->isRegInt() && arg2->isExtStr() && arg3->isDexStr();
 }
 bool Instruction::isRegInt_extInt_negByte() const {
   return arg1->isRegInt() && arg2->isExtInt() && arg3->isNegByte();

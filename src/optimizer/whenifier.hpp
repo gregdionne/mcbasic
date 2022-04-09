@@ -18,9 +18,9 @@ class StatementWhenifier : public NullStatementTransmutator {
 public:
   StatementWhenifier(const Announcer &a, int linenum)
       : announcer(a), lineNumber(linenum) {}
-  std::unique_ptr<Statement> mutate(If &s) override;
+  up<Statement> mutate(If &s) override;
 
-  void whenify(std::vector<std::unique_ptr<Statement>> &statements);
+  void whenify(std::vector<up<Statement>> &statements);
 
 private:
   using NullStatementTransmutator::mutate;

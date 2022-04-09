@@ -21,8 +21,9 @@ public:
   virtual void inspect(const Dim & /*s*/) const override {}
   virtual void inspect(const Read & /*s*/) const override {}
   virtual void inspect(const Let & /*s*/) const override {}
-  virtual void inspect(const Inc & /*s*/) const override {}
-  virtual void inspect(const Dec & /*s*/) const override {}
+  virtual void inspect(const Accum & /*s*/) const override {}
+  virtual void inspect(const Decum & /*s*/) const override {}
+  virtual void inspect(const Necum & /*s*/) const override {}
   virtual void inspect(const Run & /*s*/) const override {}
   virtual void inspect(const Restore & /*s*/) const override {}
   virtual void inspect(const Return & /*s*/) const override {}

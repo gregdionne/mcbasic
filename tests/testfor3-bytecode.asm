@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -98,9 +99,8 @@ LINE_10
 
 	; FOR T=0 TO 1.1 STEP 0.3333
 
-	.byte	bytecode_for_fx_pb
+	.byte	bytecode_forclr_fx
 	.byte	bytecode_FLTVAR_T
-	.byte	0
 
 	.byte	bytecode_to_fp_fx
 	.byte	bytecode_FLT_1p10000
@@ -139,7 +139,7 @@ LLAST
 
 ; Library Catalog
 bytecode_clear	.equ	0
-bytecode_for_fx_pb	.equ	1
+bytecode_forclr_fx	.equ	1
 bytecode_ld_fr1_fx	.equ	2
 bytecode_next	.equ	3
 bytecode_nextvar_fx	.equ	4
@@ -153,7 +153,7 @@ bytecode_to_fp_fx	.equ	11
 
 catalog
 	.word	clear
-	.word	for_fx_pb
+	.word	forclr_fx
 	.word	ld_fr1_fx
 	.word	next
 	.word	nextvar_fx
@@ -254,6 +254,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -807,15 +845,14 @@ _start
 	stx	DP_DATA
 	rts
 
-for_fx_pb			; numCalls = 1
-	.module	modfor_fx_pb
-	jsr	extbyte
+forclr_fx			; numCalls = 1
+	.module	modforclr_fx
+	jsr	extend
 	stx	letptr
-	clra
-	staa	0,x
-	std	1,x
-	clrb
+	ldd	#0
 	std	3,x
+	std	1,x
+	stab	0,x
 	rts
 
 ld_fr1_fx			; numCalls = 1
@@ -842,12 +879,10 @@ next			; numCalls = 1
 _ok
 	cmpb	#11
 	bne	_flt
-	ldd	9,x
-	std	r1+1
 	ldab	8,x
 	stab	r1
+	ldd	9,x
 	ldx	1,x
-	ldd	r1+1
 	addd	1,x
 	std	r1+1
 	std	1,x
@@ -862,7 +897,7 @@ _ok
 	subd	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
@@ -871,22 +906,22 @@ _iopp
 	subd	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
-_idone
-	ldab	#11
-	bra	_done
+_done
+	ldab	0,x
+	abx
+	txs
+	jmp	mainloop
 _flt
-	ldd	13,x
-	std	r1+3
-	ldd	11,x
-	std	r1+1
 	ldab	10,x
 	stab	r1
+	ldd	11,x
+	std	r1+1
+	ldd	13,x
 	ldx	1,x
-	ldd	r1+3
 	addd	3,x
 	std	r1+3
 	std	3,x
@@ -909,7 +944,7 @@ _flt
 	sbca	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
@@ -921,15 +956,9 @@ _fopp
 	sbca	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
-	jmp	mainloop
-_fdone
-	ldab	#15
-_done
-	abx
-	txs
 	jmp	mainloop
 
 nextvar_fx			; numCalls = 1

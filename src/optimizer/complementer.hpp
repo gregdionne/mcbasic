@@ -9,11 +9,11 @@
 
 class Complementer : public NullExprTransmutator {
 public:
-  std::unique_ptr<NumericExpr> mutate(NumericConstantExpr &e) override;
-  std::unique_ptr<NumericExpr> mutate(ComplementedExpr &e) override;
-  std::unique_ptr<NumericExpr> mutate(AndExpr &e) override;
-  std::unique_ptr<NumericExpr> mutate(OrExpr &e) override;
-  std::unique_ptr<NumericExpr> mutate(RelationalExpr &e) override;
+  up<NumericExpr> mutate(NumericConstantExpr &e) override;
+  up<NumericExpr> mutate(ComplementedExpr &e) override;
+  up<NumericExpr> mutate(AndExpr &e) override;
+  up<NumericExpr> mutate(OrExpr &e) override;
+  up<NumericExpr> mutate(RelationalExpr &e) override;
 
 private:
   using NullExprTransmutator::mutate;

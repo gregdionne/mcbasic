@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -879,7 +880,8 @@ mem_ir1			; numCalls = 3
 	ldd	tmp1
 	subd	strfree
 	std	r1+1
-	clr	r1
+	clrb
+	stab	r1
 	rts
 
 pr_sr1			; numCalls = 3

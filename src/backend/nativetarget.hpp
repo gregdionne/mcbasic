@@ -10,7 +10,7 @@
 class NativeTarget : public CoreTarget {
 protected:
   std::string generateCode(InstQueue &queue) override;
-  std::unique_ptr<Dispatcher> makeDispatcher() override;
+  up<Dispatcher> makeDispatcher() override;
 };
 
 #endif

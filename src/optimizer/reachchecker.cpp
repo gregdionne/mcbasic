@@ -20,7 +20,7 @@ void StatementReachChecker::inspect(const If &s) const {
 }
 
 void StatementReachChecker::validate(
-    const std::vector<std::unique_ptr<Statement>> &statements) const {
+    const std::vector<up<Statement>> &statements) const {
 
   IsExecutableStatement isExecutable;
   IsTerminalStatement isTerminal;

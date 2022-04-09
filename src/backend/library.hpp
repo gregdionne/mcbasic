@@ -72,9 +72,15 @@ private:
   static std::string mdStrLox();
   static std::string mdRnd();
   std::string mdNegX();
+  std::string mdNegTmp2XI();
+  std::string mdNegTmp2XF();
   std::string mdNegArgV();
   std::string mdNegTmp();
   static std::string mdMul12();
+  static std::string mdMul3F();
+  static std::string mdMul3I();
+  static std::string mdMulBytF();
+  static std::string mdMulBytI();
   static std::string mdMulFlt();
   static std::string mdMulHlf();
   static std::string mdMulInt();
@@ -97,6 +103,8 @@ private:
   static std::string mdPowFlt();
   static std::string mdRMul315();
   static std::string mdMSBit();
+  static std::string mdTmp2XF();
+  static std::string mdTmp2XI();
   static std::string mdArg2X();
   static std::string mdX2Arg();
   static std::string mdSqr();

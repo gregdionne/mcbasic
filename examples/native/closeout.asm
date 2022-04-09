@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -87,18 +88,9 @@ LINE_0
 
 	jsr	cls
 
-	; LV=RND(-SHIFT(PEEK(9),8)-PEEK(10))
+	; LV=RND(-TIMER)
 
-	ldab	#9
-	jsr	peek_ir1_pb
-
-	ldab	#8
-	jsr	shift_ir1_ir1_pb
-
-	ldab	#10
-	jsr	peek_ir2_pb
-
-	jsr	add_ir1_ir1_ir2
+	jsr	timer_ir1
 
 	jsr	neg_ir1_ir1
 
@@ -138,30 +130,26 @@ LINE_1
 	; C=-1
 
 	ldx	#INTVAR_C
-	ldab	#-1
-	jsr	ld_ix_nb
+	jsr	true_ix
 
 	; D=O
 
+	ldd	#INTVAR_D
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_D
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; C2+=1
 
 	ldx	#INTVAR_C2
-	ldab	#1
-	jsr	add_ix_ix_pb
+	jsr	inc_ix_ix
 
-	; C1=1 AND C2
-
-	ldab	#1
-	jsr	ld_ir1_pb
+	; C1=C2 AND 1
 
 	ldx	#INTVAR_C2
-	jsr	and_ir1_ir1_ix
+	jsr	ld_ir1_ix
+
+	ldab	#1
+	jsr	and_ir1_ir1_pb
 
 	ldx	#INTVAR_C1
 	jsr	ld_ix_ir1
@@ -175,30 +163,26 @@ LINE_2
 	; C=1
 
 	ldx	#INTVAR_C
-	ldab	#1
-	jsr	ld_ix_pb
+	jsr	one_ix
 
 	; D=O
 
+	ldd	#INTVAR_D
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_D
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; C2+=1
 
 	ldx	#INTVAR_C2
-	ldab	#1
-	jsr	add_ix_ix_pb
+	jsr	inc_ix_ix
 
-	; C1=1 AND C2
-
-	ldab	#1
-	jsr	ld_ir1_pb
+	; C1=C2 AND 1
 
 	ldx	#INTVAR_C2
-	jsr	and_ir1_ir1_ix
+	jsr	ld_ir1_ix
+
+	ldab	#1
+	jsr	and_ir1_ir1_pb
 
 	ldx	#INTVAR_C1
 	jsr	ld_ix_ir1
@@ -212,30 +196,26 @@ LINE_3
 	; D=1
 
 	ldx	#INTVAR_D
-	ldab	#1
-	jsr	ld_ix_pb
+	jsr	one_ix
 
 	; C=O
 
+	ldd	#INTVAR_C
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_C
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; C2+=1
 
 	ldx	#INTVAR_C2
-	ldab	#1
-	jsr	add_ix_ix_pb
+	jsr	inc_ix_ix
 
-	; C1=1 AND C2
-
-	ldab	#1
-	jsr	ld_ir1_pb
+	; C1=C2 AND 1
 
 	ldx	#INTVAR_C2
-	jsr	and_ir1_ir1_ix
+	jsr	ld_ir1_ix
+
+	ldab	#1
+	jsr	and_ir1_ir1_pb
 
 	ldx	#INTVAR_C1
 	jsr	ld_ix_ir1
@@ -249,30 +229,26 @@ LINE_4
 	; D=-1
 
 	ldx	#INTVAR_D
-	ldab	#-1
-	jsr	ld_ix_nb
+	jsr	true_ix
 
 	; C=O
 
+	ldd	#INTVAR_C
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_C
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; C2+=1
 
 	ldx	#INTVAR_C2
-	ldab	#1
-	jsr	add_ix_ix_pb
+	jsr	inc_ix_ix
 
-	; C1=1 AND C2
-
-	ldab	#1
-	jsr	ld_ir1_pb
+	; C1=C2 AND 1
 
 	ldx	#INTVAR_C2
-	jsr	and_ir1_ir1_ix
+	jsr	ld_ir1_ix
+
+	ldab	#1
+	jsr	and_ir1_ir1_pb
 
 	ldx	#INTVAR_C1
 	jsr	ld_ix_ir1
@@ -408,8 +384,7 @@ LINE_7
 	ldx	#INTARR_K
 	jsr	arrref1_ir1_ix
 
-	ldab	#1
-	jsr	ld_ip_pb
+	jsr	one_ip
 
 	; K(68)=2
 
@@ -460,26 +435,22 @@ LINE_8
 	; R=0
 
 	ldx	#INTVAR_R
-	ldab	#0
-	jsr	ld_ix_pb
+	jsr	clr_ix
 
 	; T=0
 
 	ldx	#FLTVAR_T
-	ldab	#0
-	jsr	ld_fx_pb
+	jsr	clr_fx
 
 	; SH=1
 
 	ldx	#INTVAR_SH
-	ldab	#1
-	jsr	ld_ix_pb
+	jsr	one_ix
 
 	; O=0
 
 	ldx	#INTVAR_O
-	ldab	#0
-	jsr	ld_ix_pb
+	jsr	clr_ix
 
 LINE_9
 
@@ -504,8 +475,7 @@ LINE_10
 	; R+=1
 
 	ldx	#INTVAR_R
-	ldab	#1
-	jsr	add_ix_ix_pb
+	jsr	inc_ix_ix
 
 	; PRINT @87, "round";STR$(R);" ";
 
@@ -568,11 +538,9 @@ LINE_12
 
 	; M=O
 
+	ldd	#INTVAR_M
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_M
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 LINE_13
 
@@ -661,8 +629,7 @@ LINE_14
 	; FOR I=1 TO 6
 
 	ldx	#INTVAR_I
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldab	#6
 	jsr	to_ip_pb
@@ -683,8 +650,7 @@ LINE_14
 	ldx	#INTARR_K
 	jsr	arrref1_ir1_ix
 
-	ldab	#1
-	jsr	ld_ip_pb
+	jsr	one_ip
 
 	; NEXT
 
@@ -698,8 +664,7 @@ LINE_14
 	ldx	#INTARR_K
 	jsr	arrref1_ir1_ix
 
-	ldab	#1
-	jsr	ld_ip_pb
+	jsr	one_ip
 
 	; K(24)=5
 
@@ -728,8 +693,7 @@ LINE_16
 	; FOR J=0 TO 15 STEP 2
 
 	ldx	#INTVAR_J
-	ldab	#0
-	jsr	for_ix_pb
+	jsr	forclr_ix
 
 	ldab	#15
 	jsr	to_ip_pb
@@ -754,8 +718,7 @@ LINE_17
 	; FOR I=1 TO 22
 
 	ldx	#INTVAR_I
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldab	#22
 	jsr	to_ip_pb
@@ -817,8 +780,7 @@ LINE_20
 	; FOR I=0 TO 448 STEP Q
 
 	ldx	#INTVAR_I
-	ldab	#0
-	jsr	for_ix_pb
+	jsr	forclr_ix
 
 	ldd	#448
 	jsr	to_ip_pw
@@ -839,10 +801,8 @@ LINE_20
 	; PRINT @I+21, "Ãð";
 
 	ldx	#INTVAR_I
-	jsr	ld_ir1_ix
-
 	ldab	#21
-	jsr	add_ir1_ir1_pb
+	jsr	add_ir1_ix_pb
 
 	jsr	prat_ir1
 
@@ -858,8 +818,7 @@ LINE_21
 	; FOR I=1 TO 9
 
 	ldx	#INTVAR_I
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldab	#9
 	jsr	to_ip_pb
@@ -874,8 +833,7 @@ LINE_23
 	ldab	#7
 	jsr	mul_fr1_fr1_pb
 
-	ldab	#3
-	jsr	mul_ir1_ir1_pb
+	jsr	mul3_ir1_ir1
 
 	ldab	#3
 	jsr	add_ir1_ir1_pb
@@ -905,8 +863,7 @@ LINE_23
 	ldx	#INTVAR_O
 	jsr	rnd_fr1_ix
 
-	ldab	#3
-	jsr	mul_fr1_fr1_pb
+	jsr	mul3_fr1_fr1
 
 	ldab	#1
 	jsr	shift_ir1_ir1_pb
@@ -923,10 +880,8 @@ LINE_23
 	jsr	ld_ir1_pb
 
 	ldx	#INTVAR_B
-	jsr	ld_ir2_ix
-
-	ldx	#INTVAR_L
-	jsr	add_ir2_ir2_ix
+	ldd	#INTVAR_L
+	jsr	add_ir2_ix_id
 
 	jsr	ldlt_ir1_ir1_ir2
 
@@ -947,10 +902,8 @@ LINE_24
 	jsr	for_ix_ir1
 
 	ldx	#INTVAR_B
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_L
-	jsr	add_ir1_ir1_ix
+	ldd	#INTVAR_L
+	jsr	add_ir1_ix_id
 
 	ldx	#INTVAR_Q
 	jsr	mul_ir1_ir1_ix
@@ -965,10 +918,8 @@ LINE_24
 	; K=PEEK(V+A+J)
 
 	ldx	#INTVAR_V
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_A
-	jsr	add_ir1_ir1_ix
+	ldd	#INTVAR_A
+	jsr	add_ir1_ix_id
 
 	ldx	#INTVAR_J
 	jsr	add_ir1_ir1_ix
@@ -995,18 +946,15 @@ LINE_24
 	; TT-=1
 
 	ldx	#INTVAR_TT
-	ldab	#1
-	jsr	sub_ix_ix_pb
+	jsr	dec_ix_ix
 
 LINE_25
 
 	; PRINT @A+J, "Ã";
 
 	ldx	#INTVAR_A
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_J
-	jsr	add_ir1_ir1_ix
+	ldd	#INTVAR_J
+	jsr	add_ir1_ix_id
 
 	jsr	prat_ir1
 
@@ -1024,8 +972,7 @@ LINE_25
 	; TT-=1
 
 	ldx	#INTVAR_TT
-	ldab	#1
-	jsr	sub_ix_ix_pb
+	jsr	dec_ix_ix
 
 	; PRINT @375, "time\r";
 
@@ -1048,16 +995,16 @@ LINE_25
 
 LINE_26
 
-	; J=RND(120)+8+V
+	; J=RND(120)+V+8
 
 	ldab	#120
 	jsr	irnd_ir1_pb
 
-	ldab	#8
-	jsr	add_ir1_ir1_pb
-
 	ldx	#INTVAR_V
 	jsr	add_ir1_ir1_ix
+
+	ldab	#8
+	jsr	add_ir1_ir1_pb
 
 	ldx	#INTVAR_J
 	jsr	ld_ix_ir1
@@ -1100,8 +1047,7 @@ LINE_27
 	ldx	#INTARR_W
 	jsr	arrref1_ir1_ix
 
-	ldab	#1
-	jsr	ld_ip_pb
+	jsr	one_ip
 
 	; W(1)=2
 
@@ -1127,11 +1073,9 @@ LINE_27
 
 	; FOR I=O TO 2
 
+	ldd	#INTVAR_I
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_I
-	jsr	for_ix_ir1
+	jsr	for_id_ix
 
 	ldab	#2
 	jsr	to_ip_pb
@@ -1244,8 +1188,7 @@ LINE_29
 	ldx	#INTARR_X
 	jsr	arrref1_ir1_ix
 
-	ldab	#1
-	jsr	ld_ip_pb
+	jsr	one_ip
 
 	; X(1)=1
 
@@ -1255,8 +1198,7 @@ LINE_29
 	ldx	#INTARR_X
 	jsr	arrref1_ir1_ix
 
-	ldab	#1
-	jsr	ld_ip_pb
+	jsr	one_ip
 
 	; X(2)=-1
 
@@ -1266,18 +1208,15 @@ LINE_29
 	ldx	#INTARR_X
 	jsr	arrref1_ir1_ix
 
-	ldab	#-1
-	jsr	ld_ip_nb
+	jsr	true_ip
 
 LINE_30
 
 	; FOR I=O TO 2
 
+	ldd	#INTVAR_I
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_I
-	jsr	for_ix_ir1
+	jsr	for_id_ix
 
 	ldab	#2
 	jsr	to_ip_pb
@@ -1313,19 +1252,15 @@ LINE_31
 
 	; C=O
 
+	ldd	#INTVAR_C
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_C
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; D=O
 
+	ldd	#INTVAR_D
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_D
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; G=128
 
@@ -1335,11 +1270,9 @@ LINE_31
 
 	; K=O
 
+	ldd	#INTVAR_K
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_K
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; L=379
 
@@ -1349,11 +1282,9 @@ LINE_31
 
 	; C2=O
 
+	ldd	#INTVAR_C2
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_C2
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 LINE_32
 
@@ -1387,8 +1318,7 @@ LINE_32
 	; FOR Z2=1 TO Z3
 
 	ldx	#INTVAR_Z2
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldx	#FLTVAR_Z3
 	jsr	to_ip_ix
@@ -1412,29 +1342,23 @@ LINE_32
 
 	; CC=C
 
+	ldd	#INTVAR_CC
 	ldx	#INTVAR_C
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_CC
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 LINE_33
 
 	; C=O
 
+	ldd	#INTVAR_C
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_C
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; D=O
 
+	ldd	#INTVAR_D
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_D
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; ON K(K) GOSUB 1,2,3,4,59
 
@@ -1504,10 +1428,8 @@ LINE_33
 	jsr	or_ir1_ir1_ir2
 
 	ldx	#INTVAR_B
-	jsr	ld_ir2_ix
-
-	ldx	#INTVAR_D
-	jsr	add_ir2_ir2_ix
+	ldd	#INTVAR_D
+	jsr	add_ir2_ix_id
 
 	ldx	#INTVAR_O
 	jsr	ldlt_ir2_ir2_ix
@@ -1519,11 +1441,9 @@ LINE_33
 
 	; D=O
 
+	ldd	#INTVAR_D
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_D
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 LINE_34
 
@@ -1538,10 +1458,8 @@ LINE_34
 	; IF K(PEEK(P+C))=3 THEN
 
 	ldx	#INTVAR_P
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_C
-	jsr	add_ir1_ir1_ix
+	ldd	#INTVAR_C
+	jsr	add_ir1_ix_id
 
 	jsr	peek_ir1_ir1
 
@@ -1556,29 +1474,23 @@ LINE_34
 
 	; C=O
 
+	ldd	#INTVAR_C
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_C
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; K=O
 
+	ldd	#INTVAR_K
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_K
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 LINE_35
 
 	; POKE P,G
 
+	ldd	#INTVAR_P
 	ldx	#INTVAR_G
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_P
-	jsr	poke_ix_ir1
+	jsr	poke_id_ix
 
 	; A+=C
 
@@ -1665,10 +1577,8 @@ LINE_39
 	; POKE 49151,128-J
 
 	ldab	#128
-	jsr	ld_ir1_pb
-
 	ldx	#INTVAR_J
-	jsr	sub_ir1_ir1_ix
+	jsr	sub_ir1_pb_ix
 
 	ldd	#49151
 	jsr	poke_pw_ir1
@@ -1761,16 +1671,13 @@ LINE_40
 	; M+=1
 
 	ldx	#INTVAR_M
-	ldab	#1
-	jsr	add_ix_ix_pb
+	jsr	inc_ix_ix
 
 	; IF M=TT THEN
 
 	ldx	#INTVAR_M
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_TT
-	jsr	ldeq_ir1_ir1_ix
+	ldd	#INTVAR_TT
+	jsr	ldeq_ir1_ix_id
 
 	ldx	#LINE_41
 	jsr	jmpeq_ir1_ix
@@ -1789,8 +1696,7 @@ LINE_40
 	; FOR I=1 TO LV
 
 	ldx	#INTVAR_I
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldx	#FLTVAR_LV
 	jsr	to_ip_ix
@@ -1858,10 +1764,7 @@ LINE_42
 	jsr	ldlt_ir1_ir1_pb
 
 	ldx	#INTVAR_E
-	jsr	ld_ir2_ix
-
-	ldab	#1
-	jsr	add_ir2_ir2_pb
+	jsr	inc_ir2_ix
 
 	jsr	and_ir1_ir1_ir2
 
@@ -1953,21 +1856,17 @@ LINE_42
 
 	; POKE P,F
 
+	ldd	#INTVAR_P
 	ldx	#INTVAR_F
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_P
-	jsr	poke_ix_ir1
+	jsr	poke_id_ix
 
 LINE_43
 
 	; IF (K(PEEK(P-Q))=2) OR (K(PEEK(P+Q))=2) THEN
 
 	ldx	#INTVAR_P
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_Q
-	jsr	sub_ir1_ir1_ix
+	ldd	#INTVAR_Q
+	jsr	sub_ir1_ix_id
 
 	jsr	peek_ir1_ir1
 
@@ -1978,10 +1877,8 @@ LINE_43
 	jsr	ldeq_ir1_ir1_pb
 
 	ldx	#INTVAR_P
-	jsr	ld_ir2_ix
-
-	ldx	#INTVAR_Q
-	jsr	add_ir2_ir2_ix
+	ldd	#INTVAR_Q
+	jsr	add_ir2_ix_id
 
 	jsr	peek_ir2_ir2
 
@@ -2011,19 +1908,15 @@ LINE_43
 
 	; X=O
 
+	ldd	#INTVAR_X
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_X
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; Y=SGN(B-Z)
 
 	ldx	#INTVAR_B
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_Z
-	jsr	sub_ir1_ir1_ix
+	ldd	#INTVAR_Z
+	jsr	sub_ir1_ix_id
 
 	jsr	sgn_ir1_ir1
 
@@ -2052,10 +1945,8 @@ LINE_44
 	jsr	ldeq_ir1_ir1_pb
 
 	ldx	#INTVAR_Z
-	jsr	ld_ir2_ix
-
-	ldx	#INTVAR_B
-	jsr	ldeq_ir2_ir2_ix
+	ldd	#INTVAR_B
+	jsr	ldeq_ir2_ix_id
 
 	ldx	#INTVAR_Z
 	jsr	ld_ir3_ix
@@ -2080,19 +1971,15 @@ LINE_44
 
 	; Y=O
 
+	ldd	#INTVAR_Y
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_Y
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; X=SGN(A-W)
 
 	ldx	#INTVAR_A
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_W
-	jsr	sub_ir1_ir1_ix
+	ldd	#INTVAR_W
+	jsr	sub_ir1_ix_id
 
 	jsr	sgn_ir1_ir1
 
@@ -2120,10 +2007,8 @@ LINE_45
 	; IF (W=O) OR (W=21) THEN
 
 	ldx	#INTVAR_W
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_O
-	jsr	ldeq_ir1_ir1_ix
+	ldd	#INTVAR_O
+	jsr	ldeq_ir1_ix_id
 
 	ldx	#INTVAR_W
 	jsr	ld_ir2_ix
@@ -2139,10 +2024,7 @@ LINE_45
 	; X=-X
 
 	ldx	#INTVAR_X
-	jsr	neg_ir1_ix
-
-	ldx	#INTVAR_X
-	jsr	ld_ix_ir1
+	jsr	neg_ix_ix
 
 LINE_46
 
@@ -2214,11 +2096,9 @@ LINE_47
 
 	; POKE N,H
 
+	ldd	#INTVAR_N
 	ldx	#INTVAR_H
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_N
-	jsr	poke_ix_ir1
+	jsr	poke_id_ix
 
 	; W(E)=W
 
@@ -2298,27 +2178,23 @@ LINE_48
 
 	; FOR I=O TO 2
 
+	ldd	#INTVAR_I
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_I
-	jsr	for_ix_ir1
+	jsr	for_id_ix
 
 	ldab	#2
 	jsr	to_ip_pb
 
-	; IF F<>H(I) THEN
-
-	ldx	#INTVAR_F
-	jsr	ld_ir1_ix
+	; IF H(I)<>F THEN
 
 	ldx	#INTVAR_I
-	jsr	ld_ir2_ix
+	jsr	ld_ir1_ix
 
 	ldx	#INTARR_H
-	jsr	arrval1_ir2_ix
+	jsr	arrval1_ir1_ix
 
-	jsr	ldne_ir1_ir1_ir2
+	ldx	#INTVAR_F
+	jsr	ldne_ir1_ir1_ix
 
 	ldx	#LINE_49
 	jsr	jmpeq_ir1_ix
@@ -2356,11 +2232,9 @@ LINE_49
 
 	; POKE N,H
 
+	ldd	#INTVAR_N
 	ldx	#INTVAR_H
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_N
-	jsr	poke_ix_ir1
+	jsr	poke_id_ix
 
 	; W(E)=W
 
@@ -2440,11 +2314,9 @@ LINE_51
 
 	; U=O
 
+	ldd	#INTVAR_U
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_U
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; NEXT
 
@@ -2453,8 +2325,7 @@ LINE_51
 	; FOR I=1 TO 20
 
 	ldx	#INTVAR_I
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldab	#20
 	jsr	to_ip_pb
@@ -2470,8 +2341,7 @@ LINE_51
 	; FOR J=1 TO 100
 
 	ldx	#INTVAR_J
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldab	#100
 	jsr	to_ip_pb
@@ -2510,10 +2380,8 @@ LINE_52
 	; POKE V+382,33
 
 	ldx	#INTVAR_V
-	jsr	ld_ir1_ix
-
 	ldd	#382
-	jsr	add_ir1_ir1_pw
+	jsr	add_ir1_ix_pw
 
 	ldab	#33
 	jsr	poke_ir1_pb
@@ -2549,10 +2417,8 @@ LINE_53
 	; POKE V+511,89
 
 	ldx	#INTVAR_V
-	jsr	ld_ir1_ix
-
 	ldd	#511
-	jsr	add_ir1_ir1_pw
+	jsr	add_ir1_ix_pw
 
 	ldab	#89
 	jsr	poke_ir1_pb
@@ -2560,21 +2426,17 @@ LINE_53
 	; IF T>HS THEN
 
 	ldx	#FLTVAR_HS
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_T
-	jsr	ldlt_ir1_fr1_fx
+	ldd	#FLTVAR_T
+	jsr	ldlt_ir1_fx_fd
 
 	ldx	#LINE_54
 	jsr	jmpeq_ir1_ix
 
 	; HS=T
 
+	ldd	#FLTVAR_HS
 	ldx	#FLTVAR_T
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_HS
-	jsr	ld_fx_fr1
+	jsr	ld_fd_fx
 
 LINE_54
 
@@ -2586,18 +2448,15 @@ LINE_54
 	; FOR I=1 TO 20
 
 	ldx	#INTVAR_I
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldab	#20
 	jsr	to_ip_pb
 
 	; A$=INKEY$
 
-	jsr	inkey_sr1
-
 	ldx	#STRVAR_A
-	jsr	ld_sx_sr1
+	jsr	inkey_sx
 
 	; NEXT
 
@@ -2607,10 +2466,8 @@ LINE_55
 
 	; A$=INKEY$
 
-	jsr	inkey_sr1
-
 	ldx	#STRVAR_A
-	jsr	ld_sx_sr1
+	jsr	inkey_sx
 
 	; WHEN A$="" GOTO 55
 
@@ -2699,10 +2556,8 @@ LINE_58
 	; POKE V+511,96
 
 	ldx	#INTVAR_V
-	jsr	ld_ir1_ix
-
 	ldd	#511
-	jsr	add_ir1_ir1_pw
+	jsr	add_ir1_ix_pw
 
 	ldab	#96
 	jsr	poke_ir1_pb
@@ -2721,10 +2576,8 @@ LINE_60
 	; IF CC=O THEN
 
 	ldx	#INTVAR_CC
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_O
-	jsr	ldeq_ir1_ir1_ix
+	ldd	#INTVAR_O
+	jsr	ldeq_ir1_ix_id
 
 	ldx	#LINE_61
 	jsr	jmpeq_ir1_ix
@@ -2741,11 +2594,9 @@ LINE_60
 
 	; K=O
 
+	ldd	#INTVAR_K
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_K
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; RETURN
 
@@ -2758,11 +2609,8 @@ LINE_61
 	ldx	#INTVAR_SH
 	jsr	ld_ir1_ix
 
-	ldab	#0
-	jsr	ldeq_ir1_ir1_pb
-
 	ldx	#LINE_62
-	jsr	jmpeq_ir1_ix
+	jsr	jmpne_ir1_ix
 
 	; SOUND 20,10
 
@@ -2776,11 +2624,9 @@ LINE_61
 
 	; K=O
 
+	ldd	#INTVAR_K
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_K
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; RETURN
 
@@ -2804,27 +2650,21 @@ LINE_62
 
 	; K=O
 
+	ldd	#INTVAR_K
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_K
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 LINE_63
 
 	; FOR I=A TO (CC>O) AND 21 STEP CC
 
+	ldd	#INTVAR_I
 	ldx	#INTVAR_A
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_I
-	jsr	for_ix_ir1
+	jsr	for_id_ix
 
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_CC
-	jsr	ldlt_ir1_ir1_ix
+	ldd	#INTVAR_CC
+	jsr	ldlt_ir1_ix_id
 
 	ldab	#21
 	jsr	and_ir1_ir1_pb
@@ -2845,10 +2685,8 @@ LINE_63
 	jsr	arrref1_ir1_ix
 
 	ldx	#INTVAR_P
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_I
-	jsr	add_ir1_ir1_ix
+	ldd	#INTVAR_I
+	jsr	add_ir1_ix_id
 
 	jsr	peek_ir1_ir1
 
@@ -2857,10 +2695,8 @@ LINE_63
 	; POKE P+I,P((INT(I) AND 1)+3)
 
 	ldx	#INTVAR_P
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_I
-	jsr	add_ir1_ir1_ix
+	ldd	#INTVAR_I
+	jsr	add_ir1_ix_id
 
 	ldx	#INTVAR_I
 	jsr	ld_ir2_ix
@@ -2916,17 +2752,13 @@ LINE_66
 
 	; FOR I=A TO (CC>O) AND 21 STEP CC
 
+	ldd	#INTVAR_I
 	ldx	#INTVAR_A
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_I
-	jsr	for_ix_ir1
+	jsr	for_id_ix
 
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_CC
-	jsr	ldlt_ir1_ir1_ix
+	ldd	#INTVAR_CC
+	jsr	ldlt_ir1_ix_id
 
 	ldab	#21
 	jsr	and_ir1_ir1_pb
@@ -2943,10 +2775,8 @@ LINE_67
 	; POKE P+I,S(I)
 
 	ldx	#INTVAR_P
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_I
-	jsr	add_ir1_ir1_ix
+	ldd	#INTVAR_I
+	jsr	add_ir1_ix_id
 
 	ldx	#INTVAR_I
 	jsr	ld_ir2_ix
@@ -2963,8 +2793,7 @@ LINE_67
 	; SH-=1
 
 	ldx	#INTVAR_SH
-	ldab	#1
-	jsr	sub_ix_ix_pb
+	jsr	dec_ix_ix
 
 LINE_68
 
@@ -2991,11 +2820,9 @@ LINE_70
 
 	; FOR J=O TO 2
 
+	ldd	#INTVAR_J
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_J
-	jsr	for_ix_ir1
+	jsr	for_id_ix
 
 	ldab	#2
 	jsr	to_ip_pb
@@ -3074,8 +2901,7 @@ LINE_72
 	ldx	#INTARR_Z
 	jsr	arrref1_ir1_ix
 
-	ldab	#0
-	jsr	ld_ip_pb
+	jsr	clr_ip
 
 	; F(J)=PEEK(W(J)+V)
 
@@ -3125,8 +2951,7 @@ LINE_73
 	ldx	#INTARR_X
 	jsr	arrref1_ir1_ix
 
-	ldab	#-1
-	jsr	ld_ip_nb
+	jsr	true_ip
 
 	; IF RND(O)>0.5 THEN
 
@@ -3149,8 +2974,7 @@ LINE_73
 	ldx	#INTARR_X
 	jsr	arrref1_ir1_ix
 
-	ldab	#1
-	jsr	ld_ip_pb
+	jsr	one_ip
 
 LINE_74
 
@@ -3256,11 +3080,9 @@ LINE_83
 
 	; K=O
 
+	ldd	#INTVAR_K
 	ldx	#INTVAR_O
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_K
-	jsr	ld_ix_ir1
+	jsr	ld_id_ix
 
 	; IF PEEK(2) AND NOT PEEK(16952) AND 4 THEN
 
@@ -3472,8 +3294,7 @@ LINE_200
 	; FOR I=1 TO 20
 
 	ldx	#INTVAR_I
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldab	#20
 	jsr	to_ip_pb
@@ -3489,8 +3310,7 @@ LINE_200
 	; FOR J=1 TO 100
 
 	ldx	#INTVAR_J
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldab	#100
 	jsr	to_ip_pb
@@ -3587,8 +3407,7 @@ LINE_305
 	; FOR I=1 TO RND(L)
 
 	ldx	#INTVAR_I
-	ldab	#1
-	jsr	for_ix_pb
+	jsr	forone_ix
 
 	ldx	#INTVAR_L
 	jsr	rnd_fr1_ix
@@ -3622,8 +3441,7 @@ LINE_310
 	ldab	#1
 	jsr	shift_ir1_ir1_pb
 
-	ldab	#1
-	jsr	add_ir1_ir1_pb
+	jsr	inc_ir1_ir1
 
 	ldx	#INTVAR_J
 	jsr	ld_ix_ir1
@@ -3763,8 +3581,7 @@ LINE_320
 	ldab	#1
 	jsr	shift_ir1_ir1_pb
 
-	ldab	#1
-	jsr	add_ir1_ir1_pb
+	jsr	inc_ir1_ir1
 
 	ldx	#INTVAR_J
 	jsr	ld_ix_ir1
@@ -3832,7 +3649,7 @@ LINE_321
 	ldx	#LINE_322
 	jsr	jmpeq_ir1_ix
 
-	; PRINT @(Q*J)+21+Q, "€";
+	; PRINT @(Q*J)+Q+21, "€";
 
 	ldx	#INTVAR_Q
 	jsr	ld_ir1_ix
@@ -3840,11 +3657,11 @@ LINE_321
 	ldx	#INTVAR_J
 	jsr	mul_ir1_ir1_ix
 
-	ldab	#21
-	jsr	add_ir1_ir1_pb
-
 	ldx	#INTVAR_Q
 	jsr	add_ir1_ir1_ix
+
+	ldab	#21
+	jsr	add_ir1_ir1_pb
 
 	jsr	prat_ir1
 
@@ -4021,24 +3838,22 @@ LINE_448
 
 	; A$=INKEY$
 
-	jsr	inkey_sr1
-
 	ldx	#STRVAR_A
-	jsr	ld_sx_sr1
+	jsr	inkey_sx
 
 	; WHEN (A$<"1") OR (A$>"3") GOTO 448
 
 	ldx	#STRVAR_A
 	jsr	ld_sr1_sx
 
-	jsr	ldlo_ir1_sr1_ss
+	jsr	ldlt_ir1_sr1_ss
 	.text	1, "1"
 
 	jsr	ld_sr2_ss
 	.text	1, "3"
 
 	ldx	#STRVAR_A
-	jsr	ldlo_ir2_sr2_sx
+	jsr	ldlt_ir2_sr2_sx
 
 	jsr	or_ir1_ir1_ir2
 
@@ -4049,16 +3864,14 @@ LINE_449
 
 	; Z3=550-(VAL(A$)*50)
 
-	ldd	#550
-	jsr	ld_ir1_pw
-
 	ldx	#STRVAR_A
-	jsr	val_fr2_sx
+	jsr	val_fr1_sx
 
 	ldab	#50
-	jsr	mul_fr2_fr2_pb
+	jsr	mul_fr1_fr1_pb
 
-	jsr	sub_fr1_ir1_fr2
+	ldd	#550
+	jsr	rsub_fr1_fr1_pw
 
 	ldx	#FLTVAR_Z3
 	jsr	ld_fx_fr1
@@ -4288,6 +4101,15 @@ _1
 	ldd	#-1
 	rts
 
+	.module	mdgetlo
+getlo
+	blo	_1
+	ldd	#0
+	rts
+_1
+	ldd	#-1
+	rts
+
 	.module	mdgetlt
 getlt
 	blt	_1
@@ -4374,189 +4196,89 @@ _dec
 	tst	tmp1+1
 	rts
 
-	.module	mdmulflt
-mulfltx
-	bsr	mulfltt
-	ldab	tmp1+1
-	stab	0,x
-	ldd	tmp2
-	std	1,x
-	ldd	tmp3
-	std	3,x
-	rts
-mulfltt
-	jsr	mulhlf
-	clr	tmp4
-_4_3
-	ldaa	4+argv
-	beq	_3_4
-	ldab	3,x
-	bsr	_m43
-_4_1
-	ldaa	4+argv
-	ldab	1,x
-	bsr	_m41
-_4_2
-	ldaa	4+argv
-	ldab	2,x
-	bsr	_m42
-_4_0
-	ldaa	4+argv
-	ldab	0,x
-	bsr	_m40
-	ldab	0,x
-	bpl	_4_4
-	ldd	tmp1+1
-	subb	4+argv
-	sbca	#0
-	std	tmp1+1
-_4_4
-	ldaa	4+argv
-	ldab	4,x
-	beq	_rndup
-	mul
-	lslb
-	adca	tmp4
-	staa	tmp4
-	bsr	mulflt3
-_3_4
-	ldab	4,x
-	beq	_rndup
-	ldaa	3+argv
-	bsr	_m43
-_1_4
-	ldab	4,x
-	ldaa	1+argv
-	bsr	_m41
-_2_4
-	ldab	4,x
-	ldaa	2+argv
-	bsr	_m42
-_0_4
-	ldab	4,x
-	ldaa	0+argv
-	bsr	_m40
-	ldaa	0+argv
-	bpl	_rndup
-	ldd	tmp1+1
-	subb	4,x
-	sbca	#0
-	std	tmp1+1
-_rndup
-	ldaa	tmp4
-	lsla
-mulflt3
-	ldd	tmp3
-	adcb	#0
-	adca	#0
+	.module	mdmul3f
+; multiply X by 3
+; result in X
+; clobbers TMP1+1..TMP3+1
+mul3f
+	ldd	3,x
+	lsld
 	std	tmp3
-	ldd	tmp2
-	adcb	#0
-	adca	#0
-	jmp	mulhlf2
-_m43
-	mul
-	addd	tmp3+1
-	std	tmp3+1
-	rol	tmp4+1
-	rts
-_m41
-	mul
-	lsr	tmp4+1
-	adcb	tmp3
-	adca	tmp2+1
-	std	tmp2+1
-	ldd	tmp1+1
-	adcb	#0
-	adca	#0
-	std	tmp1+1
-	rts
-_m42
-	mul
-	addd	tmp3
-	std	tmp3
-	rol	tmp4+1
-	rts
-_m40
-	mul
-	lsr	tmp4+1
-	adcb	tmp2+1
-	adca	tmp2
-	bra	mulhlf2
-
-	.module	mdmulhlf
-mulhlf
-	bsr	mulint
-	ldd	#0
-	std	tmp3
-	stab	tmp4+1
-_3_2
-	ldaa	3+argv
-	beq	_2_3
-	ldab	2,x
-	bsr	_m32
-_3_0
-	ldaa	3+argv
-	ldab	0,x
-	bsr	_m30
-	ldab	0,x
-	bpl	_3_3
-	ldab	tmp1+1
-	subb	3+argv
-	stab	tmp1+1
-_3_3
-	ldaa	3+argv
-	ldab	3,x
-	mul
-	adda	tmp3
-	std	tmp3
-	rol	tmp4+1
-_3_1
-	ldaa	3+argv
-	ldab	1,x
-	bsr	_m31
-_2_3
-	ldab	3,x
-	beq	_rts
-	ldaa	2+argv
-	bsr	_m32
-_0_3
-	ldab	3,x
-	ldaa	0+argv
-	bsr	_m30
-	ldaa	0+argv
-	bpl	_1_3
-	ldab	tmp1+1
-	subb	3,x
-	stab	tmp1+1
-_1_3
-	ldab	3,x
-	ldaa	1+argv
-	clr	tmp4+1
-_m31
-	mul
-	lsr	tmp4+1
-	adcb	tmp2+1
-	adca	tmp2
-mulhlf2
+	ldd	1,x
+	rolb
+	rola
 	std	tmp2
-	ldab	tmp1+1
-	adcb	#0
+	ldab	0,x
+	rolb
 	stab	tmp1+1
+	ldd	3,x
+	addd	tmp3
+	std	3,x
+	ldd	1,x
+	adcb	tmp2+1
+	adca	tmp2
+	std	1,x
+	ldab	0,x
+	adcb	tmp1+1
+	stab	0,x
 	rts
-_m32
+
+	.module	mdmul3i
+; multiply X by 3
+; result in X
+; clobbers TMP1+1
+mul3i
+	ldab	0,x
+	stab	tmp1+1
+	ldd	1,x
+	lsld
+	rol	tmp1+1
+	addd	1,x
+	std	1,x
+	ldab	0,x
+	adcb	tmp1+1
+	stab	0,x
+	rts
+
+	.module	mdmulbytf
+; multiply X with ACCB
+; result in X
+; clobbers TMP1+1...TMP3+1
+mulbytf
+	bsr	mulbyti
+	ldaa	4,x
+	ldab	tmp1
+	mul
+	std	tmp3
+	ldaa	3,x
+	ldab	tmp1
 	mul
 	addd	tmp2+1
 	std	tmp2+1
-	rol	tmp4+1
-	rts
-_m30
-	mul
-	lsr	tmp4+1
-	adcb	tmp2
-	adca	tmp1+1
+	ldd	tmp1+1
+	adcb	#0
+	adca	#0
 	std	tmp1+1
-_rts
+	rts
+
+	.module	mdmulbyti
+; multiply X with ACCB
+; result in TMP1+1...TMP2+1
+; clobbers TMP1
+mulbyti
+	stab	tmp1
+	ldaa	2,x
+	mul
+	std	tmp2
+	ldaa	0,x
+	ldab	tmp1
+	mul
+	stab	tmp1+1
+	ldaa	1,x
+	ldab	tmp1
+	mul
+	addd	tmp1+1
+	std	tmp1+1
 	rts
 
 	.module	mdmulint
@@ -4572,14 +4294,12 @@ mulint
 	ldaa	2+argv
 	ldab	1,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	1+argv
 	ldab	2,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	2+argv
 	ldab	0,x
@@ -5482,6 +5202,19 @@ _tblten
 	.byte	$0F,$42,$40
 	.byte	$98,$96,$80
 
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
+	rts
+
 	.module	mdtonat
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
@@ -5564,17 +5297,7 @@ add_fx_fx_fr1			; numCalls = 4
 	stab	0,x
 	rts
 
-add_ir1_ir1_ir2			; numCalls = 1
-	.module	modadd_ir1_ir1_ir2
-	ldd	r1+1
-	addd	r2+1
-	std	r1+1
-	ldab	r1
-	adcb	r2
-	stab	r1
-	rts
-
-add_ir1_ir1_ix			; numCalls = 28
+add_ir1_ir1_ix			; numCalls = 21
 	.module	modadd_ir1_ir1_ix
 	ldd	r1+1
 	addd	1,x
@@ -5594,7 +5317,7 @@ add_ir1_ir1_nb			; numCalls = 1
 	stab	r1
 	rts
 
-add_ir1_ir1_pb			; numCalls = 16
+add_ir1_ir1_pb			; numCalls = 13
 	.module	modadd_ir1_ir1_pb
 	clra
 	addd	r1+1
@@ -5604,16 +5327,40 @@ add_ir1_ir1_pb			; numCalls = 16
 	stab	r1
 	rts
 
-add_ir1_ir1_pw			; numCalls = 3
-	.module	modadd_ir1_ir1_pw
-	addd	r1+1
+add_ir1_ix_id			; numCalls = 7
+	.module	modadd_ir1_ix_id
+	std	tmp1
+	ldab	0,x
+	stab	r1
+	ldd	1,x
+	ldx	tmp1
+	addd	1,x
 	std	r1+1
-	ldab	#0
-	adcb	r1
+	ldab	r1
+	adcb	0,x
 	stab	r1
 	rts
 
-add_ir2_ir2_ix			; numCalls = 4
+add_ir1_ix_pb			; numCalls = 1
+	.module	modadd_ir1_ix_pb
+	clra
+	addd	1,x
+	std	r1+1
+	ldab	#0
+	adcb	0,x
+	stab	r1
+	rts
+
+add_ir1_ix_pw			; numCalls = 3
+	.module	modadd_ir1_ix_pw
+	addd	1,x
+	std	r1+1
+	ldab	#0
+	adcb	0,x
+	stab	r1
+	rts
+
+add_ir2_ir2_ix			; numCalls = 1
 	.module	modadd_ir2_ir2_ix
 	ldd	r2+1
 	addd	1,x
@@ -5623,13 +5370,27 @@ add_ir2_ir2_ix			; numCalls = 4
 	stab	r2
 	rts
 
-add_ir2_ir2_pb			; numCalls = 2
+add_ir2_ir2_pb			; numCalls = 1
 	.module	modadd_ir2_ir2_pb
 	clra
 	addd	r2+1
 	std	r2+1
 	ldab	#0
 	adcb	r2
+	stab	r2
+	rts
+
+add_ir2_ix_id			; numCalls = 3
+	.module	modadd_ir2_ix_id
+	std	tmp1
+	ldab	0,x
+	stab	r2
+	ldd	1,x
+	ldx	tmp1
+	addd	1,x
+	std	r2+1
+	ldab	r2
+	adcb	0,x
 	stab	r2
 	rts
 
@@ -5643,7 +5404,7 @@ add_ix_ix_ir1			; numCalls = 4
 	stab	0,x
 	rts
 
-add_ix_ix_pb			; numCalls = 8
+add_ix_ix_pb			; numCalls = 2
 	.module	modadd_ix_ix_pb
 	clra
 	addd	1,x
@@ -5664,18 +5425,7 @@ and_ir1_ir1_ir2			; numCalls = 6
 	stab	r1
 	rts
 
-and_ir1_ir1_ix			; numCalls = 4
-	.module	modand_ir1_ir1_ix
-	ldd	1,x
-	andb	r1+2
-	anda	r1+1
-	std	r1+1
-	ldab	0,x
-	andb	r1
-	stab	r1
-	rts
-
-and_ir1_ir1_pb			; numCalls = 8
+and_ir1_ir1_pb			; numCalls = 12
 	.module	modand_ir1_ir1_pb
 	andb	r1+2
 	clra
@@ -5728,7 +5478,7 @@ arrref1_ir1_ix			; numCalls = 53
 	std	letptr
 	rts
 
-arrval1_ir1_ix			; numCalls = 28
+arrval1_ir1_ix			; numCalls = 29
 	.module	modarrval1_ir1_ix
 	ldd	r1+1
 	std	0+argv
@@ -5742,7 +5492,7 @@ arrval1_ir1_ix			; numCalls = 28
 	std	r1+1
 	rts
 
-arrval1_ir2_ix			; numCalls = 6
+arrval1_ir2_ix			; numCalls = 5
 	.module	modarrval1_ir2_ix
 	ldd	r2+1
 	std	0+argv
@@ -5794,6 +5544,29 @@ _start
 	stx	DP_DATA
 	rts
 
+clr_fx			; numCalls = 1
+	.module	modclr_fx
+	ldd	#0
+	std	3,x
+	std	1,x
+	stab	0,x
+	rts
+
+clr_ip			; numCalls = 1
+	.module	modclr_ip
+	ldx	letptr
+	ldd	#0
+	stab	0,x
+	std	1,x
+	rts
+
+clr_ix			; numCalls = 2
+	.module	modclr_ix
+	ldd	#0
+	stab	0,x
+	std	1,x
+	rts
+
 cls			; numCalls = 3
 	.module	modcls
 	jmp	R_CLS
@@ -5805,7 +5578,29 @@ com_ir2_ir2			; numCalls = 5
 	com	r2
 	rts
 
-for_ix_ir1			; numCalls = 7
+dec_ix_ix			; numCalls = 3
+	.module	moddec_ix_ix
+	ldd	1,x
+	subd	#1
+	std	1,x
+	ldab	0,x
+	sbcb	#0
+	stab	0,x
+	rts
+
+for_id_ix			; numCalls = 6
+	.module	modfor_id_ix
+	std	letptr
+	ldab	0,x
+	stab	tmp1+1
+	ldd	1,x
+	ldx	letptr
+	std	1,x
+	ldab	tmp1+1
+	stab	0,x
+	rts
+
+for_ix_ir1			; numCalls = 1
 	.module	modfor_ix_ir1
 	stx	letptr
 	ldd	r1+1
@@ -5814,7 +5609,7 @@ for_ix_ir1			; numCalls = 7
 	stab	0,x
 	rts
 
-for_ix_pb			; numCalls = 15
+for_ix_pb			; numCalls = 2
 	.module	modfor_ix_pb
 	stx	letptr
 	clra
@@ -5826,6 +5621,22 @@ for_ix_pw			; numCalls = 1
 	.module	modfor_ix_pw
 	stx	letptr
 	clr	0,x
+	std	1,x
+	rts
+
+forclr_ix			; numCalls = 2
+	.module	modforclr_ix
+	stx	letptr
+	ldd	#0
+	stab	0,x
+	std	1,x
+	rts
+
+forone_ix			; numCalls = 11
+	.module	modforone_ix
+	stx	letptr
+	ldd	#1
+	staa	0,x
 	std	1,x
 	rts
 
@@ -5841,18 +5652,49 @@ goto_ix			; numCalls = 9
 	ins
 	jmp	,x
 
-inkey_sr1			; numCalls = 3
-	.module	modinkey_sr1
+inc_ir1_ir1			; numCalls = 2
+	.module	modinc_ir1_ir1
+	inc	r1+2
+	bne	_rts
+	inc	r1+1
+	bne	_rts
+	inc	r1
+_rts
+	rts
+
+inc_ir2_ix			; numCalls = 1
+	.module	modinc_ir2_ix
+	ldd	1,x
+	addd	#1
+	std	r2+1
+	ldab	0,x
+	adcb	#0
+	stab	r2
+	rts
+
+inc_ix_ix			; numCalls = 6
+	.module	modinc_ix_ix
+	inc	2,x
+	bne	_rts
+	inc	1,x
+	bne	_rts
+	inc	0,x
+_rts
+	rts
+
+inkey_sx			; numCalls = 3
+	.module	modinkey_sx
+	jsr	strdel
 	ldd	#$0100+(charpage>>8)
-	std	r1
+	std	0,x
 	ldaa	M_IKEY
 	bne	_gotkey
 	jsr	R_KEYIN
 _gotkey
 	clr	M_IKEY
-	staa	r1+2
+	staa	2,x
 	bne	_rts
-	staa	r1
+	staa	0,x
 _rts
 	rts
 
@@ -5878,7 +5720,7 @@ irnd_ir2_pb			; numCalls = 1
 	stab	r2
 	rts
 
-jmpeq_ir1_ix			; numCalls = 37
+jmpeq_ir1_ix			; numCalls = 36
 	.module	modjmpeq_ir1_ix
 	ldd	r1+1
 	bne	_rts
@@ -5890,7 +5732,7 @@ jmpeq_ir1_ix			; numCalls = 37
 _rts
 	rts
 
-jmpne_ir1_ix			; numCalls = 8
+jmpne_ir1_ix			; numCalls = 9
 	.module	modjmpne_ir1_ix
 	ldd	r1+1
 	bne	_go
@@ -5914,7 +5756,23 @@ _go
 	pshb
 	jmp	,x
 
-ld_fr1_fx			; numCalls = 8
+ld_fd_fx			; numCalls = 1
+	.module	modld_fd_fx
+	std	tmp1
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	ldx	tmp1
+	std	3,x
+	ldd	1+argv
+	std	1,x
+	ldab	0+argv
+	stab	0,x
+	rts
+
+ld_fr1_fx			; numCalls = 6
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -5924,7 +5782,7 @@ ld_fr1_fx			; numCalls = 8
 	stab	r1
 	rts
 
-ld_fx_fr1			; numCalls = 4
+ld_fx_fr1			; numCalls = 3
 	.module	modld_fx_fr1
 	ldd	r1+3
 	std	3,x
@@ -5934,12 +5792,16 @@ ld_fx_fr1			; numCalls = 4
 	stab	0,x
 	rts
 
-ld_fx_pb			; numCalls = 1
-	.module	modld_fx_pb
-	stab	2,x
-	ldd	#0
-	std	3,x
-	std	0,x
+ld_id_ix			; numCalls = 22
+	.module	modld_id_ix
+	std	tmp1
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	ldx	tmp1
+	std	1,x
+	ldab	0+argv
+	stab	0,x
 	rts
 
 ld_ip_ir1			; numCalls = 17
@@ -5951,15 +5813,7 @@ ld_ip_ir1			; numCalls = 17
 	stab	0,x
 	rts
 
-ld_ip_nb			; numCalls = 2
-	.module	modld_ip_nb
-	ldx	letptr
-	stab	2,x
-	ldd	#-1
-	std	0,x
-	rts
-
-ld_ip_pb			; numCalls = 34
+ld_ip_pb			; numCalls = 26
 	.module	modld_ip_pb
 	ldx	letptr
 	stab	2,x
@@ -5967,7 +5821,7 @@ ld_ip_pb			; numCalls = 34
 	std	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 149
+ld_ir1_ix			; numCalls = 102
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -5982,21 +5836,14 @@ ld_ir1_nb			; numCalls = 1
 	std	r1
 	rts
 
-ld_ir1_pb			; numCalls = 59
+ld_ir1_pb			; numCalls = 54
 	.module	modld_ir1_pb
 	stab	r1+2
 	ldd	#0
 	std	r1
 	rts
 
-ld_ir1_pw			; numCalls = 1
-	.module	modld_ir1_pw
-	std	r1+1
-	ldab	#0
-	stab	r1
-	rts
-
-ld_ir2_ix			; numCalls = 12
+ld_ir2_ix			; numCalls = 6
 	.module	modld_ir2_ix
 	ldd	1,x
 	std	r2+1
@@ -6027,7 +5874,7 @@ ld_ir4_ix			; numCalls = 1
 	stab	r4
 	rts
 
-ld_ix_ir1			; numCalls = 53
+ld_ix_ir1			; numCalls = 30
 	.module	modld_ix_ir1
 	ldd	r1+1
 	std	1,x
@@ -6035,14 +5882,7 @@ ld_ix_ir1			; numCalls = 53
 	stab	0,x
 	rts
 
-ld_ix_nb			; numCalls = 2
-	.module	modld_ix_nb
-	stab	2,x
-	ldd	#-1
-	std	0,x
-	rts
-
-ld_ix_pb			; numCalls = 23
+ld_ix_pb			; numCalls = 18
 	.module	modld_ix_pb
 	stab	2,x
 	ldd	#0
@@ -6084,7 +5924,7 @@ ld_sr2_ss			; numCalls = 1
 	abx
 	jmp	,x
 
-ld_sx_sr1			; numCalls = 4
+ld_sx_sr1			; numCalls = 1
 	.module	modld_sx_sr1
 	ldab	r1
 	stab	0+argv
@@ -6092,24 +5932,28 @@ ld_sx_sr1			; numCalls = 4
 	std	1+argv
 	jmp	strprm
 
-ldeq_ir1_ir1_ix			; numCalls = 3
-	.module	modldeq_ir1_ir1_ix
-	ldd	r1+1
-	subd	1,x
+ldeq_ir1_ir1_pb			; numCalls = 15
+	.module	modldeq_ir1_ir1_pb
+	cmpb	r1+2
 	bne	_done
-	ldab	r1
-	cmpb	0,x
+	ldd	r1
 _done
 	jsr	geteq
 	std	r1+1
 	stab	r1
 	rts
 
-ldeq_ir1_ir1_pb			; numCalls = 16
-	.module	modldeq_ir1_ir1_pb
-	cmpb	r1+2
+ldeq_ir1_ix_id			; numCalls = 3
+	.module	modldeq_ir1_ix_id
+	std	tmp1
+	ldab	0,x
+	stab	r1
+	ldd	1,x
+	ldx	tmp1
+	subd	1,x
 	bne	_done
-	ldd	r1
+	ldab	r1
+	cmpb	0,x
 _done
 	jsr	geteq
 	std	r1+1
@@ -6128,24 +5972,28 @@ ldeq_ir1_sr1_ss			; numCalls = 3
 	stab	r1
 	rts
 
-ldeq_ir2_ir2_ix			; numCalls = 1
-	.module	modldeq_ir2_ir2_ix
-	ldd	r2+1
-	subd	1,x
+ldeq_ir2_ir2_pb			; numCalls = 3
+	.module	modldeq_ir2_ir2_pb
+	cmpb	r2+2
 	bne	_done
-	ldab	r2
-	cmpb	0,x
+	ldd	r2
 _done
 	jsr	geteq
 	std	r2+1
 	stab	r2
 	rts
 
-ldeq_ir2_ir2_pb			; numCalls = 3
-	.module	modldeq_ir2_ir2_pb
-	cmpb	r2+2
+ldeq_ir2_ix_id			; numCalls = 1
+	.module	modldeq_ir2_ix_id
+	std	tmp1
+	ldab	0,x
+	stab	r2
+	ldd	1,x
+	ldx	tmp1
+	subd	1,x
 	bne	_done
-	ldd	r2
+	ldab	r2
+	cmpb	0,x
 _done
 	jsr	geteq
 	std	r2+1
@@ -6167,42 +6015,6 @@ _done
 	stab	r3
 	rts
 
-ldlo_ir1_sr1_ss			; numCalls = 1
-	.module	modldlo_ir1_sr1_ss
-	ldab	r1
-	stab	0+argv
-	ldd	r1+1
-	std	1+argv
-	jsr	strlos
-	blo	_1
-	ldd	#0
-	std	r1+1
-	stab	r1
-	rts
-_1
-	ldd	#-1
-	std	r1+1
-	stab	r1
-	rts
-
-ldlo_ir2_sr2_sx			; numCalls = 1
-	.module	modldlo_ir2_sr2_sx
-	ldab	r2
-	stab	0+argv
-	ldd	r2+1
-	std	1+argv
-	jsr	strlox
-	blo	_1
-	ldd	#0
-	std	r2+1
-	stab	r2
-	rts
-_1
-	ldd	#-1
-	std	r2+1
-	stab	r2
-	rts
-
 ldlt_ir1_fr1_fr2			; numCalls = 2
 	.module	modldlt_ir1_fr1_fr2
 	ldd	r1+3
@@ -6217,9 +6029,15 @@ ldlt_ir1_fr1_fr2			; numCalls = 2
 	stab	r1
 	rts
 
-ldlt_ir1_fr1_fx			; numCalls = 1
-	.module	modldlt_ir1_fr1_fx
-	ldd	r1+3
+ldlt_ir1_fx_fd			; numCalls = 1
+	.module	modldlt_ir1_fx_fd
+	std	tmp1
+	ldab	0,x
+	stab	r1
+	ldd	1,x
+	std	r1+1
+	ldd	3,x
+	ldx	tmp1
 	subd	3,x
 	ldd	r1+1
 	sbcb	2,x
@@ -6242,7 +6060,7 @@ ldlt_ir1_ir1_ir2			; numCalls = 1
 	stab	r1
 	rts
 
-ldlt_ir1_ir1_ix			; numCalls = 7
+ldlt_ir1_ir1_ix			; numCalls = 5
 	.module	modldlt_ir1_ir1_ix
 	ldd	r1+1
 	subd	1,x
@@ -6266,6 +6084,33 @@ ldlt_ir1_ir1_pb			; numCalls = 1
 	stab	r1
 	rts
 
+ldlt_ir1_ix_id			; numCalls = 2
+	.module	modldlt_ir1_ix_id
+	std	tmp1
+	ldab	0,x
+	stab	r1
+	ldd	1,x
+	ldx	tmp1
+	subd	1,x
+	ldab	r1
+	sbcb	0,x
+	jsr	getlt
+	std	r1+1
+	stab	r1
+	rts
+
+ldlt_ir1_sr1_ss			; numCalls = 1
+	.module	modldlt_ir1_sr1_ss
+	ldab	r1
+	stab	0+argv
+	ldd	r1+1
+	std	1+argv
+	jsr	strlos
+	jsr	getlo
+	std	r1+1
+	stab	r1
+	rts
+
 ldlt_ir2_ir2_ix			; numCalls = 1
 	.module	modldlt_ir2_ir2_ix
 	ldd	r2+1
@@ -6277,13 +6122,38 @@ ldlt_ir2_ir2_ix			; numCalls = 1
 	stab	r2
 	rts
 
-ldne_ir1_ir1_ir2			; numCalls = 2
+ldlt_ir2_sr2_sx			; numCalls = 1
+	.module	modldlt_ir2_sr2_sx
+	ldab	r2
+	stab	0+argv
+	ldd	r2+1
+	std	1+argv
+	jsr	strlox
+	jsr	getlo
+	std	r2+1
+	stab	r2
+	rts
+
+ldne_ir1_ir1_ir2			; numCalls = 1
 	.module	modldne_ir1_ir1_ir2
 	ldd	r1+1
 	subd	r2+1
 	bne	_done
 	ldab	r1
 	cmpb	r2
+_done
+	jsr	getne
+	std	r1+1
+	stab	r1
+	rts
+
+ldne_ir1_ir1_ix			; numCalls = 1
+	.module	modldne_ir1_ir1_ix
+	ldd	r1+1
+	subd	1,x
+	bne	_done
+	ldab	r1
+	cmpb	0,x
 _done
 	jsr	getne
 	std	r1+1
@@ -6352,23 +6222,21 @@ _fc_error
 	ldab	#FC_ERROR
 	jmp	error
 
+mul3_fr1_fr1			; numCalls = 1
+	.module	modmul3_fr1_fr1
+	ldx	#r1
+	jmp	mul3f
+
+mul3_ir1_ir1			; numCalls = 1
+	.module	modmul3_ir1_ir1
+	ldx	#r1
+	jmp	mul3i
+
 mul_fr1_fr1_pb			; numCalls = 6
 	.module	modmul_fr1_fr1_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
-	std	3+argv
 	ldx	#r1
-	jmp	mulfltx
-
-mul_fr2_fr2_pb			; numCalls = 1
-	.module	modmul_fr2_fr2_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
-	std	3+argv
-	ldx	#r2
-	jmp	mulfltx
+	jsr	mulbytf
+	jmp	tmp2xf
 
 mul_ir1_ir1_ix			; numCalls = 20
 	.module	modmul_ir1_ir1_ix
@@ -6376,14 +6244,6 @@ mul_ir1_ir1_ix			; numCalls = 20
 	stab	0+argv
 	ldd	1,x
 	std	1+argv
-	ldx	#r1
-	jmp	mulintx
-
-mul_ir1_ir1_pb			; numCalls = 1
-	.module	modmul_ir1_ir1_pb
-	stab	2+argv
-	ldd	#0
-	std	0+argv
 	ldx	#r1
 	jmp	mulintx
 
@@ -6401,15 +6261,9 @@ neg_ir1_ir1			; numCalls = 1
 	ldx	#r1
 	jmp	negxi
 
-neg_ir1_ix			; numCalls = 1
-	.module	modneg_ir1_ix
-	ldd	#0
-	subd	1,x
-	std	r1+1
-	ldab	#0
-	sbcb	0,x
-	stab	r1
-	rts
+neg_ix_ix			; numCalls = 1
+	.module	modneg_ix_ix
+	jmp	negxi
 
 next			; numCalls = 27
 	.module	modnext
@@ -6424,12 +6278,10 @@ next			; numCalls = 27
 _ok
 	cmpb	#11
 	bne	_flt
-	ldd	9,x
-	std	r1+1
 	ldab	8,x
 	stab	r1
+	ldd	9,x
 	ldx	1,x
-	ldd	r1+1
 	addd	1,x
 	std	r1+1
 	std	1,x
@@ -6444,7 +6296,7 @@ _ok
 	subd	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	jmp	,x
 _iopp
@@ -6452,21 +6304,22 @@ _iopp
 	subd	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	jmp	,x
-_idone
-	ldab	#11
-	bra	_done
+_done
+	ldab	0,x
+	abx
+	txs
+	ldx	tmp1
+	jmp	,x
 _flt
-	ldd	13,x
-	std	r1+3
-	ldd	11,x
-	std	r1+1
 	ldab	10,x
 	stab	r1
+	ldd	11,x
+	std	r1+1
+	ldd	13,x
 	ldx	1,x
-	ldd	r1+3
 	addd	3,x
 	std	r1+3
 	std	3,x
@@ -6489,7 +6342,7 @@ _flt
 	sbca	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	jmp	,x
 _fopp
@@ -6500,16 +6353,24 @@ _fopp
 	sbca	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	jmp	,x
-_fdone
-	ldab	#15
-_done
-	abx
-	txs
-	ldx	tmp1
-	jmp	,x
+
+one_ip			; numCalls = 7
+	.module	modone_ip
+	ldx	letptr
+	ldd	#1
+	staa	0,x
+	std	1,x
+	rts
+
+one_ix			; numCalls = 3
+	.module	modone_ix
+	ldd	#1
+	staa	0,x
+	std	1,x
+	rts
 
 ongosub_ir1_is			; numCalls = 2
 	.module	modongosub_ir1_is
@@ -6570,7 +6431,7 @@ peek_ir1_ix			; numCalls = 3
 	std	r1
 	rts
 
-peek_ir1_pb			; numCalls = 7
+peek_ir1_pb			; numCalls = 6
 	.module	modpeek_ir1_pb
 	clra
 	std	tmp1
@@ -6590,17 +6451,6 @@ peek_ir2_ir2			; numCalls = 2
 	std	r2
 	rts
 
-peek_ir2_pb			; numCalls = 1
-	.module	modpeek_ir2_pb
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
-	stab	r2+2
-	ldd	#0
-	std	r2
-	rts
-
 peek_ir2_pw			; numCalls = 5
 	.module	modpeek_ir2_pw
 	std	tmp1
@@ -6609,6 +6459,15 @@ peek_ir2_pw			; numCalls = 5
 	stab	r2+2
 	ldd	#0
 	std	r2
+	rts
+
+poke_id_ix			; numCalls = 4
+	.module	modpoke_id_ix
+	std	tmp1
+	ldab	2,x
+	ldx	tmp1
+	ldx	1,x
+	stab	,x
 	rts
 
 poke_ir1_ir2			; numCalls = 2
@@ -6624,7 +6483,7 @@ poke_ir1_pb			; numCalls = 3
 	stab	,x
 	rts
 
-poke_ix_ir1			; numCalls = 6
+poke_ix_ir1			; numCalls = 2
 	.module	modpoke_ix_ir1
 	ldab	r1+2
 	ldx	1,x
@@ -6855,6 +6714,21 @@ _flt
 	stab	r2
 	rts
 
+rsub_fr1_fr1_pw			; numCalls = 1
+	.module	modrsub_fr1_fr1_pw
+	std	tmp1
+	ldd	#0
+	subd	r1+3
+	std	r1+3
+	ldd	tmp1
+	sbcb	r1+2
+	sbca	r1+1
+	std	r1+1
+	ldab	#0
+	sbcb	r1
+	stab	r1
+	rts
+
 sgn_ir1_ir1			; numCalls = 2
 	.module	modsgn_ir1_ir1
 	ldab	r1
@@ -6889,7 +6763,7 @@ shift_fr4_ir4_nb			; numCalls = 1
 	negb
 	jmp	shrint
 
-shift_ir1_ir1_pb			; numCalls = 7
+shift_ir1_ir1_pb			; numCalls = 6
 	.module	modshift_ir1_ir1_pb
 	ldx	#r1
 	jmp	shlint
@@ -6956,21 +6830,7 @@ str_sr1_ix			; numCalls = 4
 	stab	r1
 	rts
 
-sub_fr1_ir1_fr2			; numCalls = 1
-	.module	modsub_fr1_ir1_fr2
-	ldd	#0
-	subd	r2+3
-	std	r1+3
-	ldd	r1+1
-	sbcb	r2+2
-	sbca	r2+1
-	std	r1+1
-	ldab	r1
-	sbcb	r2
-	stab	r1
-	rts
-
-sub_ir1_ir1_ix			; numCalls = 6
+sub_ir1_ir1_ix			; numCalls = 2
 	.module	modsub_ir1_ir1_ix
 	ldd	r1+1
 	subd	1,x
@@ -6992,16 +6852,36 @@ sub_ir1_ir1_pb			; numCalls = 1
 	stab	r1
 	rts
 
-sub_ix_ix_pb			; numCalls = 3
-	.module	modsub_ix_ix_pb
-	stab	tmp1
-	ldd	1,x
-	subb	tmp1
-	sbca	#0
-	std	1,x
+sub_ir1_ix_id			; numCalls = 3
+	.module	modsub_ir1_ix_id
+	std	tmp1
 	ldab	0,x
-	sbcb	#0
-	stab	0,x
+	stab	r1
+	ldd	1,x
+	ldx	tmp1
+	subd	1,x
+	std	r1+1
+	ldab	r1
+	sbcb	0,x
+	stab	r1
+	rts
+
+sub_ir1_pb_ix			; numCalls = 1
+	.module	modsub_ir1_pb_ix
+	subb	2,x
+	stab	r1+2
+	ldd	#0
+	sbcb	1,x
+	sbca	0,x
+	std	r1
+	rts
+
+timer_ir1			; numCalls = 1
+	.module	modtimer_ir1
+	ldd	DP_TIMR
+	std	r1+1
+	clrb
+	stab	r1
 	rts
 
 to_ip_ir1			; numCalls = 4
@@ -7040,7 +6920,22 @@ to_ip_pw			; numCalls = 1
 	ldab	#11
 	jmp	to
 
-val_fr1_sx			; numCalls = 1
+true_ip			; numCalls = 2
+	.module	modtrue_ip
+	ldx	letptr
+	ldd	#-1
+	stab	0,x
+	std	1,x
+	rts
+
+true_ix			; numCalls = 2
+	.module	modtrue_ix
+	ldd	#-1
+	stab	0,x
+	std	1,x
+	rts
+
+val_fr1_sx			; numCalls = 2
 	.module	modval_fr1_sx
 	jsr	strval
 	ldab	tmp1+1
@@ -7049,17 +6944,6 @@ val_fr1_sx			; numCalls = 1
 	std	r1+1
 	ldd	tmp3
 	std	r1+3
-	rts
-
-val_fr2_sx			; numCalls = 1
-	.module	modval_fr2_sx
-	jsr	strval
-	ldab	tmp1+1
-	stab	r2
-	ldd	tmp2
-	std	r2+1
-	ldd	tmp3
-	std	r2+3
 	rts
 
 ; data table

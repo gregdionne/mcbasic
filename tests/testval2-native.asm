@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -106,10 +107,8 @@ LINE_100
 
 	; A$=INKEY$
 
-	jsr	inkey_sr1
-
 	ldx	#STRVAR_A
-	jsr	ld_sx_sr1
+	jsr	inkey_sx
 
 LINE_105
 
@@ -1055,18 +1054,19 @@ goto_ix			; numCalls = 1
 	ins
 	jmp	,x
 
-inkey_sr1			; numCalls = 1
-	.module	modinkey_sr1
+inkey_sx			; numCalls = 1
+	.module	modinkey_sx
+	jsr	strdel
 	ldd	#$0100+(charpage>>8)
-	std	r1
+	std	0,x
 	ldaa	M_IKEY
 	bne	_gotkey
 	jsr	R_KEYIN
 _gotkey
 	clr	M_IKEY
-	staa	r1+2
+	staa	2,x
 	bne	_rts
-	staa	r1
+	staa	0,x
 _rts
 	rts
 
@@ -1100,7 +1100,7 @@ ld_sr1_sx			; numCalls = 1
 	stab	r1
 	rts
 
-ld_sx_sr1			; numCalls = 2
+ld_sx_sr1			; numCalls = 1
 	.module	modld_sx_sr1
 	ldab	r1
 	stab	0+argv

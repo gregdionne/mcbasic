@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -112,9 +113,8 @@ LINE_20
 
 	; FOR I=0 TO 3
 
-	.byte	bytecode_for_ix_pb
+	.byte	bytecode_forclr_ix
 	.byte	bytecode_INTVAR_I
-	.byte	0
 
 	.byte	bytecode_to_ip_pb
 	.byte	3
@@ -123,9 +123,8 @@ LINE_30
 
 	; FOR J=0 TO 4
 
-	.byte	bytecode_for_ix_pb
+	.byte	bytecode_forclr_ix
 	.byte	bytecode_INTVAR_J
-	.byte	0
 
 	.byte	bytecode_to_ip_pb
 	.byte	4
@@ -170,7 +169,7 @@ LLAST
 bytecode_arrdim2_ir1_ix	.equ	0
 bytecode_arrref2_ir1_ix	.equ	1
 bytecode_clear	.equ	2
-bytecode_for_ix_pb	.equ	3
+bytecode_forclr_ix	.equ	3
 bytecode_ld_ip_ir1	.equ	4
 bytecode_ld_ir1_ix	.equ	5
 bytecode_ld_ir1_pb	.equ	6
@@ -185,7 +184,7 @@ catalog
 	.word	arrdim2_ir1_ix
 	.word	arrref2_ir1_ix
 	.word	clear
-	.word	for_ix_pb
+	.word	forclr_ix
 	.word	ld_ip_ir1
 	.word	ld_ir1_ix
 	.word	ld_ir1_pb
@@ -348,6 +347,44 @@ wordext
 	ldx	,x
 	pulb
 	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
 immstr
 	ldx	curinst
 	inx
@@ -360,6 +397,8 @@ immstr
 	rts
 
 	.module	mdmul12
+; multiply words in TMP1 and TMP2
+; result in TMP3
 mul12
 	ldaa	tmp1+1
 	ldab	tmp2+1
@@ -534,12 +573,12 @@ _start
 	stx	DP_DATA
 	rts
 
-for_ix_pb			; numCalls = 2
-	.module	modfor_ix_pb
-	jsr	extbyte
+forclr_ix			; numCalls = 2
+	.module	modforclr_ix
+	jsr	extend
 	stx	letptr
-	clra
-	staa	0,x
+	ldd	#0
+	stab	0,x
 	std	1,x
 	rts
 
@@ -600,12 +639,10 @@ next			; numCalls = 2
 _ok
 	cmpb	#11
 	bne	_flt
-	ldd	9,x
-	std	r1+1
 	ldab	8,x
 	stab	r1
+	ldd	9,x
 	ldx	1,x
-	ldd	r1+1
 	addd	1,x
 	std	r1+1
 	std	1,x
@@ -620,7 +657,7 @@ _ok
 	subd	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
@@ -629,22 +666,22 @@ _iopp
 	subd	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
-_idone
-	ldab	#11
-	bra	_done
+_done
+	ldab	0,x
+	abx
+	txs
+	jmp	mainloop
 _flt
-	ldd	13,x
-	std	r1+3
-	ldd	11,x
-	std	r1+1
 	ldab	10,x
 	stab	r1
+	ldd	11,x
+	std	r1+1
+	ldd	13,x
 	ldx	1,x
-	ldd	r1+3
 	addd	3,x
 	std	r1+3
 	std	3,x
@@ -667,7 +704,7 @@ _flt
 	sbca	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
@@ -679,15 +716,9 @@ _fopp
 	sbca	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
-	jmp	mainloop
-_fdone
-	ldab	#15
-_done
-	abx
-	txs
 	jmp	mainloop
 
 progbegin			; numCalls = 1

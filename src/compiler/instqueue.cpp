@@ -15,9 +15,8 @@ int InstQueue::allocRegister() {
 
 void InstQueue::clearRegisters() { registerCount = 0; }
 
-std::unique_ptr<AddressMode>
-InstQueue::append(std::unique_ptr<Instruction> inst) {
-  queue.emplace_back(std::move(inst));
+up<AddressMode> InstQueue::append(up<Instruction> inst) {
+  queue.emplace_back(mv(inst));
   if (queue.back()->result->isRegister()) {
     registerCount = queue.back()->result->getRegister();
     maxRegisterCount = std::max(maxRegisterCount, registerCount);
@@ -25,22 +24,18 @@ InstQueue::append(std::unique_ptr<Instruction> inst) {
   return queue.back()->result->clone();
 }
 
-std::unique_ptr<AddressMode>
-InstQueue::alloc(std::unique_ptr<AddressMode> result) {
+up<AddressMode> InstQueue::alloc(up<AddressMode> result) {
   if (!result->isRegister()) {
-    result =
-        std::make_unique<AddressModeReg>(allocRegister(), result->dataType);
+    result = makeup<AddressModeReg>(allocRegister(), result->dataType);
   }
   return result;
 }
 
-std::unique_ptr<AddressMode>
-InstQueue::load(std::unique_ptr<AddressMode> result) {
+up<AddressMode> InstQueue::load(up<AddressMode> result) {
   if (!result->isRegister()) {
     auto dataType = result->dataType;
-    result = append(std::make_unique<InstLd>(
-        std::make_unique<AddressModeReg>(allocRegister(), dataType),
-        std::move(result)));
+    result = append(makeup<InstLd>(
+        makeup<AddressModeReg>(allocRegister(), dataType), mv(result)));
   }
   return result;
 }

@@ -13,10 +13,10 @@ class WhenStatementFolder : public NullStatementTransmutator {
 public:
   WhenStatementFolder(int linenum, const Announcer &w)
       : lineNumber(linenum), announcer(w) {}
-  std::unique_ptr<Statement> mutate(If &s) override;
-  std::unique_ptr<Statement> mutate(When &s) override;
+  up<Statement> mutate(If &s) override;
+  up<Statement> mutate(When &s) override;
 
-  void fold(std::vector<std::unique_ptr<Statement>> &statements);
+  void fold(std::vector<up<Statement>> &statements);
   const int lineNumber;
   const Announcer &announcer;
 
@@ -31,7 +31,7 @@ public:
   void operate(Line &l) override;
 
   const Announcer announcer;
-  std::vector<std::unique_ptr<Line>>::iterator itCurrentLine;
+  std::vector<up<Line>>::iterator itCurrentLine;
 };
 
 #endif

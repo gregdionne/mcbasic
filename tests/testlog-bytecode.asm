@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -178,9 +179,8 @@ LINE_110
 
 	; FOR I=1 TO 5
 
-	.byte	bytecode_for_ix_pb
+	.byte	bytecode_forone_ix
 	.byte	bytecode_INTVAR_I
-	.byte	1
 
 	.byte	bytecode_to_ip_pb
 	.byte	5
@@ -199,8 +199,7 @@ LINE_120
 
 	.byte	bytecode_div_fr1_fr1_fr2
 
-	.byte	bytecode_sub_fr1_fr1_pb
-	.byte	1
+	.byte	bytecode_dec_fr1_fr1
 
 	.byte	bytecode_add_fx_fx_fr1
 	.byte	bytecode_FLTVAR_X
@@ -209,10 +208,8 @@ LINE_125
 
 	; IF X>15.9423 THEN
 
-	.byte	bytecode_ld_fr1_fx
+	.byte	bytecode_ldlt_ir1_fx_fd
 	.byte	bytecode_FLT_15p94235
-
-	.byte	bytecode_ldlt_ir1_fr1_fx
 	.byte	bytecode_FLTVAR_X
 
 	.byte	bytecode_jmpeq_ir1_ix
@@ -220,11 +217,9 @@ LINE_125
 
 	; X=15.9423
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_15p94235
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_X
+	.byte	bytecode_FLT_15p94235
 
 LINE_130
 
@@ -296,49 +291,50 @@ LLAST
 ; Library Catalog
 bytecode_add_fx_fx_fr1	.equ	0
 bytecode_clear	.equ	1
-bytecode_div_fr1_fr1_fr2	.equ	2
-bytecode_exp_fr1_fr1	.equ	3
-bytecode_exp_fr2_fr2	.equ	4
-bytecode_for_ix_pb	.equ	5
-bytecode_gosub_ix	.equ	6
-bytecode_goto_ix	.equ	7
-bytecode_ignxtra	.equ	8
-bytecode_input	.equ	9
-bytecode_jmpeq_ir1_ix	.equ	10
-bytecode_ld_fr1_fx	.equ	11
-bytecode_ld_fr2_fx	.equ	12
-bytecode_ld_fx_fr1	.equ	13
-bytecode_ldlt_ir1_fr1_fx	.equ	14
-bytecode_log_fr1_fr1	.equ	15
-bytecode_next	.equ	16
-bytecode_nextvar_ix	.equ	17
-bytecode_pr_sr1	.equ	18
-bytecode_pr_ss	.equ	19
-bytecode_progbegin	.equ	20
-bytecode_progend	.equ	21
-bytecode_readbuf_fx	.equ	22
-bytecode_return	.equ	23
-bytecode_str_sr1_fr1	.equ	24
-bytecode_str_sr1_fx	.equ	25
-bytecode_sub_fr1_fr1_pb	.equ	26
+bytecode_dec_fr1_fr1	.equ	2
+bytecode_div_fr1_fr1_fr2	.equ	3
+bytecode_exp_fr1_fr1	.equ	4
+bytecode_exp_fr2_fr2	.equ	5
+bytecode_forone_ix	.equ	6
+bytecode_gosub_ix	.equ	7
+bytecode_goto_ix	.equ	8
+bytecode_ignxtra	.equ	9
+bytecode_input	.equ	10
+bytecode_jmpeq_ir1_ix	.equ	11
+bytecode_ld_fd_fx	.equ	12
+bytecode_ld_fr1_fx	.equ	13
+bytecode_ld_fr2_fx	.equ	14
+bytecode_ldlt_ir1_fx_fd	.equ	15
+bytecode_log_fr1_fr1	.equ	16
+bytecode_next	.equ	17
+bytecode_nextvar_ix	.equ	18
+bytecode_pr_sr1	.equ	19
+bytecode_pr_ss	.equ	20
+bytecode_progbegin	.equ	21
+bytecode_progend	.equ	22
+bytecode_readbuf_fx	.equ	23
+bytecode_return	.equ	24
+bytecode_str_sr1_fr1	.equ	25
+bytecode_str_sr1_fx	.equ	26
 bytecode_to_ip_pb	.equ	27
 
 catalog
 	.word	add_fx_fx_fr1
 	.word	clear
+	.word	dec_fr1_fr1
 	.word	div_fr1_fr1_fr2
 	.word	exp_fr1_fr1
 	.word	exp_fr2_fr2
-	.word	for_ix_pb
+	.word	forone_ix
 	.word	gosub_ix
 	.word	goto_ix
 	.word	ignxtra
 	.word	input
 	.word	jmpeq_ir1_ix
+	.word	ld_fd_fx
 	.word	ld_fr1_fx
 	.word	ld_fr2_fx
-	.word	ld_fx_fr1
-	.word	ldlt_ir1_fr1_fx
+	.word	ldlt_ir1_fx_fd
 	.word	log_fr1_fr1
 	.word	next
 	.word	nextvar_ix
@@ -350,7 +346,6 @@ catalog
 	.word	return
 	.word	str_sr1_fr1
 	.word	str_sr1_fx
-	.word	sub_fr1_fr1_pb
 	.word	to_ip_pb
 
 	.module	mdarg2x
@@ -455,6 +450,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -1181,14 +1214,12 @@ mulint
 	ldaa	2+argv
 	ldab	1,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	1+argv
 	ldab	2,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	2+argv
 	ldab	0,x
@@ -1837,6 +1868,19 @@ _start
 	stx	DP_DATA
 	rts
 
+dec_fr1_fr1			; numCalls = 1
+	.module	moddec_fr1_fr1
+	jsr	noargs
+	ldd	r1+3
+	std	r1+3
+	ldd	r1+1
+	subd	#1
+	std	r1+1
+	ldab	r1
+	sbcb	#0
+	stab	r1
+	rts
+
 div_fr1_fr1_fr2			; numCalls = 1
 	.module	moddiv_fr1_fr1_fr2
 	jsr	noargs
@@ -1861,11 +1905,11 @@ exp_fr2_fr2			; numCalls = 1
 	ldx	#r2
 	jmp	exp
 
-for_ix_pb			; numCalls = 1
-	.module	modfor_ix_pb
-	jsr	extbyte
+forone_ix			; numCalls = 1
+	.module	modforone_ix
+	jsr	extend
 	stx	letptr
-	clra
+	ldd	#1
 	staa	0,x
 	std	1,x
 	rts
@@ -1918,7 +1962,24 @@ jmpeq_ir1_ix			; numCalls = 1
 _rts
 	rts
 
-ld_fr1_fx			; numCalls = 6
+ld_fd_fx			; numCalls = 1
+	.module	modld_fd_fx
+	jsr	dexext
+	std	tmp1
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	ldx	tmp1
+	std	3,x
+	ldd	1+argv
+	std	1,x
+	ldab	0+argv
+	stab	0,x
+	rts
+
+ld_fr1_fx			; numCalls = 4
 	.module	modld_fr1_fx
 	jsr	extend
 	ldd	3,x
@@ -1940,21 +2001,16 @@ ld_fr2_fx			; numCalls = 1
 	stab	r2
 	rts
 
-ld_fx_fr1			; numCalls = 1
-	.module	modld_fx_fr1
-	jsr	extend
-	ldd	r1+3
-	std	3,x
-	ldd	r1+1
-	std	1,x
-	ldab	r1
-	stab	0,x
-	rts
-
-ldlt_ir1_fr1_fx			; numCalls = 1
-	.module	modldlt_ir1_fr1_fx
-	jsr	extend
-	ldd	r1+3
+ldlt_ir1_fx_fd			; numCalls = 1
+	.module	modldlt_ir1_fx_fd
+	jsr	extdex
+	std	tmp1
+	ldab	0,x
+	stab	r1
+	ldd	1,x
+	std	r1+1
+	ldd	3,x
+	ldx	tmp1
 	subd	3,x
 	ldd	r1+1
 	sbcb	2,x
@@ -1985,12 +2041,10 @@ next			; numCalls = 1
 _ok
 	cmpb	#11
 	bne	_flt
-	ldd	9,x
-	std	r1+1
 	ldab	8,x
 	stab	r1
+	ldd	9,x
 	ldx	1,x
-	ldd	r1+1
 	addd	1,x
 	std	r1+1
 	std	1,x
@@ -2005,7 +2059,7 @@ _ok
 	subd	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
@@ -2014,22 +2068,22 @@ _iopp
 	subd	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
-_idone
-	ldab	#11
-	bra	_done
+_done
+	ldab	0,x
+	abx
+	txs
+	jmp	mainloop
 _flt
-	ldd	13,x
-	std	r1+3
-	ldd	11,x
-	std	r1+1
 	ldab	10,x
 	stab	r1
+	ldd	11,x
+	std	r1+1
+	ldd	13,x
 	ldx	1,x
-	ldd	r1+3
 	addd	3,x
 	std	r1+3
 	std	3,x
@@ -2052,7 +2106,7 @@ _flt
 	sbca	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
@@ -2064,15 +2118,9 @@ _fopp
 	sbca	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
-	jmp	mainloop
-_fdone
-	ldab	#15
-_done
-	abx
-	txs
 	jmp	mainloop
 
 nextvar_ix			; numCalls = 1
@@ -2242,19 +2290,6 @@ str_sr1_fx			; numCalls = 3
 	jsr	strflt
 	std	r1+1
 	ldab	tmp1
-	stab	r1
-	rts
-
-sub_fr1_fr1_pb			; numCalls = 1
-	.module	modsub_fr1_fr1_pb
-	jsr	getbyte
-	stab	tmp1
-	ldd	r1+1
-	subb	tmp1
-	sbca	#0
-	std	r1+1
-	ldab	r1
-	sbcb	#0
 	stab	r1
 	rts
 

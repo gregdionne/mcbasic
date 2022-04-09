@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -101,11 +102,9 @@ LINE_0
 
 	; X=3.0001
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_3p00010
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_X
+	.byte	bytecode_FLT_3p00010
 
 LINE_10
 
@@ -229,8 +228,8 @@ LLAST
 
 ; Library Catalog
 bytecode_clear	.equ	0
-bytecode_ld_fr1_fx	.equ	1
-bytecode_ld_fx_fr1	.equ	2
+bytecode_ld_fd_fx	.equ	1
+bytecode_ld_fr1_fx	.equ	2
 bytecode_pow_fr1_fr1_pb	.equ	3
 bytecode_pr_sr1	.equ	4
 bytecode_pr_ss	.equ	5
@@ -241,8 +240,8 @@ bytecode_str_sr1_fx	.equ	9
 
 catalog
 	.word	clear
+	.word	ld_fd_fx
 	.word	ld_fr1_fx
-	.word	ld_fx_fr1
 	.word	pow_fr1_fr1_pb
 	.word	pr_sr1
 	.word	pr_ss
@@ -340,6 +339,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -754,14 +791,12 @@ mulint
 	ldaa	2+argv
 	ldab	1,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	1+argv
 	ldab	2,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	2+argv
 	ldab	0,x
@@ -1119,7 +1154,24 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_fr1_fx			; numCalls = 7
+ld_fd_fx			; numCalls = 1
+	.module	modld_fd_fx
+	jsr	dexext
+	std	tmp1
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	ldx	tmp1
+	std	3,x
+	ldd	1+argv
+	std	1,x
+	ldab	0+argv
+	stab	0,x
+	rts
+
+ld_fr1_fx			; numCalls = 6
 	.module	modld_fr1_fx
 	jsr	extend
 	ldd	3,x
@@ -1128,17 +1180,6 @@ ld_fr1_fx			; numCalls = 7
 	std	r1+1
 	ldab	0,x
 	stab	r1
-	rts
-
-ld_fx_fr1			; numCalls = 1
-	.module	modld_fx_fr1
-	jsr	extend
-	ldd	r1+3
-	std	3,x
-	ldd	r1+1
-	std	1,x
-	ldab	r1
-	stab	0,x
 	rts
 
 pow_fr1_fr1_pb			; numCalls = 6

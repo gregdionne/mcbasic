@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -92,11 +93,9 @@ LINE_15
 
 	; P=-3.41463
 
+	ldd	#FLTVAR_P
 	ldx	#FLT_m3p41462
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_P
-	jsr	ld_fx_fr1
+	jsr	ld_fd_fx
 
 	; PRINT STR$(P);" \r";
 
@@ -1262,23 +1261,19 @@ _go
 	ins
 	jmp	,x
 
-ld_fr1_fx			; numCalls = 1
-	.module	modld_fr1_fx
-	ldd	3,x
-	std	r1+3
-	ldd	1,x
-	std	r1+1
+ld_fd_fx			; numCalls = 1
+	.module	modld_fd_fx
+	std	tmp1
 	ldab	0,x
-	stab	r1
-	rts
-
-ld_fx_fr1			; numCalls = 1
-	.module	modld_fx_fr1
-	ldd	r1+3
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	ldx	tmp1
 	std	3,x
-	ldd	r1+1
+	ldd	1+argv
 	std	1,x
-	ldab	r1
+	ldab	0+argv
 	stab	0,x
 	rts
 

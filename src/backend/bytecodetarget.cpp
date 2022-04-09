@@ -41,9 +41,8 @@ std::string ByteCodeTarget::generateCode(InstQueue &queue) {
   return ops;
 }
 
-std::unique_ptr<Dispatcher> ByteCodeTarget::makeDispatcher() {
-  return std::make_unique<Dispatcher>(
-      std::make_unique<ByteCodeImplementation>());
+up<Dispatcher> ByteCodeTarget::makeDispatcher() {
+  return makeup<Dispatcher>(makeup<ByteCodeImplementation>());
 }
 
 std::string ByteCodeTarget::generateLibraryCatalog(Library &library) {

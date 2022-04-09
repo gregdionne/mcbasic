@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -67,7 +68,6 @@ tmp4	.block	2
 tmp5	.block	2
 	.org	$af
 r1	.block	5
-r2	.block	5
 rend
 curinst	.block	2
 nxtinst	.block	2
@@ -107,14 +107,12 @@ LINE_10
 
 LINE_20
 
-	; PRINT STR$(X$=INKEY$);" \r";
+	; PRINT STR$(INKEY$=X$);" \r";
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_inkey_sr1
+
+	.byte	bytecode_ldeq_ir1_sr1_sx
 	.byte	bytecode_STRVAR_X
-
-	.byte	bytecode_inkey_sr2
-
-	.byte	bytecode_ldeq_ir1_sr1_sr2
 
 	.byte	bytecode_str_sr1_ir1
 
@@ -137,25 +135,23 @@ LLAST
 ; Library Catalog
 bytecode_clear	.equ	0
 bytecode_goto_ix	.equ	1
-bytecode_inkey_sr2	.equ	2
+bytecode_inkey_sr1	.equ	2
 bytecode_ld_sr1_ss	.equ	3
-bytecode_ld_sr1_sx	.equ	4
-bytecode_ld_sx_sr1	.equ	5
-bytecode_ldeq_ir1_sr1_sr2	.equ	6
-bytecode_pr_sr1	.equ	7
-bytecode_pr_ss	.equ	8
-bytecode_progbegin	.equ	9
-bytecode_progend	.equ	10
-bytecode_str_sr1_ir1	.equ	11
+bytecode_ld_sx_sr1	.equ	4
+bytecode_ldeq_ir1_sr1_sx	.equ	5
+bytecode_pr_sr1	.equ	6
+bytecode_pr_ss	.equ	7
+bytecode_progbegin	.equ	8
+bytecode_progend	.equ	9
+bytecode_str_sr1_ir1	.equ	10
 
 catalog
 	.word	clear
 	.word	goto_ix
-	.word	inkey_sr2
+	.word	inkey_sr1
 	.word	ld_sr1_ss
-	.word	ld_sr1_sx
 	.word	ld_sx_sr1
-	.word	ldeq_ir1_sr1_sr2
+	.word	ldeq_ir1_sr1_sx
 	.word	pr_sr1
 	.word	pr_ss
 	.word	progbegin
@@ -308,6 +304,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -1004,19 +1038,19 @@ goto_ix			; numCalls = 1
 	stx	nxtinst
 	rts
 
-inkey_sr2			; numCalls = 1
-	.module	modinkey_sr2
+inkey_sr1			; numCalls = 1
+	.module	modinkey_sr1
 	jsr	noargs
 	ldd	#$0100+(charpage>>8)
-	std	r2
+	std	r1
 	ldaa	M_IKEY
 	bne	_gotkey
 	jsr	R_KEYIN
 _gotkey
 	clr	M_IKEY
-	staa	r2+2
+	staa	r1+2
 	bne	_rts
-	staa	r2
+	staa	r1
 _rts
 	rts
 
@@ -1032,15 +1066,6 @@ ld_sr1_ss			; numCalls = 1
 	stx	nxtinst
 	rts
 
-ld_sr1_sx			; numCalls = 1
-	.module	modld_sr1_sx
-	jsr	extend
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_sx_sr1			; numCalls = 1
 	.module	modld_sx_sr1
 	jsr	extend
@@ -1050,14 +1075,13 @@ ld_sx_sr1			; numCalls = 1
 	std	1+argv
 	jmp	strprm
 
-ldeq_ir1_sr1_sr2			; numCalls = 1
-	.module	modldeq_ir1_sr1_sr2
-	jsr	noargs
+ldeq_ir1_sr1_sx			; numCalls = 1
+	.module	modldeq_ir1_sr1_sx
+	jsr	extend
 	ldab	r1
 	stab	tmp1+1
 	ldd	r1+1
 	std	tmp2
-	ldx	#r2
 	jsr	streqx
 	jsr	geteq
 	std	r1+1

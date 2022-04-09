@@ -24,7 +24,7 @@ bool IsChar::inspect(const MidExpr &e) const {
   }
 
   // otherwise see if string itself passes
-  return e.str->inspect(this);
+  return e.str->check(this);
 }
 
 bool IsChar::inspect(const LeftExpr &e) const {
@@ -36,5 +36,5 @@ bool IsChar::inspect(const LeftExpr &e) const {
   }
 
   // otherwise see if string itself passes
-  return e.str->inspect(this);
+  return e.str->check(this);
 }

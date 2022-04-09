@@ -150,6 +150,10 @@ public:
   std::string extInt_regInt(InstLd &inst) override;
   std::string extStr_immStr(InstLd &inst) override;
   std::string extStr_regStr(InstLd &inst) override;
+  std::string dexFlt_extFlt(InstLd &inst) override;
+  std::string dexFlt_extInt(InstLd &inst) override;
+  std::string dexInt_extInt(InstLd &inst) override;
+  std::string dexStr_extStr(InstLd &inst) override;
   std::string indFlt_posByte(InstLd &inst) override;
   std::string indFlt_negByte(InstLd &inst) override;
   std::string indFlt_posWord(InstLd &inst) override;
@@ -173,9 +177,50 @@ public:
   std::string regStr_regStr_immStr(InstStrCat &inst) override;
 
   std::string regStr(InstInkey &inst) override;
+  std::string extStr(InstInkey &inst) override;
+  std::string indStr(InstInkey &inst) override;
 
   std::string regInt(InstMem &inst) override;
+  std::string regInt(InstPos &inst) override;
+  std::string regInt(InstTimer &inst) override;
 
+  std::string indFlt(InstOne &inst) override;
+  std::string indInt(InstOne &inst) override;
+  std::string extFlt(InstOne &inst) override;
+  std::string extInt(InstOne &inst) override;
+
+  std::string indFlt(InstTrue &inst) override;
+  std::string indInt(InstTrue &inst) override;
+  std::string extFlt(InstTrue &inst) override;
+  std::string extInt(InstTrue &inst) override;
+
+  std::string indFlt(InstClr &inst) override;
+  std::string indInt(InstClr &inst) override;
+  std::string extFlt(InstClr &inst) override;
+  std::string extInt(InstClr &inst) override;
+
+  std::string indFlt_indFlt(InstInc &inst) override;
+  std::string indInt_indInt(InstInc &inst) override;
+  std::string extFlt_extFlt(InstInc &inst) override;
+  std::string extInt_extInt(InstInc &inst) override;
+  std::string regFlt_regFlt(InstInc &inst) override;
+  std::string regInt_regInt(InstInc &inst) override;
+  std::string regFlt_extFlt(InstInc &inst) override;
+  std::string regInt_extInt(InstInc &inst) override;
+
+  std::string indFlt_indFlt(InstDec &inst) override;
+  std::string indInt_indInt(InstDec &inst) override;
+  std::string extFlt_extFlt(InstDec &inst) override;
+  std::string extInt_extInt(InstDec &inst) override;
+  std::string regFlt_regFlt(InstDec &inst) override;
+  std::string regInt_regInt(InstDec &inst) override;
+  std::string regFlt_extFlt(InstDec &inst) override;
+  std::string regInt_extInt(InstDec &inst) override;
+
+  std::string indFlt_indFlt(InstNeg &inst) override;
+  std::string indInt_indInt(InstNeg &inst) override;
+  std::string extFlt_extFlt(InstNeg &inst) override;
+  std::string extInt_extInt(InstNeg &inst) override;
   std::string regInt_regInt(InstNeg &inst) override;
   std::string regInt_extInt(InstNeg &inst) override;
   std::string regFlt_regFlt(InstNeg &inst) override;
@@ -288,8 +333,13 @@ public:
   std::string regInt_regFlt_extInt(InstLdEq &inst) override;
   std::string regInt_regFlt_regFlt(InstLdEq &inst) override;
   std::string regInt_regFlt_extFlt(InstLdEq &inst) override;
+  std::string regInt_extInt_dexInt(InstLdEq &inst) override;
+  std::string regInt_extInt_dexFlt(InstLdEq &inst) override;
+  std::string regInt_extFlt_dexInt(InstLdEq &inst) override;
+  std::string regInt_extFlt_dexFlt(InstLdEq &inst) override;
   std::string regInt_regStr_regStr(InstLdEq &inst) override;
   std::string regInt_regStr_extStr(InstLdEq &inst) override;
+  std::string regInt_extStr_dexStr(InstLdEq &inst) override;
   std::string regInt_regStr_immStr(InstLdEq &inst) override;
 
   std::string regInt_regInt_posByte(InstLdNe &inst) override;
@@ -308,8 +358,13 @@ public:
   std::string regInt_regFlt_extInt(InstLdNe &inst) override;
   std::string regInt_regFlt_regFlt(InstLdNe &inst) override;
   std::string regInt_regFlt_extFlt(InstLdNe &inst) override;
+  std::string regInt_extInt_dexInt(InstLdNe &inst) override;
+  std::string regInt_extInt_dexFlt(InstLdNe &inst) override;
+  std::string regInt_extFlt_dexInt(InstLdNe &inst) override;
+  std::string regInt_extFlt_dexFlt(InstLdNe &inst) override;
   std::string regInt_regStr_regStr(InstLdNe &inst) override;
   std::string regInt_regStr_extStr(InstLdNe &inst) override;
+  std::string regInt_extStr_dexStr(InstLdNe &inst) override;
   std::string regInt_regStr_immStr(InstLdNe &inst) override;
 
   std::string regInt_regInt_posByte(InstLdLt &inst) override;
@@ -328,6 +383,10 @@ public:
   std::string regInt_regFlt_extInt(InstLdLt &inst) override;
   std::string regInt_regFlt_regFlt(InstLdLt &inst) override;
   std::string regInt_regFlt_extFlt(InstLdLt &inst) override;
+  std::string regInt_extInt_dexInt(InstLdLt &inst) override;
+  std::string regInt_extInt_dexFlt(InstLdLt &inst) override;
+  std::string regInt_extFlt_dexInt(InstLdLt &inst) override;
+  std::string regInt_extFlt_dexFlt(InstLdLt &inst) override;
 
   std::string regInt_regInt_posByte(InstLdGe &inst) override;
   std::string regInt_regInt_negByte(InstLdGe &inst) override;
@@ -345,18 +404,29 @@ public:
   std::string regInt_regFlt_extInt(InstLdGe &inst) override;
   std::string regInt_regFlt_regFlt(InstLdGe &inst) override;
   std::string regInt_regFlt_extFlt(InstLdGe &inst) override;
+  std::string regInt_extInt_dexInt(InstLdGe &inst) override;
+  std::string regInt_extInt_dexFlt(InstLdGe &inst) override;
+  std::string regInt_extFlt_dexInt(InstLdGe &inst) override;
+  std::string regInt_extFlt_dexFlt(InstLdGe &inst) override;
 
-  std::string regInt_regStr_regStr(InstLdLo &inst) override;
-  std::string regInt_regStr_extStr(InstLdLo &inst) override;
-  std::string regInt_regStr_immStr(InstLdLo &inst) override;
-  std::string regInt_regStr_regStr(InstLdHs &inst) override;
-  std::string regInt_regStr_extStr(InstLdHs &inst) override;
-  std::string regInt_regStr_immStr(InstLdHs &inst) override;
+  std::string regInt_regStr_regStr(InstLdLt &inst) override;
+  std::string regInt_regStr_extStr(InstLdLt &inst) override;
+  std::string regInt_extStr_dexStr(InstLdLt &inst) override;
+  std::string regInt_regStr_immStr(InstLdLt &inst) override;
+  std::string regInt_regStr_regStr(InstLdGe &inst) override;
+  std::string regInt_regStr_extStr(InstLdGe &inst) override;
+  std::string regInt_extStr_dexStr(InstLdGe &inst) override;
+  std::string regInt_regStr_immStr(InstLdGe &inst) override;
 
   std::string regInt_regInt(InstPeek &inst) override;
   std::string regInt_extInt(InstPeek &inst) override;
   std::string regInt_posWord(InstPeek &inst) override;
   std::string regInt_posByte(InstPeek &inst) override;
+
+  std::string regInt_regInt(InstPeekWord &inst) override;
+  std::string regInt_extInt(InstPeekWord &inst) override;
+  std::string regInt_posWord(InstPeekWord &inst) override;
+  std::string regInt_posByte(InstPeekWord &inst) override;
 
   std::string posByte_regInt(InstPoke &inst) override;
   std::string posByte_extInt(InstPoke &inst) override;
@@ -367,6 +437,7 @@ public:
   std::string regInt_extInt(InstPoke &inst) override;
   std::string extInt_posByte(InstPoke &inst) override;
   std::string extInt_regInt(InstPoke &inst) override;
+  std::string dexInt_extInt(InstPoke &inst) override;
 
   std::string extInt_posByte(InstFor &inst) override;
   std::string extInt_negByte(InstFor &inst) override;
@@ -379,6 +450,18 @@ public:
   std::string extFlt_negWord(InstFor &inst) override;
   std::string extFlt_regInt(InstFor &inst) override;
   std::string extFlt_regFlt(InstFor &inst) override;
+  std::string dexInt_extInt(InstFor &inst) override;
+  std::string dexFlt_extInt(InstFor &inst) override;
+  std::string dexFlt_extFlt(InstFor &inst) override;
+
+  std::string extFlt(InstForOne &inst) override;
+  std::string extInt(InstForOne &inst) override;
+
+  std::string extFlt(InstForTrue &inst) override;
+  std::string extInt(InstForTrue &inst) override;
+
+  std::string extFlt(InstForClr &inst) override;
+  std::string extInt(InstForClr &inst) override;
 
   std::string ptrInt_posByte(InstTo &inst) override;
   std::string ptrInt_negByte(InstTo &inst) override;
@@ -504,6 +587,10 @@ public:
   std::string regInt_negByte_extInt(InstAdd &inst) override;
   std::string regInt_posWord_extInt(InstAdd &inst) override;
   std::string regInt_negWord_extInt(InstAdd &inst) override;
+  std::string regFlt_extFlt_dexFlt(InstAdd &inst) override;
+  std::string regFlt_extFlt_dexInt(InstAdd &inst) override;
+  std::string regFlt_extInt_dexFlt(InstAdd &inst) override;
+  std::string regInt_extInt_dexInt(InstAdd &inst) override;
 
   std::string indFlt_indFlt_regFlt(InstSub &inst) override;
   std::string indFlt_indFlt_regInt(InstSub &inst) override;
@@ -559,6 +646,65 @@ public:
   std::string regInt_negByte_extInt(InstSub &inst) override;
   std::string regInt_posWord_extInt(InstSub &inst) override;
   std::string regInt_negWord_extInt(InstSub &inst) override;
+  std::string regFlt_extFlt_dexFlt(InstSub &inst) override;
+  std::string regFlt_extFlt_dexInt(InstSub &inst) override;
+  std::string regFlt_extInt_dexFlt(InstSub &inst) override;
+  std::string regInt_extInt_dexInt(InstSub &inst) override;
+
+  std::string indFlt_indFlt_regFlt(InstRSub &inst) override;
+  std::string indFlt_indFlt_regInt(InstRSub &inst) override;
+  std::string indFlt_indFlt_posByte(InstRSub &inst) override;
+  std::string indFlt_indFlt_negByte(InstRSub &inst) override;
+  std::string indFlt_indFlt_posWord(InstRSub &inst) override;
+  std::string indFlt_indFlt_negWord(InstRSub &inst) override;
+  std::string indInt_indInt_regInt(InstRSub &inst) override;
+  std::string indInt_indInt_posByte(InstRSub &inst) override;
+  std::string indInt_indInt_negByte(InstRSub &inst) override;
+  std::string indInt_indInt_posWord(InstRSub &inst) override;
+  std::string indInt_indInt_negWord(InstRSub &inst) override;
+  std::string extFlt_extFlt_regFlt(InstRSub &inst) override;
+  std::string extFlt_extFlt_regInt(InstRSub &inst) override;
+  std::string extFlt_extFlt_posByte(InstRSub &inst) override;
+  std::string extFlt_extFlt_negByte(InstRSub &inst) override;
+  std::string extFlt_extFlt_posWord(InstRSub &inst) override;
+  std::string extFlt_extFlt_negWord(InstRSub &inst) override;
+  std::string extInt_extInt_regInt(InstRSub &inst) override;
+  std::string extInt_extInt_posByte(InstRSub &inst) override;
+  std::string extInt_extInt_negByte(InstRSub &inst) override;
+  std::string extInt_extInt_posWord(InstRSub &inst) override;
+  std::string extInt_extInt_negWord(InstRSub &inst) override;
+  std::string regFlt_regFlt_regFlt(InstRSub &inst) override;
+  std::string regFlt_regFlt_regInt(InstRSub &inst) override;
+  std::string regFlt_regInt_regFlt(InstRSub &inst) override;
+  std::string regInt_regInt_regInt(InstRSub &inst) override;
+  std::string regFlt_regFlt_extFlt(InstRSub &inst) override;
+  std::string regFlt_regFlt_extInt(InstRSub &inst) override;
+  std::string regFlt_regInt_extFlt(InstRSub &inst) override;
+  std::string regInt_regInt_extInt(InstRSub &inst) override;
+  std::string regFlt_regFlt_posByte(InstRSub &inst) override;
+  std::string regFlt_regFlt_negByte(InstRSub &inst) override;
+  std::string regFlt_regFlt_posWord(InstRSub &inst) override;
+  std::string regFlt_regFlt_negWord(InstRSub &inst) override;
+  std::string regInt_regInt_posByte(InstRSub &inst) override;
+  std::string regInt_regInt_negByte(InstRSub &inst) override;
+  std::string regInt_regInt_posWord(InstRSub &inst) override;
+  std::string regInt_regInt_negWord(InstRSub &inst) override;
+  std::string regFlt_extFlt_posByte(InstRSub &inst) override;
+  std::string regFlt_extFlt_negByte(InstRSub &inst) override;
+  std::string regFlt_extFlt_posWord(InstRSub &inst) override;
+  std::string regFlt_extFlt_negWord(InstRSub &inst) override;
+  std::string regInt_extInt_posByte(InstRSub &inst) override;
+  std::string regInt_extInt_negByte(InstRSub &inst) override;
+  std::string regInt_extInt_posWord(InstRSub &inst) override;
+  std::string regInt_extInt_negWord(InstRSub &inst) override;
+  std::string regFlt_posByte_extFlt(InstRSub &inst) override;
+  std::string regFlt_negByte_extFlt(InstRSub &inst) override;
+  std::string regFlt_posWord_extFlt(InstRSub &inst) override;
+  std::string regFlt_negWord_extFlt(InstRSub &inst) override;
+  std::string regInt_posByte_extInt(InstRSub &inst) override;
+  std::string regInt_negByte_extInt(InstRSub &inst) override;
+  std::string regInt_posWord_extInt(InstRSub &inst) override;
+  std::string regInt_negWord_extInt(InstRSub &inst) override;
 
   std::string regFlt_regFlt_regFlt(InstMul &inst) override;
   std::string regFlt_regFlt_extFlt(InstMul &inst) override;
@@ -576,6 +722,11 @@ public:
   std::string regInt_regInt_negByte(InstMul &inst) override;
   std::string regInt_regInt_posWord(InstMul &inst) override;
   std::string regInt_regInt_negWord(InstMul &inst) override;
+
+  std::string regFlt_regFlt(InstMul3 &inst) override;
+  std::string regInt_regInt(InstMul3 &inst) override;
+  std::string regFlt_extFlt(InstMul3 &inst) override;
+  std::string regInt_extInt(InstMul3 &inst) override;
 
   std::string regFlt_regFlt_regFlt(InstDiv &inst) override;
   std::string regFlt_regFlt_extFlt(InstDiv &inst) override;

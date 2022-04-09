@@ -5,16 +5,13 @@
 #include "isboolean.hpp"
 
 // search for -<boolean>
-bool ExprIsGerrieatric::inspect(const NegatedExpr &e) const {
-  IsBoolean isBoolean;
-  return e.expr->inspect(&isBoolean);
-}
-
 // search for 1-<boolean>
 bool ExprIsGerrieatric::inspect(const AdditiveExpr &e) const {
   IsBoolean isBoolean;
   ConstInspector constInspector;
-  return e.operands.size() == 1 &&
-         constInspector.isEqual(e.operands[0].get(), 1) &&
-         e.invoperands.size() == 1 && e.invoperands[0]->inspect(&isBoolean);
+  return e.invoperands.size() == 1 && e.invoperands[0]->check(&isBoolean) &&
+         (e.operands.empty() ||
+          (e.operands.size() == 1 &&
+           (constInspector.isEqual(e.operands[0].get(), 0) ||
+            constInspector.isEqual(e.operands[0].get(), 1))));
 }

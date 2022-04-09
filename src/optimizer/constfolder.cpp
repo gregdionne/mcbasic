@@ -9,57 +9,55 @@
 #include <string>
 
 // fold expressions...
-bool ExprConstFolder::fold(std::unique_ptr<NumericExpr> &expr) {
+bool ExprConstFolder::fold(up<NumericExpr> &expr) {
   if (expr->isConst(dvalue)) {
     gotConst = true;
   } else {
     gotConst = false;
     expr->mutate(this);
     if (gotConst) {
-      expr = std::make_unique<NumericConstantExpr>(dvalue);
+      expr = makeup<NumericConstantExpr>(dvalue);
     }
   }
 
   return gotConst;
 }
 
-bool ExprConstFolder::fold(std::unique_ptr<StringExpr> &expr) {
+bool ExprConstFolder::fold(up<StringExpr> &expr) {
   if (expr->isConst(svalue)) {
     gotConst = true;
   } else {
     gotConst = false;
     expr->mutate(this);
     if (gotConst) {
-      expr = std::make_unique<StringConstantExpr>(svalue);
+      expr = makeup<StringConstantExpr>(svalue);
     }
   }
 
   return gotConst;
 }
 
-bool ExprConstFolder::fold(std::unique_ptr<StringExpr> &expr,
-                           std::string &value) {
+bool ExprConstFolder::fold(up<StringExpr> &expr, std::string &value) {
   bool result = fold(expr);
   value = svalue;
   return result;
 }
 
-bool ExprConstFolder::fold(std::unique_ptr<NumericExpr> &expr, double &value) {
+bool ExprConstFolder::fold(up<NumericExpr> &expr, double &value) {
   bool result = fold(expr);
   value = dvalue;
   return result;
 }
 
-bool ExprConstFolder::fold(std::unique_ptr<Expr> &expr) {
+bool ExprConstFolder::fold(up<Expr> &expr) {
   if (expr->isConst(dvalue) || expr->isConst(svalue)) {
     gotConst = true;
   } else {
     gotConst = false;
     expr->mutate(this);
     if (gotConst) {
-      expr = expr->isString()
-                 ? std::unique_ptr<Expr>(new StringConstantExpr(svalue))
-                 : std::unique_ptr<Expr>(new NumericConstantExpr(dvalue));
+      expr = expr->isString() ? up<Expr>(new StringConstantExpr(svalue))
+                              : up<Expr>(new NumericConstantExpr(dvalue));
     }
   }
 
@@ -109,7 +107,7 @@ void StatementConstFolder::mutate(Print &s) {
     std::string rhs;
     while (i + 1 < s.printExpr.size() && s.printExpr[i]->isConst(lhs) &&
            s.printExpr[i + 1]->isConst(rhs)) {
-      s.printExpr[i] = std::make_unique<StringConstantExpr>(lhs + rhs);
+      s.printExpr[i] = makeup<StringConstantExpr>(lhs + rhs);
       s.printExpr.erase(s.printExpr.begin() + i + 1);
     }
   }
@@ -143,12 +141,17 @@ void StatementConstFolder::mutate(Let &s) {
   cfe.fold(s.rhs);
 }
 
-void StatementConstFolder::mutate(Inc &s) {
+void StatementConstFolder::mutate(Accum &s) {
   cfe.fold(s.lhs); // if lhs is already const?  verify rhs == 0 then purge?
   cfe.fold(s.rhs);
 }
 
-void StatementConstFolder::mutate(Dec &s) {
+void StatementConstFolder::mutate(Decum &s) {
+  cfe.fold(s.lhs); // if lhs is already const?  verify rhs == 0 then purge?
+  cfe.fold(s.rhs);
+}
+
+void StatementConstFolder::mutate(Necum &s) {
   cfe.fold(s.lhs); // if lhs is already const?  verify rhs == 0 then purge?
   cfe.fold(s.rhs);
 }
@@ -238,10 +241,9 @@ void ExprConstFolder::mutate(PrintCRExpr & /*expr*/) {
 }
 
 void ExprConstFolder::mutate(StringConcatenationExpr &e) {
-  bool pure = true;
 
   for (auto &operand : e.operands) {
-    pure &= fold(operand);
+    fold(operand);
   }
 
   for (std::size_t i = 0; i + 1 < e.operands.size(); ++i) {
@@ -249,7 +251,7 @@ void ExprConstFolder::mutate(StringConcatenationExpr &e) {
     std::string rhs;
     while (i + 1 < e.operands.size() && e.operands[i]->isConst(lhs) &&
            e.operands[i + 1]->isConst(rhs)) {
-      e.operands[i] = std::make_unique<StringConstantExpr>(lhs + rhs);
+      e.operands[i] = makeup<StringConstantExpr>(lhs + rhs);
       e.operands.erase(e.operands.begin() + i + 1);
     }
   }
@@ -406,12 +408,6 @@ void ExprConstFolder::mutate(ArrayIndicesExpr &e) {
   gotConst = false;
 }
 
-void ExprConstFolder::mutate(NegatedExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = -dvalue;
-  }
-}
-
 void ExprConstFolder::mutate(ComplementedExpr &e) {
   if (fold(e.expr)) {
     dvalue = static_cast<double>(~static_cast<int>(dvalue));
@@ -492,7 +488,13 @@ void ExprConstFolder::mutate(InkeyExpr & /*expr*/) { gotConst = false; }
 
 void ExprConstFolder::mutate(MemExpr & /*expr*/) { gotConst = false; }
 
-void ExprConstFolder::fold(std::vector<std::unique_ptr<NumericExpr>> &operands,
+void ExprConstFolder::mutate(PosExpr & /*expr*/) { gotConst = false; }
+
+void ExprConstFolder::mutate(TimerExpr & /*expr*/) { gotConst = false; }
+
+void ExprConstFolder::mutate(PeekWordExpr & /*expr*/) { gotConst = false; }
+
+void ExprConstFolder::fold(std::vector<up<NumericExpr>> &operands,
                            bool &enableFold, bool &folded, int &iOffset,
                            double &value, void (*op)(double &value, double v)) {
   for (std::size_t i = 0; i < operands.size(); ++i) {
@@ -536,13 +538,13 @@ void ExprConstFolder::mutate(AdditiveExpr &e) {
   if (gotFold) {
     if (gotAdd) {
       if (value != 0) {
-        e.operands[iOffset] = std::make_unique<NumericConstantExpr>(value);
+        e.operands[iOffset] = makeup<NumericConstantExpr>(value);
       } else {
         e.operands.erase(e.operands.begin() + iOffset);
       }
     } else if (gotSub) {
       if (value != 0) {
-        e.invoperands[iOffset] = std::make_unique<NumericConstantExpr>(value);
+        e.invoperands[iOffset] = makeup<NumericConstantExpr>(value);
       } else {
         e.invoperands.erase(e.invoperands.begin() + iOffset);
       }
@@ -609,7 +611,7 @@ void ExprConstFolder::mutate(MultiplicativeExpr &e) {
     gotMul = false;
     e.operands.clear();
     e.invoperands.clear();
-    e.operands.emplace_back(std::make_unique<NumericConstantExpr>(value));
+    e.operands.emplace_back(makeup<NumericConstantExpr>(value));
   }
 
   bool gotDiv = gotMul;
@@ -618,9 +620,9 @@ void ExprConstFolder::mutate(MultiplicativeExpr &e) {
 
   if (gotFold) {
     if (gotMul) {
-      e.operands[iOffset] = std::make_unique<NumericConstantExpr>(value);
+      e.operands[iOffset] = makeup<NumericConstantExpr>(value);
     } else if (gotDiv) {
-      e.invoperands[iOffset] = std::make_unique<NumericConstantExpr>(value);
+      e.invoperands[iOffset] = makeup<NumericConstantExpr>(value);
     }
   }
 
@@ -654,7 +656,7 @@ void ExprConstFolder::mutate(AndExpr &e) {
 
   if (gotFold) {
     e.operands[iOffset] =
-        std::make_unique<NumericConstantExpr>(static_cast<double>(value));
+        makeup<NumericConstantExpr>(static_cast<double>(value));
   }
 
   gotConst = e.operands.size() == 1 && e.operands[0]->isConst(dvalue);
@@ -677,7 +679,7 @@ void ExprConstFolder::mutate(OrExpr &e) {
   if (gotFold) {
     dvalue = value;
     e.operands[iOffset] =
-        std::make_unique<NumericConstantExpr>(static_cast<double>(value));
+        makeup<NumericConstantExpr>(static_cast<double>(value));
   }
 
   gotConst = e.operands.size() == 1 && e.operands[0]->isConst(dvalue);

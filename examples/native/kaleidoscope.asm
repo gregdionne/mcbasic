@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -109,8 +110,7 @@ LINE_20
 	ldab	#32
 	jsr	irnd_ir1_pb
 
-	ldab	#1
-	jsr	sub_ir1_ir1_pb
+	jsr	dec_ir1_ir1
 
 	ldx	#INTVAR_X
 	jsr	ld_ix_ir1
@@ -122,8 +122,7 @@ LINE_30
 	ldab	#16
 	jsr	irnd_ir1_pb
 
-	ldab	#1
-	jsr	sub_ir1_ir1_pb
+	jsr	dec_ir1_ir1
 
 	ldx	#INTVAR_Y
 	jsr	ld_ix_ir1
@@ -135,8 +134,7 @@ LINE_40
 	ldab	#9
 	jsr	irnd_ir1_pb
 
-	ldab	#1
-	jsr	sub_ir1_ir1_pb
+	jsr	dec_ir1_ir1
 
 	ldx	#INTVAR_Z
 	jsr	ld_ix_ir1
@@ -178,19 +176,15 @@ LINE_90
 
 LINE_100
 
-	; SET(31-X,16+Y,Z)
+	; SET(31-X,Y+16,Z)
 
 	ldab	#31
-	jsr	ld_ir1_pb
-
 	ldx	#INTVAR_X
-	jsr	sub_ir1_ir1_ix
-
-	ldab	#16
-	jsr	ld_ir2_pb
+	jsr	sub_ir1_pb_ix
 
 	ldx	#INTVAR_Y
-	jsr	add_ir2_ir2_ix
+	ldab	#16
+	jsr	add_ir2_ix_pb
 
 	ldx	#INTVAR_Z
 	jsr	setc_ir1_ir2_ix
@@ -200,16 +194,12 @@ LINE_110
 	; SET(31-X,15-Y,Z)
 
 	ldab	#31
-	jsr	ld_ir1_pb
-
 	ldx	#INTVAR_X
-	jsr	sub_ir1_ir1_ix
+	jsr	sub_ir1_pb_ix
 
 	ldab	#15
-	jsr	ld_ir2_pb
-
 	ldx	#INTVAR_Y
-	jsr	sub_ir2_ir2_ix
+	jsr	sub_ir2_pb_ix
 
 	ldx	#INTVAR_Z
 	jsr	setc_ir1_ir2_ix
@@ -218,38 +208,30 @@ LINE_110
 
 LINE_120
 
-	; SET(32+X,16+Y,Z)
-
-	ldab	#32
-	jsr	ld_ir1_pb
+	; SET(X+32,Y+16,Z)
 
 	ldx	#INTVAR_X
-	jsr	add_ir1_ir1_ix
-
-	ldab	#16
-	jsr	ld_ir2_pb
+	ldab	#32
+	jsr	add_ir1_ix_pb
 
 	ldx	#INTVAR_Y
-	jsr	add_ir2_ir2_ix
+	ldab	#16
+	jsr	add_ir2_ix_pb
 
 	ldx	#INTVAR_Z
 	jsr	setc_ir1_ir2_ix
 
 LINE_130
 
-	; SET(32+X,15-Y,Z)
-
-	ldab	#32
-	jsr	ld_ir1_pb
+	; SET(X+32,15-Y,Z)
 
 	ldx	#INTVAR_X
-	jsr	add_ir1_ir1_ix
+	ldab	#32
+	jsr	add_ir1_ix_pb
 
 	ldab	#15
-	jsr	ld_ir2_pb
-
 	ldx	#INTVAR_Y
-	jsr	sub_ir2_ir2_ix
+	jsr	sub_ir2_pb_ix
 
 	ldx	#INTVAR_Z
 	jsr	setc_ir1_ir2_ix
@@ -262,19 +244,15 @@ LINE_140
 
 LINE_150
 
-	; RESET(31-X,16+Y)
+	; RESET(31-X,Y+16)
 
 	ldab	#31
-	jsr	ld_ir1_pb
-
 	ldx	#INTVAR_X
-	jsr	sub_ir1_ir1_ix
-
-	ldab	#16
-	jsr	ld_ir2_pb
+	jsr	sub_ir1_pb_ix
 
 	ldx	#INTVAR_Y
-	jsr	add_ir2_ir2_ix
+	ldab	#16
+	jsr	add_ir2_ix_pb
 
 	jsr	reset_ir1_ir2
 
@@ -283,52 +261,40 @@ LINE_160
 	; RESET(31-X,15-Y)
 
 	ldab	#31
-	jsr	ld_ir1_pb
-
 	ldx	#INTVAR_X
-	jsr	sub_ir1_ir1_ix
+	jsr	sub_ir1_pb_ix
 
 	ldab	#15
-	jsr	ld_ir2_pb
-
 	ldx	#INTVAR_Y
-	jsr	sub_ir2_ir2_ix
+	jsr	sub_ir2_pb_ix
 
 	jsr	reset_ir1_ir2
 
 LINE_170
 
-	; RESET(32+X,16+Y)
-
-	ldab	#32
-	jsr	ld_ir1_pb
+	; RESET(X+32,Y+16)
 
 	ldx	#INTVAR_X
-	jsr	add_ir1_ir1_ix
-
-	ldab	#16
-	jsr	ld_ir2_pb
+	ldab	#32
+	jsr	add_ir1_ix_pb
 
 	ldx	#INTVAR_Y
-	jsr	add_ir2_ir2_ix
+	ldab	#16
+	jsr	add_ir2_ix_pb
 
 	jsr	reset_ir1_ir2
 
 LINE_180
 
-	; RESET(32+X,15-Y)
-
-	ldab	#32
-	jsr	ld_ir1_pb
+	; RESET(X+32,15-Y)
 
 	ldx	#INTVAR_X
-	jsr	add_ir1_ir1_ix
+	ldab	#32
+	jsr	add_ir1_ix_pb
 
 	ldab	#15
-	jsr	ld_ir2_pb
-
 	ldx	#INTVAR_Y
-	jsr	sub_ir2_ir2_ix
+	jsr	sub_ir2_pb_ix
 
 	jsr	reset_ir1_ir2
 
@@ -484,22 +450,22 @@ _loadc
 _ok
 	bra	doset
 
-add_ir1_ir1_ix			; numCalls = 4
-	.module	modadd_ir1_ir1_ix
-	ldd	r1+1
+add_ir1_ix_pb			; numCalls = 4
+	.module	modadd_ir1_ix_pb
+	clra
 	addd	1,x
 	std	r1+1
-	ldab	r1
+	ldab	#0
 	adcb	0,x
 	stab	r1
 	rts
 
-add_ir2_ir2_ix			; numCalls = 4
-	.module	modadd_ir2_ir2_ix
-	ldd	r2+1
+add_ir2_ix_pb			; numCalls = 4
+	.module	modadd_ir2_ix_pb
+	clra
 	addd	1,x
 	std	r2+1
-	ldab	r2
+	ldab	#0
 	adcb	0,x
 	stab	r2
 	rts
@@ -529,6 +495,16 @@ _start
 clsn_pb			; numCalls = 1
 	.module	modclsn_pb
 	jmp	R_CLSN
+
+dec_ir1_ir1			; numCalls = 3
+	.module	moddec_ir1_ir1
+	ldd	r1+1
+	subd	#1
+	std	r1+1
+	ldab	r1
+	sbcb	#0
+	stab	r1
+	rts
 
 gosub_ix			; numCalls = 1
 	.module	modgosub_ix
@@ -582,20 +558,6 @@ ld_ir1_ix			; numCalls = 1
 	std	r1+1
 	ldab	0,x
 	stab	r1
-	rts
-
-ld_ir1_pb			; numCalls = 8
-	.module	modld_ir1_pb
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
-ld_ir2_pb			; numCalls = 8
-	.module	modld_ir2_pb
-	stab	r2+2
-	ldd	#0
-	std	r2
 	rts
 
 ld_ix_ir1			; numCalls = 3
@@ -724,36 +686,24 @@ setc_ir1_ir2_ix			; numCalls = 4
 	pulb
 	jmp	setc
 
-sub_ir1_ir1_ix			; numCalls = 4
-	.module	modsub_ir1_ir1_ix
-	ldd	r1+1
-	subd	1,x
-	std	r1+1
-	ldab	r1
-	sbcb	0,x
-	stab	r1
+sub_ir1_pb_ix			; numCalls = 4
+	.module	modsub_ir1_pb_ix
+	subb	2,x
+	stab	r1+2
+	ldd	#0
+	sbcb	1,x
+	sbca	0,x
+	std	r1
 	rts
 
-sub_ir1_ir1_pb			; numCalls = 3
-	.module	modsub_ir1_ir1_pb
-	stab	tmp1
-	ldd	r1+1
-	subb	tmp1
-	sbca	#0
-	std	r1+1
-	ldab	r1
-	sbcb	#0
-	stab	r1
-	rts
-
-sub_ir2_ir2_ix			; numCalls = 4
-	.module	modsub_ir2_ir2_ix
-	ldd	r2+1
-	subd	1,x
-	std	r2+1
-	ldab	r2
-	sbcb	0,x
-	stab	r2
+sub_ir2_pb_ix			; numCalls = 4
+	.module	modsub_ir2_pb_ix
+	subb	2,x
+	stab	r2+2
+	ldd	#0
+	sbcb	1,x
+	sbca	0,x
+	std	r2
 	rts
 
 ; data table

@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -84,8 +85,7 @@ LINE_10
 	; FOR T=0 TO 1 STEP 0.01
 
 	ldx	#FLTVAR_T
-	ldab	#0
-	jsr	for_fx_pb
+	jsr	forclr_fx
 
 	ldab	#1
 	jsr	to_fp_pb
@@ -100,16 +100,12 @@ LINE_20
 	; S1=(1-T)*(1-T)
 
 	ldab	#1
-	jsr	ld_ir1_pb
-
 	ldx	#FLTVAR_T
-	jsr	sub_fr1_ir1_fx
+	jsr	sub_fr1_pb_fx
 
 	ldab	#1
-	jsr	ld_ir2_pb
-
 	ldx	#FLTVAR_T
-	jsr	sub_fr2_ir2_fx
+	jsr	sub_fr2_pb_fx
 
 	jsr	mul_fr1_fr1_fr2
 
@@ -121,10 +117,8 @@ LINE_30
 	; S2=SHIFT((1-T)*T,1)
 
 	ldab	#1
-	jsr	ld_ir1_pb
-
 	ldx	#FLTVAR_T
-	jsr	sub_fr1_ir1_fx
+	jsr	sub_fr1_pb_fx
 
 	ldx	#FLTVAR_T
 	jsr	mul_fr1_fr1_fx
@@ -177,10 +171,8 @@ LINE_50
 	.text	1, " "
 
 	ldx	#FLTVAR_S1
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_S2
-	jsr	add_fr1_fr1_fx
+	ldd	#FLTVAR_S2
+	jsr	add_fr1_fx_fd
 
 	ldx	#FLTVAR_S3
 	jsr	add_fr1_fr1_fx
@@ -622,14 +614,12 @@ mulint
 	ldaa	2+argv
 	ldab	1,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	1+argv
 	ldab	2,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	2+argv
 	ldab	0,x
@@ -1041,9 +1031,29 @@ _done
 	ldx	tmp1
 	jmp	,x
 
-add_fr1_fr1_fx			; numCalls = 2
+add_fr1_fr1_fx			; numCalls = 1
 	.module	modadd_fr1_fr1_fx
 	ldd	r1+3
+	addd	3,x
+	std	r1+3
+	ldd	r1+1
+	adcb	2,x
+	adca	1,x
+	std	r1+1
+	ldab	r1
+	adcb	0,x
+	stab	r1
+	rts
+
+add_fr1_fx_fd			; numCalls = 1
+	.module	modadd_fr1_fx_fd
+	std	tmp1
+	ldab	0,x
+	stab	r1
+	ldd	1,x
+	std	r1+1
+	ldd	3,x
+	ldx	tmp1
 	addd	3,x
 	std	r1+3
 	ldd	r1+1
@@ -1077,14 +1087,13 @@ _start
 	stx	DP_DATA
 	rts
 
-for_fx_pb			; numCalls = 1
-	.module	modfor_fx_pb
+forclr_fx			; numCalls = 1
+	.module	modforclr_fx
 	stx	letptr
-	clra
-	staa	0,x
-	std	1,x
-	clrb
+	ldd	#0
 	std	3,x
+	std	1,x
+	stab	0,x
 	rts
 
 inkey_sr1			; numCalls = 1
@@ -1114,7 +1123,7 @@ _go
 	ins
 	jmp	,x
 
-ld_fr1_fx			; numCalls = 3
+ld_fr1_fx			; numCalls = 2
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -1132,20 +1141,6 @@ ld_fx_fr1			; numCalls = 3
 	std	1,x
 	ldab	r1
 	stab	0,x
-	rts
-
-ld_ir1_pb			; numCalls = 2
-	.module	modld_ir1_pb
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
-ld_ir2_pb			; numCalls = 1
-	.module	modld_ir2_pb
-	stab	r2+2
-	ldd	#0
-	std	r2
 	rts
 
 ldeq_ir1_sr1_ss			; numCalls = 1
@@ -1195,12 +1190,10 @@ next			; numCalls = 1
 _ok
 	cmpb	#11
 	bne	_flt
-	ldd	9,x
-	std	r1+1
 	ldab	8,x
 	stab	r1
+	ldd	9,x
 	ldx	1,x
-	ldd	r1+1
 	addd	1,x
 	std	r1+1
 	std	1,x
@@ -1215,7 +1208,7 @@ _ok
 	subd	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	jmp	,x
 _iopp
@@ -1223,21 +1216,22 @@ _iopp
 	subd	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	jmp	,x
-_idone
-	ldab	#11
-	bra	_done
+_done
+	ldab	0,x
+	abx
+	txs
+	ldx	tmp1
+	jmp	,x
 _flt
-	ldd	13,x
-	std	r1+3
-	ldd	11,x
-	std	r1+1
 	ldab	10,x
 	stab	r1
+	ldd	11,x
+	std	r1+1
+	ldd	13,x
 	ldx	1,x
-	ldd	r1+3
 	addd	3,x
 	std	r1+3
 	std	3,x
@@ -1260,7 +1254,7 @@ _flt
 	sbca	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	jmp	,x
 _fopp
@@ -1271,15 +1265,8 @@ _fopp
 	sbca	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_fdone
+	blt	_done
 	ldx	3,x
-	jmp	,x
-_fdone
-	ldab	#15
-_done
-	abx
-	txs
-	ldx	tmp1
 	jmp	,x
 
 pr_sr1			; numCalls = 4
@@ -1400,32 +1387,34 @@ str_sr1_fx			; numCalls = 3
 	stab	r1
 	rts
 
-sub_fr1_ir1_fx			; numCalls = 2
-	.module	modsub_fr1_ir1_fx
+sub_fr1_pb_fx			; numCalls = 2
+	.module	modsub_fr1_pb_fx
+	stab	tmp1
 	ldd	#0
 	subd	3,x
 	std	r1+3
-	ldd	r1+1
+	ldab	tmp1
 	sbcb	2,x
-	sbca	1,x
-	std	r1+1
-	ldab	r1
-	sbcb	0,x
-	stab	r1
+	stab	r1+2
+	ldd	#0
+	sbcb	1,x
+	sbca	0,x
+	std	r1
 	rts
 
-sub_fr2_ir2_fx			; numCalls = 1
-	.module	modsub_fr2_ir2_fx
+sub_fr2_pb_fx			; numCalls = 1
+	.module	modsub_fr2_pb_fx
+	stab	tmp1
 	ldd	#0
 	subd	3,x
 	std	r2+3
-	ldd	r2+1
+	ldab	tmp1
 	sbcb	2,x
-	sbca	1,x
-	std	r2+1
-	ldab	r2
-	sbcb	0,x
-	stab	r2
+	stab	r2+2
+	ldd	#0
+	sbcb	1,x
+	sbca	0,x
+	std	r2
 	rts
 
 to_fp_pb			; numCalls = 1

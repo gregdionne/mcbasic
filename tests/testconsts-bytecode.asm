@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -98,31 +99,25 @@ LINE_10
 
 	; PI=3.14159
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_3p14158
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_PI
+	.byte	bytecode_FLT_3p14158
 
 LINE_20
 
 	; X=8.38861e+06
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INT_8388607
-
-	.byte	bytecode_ld_ix_ir1
+	.byte	bytecode_ld_id_ix
 	.byte	bytecode_INTVAR_X
+	.byte	bytecode_INT_8388607
 
 LINE_50
 
 	; Z=-8.38861e+06
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INT_m8388608
-
-	.byte	bytecode_ld_ix_ir1
+	.byte	bytecode_ld_id_ix
 	.byte	bytecode_INTVAR_Z
+	.byte	bytecode_INT_m8388608
 
 LLAST
 
@@ -132,19 +127,15 @@ LLAST
 
 ; Library Catalog
 bytecode_clear	.equ	0
-bytecode_ld_fr1_fx	.equ	1
-bytecode_ld_fx_fr1	.equ	2
-bytecode_ld_ir1_ix	.equ	3
-bytecode_ld_ix_ir1	.equ	4
-bytecode_progbegin	.equ	5
-bytecode_progend	.equ	6
+bytecode_ld_fd_fx	.equ	1
+bytecode_ld_id_ix	.equ	2
+bytecode_progbegin	.equ	3
+bytecode_progend	.equ	4
 
 catalog
 	.word	clear
-	.word	ld_fr1_fx
-	.word	ld_fx_fr1
-	.word	ld_ir1_ix
-	.word	ld_ix_ir1
+	.word	ld_fd_fx
+	.word	ld_id_ix
 	.word	progbegin
 	.word	progend
 
@@ -243,6 +234,44 @@ wordext
 	ldx	,x
 	pulb
 	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
 immstr
 	ldx	curinst
 	inx
@@ -287,43 +316,33 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_fr1_fx			; numCalls = 1
-	.module	modld_fr1_fx
-	jsr	extend
-	ldd	3,x
-	std	r1+3
-	ldd	1,x
-	std	r1+1
+ld_fd_fx			; numCalls = 1
+	.module	modld_fd_fx
+	jsr	dexext
+	std	tmp1
 	ldab	0,x
-	stab	r1
-	rts
-
-ld_fx_fr1			; numCalls = 1
-	.module	modld_fx_fr1
-	jsr	extend
-	ldd	r1+3
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	ldx	tmp1
 	std	3,x
-	ldd	r1+1
+	ldd	1+argv
 	std	1,x
-	ldab	r1
+	ldab	0+argv
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 2
-	.module	modld_ir1_ix
-	jsr	extend
-	ldd	1,x
-	std	r1+1
+ld_id_ix			; numCalls = 2
+	.module	modld_id_ix
+	jsr	dexext
+	std	tmp1
 	ldab	0,x
-	stab	r1
-	rts
-
-ld_ix_ir1			; numCalls = 2
-	.module	modld_ix_ir1
-	jsr	extend
-	ldd	r1+1
+	stab	0+argv
+	ldd	1,x
+	ldx	tmp1
 	std	1,x
-	ldab	r1
+	ldab	0+argv
 	stab	0,x
 	rts
 

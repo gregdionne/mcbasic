@@ -45,7 +45,7 @@ public:
   void inspect(const For &s) const override;
   void inspect(const Input &s) const override;
 
-  void delve(const std::vector<std::unique_ptr<Statement>> &statements) const;
+  void delve(const std::vector<up<Statement>> &statements) const;
 
 private:
   ExprSymbolTabulator exprSymbolTabulator;

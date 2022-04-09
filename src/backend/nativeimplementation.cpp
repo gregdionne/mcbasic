@@ -283,8 +283,9 @@ std::string NativeImplementation::regInt_regStr_immStr(InstLdNe &inst) {
   return tasm.source();
 }
 
-std::string NativeImplementation::regInt_regStr_immStr(InstLdLo &inst) {
+std::string NativeImplementation::regInt_regStr_immStr(InstLdLt &inst) {
   inst.dependencies.insert("mdstrlos");
+  inst.dependencies.insert("mdgetlo");
 
   Assembler tasm;
   tasm.ldab(inst.arg2->sbyte());
@@ -292,21 +293,16 @@ std::string NativeImplementation::regInt_regStr_immStr(InstLdLo &inst) {
   tasm.ldd(inst.arg2->lword());
   tasm.std("1+argv");
   tasm.jsr("strlos");
-  tasm.blo("_1");
-  tasm.ldd("#0");
-  tasm.std(inst.arg1->lword());
-  tasm.stab(inst.arg1->sbyte());
-  tasm.rts();
-  tasm.label("_1");
-  tasm.ldd("#-1");
+  tasm.jsr("getlo");
   tasm.std(inst.arg1->lword());
   tasm.stab(inst.arg1->sbyte());
   tasm.rts();
   return tasm.source();
 }
 
-std::string NativeImplementation::regInt_regStr_immStr(InstLdHs &inst) {
+std::string NativeImplementation::regInt_regStr_immStr(InstLdGe &inst) {
   inst.dependencies.insert("mdstrlos");
+  inst.dependencies.insert("mdgeths");
 
   Assembler tasm;
   tasm.ldab(inst.arg2->sbyte());
@@ -314,13 +310,7 @@ std::string NativeImplementation::regInt_regStr_immStr(InstLdHs &inst) {
   tasm.ldd(inst.arg2->lword());
   tasm.std("1+argv");
   tasm.jsr("strlos");
-  tasm.bhs("_1");
-  tasm.ldd("#0");
-  tasm.std(inst.arg1->lword());
-  tasm.stab(inst.arg1->sbyte());
-  tasm.rts();
-  tasm.label("_1");
-  tasm.ldd("#-1");
+  tasm.jsr("geths");
   tasm.std(inst.arg1->lword());
   tasm.stab(inst.arg1->sbyte());
   tasm.rts();
@@ -652,113 +642,115 @@ std::string NativeImplementation::inherent(InstNext &inst) {
   tasm.jmp("error");
   tasm.label("_ok");
   tasm.cmpb(inst.generateLines ? "#13" : "#11");
-  tasm.bne("_flt"); //                [0]        [1,2]      [3,4]
-                    //                [5,6,7]    [8,9,10]
-  tasm.ldd("9,x");  // 1 + 2 + 2 + 3  0,x == rz; 1,x == ip; 3,x ==
-                    // ret; 5,x == to; 8,x == step
-  tasm.std("r1+1");
-  tasm.ldab("8,x");
-  tasm.stab("r1");
-  tasm.ldx("1,x");
-  tasm.ldd("r1+1");
-  tasm.addd("1,x");
-  tasm.std("r1+1");
-  tasm.std("1,x");
-  tasm.ldab("r1");
-  tasm.adcb(",x");
-  tasm.stab("r1");
-  tasm.stab(",x");
-  tasm.tsx();
-  tasm.tst("8,x");
-  tasm.bpl("_iopp");
-  tasm.ldd("r1+1"); // 1 + 2 + 2
-  tasm.subd("6,x"); // 1 + 2 + 2
-  tasm.ldab("r1");
-  tasm.sbcb("5,x");
-  tasm.blt("_idone");
+  tasm.bne("_flt");
+  //   0,x (byte) rec length
+  //   1,x (word) index variable pointer
+  //   3,x (word) loop destination
+  //   5,x (trip) "to" limit
+  //   8,x (trip) step amount
+  // [11,x (word) line number of destination]
+  tasm.ldab("8,x");  // save sign byte of "step" in r1
+  tasm.stab("r1");   //
+  tasm.ldd("9,x");   // get lower word
+  tasm.ldx("1,x");   // get pointer to index variable
+  tasm.addd("1,x");  // add to lower word of index variable
+  tasm.std("r1+1");  // ...save in r1
+  tasm.std("1,x");   // and index variable
+  tasm.ldab("r1");   // get saved sign byte of step
+  tasm.adcb(",x");   // add with sign byte of index variable
+  tasm.stab("r1");   // save in r1
+  tasm.stab(",x");   // ...and index variable
+  tasm.tsx();        // point back to stack
+  tasm.tst("8,x");   // check sign byte of "step"
+  tasm.bpl("_iopp"); // go if positive
+  tasm.ldd("r1+1");  // compare against "to" limit
+  tasm.subd("6,x");  //
+  tasm.ldab("r1");   //
+  tasm.sbcb("5,x");  //
+  tasm.blt("_done"); // bail if past limit
   if (inst.generateLines) {
-    tasm.ldd("11,x");
-    tasm.std("DP_LNUM");
+    tasm.ldd("11,x");    // transfer destination line number
+    tasm.std("DP_LNUM"); // when using "-g" compiler debug flag
   }
-  tasm.ldx("3,x");
+  tasm.ldx("3,x"); // go to destination
   tasm.jmp(",x");
   tasm.label("_iopp");
-  tasm.ldd("6,x");   // 1 + 2 + 2
-  tasm.subd("r1+1"); // 1 + 2 + 2
-  tasm.ldab("5,x");
-  tasm.sbcb("r1");
-  tasm.blt("_idone");
+  tasm.ldd("6,x");   // compare against "to" limit
+  tasm.subd("r1+1"); //
+  tasm.ldab("5,x");  //
+  tasm.sbcb("r1");   //
+  tasm.blt("_done"); // bail if past limit
   if (inst.generateLines) {
-    tasm.ldd("11,x");
-    tasm.std("DP_LNUM");
+    tasm.ldd("11,x");    // transfer destination line number
+    tasm.std("DP_LNUM"); // when using "-g" compiler flag
   }
-  tasm.ldx("3,x");
+  tasm.ldx("3,x"); // go to destination
   tasm.jmp(",x");
-  tasm.label("_idone");
-  tasm.ldab(inst.generateLines ? "#13" : "#11");
-  tasm.bra("_done");
-  tasm.label("_flt"); //                [0]        [1,2]      [3,4]
-                      //                [5,6,7,8,9] [10,11,12,13,14]
-  tasm.ldd("13,x");   // 1 + 2 + 2 + 5  0,x == rz; 1,x == ip; 3,x ==
-                      // ret; 5,x == to; 10,x == step
-  tasm.std("r1+3");
-  tasm.ldd("11,x"); // 1 + 2 + 2 + 5  0,x == rz; 1,x == ip; 3,x ==
-                    // ret; 5,x == to; 10,x == step
-  tasm.std("r1+1");
-  tasm.ldab("10,x");
-  tasm.stab("r1");
-  tasm.ldx("1,x");
-  tasm.ldd("r1+3");
-  tasm.addd("3,x");
-  tasm.std("r1+3");
-  tasm.std("3,x");
-  tasm.ldd("1,x");
-  tasm.adcb("r1+2");
-  tasm.adca("r1+1");
-  tasm.std("r1+1");
-  tasm.std("1,x");
-  tasm.ldab("r1");
-  tasm.adcb(",x");
-  tasm.stab("r1");
-  tasm.stab(",x");
+
+  tasm.label("_done"); // bail
+  tasm.ldab("0,x");    // get record length
+  tasm.abx();          // add offset to stack
+  tasm.txs();          //
+  tasm.ldx("tmp1");    // return
+  tasm.jmp(",x");
+
+  tasm.label("_flt");
+  //   0,x (byte) rec length
+  //   1,x (word) index variable pointer
+  //   3,x (word) loop destination
+  //   5,x (pent) "to" limit
+  //  10,x (pent) step amount
+  // [15,x (word) line number of destination]
+  tasm.ldab("10,x"); // save sign byte of "step" in r1
+  tasm.stab("r1");   //
+  tasm.ldd("11,x");  // save lower word in r1
+  tasm.std("r1+1");  //
+  tasm.ldd("13,x");  // load fraction word
+  tasm.ldx("1,x");   // get pointer to index variable
+  tasm.addd("3,x");  // add to fraction word
+  tasm.std("r1+3");  // store in r1
+  tasm.std("3,x");   // ... and index variable
+  tasm.ldd("1,x");   // add lower words
+  tasm.adcb("r1+2"); //
+  tasm.adca("r1+1"); //
+  tasm.std("r1+1");  // store in r1
+  tasm.std("1,x");   // ... and index variable
+  tasm.ldab("r1");   // add sign bytes
+  tasm.adcb(",x");   //
+  tasm.stab("r1");   // store in r1
+  tasm.stab(",x");   // ... and index variable
   tasm.tsx();
-  tasm.tst("10,x");
-  tasm.bpl("_fopp");
-  tasm.ldd("r1+3"); // 1 + 2 + 2
-  tasm.subd("8,x"); // 1 + 2 + 2
-  tasm.ldd("r1+1"); // 1 + 2 + 2
-  tasm.sbcb("7,x"); // 1 + 2 + 2
-  tasm.sbca("6,x"); // 1 + 2 + 2
-  tasm.ldab("r1");
-  tasm.sbcb("5,x");
-  tasm.blt("_fdone");
+  tasm.tst("10,x");  // check sign byte of "step"
+  tasm.bpl("_fopp"); // go if positive
+  tasm.ldd("r1+3");  // compare against "to" limit
+  tasm.subd("8,x");  //
+  tasm.ldd("r1+1");  //
+  tasm.sbcb("7,x");  //
+  tasm.sbca("6,x");  //
+  tasm.ldab("r1");   //
+  tasm.sbcb("5,x");  //
+  tasm.blt("_done"); // bail if past the limit
   if (inst.generateLines) {
-    tasm.ldd("15,x");
-    tasm.std("DP_LNUM");
+    tasm.ldd("15,x");    // transfer destination line number
+    tasm.std("DP_LNUM"); // when using "-g" debug flag
   }
-  tasm.ldx("3,x");
+  tasm.ldx("3,x"); // go to loop destination
   tasm.jmp(",x");
+
   tasm.label("_fopp");
-  tasm.ldd("8,x");   // 1 + 2 + 2
-  tasm.subd("r1+3"); // 1 + 2 + 2
-  tasm.ldd("6,x");   // 1 + 2 + 2
-  tasm.sbcb("r1+2"); // 1 + 2 + 2
-  tasm.sbca("r1+1"); // 1 + 2 + 2
-  tasm.ldab("5,x");
-  tasm.sbcb("r1");
-  tasm.blt("_fdone");
+  tasm.ldd("8,x");   // compare against "to" limit
+  tasm.subd("r1+3"); //
+  tasm.ldd("6,x");   //
+  tasm.sbcb("r1+2"); //
+  tasm.sbca("r1+1"); //
+  tasm.ldab("5,x");  //
+  tasm.sbcb("r1");   //
+  tasm.blt("_done"); // bail if past limit
   if (inst.generateLines) {
-    tasm.ldd("15,x");
-    tasm.std("DP_LNUM");
+    tasm.ldd("15,x");    // transfer destination line number
+    tasm.std("DP_LNUM"); // when using "-g" debug flag
   }
-  tasm.ldx("3,x");
-  tasm.jmp(",x");
-  tasm.label("_fdone");
-  tasm.ldab(inst.generateLines ? "#17" : "#15");
-  tasm.label("_done");
-  tasm.abx();
-  tasm.txs();
-  tasm.ldx("tmp1");
+  tasm.ldx("3,x"); // go to loop destination
   tasm.jmp(",x");
   return tasm.source();
 }

@@ -54,6 +54,7 @@ std::string CoreTarget::generateMicroColorConstants() {
   tasm.comment("");
 
   tasm.comment("Direct page equates");
+  tasm.equ("DP_TIMR", "$09", "value of MC6801/6803 counter");
   tasm.equ("DP_DATA", "$AD", "pointer to where READ gets next value");
   tasm.equ("DP_LNUM", "$E2", "current line in BASIC");
   tasm.equ("DP_TABW", "$E4", "current tab width on console");

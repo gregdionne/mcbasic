@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -112,10 +113,8 @@ LINE_20
 
 	; WHEN A<>B GOSUB 100
 
-	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_ldne_ir1_ix_id
 	.byte	bytecode_INTVAR_A
-
-	.byte	bytecode_ldne_ir1_ir1_ix
 	.byte	bytecode_INTVAR_B
 
 	.byte	bytecode_jsrne_ir1_ix
@@ -154,20 +153,18 @@ LLAST
 ; Library Catalog
 bytecode_clear	.equ	0
 bytecode_jsrne_ir1_ix	.equ	1
-bytecode_ld_ir1_ix	.equ	2
-bytecode_ld_ix_pb	.equ	3
-bytecode_ldne_ir1_ir1_ix	.equ	4
-bytecode_pr_ss	.equ	5
-bytecode_progbegin	.equ	6
-bytecode_progend	.equ	7
-bytecode_return	.equ	8
+bytecode_ld_ix_pb	.equ	2
+bytecode_ldne_ir1_ix_id	.equ	3
+bytecode_pr_ss	.equ	4
+bytecode_progbegin	.equ	5
+bytecode_progend	.equ	6
+bytecode_return	.equ	7
 
 catalog
 	.word	clear
 	.word	jsrne_ir1_ix
-	.word	ld_ir1_ix
 	.word	ld_ix_pb
-	.word	ldne_ir1_ir1_ix
+	.word	ldne_ir1_ix_id
 	.word	pr_ss
 	.word	progbegin
 	.word	progend
@@ -262,6 +259,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -372,15 +407,6 @@ _go
 _rts
 	jmp	mainloop
 
-ld_ir1_ix			; numCalls = 1
-	.module	modld_ir1_ix
-	jsr	extend
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_ix_pb			; numCalls = 2
 	.module	modld_ix_pb
 	jsr	extbyte
@@ -389,10 +415,14 @@ ld_ix_pb			; numCalls = 2
 	std	0,x
 	rts
 
-ldne_ir1_ir1_ix			; numCalls = 1
-	.module	modldne_ir1_ir1_ix
-	jsr	extend
-	ldd	r1+1
+ldne_ir1_ix_id			; numCalls = 1
+	.module	modldne_ir1_ix_id
+	jsr	extdex
+	std	tmp1
+	ldab	0,x
+	stab	r1
+	ldd	1,x
+	ldx	tmp1
 	subd	1,x
 	bne	_done
 	ldab	r1

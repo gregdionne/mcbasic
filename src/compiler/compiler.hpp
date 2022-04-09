@@ -26,15 +26,14 @@ public:
   InstQueue &queue;
   bool generateLines;
   int firstLine{0};
-  std::vector<std::unique_ptr<Line>>::iterator itCurrentLine;
+  std::vector<up<Line>>::iterator itCurrentLine;
 };
 
 class StatementCompiler : public StatementAbsorber<void> {
 public:
   StatementCompiler(ConstTable &ct_in, SymbolTable &st_in, DataTable &dt_in,
                     InstQueue &queue_in, int firstLine_in,
-                    std::vector<std::unique_ptr<Line>>::iterator &itCurLine,
-                    bool g_in)
+                    std::vector<up<Line>>::iterator &itCurLine, bool g_in)
       : constTable(ct_in), symbolTable(st_in), dataTable(dt_in),
         queue(queue_in), firstLine(firstLine_in), itCurrentLine(itCurLine),
         generateLines(g_in) {}
@@ -52,8 +51,9 @@ public:
   void absorb(const Dim &s) override;
   void absorb(const Read &s) override;
   void absorb(const Let &s) override;
-  void absorb(const Inc &s) override;
-  void absorb(const Dec &s) override;
+  void absorb(const Accum &s) override;
+  void absorb(const Decum &s) override;
+  void absorb(const Necum &s) override;
   void absorb(const Run &s) override;
   void absorb(const Restore &s) override;
   void absorb(const Return &s) override;
@@ -71,7 +71,7 @@ public:
   DataTable &dataTable;
   InstQueue &queue;
   int firstLine;
-  std::vector<std::unique_ptr<Line>>::iterator &itCurrentLine;
+  std::vector<up<Line>>::iterator &itCurrentLine;
   bool generateLines;
 };
 
@@ -95,7 +95,6 @@ public:
   void absorb(const PrintCRExpr &e) override;
   void absorb(const NumericArrayExpr &e) override;
   void absorb(const StringArrayExpr &e) override;
-  void absorb(const NegatedExpr &e) override;
   void absorb(const PowerExpr &e) override;
   void absorb(const IntegerDivisionExpr &e) override;
   void absorb(const MultiplicativeExpr &e) override;
@@ -127,6 +126,9 @@ public:
   void absorb(const PointExpr &e) override;
   void absorb(const InkeyExpr &e) override;
   void absorb(const MemExpr &e) override;
+  void absorb(const TimerExpr &e) override;
+  void absorb(const PosExpr &e) override;
+  void absorb(const PeekWordExpr &e) override;
 
   void absorb(const NaryNumericExpr &e) override {
     fprintf(stderr, "panic! %s\n", e.funcName.c_str());
@@ -135,7 +137,7 @@ public:
   ConstTable &constTable;
   SymbolTable &symbolTable;
   InstQueue &queue;
-  std::unique_ptr<AddressMode> result;
+  up<AddressMode> result;
   bool arrayRef;
   bool arrayDim;
 };

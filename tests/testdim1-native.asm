@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -98,8 +99,7 @@ LINE_20
 	ldx	#INTARR_X
 	jsr	arrref1_ir1_ix
 
-	ldab	#1
-	jsr	ld_ip_pb
+	jsr	one_ip
 
 	; PRINT STR$(X(0));" ";
 
@@ -837,7 +837,7 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_ip_pb			; numCalls = 4
+ld_ip_pb			; numCalls = 3
 	.module	modld_ip_pb
 	ldx	letptr
 	stab	2,x
@@ -850,6 +850,14 @@ ld_ir1_pb			; numCalls = 10
 	stab	r1+2
 	ldd	#0
 	std	r1
+	rts
+
+one_ip			; numCalls = 1
+	.module	modone_ip
+	ldx	letptr
+	ldd	#1
+	staa	0,x
+	std	1,x
 	rts
 
 pr_sr1			; numCalls = 5

@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -82,11 +83,9 @@ LINE_10
 
 	; T=0.5
 
+	ldd	#FLTVAR_T
 	ldx	#FLT_0p50000
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_T
-	jsr	ld_fx_fr1
+	jsr	ld_fd_fx
 
 LINE_20
 
@@ -119,8 +118,7 @@ LINE_40
 	; FOR T=1 TO LEN(A$)
 
 	ldx	#FLTVAR_T
-	ldab	#1
-	jsr	for_fx_pb
+	jsr	forone_fx
 
 	ldx	#STRVAR_A
 	jsr	len_ir1_sx
@@ -601,14 +599,12 @@ mulint
 	ldaa	2+argv
 	ldab	1,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	1+argv
 	ldab	2,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	2+argv
 	ldab	0,x
@@ -1127,17 +1123,33 @@ _start
 	stx	DP_DATA
 	rts
 
-for_fx_pb			; numCalls = 1
-	.module	modfor_fx_pb
+forone_fx			; numCalls = 1
+	.module	modforone_fx
 	stx	letptr
-	clra
-	staa	0,x
-	std	1,x
-	clrb
+	ldd	#0
 	std	3,x
+	std	0,x
+	ldab	#1
+	stab	2,x
 	rts
 
-ld_fr1_fx			; numCalls = 2
+ld_fd_fx			; numCalls = 1
+	.module	modld_fd_fx
+	std	tmp1
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	ldx	tmp1
+	std	3,x
+	ldd	1+argv
+	std	1,x
+	ldab	0+argv
+	stab	0,x
+	rts
+
+ld_fr1_fx			; numCalls = 1
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -1147,7 +1159,7 @@ ld_fr1_fx			; numCalls = 2
 	stab	r1
 	rts
 
-ld_fx_fr1			; numCalls = 2
+ld_fx_fr1			; numCalls = 1
 	.module	modld_fx_fr1
 	ldd	r1+3
 	std	3,x
@@ -1207,12 +1219,10 @@ next			; numCalls = 1
 _ok
 	cmpb	#11
 	bne	_flt
-	ldd	9,x
-	std	r1+1
 	ldab	8,x
 	stab	r1
+	ldd	9,x
 	ldx	1,x
-	ldd	r1+1
 	addd	1,x
 	std	r1+1
 	std	1,x
@@ -1227,7 +1237,7 @@ _ok
 	subd	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	jmp	,x
 _iopp
@@ -1235,21 +1245,22 @@ _iopp
 	subd	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	jmp	,x
-_idone
-	ldab	#11
-	bra	_done
+_done
+	ldab	0,x
+	abx
+	txs
+	ldx	tmp1
+	jmp	,x
 _flt
-	ldd	13,x
-	std	r1+3
-	ldd	11,x
-	std	r1+1
 	ldab	10,x
 	stab	r1
+	ldd	11,x
+	std	r1+1
+	ldd	13,x
 	ldx	1,x
-	ldd	r1+3
 	addd	3,x
 	std	r1+3
 	std	3,x
@@ -1272,7 +1283,7 @@ _flt
 	sbca	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	jmp	,x
 _fopp
@@ -1283,15 +1294,8 @@ _fopp
 	sbca	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_fdone
+	blt	_done
 	ldx	3,x
-	jmp	,x
-_fdone
-	ldab	#15
-_done
-	abx
-	txs
-	ldx	tmp1
 	jmp	,x
 
 pr_sr1			; numCalls = 1

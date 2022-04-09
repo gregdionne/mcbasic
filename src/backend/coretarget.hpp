@@ -53,7 +53,7 @@ protected:
   // implementation
   //  natively (direct calls via native MC6801 JSR instruction)
   //  bytecode (via the bytecode interpreter)
-  virtual std::unique_ptr<Dispatcher> makeDispatcher() = 0;
+  virtual up<Dispatcher> makeDispatcher() = 0;
 
 private:
   // The MICROCOLOR BASIC 1.0 ROM has public routines declared in $FFDC-$FFEE

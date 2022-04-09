@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -99,9 +100,7 @@ LINE_10
 
 	; M$=INKEY$
 
-	.byte	bytecode_inkey_sr1
-
-	.byte	bytecode_ld_sx_sr1
+	.byte	bytecode_inkey_sx
 	.byte	bytecode_STRVAR_M
 
 	; POKE 16384,PEEK(17023)
@@ -150,21 +149,19 @@ LLAST
 bytecode_and_ir1_ir1_ir2	.equ	0
 bytecode_clear	.equ	1
 bytecode_goto_ix	.equ	2
-bytecode_inkey_sr1	.equ	3
-bytecode_ld_sx_sr1	.equ	4
-bytecode_peek_ir1_pb	.equ	5
-bytecode_peek_ir1_pw	.equ	6
-bytecode_peek_ir2_pb	.equ	7
-bytecode_poke_pw_ir1	.equ	8
-bytecode_progbegin	.equ	9
-bytecode_progend	.equ	10
+bytecode_inkey_sx	.equ	3
+bytecode_peek_ir1_pb	.equ	4
+bytecode_peek_ir1_pw	.equ	5
+bytecode_peek_ir2_pb	.equ	6
+bytecode_poke_pw_ir1	.equ	7
+bytecode_progbegin	.equ	8
+bytecode_progend	.equ	9
 
 catalog
 	.word	and_ir1_ir1_ir2
 	.word	clear
 	.word	goto_ix
-	.word	inkey_sr1
-	.word	ld_sx_sr1
+	.word	inkey_sx
 	.word	peek_ir1_pb
 	.word	peek_ir1_pw
 	.word	peek_ir2_pb
@@ -324,6 +321,44 @@ wordext
 	ldx	,x
 	pulb
 	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
 immstr
 	ldx	curinst
 	inx
@@ -405,114 +440,6 @@ _nxtwrd
 _rts
 	rts
 
-	.module	mdstrprm
-; make a permanent string
-; ENTRY: argv -  input string descriptor
-;          X  - output string descriptor
-strprm
-	stx	tmp1
-	ldab	0+argv
-	beq	_null
-	decb
-	beq	_char
-	ldx	1+argv
-	cpx	#M_LBUF
-	blo	_const
-	cpx	#M_MSTR
-	blo	_trans
-	cpx	strbuf
-	blo	_const
-_trans
-	ldx	tmp1
-	ldab	0,x
-	ldx	1,x
-	cpx	strbuf
-	blo	_nalloc
-	cmpb	0+argv
-	beq	_copyip
-_nalloc
-	cpx	1+argv
-	bhs	_notmp
-	ldx	1+argv
-	cpx	strend
-	bhs	_notmp
-	ldx	strend
-	inx
-	inx
-	stx	strfree
-	bsr	_copy
-	ldd	strfree
-	std	1+argv
-_notmp
-	ldx	tmp1
-	pshx
-	jsr	strdel
-	pulx
-	stx	tmp1
-	ldx	strend
-	ldd	tmp1
-	std	,x
-	inx
-	inx
-	stx	strfree
-	cpx	argv+1
-	beq	_nocopy
-	bsr	_copy
-	bra	_ready
-_nocopy
-	ldab	0+argv
-	abx
-_ready
-	stx	strend
-	ldd	strfree
-	inx
-	inx
-	stx	strfree
-	clr	strtcnt
-	ldx	tmp1
-	std	1,x
-	ldab	0+argv
-	stab	0,x
-	rts
-_char
-	ldx	1+argv
-	ldab	,x
-_null
-	ldaa	#charpage>>8
-	std	1+argv
-_const
-	ldx	tmp1
-	pshx
-	jsr	strdel
-	pulx
-	ldab	0+argv
-	stab	0,x
-	ldd	1+argv
-	std	1,x
-	clr	strtcnt
-	rts
-_copyip
-	dex
-	dex
-	ldd	tmp1
-	std	,x
-	inx
-	inx
-_copy
-	sts	tmp2
-	ldab	0+argv
-	lds	1+argv
-	des
-_nxtchr
-	pula
-	staa	,x
-	inx
-	decb
-	bne	_nxtchr
-	lds	tmp2
-	clr	strtcnt
-	rts
-
 and_ir1_ir1_ir2			; numCalls = 1
 	.module	modand_ir1_ir1_ir2
 	jsr	noargs
@@ -554,30 +481,22 @@ goto_ix			; numCalls = 1
 	stx	nxtinst
 	rts
 
-inkey_sr1			; numCalls = 1
-	.module	modinkey_sr1
-	jsr	noargs
+inkey_sx			; numCalls = 1
+	.module	modinkey_sx
+	jsr	extend
+	jsr	strdel
 	ldd	#$0100+(charpage>>8)
-	std	r1
+	std	0,x
 	ldaa	M_IKEY
 	bne	_gotkey
 	jsr	R_KEYIN
 _gotkey
 	clr	M_IKEY
-	staa	r1+2
+	staa	2,x
 	bne	_rts
-	staa	r1
+	staa	0,x
 _rts
 	rts
-
-ld_sx_sr1			; numCalls = 1
-	.module	modld_sx_sr1
-	jsr	extend
-	ldab	r1
-	stab	0+argv
-	ldd	r1+1
-	std	1+argv
-	jmp	strprm
 
 peek_ir1_pb			; numCalls = 1
 	.module	modpeek_ir1_pb

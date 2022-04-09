@@ -26,7 +26,7 @@ public:
 class StatementDataPruner : public NullStatementMutator {
 public:
   void mutate(If &s) override;
-  void prune(std::vector<std::unique_ptr<Statement>> &statements);
+  void prune(std::vector<up<Statement>> &statements);
 
 private:
   using NullStatementMutator::mutate;

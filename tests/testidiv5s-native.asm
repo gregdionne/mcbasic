@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -90,8 +91,7 @@ LINE_10
 	; Z=0
 
 	ldx	#INTVAR_Z
-	ldab	#0
-	jsr	ld_ix_pb
+	jsr	clr_ix
 
 LINE_20
 
@@ -365,11 +365,9 @@ LINE_300
 
 	; Y=15.5
 
+	ldd	#FLTVAR_Y
 	ldx	#FLT_15p50000
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_Y
-	jsr	ld_fx_fr1
+	jsr	ld_fd_fx
 
 LINE_310
 
@@ -833,6 +831,13 @@ _start
 	stx	DP_DATA
 	rts
 
+clr_ix			; numCalls = 1
+	.module	modclr_ix
+	ldd	#0
+	stab	0,x
+	std	1,x
+	rts
+
 gosub_ix			; numCalls = 13
 	.module	modgosub_ix
 	ldab	#3
@@ -865,7 +870,23 @@ jmpeq_ir1_ix			; numCalls = 1
 _rts
 	rts
 
-ld_fr1_fx			; numCalls = 2
+ld_fd_fx			; numCalls = 1
+	.module	modld_fd_fx
+	std	tmp1
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	ldx	tmp1
+	std	3,x
+	ldd	1+argv
+	std	1,x
+	ldab	0+argv
+	stab	0,x
+	rts
+
+ld_fr1_fx			; numCalls = 1
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -873,16 +894,6 @@ ld_fr1_fx			; numCalls = 2
 	std	r1+1
 	ldab	0,x
 	stab	r1
-	rts
-
-ld_fx_fr1			; numCalls = 1
-	.module	modld_fx_fr1
-	ldd	r1+3
-	std	3,x
-	ldd	r1+1
-	std	1,x
-	ldab	r1
-	stab	0,x
 	rts
 
 ld_ir1_ix			; numCalls = 13
@@ -915,7 +926,7 @@ ld_ix_nw			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_ix_pb			; numCalls = 2
+ld_ix_pb			; numCalls = 1
 	.module	modld_ix_pb
 	stab	2,x
 	ldd	#0

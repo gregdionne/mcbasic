@@ -25,6 +25,10 @@ void Library::makeFoundation() {
   foundation["mdshrflt"] = Lib{0, mdShrFlt(), {}};
   foundation["mdshift"] = Lib{0, mdShift(), {"mdshlflt", "mdshrflt"}};
   foundation["mdmul12"] = Lib{0, mdMul12(), {}};
+  foundation["mdmul3f"] = Lib{0, mdMul3F(), {}};
+  foundation["mdmul3i"] = Lib{0, mdMul3I(), {}};
+  foundation["mdmulbytf"] = Lib{0, mdMulBytF(), {"mdmulbyti"}};
+  foundation["mdmulbyti"] = Lib{0, mdMulBytI(), {}};
   foundation["mdmulint"] = Lib{0, mdMulInt(), {}};
   foundation["mdmulhlf"] = Lib{0, mdMulHlf(), {"mdmulint"}};
   foundation["mdmulflt"] = Lib{0, mdMulFlt(), {"mdmulhlf"}};
@@ -32,6 +36,8 @@ void Library::makeFoundation() {
   foundation["mdpowintn"] = Lib{0, mdPowIntN(), {"mdmulint", "mdx2arg"}};
   foundation["mdpowfltn"] = Lib{0, mdPowFltN(), {"mdmulflt", "mdx2arg"}};
   foundation["mdnegx"] = Lib{0, mdNegX(), {}};
+  foundation["mdntmp2xf"] = Lib{0, mdNegTmp2XF(), {}};
+  foundation["mdntmp2xi"] = Lib{0, mdNegTmp2XI(), {}};
   foundation["mdnegargv"] = Lib{0, mdNegArgV(), {}};
   foundation["mdnegtmp"] = Lib{0, mdNegTmp(), {}};
   foundation["mdidivb"] = Lib{0, mdIDivByte(), {}};
@@ -53,6 +59,8 @@ void Library::makeFoundation() {
   foundation["mdstrlos"] = Lib{0, mdStrLos(), {"mdstrlo"}};
   foundation["mdstrlobs"] = Lib{0, mdStrLobs(), {"mdstrlo"}};
   foundation["mdstrlox"] = Lib{0, mdStrLox(), {"mdstrlo"}};
+  foundation["mdtmp2xf"] = Lib{0, mdTmp2XF(), {}};
+  foundation["mdtmp2xi"] = Lib{0, mdTmp2XI(), {}};
   foundation["mdarg2x"] = Lib{0, mdArg2X(), {}};
   foundation["mdx2arg"] = Lib{0, mdX2Arg(), {}};
   foundation["mdsqr"] = Lib{0, mdSqr(), {"mdmulflt", "mddivflt", "mdmsbit"}};
@@ -672,6 +680,36 @@ std::string Library::mdNegX() {
     tasm.com("0,x");
     tasm.rts();
   }
+  return tasm.source();
+}
+
+std::string Library::mdNegTmp2XI() {
+  Assembler tasm;
+  tasm.label("ntmp2xi");
+  tasm.ldd("#0");
+  tasm.subd("tmp2");
+  tasm.std("1,x");
+  tasm.ldab("#0");
+  tasm.sbcb("tmp1+1");
+  tasm.stab("0,x");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdNegTmp2XF() {
+  Assembler tasm;
+  tasm.label("ntmp2xf");
+  tasm.ldd("#0");
+  tasm.subd("tmp3");
+  tasm.std("3,x");
+  tasm.ldd("#0");
+  tasm.sbcb("tmp2+1");
+  tasm.sbca("tmp2");
+  tasm.std("1,x");
+  tasm.ldab("#0");
+  tasm.sbcb("tmp1+1");
+  tasm.stab("0,x");
+  tasm.rts();
   return tasm.source();
 }
 
@@ -1532,6 +1570,8 @@ std::string Library::mdRnd() {
 
 std::string Library::mdMul12() {
   Assembler tasm;
+  tasm.comment("multiply words in TMP1 and TMP2");
+  tasm.comment("result in TMP3");
   tasm.label("mul12");
   tasm.ldaa("tmp1+1");
   tasm.ldab("tmp2+1");
@@ -1548,6 +1588,103 @@ std::string Library::mdMul12() {
   tasm.tba();
   tasm.adda("tmp3");
   tasm.ldab("tmp3+1");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdMul3F() {
+  Assembler tasm;
+  tasm.comment("multiply X by 3");
+  tasm.comment("result in X");
+  tasm.comment("clobbers TMP1+1..TMP3+1");
+  tasm.label("mul3f");
+  tasm.ldd("3,x");
+  tasm.lsld();
+  tasm.std("tmp3");
+  tasm.ldd("1,x");
+  tasm.rolb();
+  tasm.rola();
+  tasm.std("tmp2");
+  tasm.ldab("0,x");
+  tasm.rolb();
+  tasm.stab("tmp1+1");
+  tasm.ldd("3,x");
+  tasm.addd("tmp3");
+  tasm.std("3,x");
+  tasm.ldd("1,x");
+  tasm.adcb("tmp2+1");
+  tasm.adca("tmp2");
+  tasm.std("1,x");
+  tasm.ldab("0,x");
+  tasm.adcb("tmp1+1");
+  tasm.stab("0,x");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdMul3I() {
+  Assembler tasm;
+  tasm.comment("multiply X by 3");
+  tasm.comment("result in X");
+  tasm.comment("clobbers TMP1+1");
+  tasm.label("mul3i");
+  tasm.ldab("0,x");
+  tasm.stab("tmp1+1");
+  tasm.ldd("1,x");
+  tasm.lsld();
+  tasm.rol("tmp1+1");
+  tasm.addd("1,x");
+  tasm.std("1,x");
+  tasm.ldab("0,x");
+  tasm.adcb("tmp1+1");
+  tasm.stab("0,x");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdMulBytF() {
+  Assembler tasm;
+  tasm.comment("multiply X with ACCB");
+  tasm.comment("result in X");
+  tasm.comment("clobbers TMP1+1...TMP3+1");
+  tasm.label("mulbytf");
+  tasm.bsr("mulbyti");
+  tasm.ldaa("4,x");
+  tasm.ldab("tmp1");
+  tasm.mul();
+  tasm.std("tmp3");
+  tasm.ldaa("3,x");
+  tasm.ldab("tmp1");
+  tasm.mul();
+  tasm.addd("tmp2+1");
+  tasm.std("tmp2+1");
+  tasm.ldd("tmp1+1");
+  tasm.adcb("#0");
+  tasm.adca("#0");
+  tasm.std("tmp1+1");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdMulBytI() {
+  Assembler tasm;
+  tasm.comment("multiply X with ACCB");
+  tasm.comment("result in TMP1+1...TMP2+1");
+  tasm.comment("clobbers TMP1");
+  tasm.label("mulbyti");
+  tasm.stab("tmp1");
+  tasm.ldaa("2,x");
+  tasm.mul();
+  tasm.std("tmp2");
+  tasm.ldaa("0,x");
+  tasm.ldab("tmp1");
+  tasm.mul();
+  tasm.stab("tmp1+1");
+  tasm.ldaa("1,x");
+  tasm.ldab("tmp1");
+  tasm.mul();
+  tasm.addd("tmp1+1");
+  tasm.std("tmp1+1");
   tasm.rts();
   return tasm.source();
 }
@@ -1769,14 +1906,12 @@ std::string Library::mdMulInt() {
   tasm.ldaa("2+argv");
   tasm.ldab("1,x");
   tasm.mul();
-  tasm.addb("tmp2");
-  tasm.adca("tmp1+1");
+  tasm.addd("tmp1+1");
   tasm.std("tmp1+1");
   tasm.ldaa("1+argv");
   tasm.ldab("2,x");
   tasm.mul();
-  tasm.addb("tmp2");
-  tasm.adca("tmp1+1");
+  tasm.addd("tmp1+1");
   tasm.std("tmp1+1");
   tasm.ldaa("2+argv");
   tasm.ldab("0,x");
@@ -2272,6 +2407,36 @@ std::string Library::mdPowFltN() {
   tasm.jsr("x2arg");
   tasm.jmp("mulfltx");
 
+  return tasm.source();
+}
+
+std::string Library::mdTmp2XI() {
+  Assembler tasm;
+  tasm.comment("copy integer tmp to [X]");
+  tasm.comment("  ENTRY  Y in tmp1+1,tmp2");
+  tasm.comment("  EXIT   Y copied to 0,x 1,x 2,x");
+  tasm.label("tmp2xi");
+  tasm.ldab("tmp1+1");
+  tasm.stab("0,x");
+  tasm.ldd("tmp2");
+  tasm.std("1,x");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdTmp2XF() {
+  Assembler tasm;
+  tasm.comment("copy fixedpt tmp to [X]");
+  tasm.comment("  ENTRY  Y in tmp1+1,tmp2,tmp3");
+  tasm.comment("  EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x");
+  tasm.label("tmp2xf");
+  tasm.ldab("tmp1+1");
+  tasm.stab("0,x");
+  tasm.ldd("tmp2");
+  tasm.std("1,x");
+  tasm.ldd("tmp3");
+  tasm.std("3,x");
+  tasm.rts();
   return tasm.source();
 }
 
@@ -3715,6 +3880,46 @@ std::string Library::mdByteCode() {
   tasm.ldd("1,x");
   tasm.pshb();
   tasm.ldab("3,x");
+  tasm.ldx("#symtbl");
+  tasm.abx();
+  tasm.abx();
+  tasm.ldx(",x");
+  tasm.pulb();
+  tasm.rts();
+
+  tasm.label("extdex");
+  tasm.ldd("curinst");
+  tasm.addd("#3");
+  tasm.std("nxtinst");
+  tasm.ldx("curinst");
+  tasm.ldab("2,x");
+  tasm.ldx("#symtbl");
+  tasm.abx();
+  tasm.abx();
+  tasm.ldd(",x");
+  tasm.pshb();
+  tasm.ldx("curinst");
+  tasm.ldab("1,x");
+  tasm.ldx("#symtbl");
+  tasm.abx();
+  tasm.abx();
+  tasm.ldx(",x");
+  tasm.pulb();
+  tasm.rts();
+
+  tasm.label("dexext");
+  tasm.ldd("curinst");
+  tasm.addd("#3");
+  tasm.std("nxtinst");
+  tasm.ldx("curinst");
+  tasm.ldab("1,x");
+  tasm.ldx("#symtbl");
+  tasm.abx();
+  tasm.abx();
+  tasm.ldd(",x");
+  tasm.pshb();
+  tasm.ldx("curinst");
+  tasm.ldab("2,x");
   tasm.ldx("#symtbl");
   tasm.abx();
   tasm.abx();

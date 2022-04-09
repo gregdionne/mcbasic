@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -106,9 +107,8 @@ LINE_80
 
 	; B=-1
 
-	.byte	bytecode_ld_ix_nb
+	.byte	bytecode_true_ix
 	.byte	bytecode_INTVAR_B
-	.byte	-1
 
 LINE_90
 
@@ -136,19 +136,18 @@ LLAST
 ; Library Catalog
 bytecode_clear	.equ	0
 bytecode_ld_ir1_ix	.equ	1
-bytecode_ld_ix_nb	.equ	2
-bytecode_ld_ix_pb	.equ	3
-bytecode_mul_ir1_ir1_ix	.equ	4
-bytecode_pr_sr1	.equ	5
-bytecode_pr_ss	.equ	6
-bytecode_progbegin	.equ	7
-bytecode_progend	.equ	8
-bytecode_str_sr1_ir1	.equ	9
+bytecode_ld_ix_pb	.equ	2
+bytecode_mul_ir1_ir1_ix	.equ	3
+bytecode_pr_sr1	.equ	4
+bytecode_pr_ss	.equ	5
+bytecode_progbegin	.equ	6
+bytecode_progend	.equ	7
+bytecode_str_sr1_ir1	.equ	8
+bytecode_true_ix	.equ	9
 
 catalog
 	.word	clear
 	.word	ld_ir1_ix
-	.word	ld_ix_nb
 	.word	ld_ix_pb
 	.word	mul_ir1_ir1_ix
 	.word	pr_sr1
@@ -156,6 +155,7 @@ catalog
 	.word	progbegin
 	.word	progend
 	.word	str_sr1_ir1
+	.word	true_ix
 
 	.module	mdbcode
 noargs
@@ -246,6 +246,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -475,14 +513,12 @@ mulint
 	ldaa	2+argv
 	ldab	1,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	1+argv
 	ldab	2,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	2+argv
 	ldab	0,x
@@ -791,14 +827,6 @@ ld_ir1_ix			; numCalls = 1
 	stab	r1
 	rts
 
-ld_ix_nb			; numCalls = 1
-	.module	modld_ix_nb
-	jsr	extbyte
-	stab	2,x
-	ldd	#-1
-	std	0,x
-	rts
-
 ld_ix_pb			; numCalls = 1
 	.module	modld_ix_pb
 	jsr	extbyte
@@ -909,6 +937,14 @@ str_sr1_ir1			; numCalls = 1
 	std	r1+1
 	ldab	tmp1
 	stab	r1
+	rts
+
+true_ix			; numCalls = 1
+	.module	modtrue_ix
+	jsr	extend
+	ldd	#-1
+	stab	0,x
+	std	1,x
 	rts
 
 ; data table

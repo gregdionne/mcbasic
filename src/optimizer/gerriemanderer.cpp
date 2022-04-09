@@ -17,57 +17,50 @@ void Gerriemanderer::operate(Line &l) {
   gms.gerriemander(l.statements);
 }
 
-std::unique_ptr<Statement> StatementGerriemanderer::mutate(If &s) {
+up<Statement> StatementGerriemanderer::mutate(If &s) {
   gerriemander(s.consequent);
-  return std::unique_ptr<Statement>();
+  return up<Statement>();
 }
 
-std::unique_ptr<Statement> StatementGerriemanderer::mutate(On &s) {
+up<Statement> StatementGerriemanderer::mutate(On &s) {
   ExprIsGerrieatric isGerrieatric;
-  if (s.branchTable.size() == 1 && s.branchIndex->inspect(&isGerrieatric)) {
+  if (s.branchTable.size() == 1 && s.branchIndex->check(&isGerrieatric)) {
     announcer.start(lineNumber);
     announcer.finish("%s gerriemandered", s.statementName().c_str());
     ExprGerriemanderer gme;
-    auto when = std::make_unique<When>();
+    auto when = makeup<When>();
     when->isSub = s.isSub;
     when->predicate = s.branchIndex->transmutate(&gme);
     when->lineNumber = s.branchTable[0];
     return when;
   }
-  return std::unique_ptr<Statement>();
+  return up<Statement>();
 }
 
-std::unique_ptr<NumericExpr> ExprGerriemanderer::mutate(NegatedExpr &e) {
-  IsBoolean isBoolean;
-  if (e.expr->inspect(&isBoolean)) {
-    return std::move(e.expr);
-  } else {
-    fprintf(stderr, "Got caught gerriemandering\n");
-    exit(1);
-  }
-  return std::unique_ptr<NumericExpr>();
-}
-
-std::unique_ptr<NumericExpr> ExprGerriemanderer::mutate(AdditiveExpr &e) {
+up<NumericExpr> ExprGerriemanderer::mutate(AdditiveExpr &e) {
   IsBoolean isBoolean;
   ConstInspector constInspector;
-  if (e.operands.size() == 1 &&
-      constInspector.isEqual(e.operands[0].get(), 1) &&
-      e.invoperands.size() == 1 && e.invoperands[0]->inspect(&isBoolean)) {
-    Complementer comp;
-    return e.invoperands[0]->transmutate(&comp);
-  } else {
-    fprintf(stderr, "Got caught gerriemandering\n");
-    exit(1);
+
+  if (e.invoperands.size() == 1 && e.invoperands[0]->check(&isBoolean)) {
+    auto sz = e.operands.size();
+    if (sz == 0 || constInspector.isEqual(e.operands[0].get(), 0)) {
+      return mv(e.invoperands[0]);
+    } else if (sz == 1 && constInspector.isEqual(e.operands[0].get(), 1)) {
+      Complementer comp;
+      return e.invoperands[0]->transmutate(&comp);
+    } else {
+      fprintf(stderr, "Got caught gerriemandering\n");
+      exit(1);
+    }
   }
-  return std::unique_ptr<NumericExpr>();
+  return up<NumericExpr>();
 }
 
 void StatementGerriemanderer::gerriemander(
-    std::vector<std::unique_ptr<Statement>> &statements) {
+    std::vector<up<Statement>> &statements) {
   for (auto &statement : statements) {
-    if (auto when = statement->mutate(this)) {
-      statement = std::move(when);
+    if (auto when = statement->transmutate(this)) {
+      statement = mv(when);
     }
   }
 }

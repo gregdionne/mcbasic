@@ -27,7 +27,6 @@ public:
   void inspect(const NumericArrayExpr &e) const override;
   void inspect(const ArrayIndicesExpr &e) const override;
   void inspect(const PrintTabExpr &e) const override;
-  void inspect(const NegatedExpr &e) const override;
   void inspect(const PowerExpr &e) const override;
   void inspect(const IntegerDivisionExpr &e) const override;
   void inspect(const MultiplicativeExpr &e) const override;
@@ -47,6 +46,7 @@ public:
   void inspect(const TanExpr &e) const override;
   void inspect(const RndExpr &e) const override;
   void inspect(const PeekExpr &e) const override;
+  void inspect(const PeekWordExpr &e) const override;
   void inspect(const RelationalExpr &e) const override;
   void inspect(const PointExpr &e) const override;
 
@@ -58,6 +58,8 @@ public:
   void inspect(const PrintCommaExpr &) const override{};
   void inspect(const InkeyExpr &) const override{};
   void inspect(const MemExpr &) const override{};
+  void inspect(const PosExpr &) const override{};
+  void inspect(const TimerExpr &) const override{};
 
 private:
   ConstTable &constTable;
@@ -74,8 +76,9 @@ public:
   void inspect(const On &s) const override;
   void inspect(const Dim &s) const override;
   void inspect(const Let &s) const override;
-  void inspect(const Inc &s) const override;
-  void inspect(const Dec &s) const override;
+  void inspect(const Accum &s) const override;
+  void inspect(const Decum &s) const override;
+  void inspect(const Necum &s) const override;
   void inspect(const Poke &s) const override;
   void inspect(const Clear &s) const override;
   void inspect(const Set &s) const override;

@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -118,8 +119,7 @@ LINE_30
 	; FOR I=0 TO 7
 
 	ldx	#INTVAR_I
-	ldab	#0
-	jsr	for_ix_pb
+	jsr	forclr_ix
 
 	ldab	#7
 	jsr	to_ip_pb
@@ -127,16 +127,12 @@ LINE_30
 	; POKE MC+I,PEEK(KS+I)
 
 	ldx	#INTVAR_MC
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_I
-	jsr	add_ir1_ir1_ix
+	ldd	#INTVAR_I
+	jsr	add_ir1_ix_id
 
 	ldx	#INTVAR_KS
-	jsr	ld_ir2_ix
-
-	ldx	#INTVAR_I
-	jsr	add_ir2_ir2_ix
+	ldd	#INTVAR_I
+	jsr	add_ir2_ix_id
 
 	jsr	peek_ir2_ir2
 
@@ -210,10 +206,8 @@ LINE_70
 
 	; KY$=INKEY$
 
-	jsr	inkey_sr1
-
 	ldx	#STRVAR_KY
-	jsr	ld_sx_sr1
+	jsr	inkey_sx
 
 	; REM NEEDED FOR COMPILER ONLY
 
@@ -357,114 +351,6 @@ _nxtwrd
 _rts
 	rts
 
-	.module	mdstrprm
-; make a permanent string
-; ENTRY: argv -  input string descriptor
-;          X  - output string descriptor
-strprm
-	stx	tmp1
-	ldab	0+argv
-	beq	_null
-	decb
-	beq	_char
-	ldx	1+argv
-	cpx	#M_LBUF
-	blo	_const
-	cpx	#M_MSTR
-	blo	_trans
-	cpx	strbuf
-	blo	_const
-_trans
-	ldx	tmp1
-	ldab	0,x
-	ldx	1,x
-	cpx	strbuf
-	blo	_nalloc
-	cmpb	0+argv
-	beq	_copyip
-_nalloc
-	cpx	1+argv
-	bhs	_notmp
-	ldx	1+argv
-	cpx	strend
-	bhs	_notmp
-	ldx	strend
-	inx
-	inx
-	stx	strfree
-	bsr	_copy
-	ldd	strfree
-	std	1+argv
-_notmp
-	ldx	tmp1
-	pshx
-	jsr	strdel
-	pulx
-	stx	tmp1
-	ldx	strend
-	ldd	tmp1
-	std	,x
-	inx
-	inx
-	stx	strfree
-	cpx	argv+1
-	beq	_nocopy
-	bsr	_copy
-	bra	_ready
-_nocopy
-	ldab	0+argv
-	abx
-_ready
-	stx	strend
-	ldd	strfree
-	inx
-	inx
-	stx	strfree
-	clr	strtcnt
-	ldx	tmp1
-	std	1,x
-	ldab	0+argv
-	stab	0,x
-	rts
-_char
-	ldx	1+argv
-	ldab	,x
-_null
-	ldaa	#charpage>>8
-	std	1+argv
-_const
-	ldx	tmp1
-	pshx
-	jsr	strdel
-	pulx
-	ldab	0+argv
-	stab	0,x
-	ldd	1+argv
-	std	1,x
-	clr	strtcnt
-	rts
-_copyip
-	dex
-	dex
-	ldd	tmp1
-	std	,x
-	inx
-	inx
-_copy
-	sts	tmp2
-	ldab	0+argv
-	lds	1+argv
-	des
-_nxtchr
-	pula
-	staa	,x
-	inx
-	decb
-	bne	_nxtchr
-	lds	tmp2
-	clr	strtcnt
-	rts
-
 	.module	mdtonat
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
@@ -523,9 +409,13 @@ _done
 	ldx	tmp1
 	jmp	,x
 
-add_ir1_ir1_ix			; numCalls = 1
-	.module	modadd_ir1_ir1_ix
-	ldd	r1+1
+add_ir1_ix_id			; numCalls = 1
+	.module	modadd_ir1_ix_id
+	std	tmp1
+	ldab	0,x
+	stab	r1
+	ldd	1,x
+	ldx	tmp1
 	addd	1,x
 	std	r1+1
 	ldab	r1
@@ -533,9 +423,13 @@ add_ir1_ir1_ix			; numCalls = 1
 	stab	r1
 	rts
 
-add_ir2_ir2_ix			; numCalls = 1
-	.module	modadd_ir2_ir2_ix
-	ldd	r2+1
+add_ir2_ix_id			; numCalls = 1
+	.module	modadd_ir2_ix_id
+	std	tmp1
+	ldab	0,x
+	stab	r2
+	ldd	1,x
+	ldx	tmp1
 	addd	1,x
 	std	r2+1
 	ldab	r2
@@ -565,11 +459,11 @@ _start
 	stx	DP_DATA
 	rts
 
-for_ix_pb			; numCalls = 1
-	.module	modfor_ix_pb
+forclr_ix			; numCalls = 1
+	.module	modforclr_ix
 	stx	letptr
-	clra
-	staa	0,x
+	ldd	#0
+	stab	0,x
 	std	1,x
 	rts
 
@@ -579,27 +473,20 @@ goto_ix			; numCalls = 1
 	ins
 	jmp	,x
 
-inkey_sr1			; numCalls = 1
-	.module	modinkey_sr1
+inkey_sx			; numCalls = 1
+	.module	modinkey_sx
+	jsr	strdel
 	ldd	#$0100+(charpage>>8)
-	std	r1
+	std	0,x
 	ldaa	M_IKEY
 	bne	_gotkey
 	jsr	R_KEYIN
 _gotkey
 	clr	M_IKEY
-	staa	r1+2
+	staa	2,x
 	bne	_rts
-	staa	r1
+	staa	0,x
 _rts
-	rts
-
-ld_ir1_ix			; numCalls = 1
-	.module	modld_ir1_ix
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
 	rts
 
 ld_ir1_pb			; numCalls = 5
@@ -609,28 +496,12 @@ ld_ir1_pb			; numCalls = 5
 	std	r1
 	rts
 
-ld_ir2_ix			; numCalls = 1
-	.module	modld_ir2_ix
-	ldd	1,x
-	std	r2+1
-	ldab	0,x
-	stab	r2
-	rts
-
 ld_ix_pw			; numCalls = 2
 	.module	modld_ix_pw
 	std	1,x
 	ldab	#0
 	stab	0,x
 	rts
-
-ld_sx_sr1			; numCalls = 1
-	.module	modld_sx_sr1
-	ldab	r1
-	stab	0+argv
-	ldd	r1+1
-	std	1+argv
-	jmp	strprm
 
 next			; numCalls = 1
 	.module	modnext
@@ -645,12 +516,10 @@ next			; numCalls = 1
 _ok
 	cmpb	#11
 	bne	_flt
-	ldd	9,x
-	std	r1+1
 	ldab	8,x
 	stab	r1
+	ldd	9,x
 	ldx	1,x
-	ldd	r1+1
 	addd	1,x
 	std	r1+1
 	std	1,x
@@ -665,7 +534,7 @@ _ok
 	subd	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	jmp	,x
 _iopp
@@ -673,21 +542,22 @@ _iopp
 	subd	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	jmp	,x
-_idone
-	ldab	#11
-	bra	_done
+_done
+	ldab	0,x
+	abx
+	txs
+	ldx	tmp1
+	jmp	,x
 _flt
-	ldd	13,x
-	std	r1+3
-	ldd	11,x
-	std	r1+1
 	ldab	10,x
 	stab	r1
+	ldd	11,x
+	std	r1+1
+	ldd	13,x
 	ldx	1,x
-	ldd	r1+3
 	addd	3,x
 	std	r1+3
 	std	3,x
@@ -710,7 +580,7 @@ _flt
 	sbca	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	jmp	,x
 _fopp
@@ -721,15 +591,8 @@ _fopp
 	sbca	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_fdone
+	blt	_done
 	ldx	3,x
-	jmp	,x
-_fdone
-	ldab	#15
-_done
-	abx
-	txs
-	ldx	tmp1
 	jmp	,x
 
 peek_ir1_pb			; numCalls = 3

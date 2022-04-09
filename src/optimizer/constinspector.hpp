@@ -26,9 +26,6 @@ public:
   utils::optional<double> inspect(const NaryNumericExpr & /*expr*/) const {
     return utils::optional<double>();
   }
-  utils::optional<double> inspect(const NegatedExpr & /*expr*/) const {
-    return utils::optional<double>();
-  }
   utils::optional<double> inspect(const PowerExpr & /*expr*/) const {
     return utils::optional<double>();
   }
@@ -104,6 +101,15 @@ public:
   utils::optional<double> inspect(const MemExpr & /*expr*/) const {
     return utils::optional<double>();
   }
+  utils::optional<double> inspect(const PosExpr & /*expr*/) const {
+    return utils::optional<double>();
+  }
+  utils::optional<double> inspect(const TimerExpr & /*expr*/) const {
+    return utils::optional<double>();
+  }
+  utils::optional<double> inspect(const PeekWordExpr & /*expr*/) const {
+    return utils::optional<double>();
+  }
 
   utils::optional<std::string> inspect(const StringConstantExpr &e) const {
     return utils::optional<std::string>(e.value);
@@ -148,6 +154,14 @@ public:
   }
   utils::optional<std::string> inspect(const InkeyExpr & /*expr*/) const {
     return utils::optional<std::string>();
+  }
+
+  inline bool isEqual(const Expr *e, double value) {
+    if (auto ne = dynamic_cast<const NumericExpr *>(e)) {
+      auto val = ne->constify(this);
+      return val && *val == value;
+    }
+    return false;
   }
 
   inline bool isEqual(const NumericExpr *e, double value) {

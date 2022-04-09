@@ -16,31 +16,30 @@ void OnFolder::operate(Line &l) {
   osf.fold(l.statements);
 }
 
-std::unique_ptr<Statement> OnStatementFolder::mutate(If &s) {
+up<Statement> OnStatementFolder::mutate(If &s) {
   fold(s.consequent);
-  return std::unique_ptr<Statement>();
+  return up<Statement>();
 }
 
-std::unique_ptr<Statement> OnStatementFolder::mutate(On &s) {
+up<Statement> OnStatementFolder::mutate(On &s) {
   ConstInspector constInspector;
   if (auto value = s.branchIndex->constify(&constInspector)) {
     double item = std::floor(*value);
 
-    auto go = std::make_unique<Go>();
+    auto go = makeup<Go>();
     go->isSub = s.isSub;
     go->lineNumber =
         item < 1 || item > s.branchTable.size() ? -1 : s.branchTable[item - 1];
     return go;
   }
 
-  return std::unique_ptr<Statement>();
+  return up<Statement>();
 }
 
-void OnStatementFolder::fold(
-    std::vector<std::unique_ptr<Statement>> &statements) {
+void OnStatementFolder::fold(std::vector<up<Statement>> &statements) {
   auto it = statements.begin();
   while (it != statements.end()) {
-    if (auto statement = (*it)->mutate(this)) {
+    if (auto statement = (*it)->transmutate(this)) {
       announcer.start(lineNumber);
       announcer.say("%s ", (*it)->statementName().c_str());
       auto *go = dynamic_cast<Go *>(statement.get());
@@ -50,7 +49,7 @@ void OnStatementFolder::fold(
       } else {
         announcer.finish("replaced with %s %i.", go->statementName().c_str(),
                          go->lineNumber);
-        *it = std::move(statement);
+        *it = mv(statement);
         ++it;
       }
     } else {

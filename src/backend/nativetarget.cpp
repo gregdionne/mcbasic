@@ -21,6 +21,6 @@ std::string NativeTarget::generateCode(InstQueue &queue) {
   return ops;
 }
 
-std::unique_ptr<Dispatcher> NativeTarget::makeDispatcher() {
-  return std::make_unique<Dispatcher>(std::make_unique<NativeImplementation>());
+up<Dispatcher> NativeTarget::makeDispatcher() {
+  return makeup<Dispatcher>(makeup<NativeImplementation>());
 }

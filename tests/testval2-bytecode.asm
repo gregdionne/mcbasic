@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -122,9 +123,7 @@ LINE_100
 
 	; A$=INKEY$
 
-	.byte	bytecode_inkey_sr1
-
-	.byte	bytecode_ld_sx_sr1
+	.byte	bytecode_inkey_sx
 	.byte	bytecode_STRVAR_A
 
 LINE_105
@@ -173,7 +172,7 @@ LLAST
 ; Library Catalog
 bytecode_clear	.equ	0
 bytecode_goto_ix	.equ	1
-bytecode_inkey_sr1	.equ	2
+bytecode_inkey_sx	.equ	2
 bytecode_jmpne_ir1_ix	.equ	3
 bytecode_ld_sr1_ss	.equ	4
 bytecode_ld_sr1_sx	.equ	5
@@ -190,7 +189,7 @@ bytecode_val_fr1_sx	.equ	14
 catalog
 	.word	clear
 	.word	goto_ix
-	.word	inkey_sr1
+	.word	inkey_sx
 	.word	jmpne_ir1_ix
 	.word	ld_sr1_ss
 	.word	ld_sr1_sx
@@ -350,6 +349,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -1193,19 +1230,20 @@ goto_ix			; numCalls = 1
 	stx	nxtinst
 	rts
 
-inkey_sr1			; numCalls = 1
-	.module	modinkey_sr1
-	jsr	noargs
+inkey_sx			; numCalls = 1
+	.module	modinkey_sx
+	jsr	extend
+	jsr	strdel
 	ldd	#$0100+(charpage>>8)
-	std	r1
+	std	0,x
 	ldaa	M_IKEY
 	bne	_gotkey
 	jsr	R_KEYIN
 _gotkey
 	clr	M_IKEY
-	staa	r1+2
+	staa	2,x
 	bne	_rts
-	staa	r1
+	staa	0,x
 _rts
 	rts
 
@@ -1242,7 +1280,7 @@ ld_sr1_sx			; numCalls = 1
 	stab	r1
 	rts
 
-ld_sx_sr1			; numCalls = 2
+ld_sx_sr1			; numCalls = 1
 	.module	modld_sx_sr1
 	jsr	extend
 	ldab	r1

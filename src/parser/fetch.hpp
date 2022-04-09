@@ -10,7 +10,7 @@
 //  The author has given it just enough attention to survive being called
 //  from classes created in C++11 and then C++14.
 //
-//  It could use const correctness and std::unique_ptr<> hints.
+//  It could use const correctness.
 //
 //  It will then need to be modernized again in another ten years.
 

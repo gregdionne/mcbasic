@@ -21,8 +21,9 @@ public:
   virtual void mutate(Dim & /*s*/) override {}
   virtual void mutate(Read & /*s*/) override {}
   virtual void mutate(Let & /*s*/) override {}
-  virtual void mutate(Inc & /*s*/) override {}
-  virtual void mutate(Dec & /*s*/) override {}
+  virtual void mutate(Accum & /*s*/) override {}
+  virtual void mutate(Decum & /*s*/) override {}
+  virtual void mutate(Necum & /*s*/) override {}
   virtual void mutate(Run & /*s*/) override {}
   virtual void mutate(Restore & /*s*/) override {}
   virtual void mutate(Return & /*s*/) override {}

@@ -18,7 +18,7 @@ public:
   explicit Accumulizer(const Announcer &&a) : announcer(a) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
-  std::unique_ptr<Statement> accumulant;
+  up<Statement> accumulant;
   const Announcer announcer;
 };
 
@@ -26,10 +26,10 @@ class StatementAccumulizer : public NullStatementTransmutator {
 public:
   StatementAccumulizer(const Announcer &a, int linenum)
       : announcer(a), lineNumber(linenum) {}
-  std::unique_ptr<Statement> mutate(If &s) override;
-  std::unique_ptr<Statement> mutate(Let &s) override;
+  up<Statement> mutate(If &s) override;
+  up<Statement> mutate(Let &s) override;
 
-  void accumulize(std::vector<std::unique_ptr<Statement>> &statements);
+  void accumulize(std::vector<up<Statement>> &statements);
 
 private:
   using NullStatementTransmutator::mutate;

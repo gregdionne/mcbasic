@@ -14,8 +14,7 @@ template <typename T> class optional {
 public:
   optional() : initialized_(false), value_{} {} // value_{} begrudgingly added
   explicit optional(const T &value) : initialized_(true), value_{value} {}
-  explicit optional(const T &&value)
-      : initialized_(true), value_{std::move(value)} {}
+  explicit optional(const T &&value) : initialized_(true), value_{mv(value)} {}
   explicit operator bool() const { return initialized_; }
   bool has_value() const { return initialized_; }
   const T &value() const { return value_; }

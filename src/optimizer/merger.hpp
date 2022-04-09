@@ -38,7 +38,6 @@ public:
   void mutate(ChrExpr &e) override;
   void mutate(NumericArrayExpr &e) override;
   void mutate(ArrayIndicesExpr &e) override;
-  void mutate(NegatedExpr &e) override;
   void mutate(PowerExpr &e) override;
   void mutate(IntegerDivisionExpr &e) override;
   void mutate(MultiplicativeExpr &e) override;
@@ -54,6 +53,7 @@ public:
   void mutate(RelationalExpr &e) override;
   void mutate(PointExpr &e) override;
   void mutate(PrintTabExpr &e) override;
+  void mutate(PeekWordExpr &e) override;
 
   void mutate(NumericConstantExpr &) override {}
   void mutate(StringConstantExpr &) override {}
@@ -72,26 +72,31 @@ public:
   void mutate(TanExpr &) override {}
   void mutate(InkeyExpr &) override {}
   void mutate(MemExpr &) override {}
+  void mutate(PosExpr &) override {}
+  void mutate(TimerExpr &) override {}
 
-  void merge(std::unique_ptr<NumericExpr> &expr);
-  void merge(std::unique_ptr<StringExpr> &expr);
-  void merge(std::unique_ptr<Expr> &expr);
+  void merge(up<NumericExpr> &expr);
+  void merge(up<StringExpr> &expr);
+  void merge(up<Expr> &expr);
   void merge(NaryNumericExpr &e);
 
   IsFloat isFloat;
 
 private:
-  // replace an empty N-ary exprssion with its identity
-  static void reduceNullOp(std::unique_ptr<NumericExpr> &expr);
-
   // remove identity elements from N-ary argument list
-  static void pruneIdentity(std::vector<std::unique_ptr<NumericExpr>> &operands,
+  static void pruneIdentity(std::vector<up<NumericExpr>> &operands,
                             double identity);
+
   // remove multiplication if only one argument
   // remove addition if only one argument
-  // replace subtraction with negation if only one argument
   //
-  static void mergeUnaryOp(std::unique_ptr<NumericExpr> &expr);
+  static void reduceNaryExpr(up<NumericExpr> &expr);
+
+  // replace
+  //   - ( - <expr1> * <expr2> ) with <expr1> * <expr2>
+  //   - (   <expr1> / -<expr2>) with <expr1> * <expr2>
+  //
+  static void mergeNegatedMultiplication(up<NumericExpr> &expr);
 
   // replace
   //    <integer> *   <boolean> with <boolean> AND - <integer>
@@ -99,50 +104,58 @@ private:
   //  - <integer> *   <boolean> with <boolean> AND <integer>
   //    <boolean> * - <integer> with <boolean> AND <integer>
   //
-  static void reduceRelationalMultiplication(std::unique_ptr<NumericExpr> &expr,
-                                             IsFloat &isFloat,
-                                             ExprMerger *that);
+  void reduceRelationalMultiplication(up<NumericExpr> &expr, IsFloat &isFloat);
   // replace
   //    2^<integer>  with SHIFT(1, <integer>) for non-zero N
-  static void reducePowerOfTwo(std::unique_ptr<NumericExpr> &expr,
-                               IsFloat &isFloat, ExprMerger *that);
+  void reducePowerOfTwo(up<NumericExpr> &expr, IsFloat &isFloat);
 
   // replace
   //    <number> * F, where F = 2^N  with SHIFT(<number>, N) for non-zero N
   //    <number> / F, where F = 2^N  with SHIFT(<number>,-N) for non-zero N
   //                                      <number>           for N zero.
   //
-  static void reducePowerOfTwoMultiplication(std::unique_ptr<NumericExpr> &expr,
-                                             ExprMerger *that);
+  void reducePowerOfTwoMultiplication(up<NumericExpr> &expr);
+  bool reducePowerOfTwoMultiplication(up<NumericExpr> &expr,
+                                      std::vector<up<NumericExpr>> &ops,
+                                      int sign);
 
   // replace
-  //   INT(X/Y) with IDIV(X,Y)
-  static void mergeIntegerDivision(std::unique_ptr<NumericExpr> &expr,
-                                   ExprMerger *that);
+  //   INT(<expr1>/<expr2>) with IDIV(<expr1>,<expr2>)
+  void reduceIntegerDivision(up<NumericExpr> &expr);
 
-  // replace - ( -(<expr1>) * <expr2> ) with <expr1>*<expr2>
+  // replace <expr>*-1 or <expr>/-1 with -<expr>
   //
-  static void mergeNegatedMultiplication(std::unique_ptr<NumericExpr> &expr);
-
-  // replace - ( <expr1> - <expr2>  ) with <expr2> - <expr1>
-  //
-  static void mergeNegatedSum(std::unique_ptr<NumericExpr> &expr);
-
-  // replace - ( - (<expr> ) ) with <expr>
-  //
-  static void mergeDoubleNegation(std::unique_ptr<NumericExpr> &expr);
+  static void reduceMultiplyByNegativeOne(up<NumericExpr> &expr);
 
   // replace SHIFT(SHIFT(<expr>, m), n) with SHIFT(<expr>, m+n)
   //
-  static void mergeDoubleShift(std::unique_ptr<NumericExpr> &expr,
-                               ExprMerger *that);
+  void mergeDoubleShift(up<NumericExpr> &expr);
+
+  // replace expressions involving consecutive PEEKS
+  //
+  void mergeDoublePeek(up<NumericExpr> &expr);
+  static bool mergeDoublePeek(std::vector<up<NumericExpr>> &ops);
+
+  // replace PEEK(9)*256+PEEK(10) with TIMER
+  //
+  static bool mergeWithTimer(PeekExpr *peek1,
+                             std::vector<up<NumericExpr>> &ops);
+
+  // replace (PEEK(17024)AND1)*256+PEEK(17025) with POS
+  //
+  static bool mergeWithPos(PeekExpr *peek1, std::vector<up<NumericExpr>> &ops);
+
+  // replace PEEK(<expr>)*256+PEEK(<expr>+1) with PEEK(<expr>)
+  //   for <expr> either constant or a variable name
+  static bool mergeWithPeekWord(PeekExpr *peek1,
+                                std::vector<up<NumericExpr>> &ops);
 
   // move relational operators earlier in expression
   //   (delays promoting bool to integer)
   // move constants and variables towards end of expression
   //   (reduce register pressure)
   //
-  static void knead(std::vector<std::unique_ptr<NumericExpr>> &operands);
+  static void knead(std::vector<up<NumericExpr>> &operands);
 };
 
 class StatementMerger : public NullStatementMutator {
@@ -155,8 +168,9 @@ public:
   void mutate(On &s) override;
   void mutate(Dim &s) override;
   void mutate(Let &s) override;
-  void mutate(Inc &s) override;
-  void mutate(Dec &s) override;
+  void mutate(Accum &s) override;
+  void mutate(Decum &s) override;
+  void mutate(Necum &s) override;
   void mutate(Poke &s) override;
   void mutate(Clear &s) override;
   void mutate(Set &s) override;

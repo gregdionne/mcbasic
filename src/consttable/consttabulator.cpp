@@ -60,11 +60,15 @@ void StatementConstTabulator::inspect(const Dim &s) const {
   }
 }
 
-void StatementConstTabulator::inspect(const Inc &s) const {
+void StatementConstTabulator::inspect(const Accum &s) const {
   s.rhs->inspect(that);
 }
 
-void StatementConstTabulator::inspect(const Dec &s) const {
+void StatementConstTabulator::inspect(const Decum &s) const {
+  s.rhs->inspect(that);
+}
+
+void StatementConstTabulator::inspect(const Necum &s) const {
   s.rhs->inspect(that);
 }
 
@@ -185,10 +189,6 @@ void ExprConstTabulator::inspect(const ShiftExpr &e) const {
   e.expr->inspect(this);
 }
 
-void ExprConstTabulator::inspect(const NegatedExpr &e) const {
-  e.expr->inspect(this);
-}
-
 void ExprConstTabulator::inspect(const ComplementedExpr &e) const {
   e.expr->inspect(this);
 }
@@ -230,6 +230,10 @@ void ExprConstTabulator::inspect(const TanExpr &e) const {
 }
 
 void ExprConstTabulator::inspect(const PeekExpr &e) const {
+  e.expr->inspect(this);
+}
+
+void ExprConstTabulator::inspect(const PeekWordExpr &e) const {
   e.expr->inspect(this);
 }
 

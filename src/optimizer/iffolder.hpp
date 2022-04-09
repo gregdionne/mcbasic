@@ -17,12 +17,12 @@ public:
 
   using NullStatementMutator::mutate;
 
-  void fold(std::vector<std::unique_ptr<Statement>> &statements);
+  void fold(std::vector<up<Statement>> &statements);
 
   const int lineNumber;
   const Announcer &announcer;
   bool needsReplacement = false;
-  std::vector<std::unique_ptr<Statement>> replacement;
+  std::vector<up<Statement>> replacement;
 };
 
 class IfFolder : public ProgramOp {
@@ -32,7 +32,7 @@ public:
   void operate(Line &l) override;
 
   const Announcer announcer;
-  std::vector<std::unique_ptr<Line>>::iterator itCurrentLine;
+  std::vector<up<Line>>::iterator itCurrentLine;
 };
 
 #endif

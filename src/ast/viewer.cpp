@@ -133,11 +133,6 @@ void ExprViewer::absorb(const ShiftExpr &e) {
   indentOp(e.count, this);
 }
 
-void ExprViewer::absorb(const NegatedExpr &e) {
-  printtab(n, "-(neg)");
-  indentOp(e.expr, this);
-}
-
 void ExprViewer::absorb(const ComplementedExpr &e) {
   printtab(n, "NOT");
   indentOp(e.expr, this);
@@ -260,6 +255,15 @@ void ExprViewer::absorb(const InkeyExpr & /*expr*/) { printtab(n, "INKEY$"); }
 
 void ExprViewer::absorb(const MemExpr & /*expr*/) { printtab(n, "MEM"); }
 
+void ExprViewer::absorb(const TimerExpr & /*expr*/) { printtab(n, "TIMER"); }
+
+void ExprViewer::absorb(const PosExpr & /*expr*/) { printtab(n, "POS"); }
+
+void ExprViewer::absorb(const PeekWordExpr &e) {
+  printtab(n, "PEEKW");
+  indentOp(e.expr, this);
+}
+
 void StatementViewer::absorb(const Rem &s) {
   printtab(n, "REM");
   printtab(n + 1, s.comment.c_str());
@@ -359,14 +363,20 @@ void StatementViewer::absorb(const Let &s) {
   indentOp(s.rhs, that);
 }
 
-void StatementViewer::absorb(const Inc &s) {
-  printtab(n, "INC");
+void StatementViewer::absorb(const Accum &s) {
+  printtab(n, "ACCUM");
   indentOp(s.lhs, that);
   indentOp(s.rhs, that);
 }
 
-void StatementViewer::absorb(const Dec &s) {
-  printtab(n, "DEC");
+void StatementViewer::absorb(const Decum &s) {
+  printtab(n, "DECUM");
+  indentOp(s.lhs, that);
+  indentOp(s.rhs, that);
+}
+
+void StatementViewer::absorb(const Necum &s) {
+  printtab(n, "NECUM");
   indentOp(s.lhs, that);
   indentOp(s.rhs, that);
 }

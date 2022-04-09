@@ -21,8 +21,9 @@ public:
   virtual bool inspect(const Dim & /*s*/) const { return true; }
   virtual bool inspect(const Read & /*s*/) const { return true; }
   virtual bool inspect(const Let & /*s*/) const { return true; }
-  virtual bool inspect(const Inc & /*s*/) const { return true; }
-  virtual bool inspect(const Dec & /*s*/) const { return true; }
+  virtual bool inspect(const Accum & /*s*/) const { return true; }
+  virtual bool inspect(const Decum & /*s*/) const { return true; }
+  virtual bool inspect(const Necum & /*s*/) const { return true; }
   virtual bool inspect(const Run & /*s*/) const { return true; }
   virtual bool inspect(const Restore & /*s*/) const { return true; }
   virtual bool inspect(const Return & /*s*/) const { return true; }

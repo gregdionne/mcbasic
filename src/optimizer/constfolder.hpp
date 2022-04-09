@@ -29,7 +29,6 @@ public:
   void mutate(NumericVariableExpr &e) override;
   void mutate(NumericArrayExpr &e) override;
   void mutate(ArrayIndicesExpr &e) override;
-  void mutate(NegatedExpr &e) override;
   void mutate(PowerExpr &e) override;
   void mutate(IntegerDivisionExpr &e) override;
   void mutate(MultiplicativeExpr &e) override;
@@ -53,6 +52,9 @@ public:
   void mutate(PointExpr &e) override;
   void mutate(InkeyExpr &e) override;
   void mutate(MemExpr &e) override;
+  void mutate(PosExpr &e) override;
+  void mutate(TimerExpr &e) override;
+  void mutate(PeekWordExpr &e) override;
 
   void mutate(NaryNumericExpr &) override { gotConst = false; };
   void mutate(PrintCommaExpr &) override { gotConst = false; };
@@ -63,14 +65,14 @@ public:
   double fetchConst(NumericExpr &e);
   std::string fetchConst(StringExpr &e);
 
-  bool fold(std::unique_ptr<Expr> &expr);
-  bool fold(std::unique_ptr<NumericExpr> &expr);
-  bool fold(std::unique_ptr<StringExpr> &expr);
-  bool fold(std::unique_ptr<NumericExpr> &expr, double &value);
-  bool fold(std::unique_ptr<StringExpr> &expr, std::string &value);
+  bool fold(up<Expr> &expr);
+  bool fold(up<NumericExpr> &expr);
+  bool fold(up<StringExpr> &expr);
+  bool fold(up<NumericExpr> &expr, double &value);
+  bool fold(up<StringExpr> &expr, std::string &value);
 
-  void fold(std::vector<std::unique_ptr<NumericExpr>> &operands,
-            bool &enableFold, bool &folded, int &iOffset, double &value,
+  void fold(std::vector<up<NumericExpr>> &operands, bool &enableFold,
+            bool &folded, int &iOffset, double &value,
             void (*op)(double &value, double v));
 };
 
@@ -87,8 +89,9 @@ public:
   void mutate(Dim &s) override;
   void mutate(Read &s) override;
   void mutate(Let &s) override;
-  void mutate(Inc &s) override;
-  void mutate(Dec &s) override;
+  void mutate(Accum &s) override;
+  void mutate(Decum &s) override;
+  void mutate(Necum &s) override;
   void mutate(Poke &s) override;
   void mutate(Clear &s) override;
   void mutate(Set &s) override;

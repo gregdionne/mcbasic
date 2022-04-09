@@ -14,7 +14,6 @@ public:
   bool inspect(const ValExpr &e) const override;
   bool inspect(const AbsExpr &e) const override;
   bool inspect(const ShiftExpr &e) const override;
-  bool inspect(const NegatedExpr &e) const override;
   bool inspect(const PowerExpr &e) const override;
   bool inspect(const MultiplicativeExpr &e) const override;
   bool inspect(const AdditiveExpr &e) const override;

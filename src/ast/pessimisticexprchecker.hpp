@@ -35,7 +35,6 @@ public:
   virtual bool inspect(const PrintSpaceExpr & /*expr*/) const { return false; }
   virtual bool inspect(const PrintCRExpr & /*expr*/) const { return false; }
   virtual bool inspect(const PrintCommaExpr & /*expr*/) const { return false; }
-  virtual bool inspect(const NegatedExpr & /*expr*/) const { return false; }
   virtual bool inspect(const PowerExpr & /*expr*/) const { return false; }
   virtual bool inspect(const IntegerDivisionExpr & /*expr*/) const {
     return false;
@@ -73,6 +72,9 @@ public:
   virtual bool inspect(const PointExpr & /*expr*/) const { return false; }
   virtual bool inspect(const InkeyExpr & /*expr*/) const { return false; }
   virtual bool inspect(const MemExpr & /*expr*/) const { return false; }
+  virtual bool inspect(const TimerExpr & /*expr*/) const { return false; }
+  virtual bool inspect(const PosExpr & /*expr*/) const { return false; }
+  virtual bool inspect(const PeekWordExpr & /*expr*/) const { return false; }
 };
 
 #endif

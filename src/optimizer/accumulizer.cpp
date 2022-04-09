@@ -18,12 +18,12 @@ void Accumulizer::operate(Line &l) {
   accumulizer.accumulize(l.statements);
 }
 
-std::unique_ptr<Statement> StatementAccumulizer::mutate(If &s) {
+up<Statement> StatementAccumulizer::mutate(If &s) {
   accumulize(s.consequent);
-  return std::unique_ptr<Statement>();
+  return up<Statement>();
 }
 
-std::unique_ptr<Statement> StatementAccumulizer::mutate(Let &s) {
+up<Statement> StatementAccumulizer::mutate(Let &s) {
   IsEqual isEqual(s.lhs.get());
 
   auto *addExpr = dynamic_cast<AdditiveExpr *>(s.rhs.get());
@@ -31,7 +31,7 @@ std::unique_ptr<Statement> StatementAccumulizer::mutate(Let &s) {
   if (addExpr != nullptr) {
     for (auto itOp = addExpr->operands.begin(); itOp != addExpr->operands.end();
          ++itOp) {
-      if ((*itOp)->inspect(&isEqual)) {
+      if ((*itOp)->check(&isEqual)) {
         addExpr->operands.erase(itOp);
         ExprLister el;
         s.lhs->soak(&el);
@@ -40,23 +40,35 @@ std::unique_ptr<Statement> StatementAccumulizer::mutate(Let &s) {
         if (addExpr->operands.empty()) {
           std::swap(addExpr->operands, addExpr->invoperands);
           announcer.finish("-=");
-          return std::make_unique<Dec>(std::move(s.lhs), std::move(s.rhs));
+          return makeup<Decum>(mv(s.lhs), mv(s.rhs));
         } else {
           announcer.finish("+=");
-          return std::make_unique<Inc>(std::move(s.lhs), std::move(s.rhs));
+          return makeup<Accum>(mv(s.lhs), mv(s.rhs));
         }
+      }
+    }
+
+    for (auto itOp = addExpr->invoperands.begin();
+         itOp != addExpr->invoperands.end(); ++itOp) {
+      if ((*itOp)->check(&isEqual)) {
+        addExpr->invoperands.erase(itOp);
+        ExprLister el;
+        s.lhs->soak(&el);
+        announcer.start(lineNumber);
+        announcer.say("%s assignment replaced with ", el.result.c_str());
+        announcer.finish("Negate-accumulate");
+        return makeup<Necum>(mv(s.lhs), mv(s.rhs));
       }
     }
   }
 
-  return std::unique_ptr<Statement>();
+  return up<Statement>();
 }
 
-void StatementAccumulizer::accumulize(
-    std::vector<std::unique_ptr<Statement>> &statements) {
+void StatementAccumulizer::accumulize(std::vector<up<Statement>> &statements) {
   for (auto &statement : statements) {
-    if (auto accumulant = statement->mutate(this)) {
-      statement = std::move(accumulant);
+    if (auto accumulant = statement->transmutate(this)) {
+      statement = mv(accumulant);
     }
   }
 }

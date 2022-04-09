@@ -3,9 +3,9 @@
 #ifndef COMPILER_ADDRESSMODE_HPP
 #define COMPILER_ADDRESSMODE_HPP
 
+#include "utils/memutils.hpp"
 #include <memory>
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "datatype.hpp"
@@ -22,14 +22,12 @@ public:
     Imm, // immediate int    (posByte, negByte, posWord, negWord)
     Lin, // linenumber value (used when creating a line number)
     Lbl, // linenumber label (used when referencing a line number)
-    Ext, // extended         (variable, flt constant, three-byte constant, array
-         // value)
+    Ext, // extended         (variable, 3+ byte constant, array value)
+    Dex, // double-extension (additional extended argument)
     Ind, // indirect         (assignment via letptr)
     Reg, // register         (result in five-byte register)
-    Ptr, // memory location  (used in TO and STEP.  implies result should go on
-         // stack).
-    Stk, // stack            (trailing labels for ON..GO or an immediate string
-         // constant)
+    Ptr, // memory location  (used in TO and STEP.  implies result on stack)
+    Stk, // stack            (trailing labels for ON..GO or string constant)
   };
 
   AddressMode(ModeType mt, DataType dt) : modeType(mt), dataType(dt) {}
@@ -53,6 +51,7 @@ public:
   virtual std::string postoperation() { return ""; }
   virtual std::string postoperands() { return ""; }
   virtual std::string suffix() { return ""; }
+  virtual std::string vsymbol() { return ""; }
   virtual bool isInherent() { return false; }
   virtual bool isImmediate() { return false; }
   virtual bool isPosByte() { return false; }
@@ -66,6 +65,7 @@ public:
   virtual bool isWord() { return false; }
   virtual bool isRegister() { return false; }
   virtual bool isExtended() { return false; }
+  virtual bool isDoubleEx() { return false; }
   virtual bool isIndirect() { return false; }
   virtual bool isImmStr() { return false; }
   virtual bool isImmLin() { return false; }
@@ -80,11 +80,14 @@ public:
   virtual bool isExtInt() { return isExtended() && isInteger(); }
   virtual bool isExtFlt() { return isExtended() && isFloat(); }
   virtual bool isExtStr() { return isExtended() && isString(); }
+  virtual bool isDexInt() { return isDoubleEx() && isInteger(); }
+  virtual bool isDexFlt() { return isDoubleEx() && isFloat(); }
+  virtual bool isDexStr() { return isDoubleEx() && isString(); }
   virtual bool isIndInt() { return isIndirect() && isInteger(); }
   virtual bool isIndFlt() { return isIndirect() && isFloat(); }
   virtual bool isIndStr() { return isIndirect() && isString(); }
   virtual int getRegister() { return 0; }
-  virtual std::unique_ptr<AddressMode> clone() = 0;
+  virtual up<AddressMode> clone() = 0;
   virtual std::string modeStr() = 0;
 
   bool exists() { return !isInherent(); }
@@ -110,9 +113,7 @@ public:
 
   std::string modeStr() override { return "inh"; }
   bool isInherent() override { return true; }
-  std::unique_ptr<AddressMode> clone() override {
-    return std::make_unique<AddressModeInh>();
-  }
+  up<AddressMode> clone() override { return makeup<AddressModeInh>(); }
 };
 
 class AddressModeImm : public AddressMode {
@@ -138,8 +139,8 @@ public:
   std::string suffix() override {
     return std::string(isNeg ? "n" : "p") + (isByte() ? "b" : "w");
   }
-  std::unique_ptr<AddressMode> clone() override {
-    return std::make_unique<AddressModeImm>(isNeg, word);
+  up<AddressMode> clone() override {
+    return makeup<AddressModeImm>(isNeg, word);
   }
   bool isImmediate() override { return true; }
   bool isByte() override { return -word < 256 && word < 256; }
@@ -168,8 +169,8 @@ public:
   std::string lbyte() override { return "2,x"; }
   std::string lword() override { return "1,x"; }
   std::string suffix() override { return dataTypeStr() + "x"; }
-  std::unique_ptr<AddressMode> clone() override {
-    return std::make_unique<AddressModeLbl>(lineNumber);
+  up<AddressMode> clone() override {
+    return makeup<AddressModeLbl>(lineNumber);
   }
   bool isImmLbl() override { return true; }
   std::string symbol() const {
@@ -201,8 +202,8 @@ public:
   std::string lbyte() override { return "2,x"; }
   std::string lword() override { return "1,x"; }
   std::string suffix() override { return dataTypeStr() + "x"; }
-  std::unique_ptr<AddressMode> clone() override {
-    return std::make_unique<AddressModeLin>(lineNumber);
+  up<AddressMode> clone() override {
+    return makeup<AddressModeLin>(lineNumber);
   }
   bool isImmLin() override { return true; }
   std::string symbol() const { return std::to_string(lineNumber); }
@@ -212,8 +213,7 @@ public:
 class AddressModeExt : public AddressMode {
 public:
   AddressModeExt(DataType dt, std::string symb_in)
-      : AddressMode(AddressMode::ModeType::Ext, dt),
-        symbol(std::move(symb_in)) {}
+      : AddressMode(AddressMode::ModeType::Ext, dt), symbol(mv(symb_in)) {}
 
   std::string modeStr() override { return "ext"; }
   std::string operation() override { return "ldx"; }
@@ -234,18 +234,50 @@ public:
     return dataType == DataType::Int ? std::string("#0") : "4,x";
   }
   std::string suffix() override { return dataTypeStr() + "x"; }
-  std::unique_ptr<AddressMode> clone() override {
-    return std::make_unique<AddressModeExt>(dataType, symbol);
+  std::string vsymbol() override { return symbol; }
+  up<AddressMode> clone() override {
+    return makeup<AddressModeExt>(dataType, symbol);
   }
   bool isExtended() override { return true; }
+  std::string symbol;
+};
+
+class AddressModeDex : public AddressMode {
+public:
+  AddressModeDex(DataType dt, std::string symb_in)
+      : AddressMode(AddressMode::ModeType::Dex, dt), symbol(mv(symb_in)) {}
+
+  std::string modeStr() override { return "dex"; }
+  std::string operation() override { return "ldd"; }
+  std::string operand() override { return "#" + symbol; }
+  std::string directive() override { return ".byte"; }
+  std::string doperand() override { return "bytecode_" + symbol; }
+  std::string sbyte() override { return "0,x"; }
+  std::string hbyte() override { return "1,x"; }
+  std::string lbyte() override { return "2,x"; }
+  std::string lword() override { return "1,x"; }
+  std::string fract() override {
+    return dataType == DataType::Int ? std::string("#0") : "3,x";
+  }
+  std::string hfrac() override {
+    return dataType == DataType::Int ? std::string("#0") : "3,x";
+  }
+  std::string lfrac() override {
+    return dataType == DataType::Int ? std::string("#0") : "4,x";
+  }
+  std::string suffix() override { return dataTypeStr() + "d"; }
+  std::string vsymbol() override { return symbol; }
+  up<AddressMode> clone() override {
+    return makeup<AddressModeDex>(dataType, symbol);
+  }
+  bool isDoubleEx() override { return true; }
   std::string symbol;
 };
 
 class AddressModeInd : public AddressMode {
 public:
   AddressModeInd(DataType dt, std::string symb_in)
-      : AddressMode(AddressMode::ModeType::Ind, dt),
-        symbol(std::move(symb_in)) {}
+      : AddressMode(AddressMode::ModeType::Ind, dt), symbol(mv(symb_in)) {}
 
   std::string modeStr() override { return "ind"; }
   std::string sbyte() override { return "0,x"; }
@@ -262,8 +294,8 @@ public:
     return dataType == DataType::Int ? std::string("#0") : "4,x";
   }
   std::string suffix() override { return dataTypeStr() + "p"; };
-  std::unique_ptr<AddressMode> clone() override {
-    return std::make_unique<AddressModeInd>(dataType, symbol);
+  up<AddressMode> clone() override {
+    return makeup<AddressModeInd>(dataType, symbol);
   }
   bool isIndirect() override { return true; }
   std::string symbol;
@@ -303,8 +335,8 @@ public:
                ? std::string("#0")
                : "r" + std::to_string(registerNumber) + "+4";
   }
-  std::unique_ptr<AddressMode> clone() override {
-    return std::make_unique<AddressModeReg>(registerNumber, dataType);
+  up<AddressMode> clone() override {
+    return makeup<AddressModeReg>(registerNumber, dataType);
   }
   bool isRegister() override { return true; }
   int getRegister() override { return registerNumber; }
@@ -316,11 +348,11 @@ class AddressModeStk : public AddressMode {
 public:
   explicit AddressModeStk(std::vector<int> labels_in)
       : AddressMode(AddressMode::ModeType::Stk, DataType::Int),
-        labels(std::move(labels_in)) {}
+        labels(mv(labels_in)) {}
 
   explicit AddressModeStk(std::string text_in)
       : AddressMode(AddressMode::ModeType::Stk, DataType::Str),
-        text(std::move(text_in)) {}
+        text(mv(text_in)) {}
 
   std::string modeStr() override { return "stk"; }
 
@@ -332,9 +364,9 @@ public:
   }
   std::string postoperands() override;
 
-  std::unique_ptr<AddressMode> clone() override {
-    return dataType == DataType::Int ? std::make_unique<AddressModeStk>(labels)
-                                     : std::make_unique<AddressModeStk>(text);
+  up<AddressMode> clone() override {
+    return dataType == DataType::Int ? makeup<AddressModeStk>(labels)
+                                     : makeup<AddressModeStk>(text);
   }
   bool isImmStr() override { return dataType == DataType::Str; }
   bool isImmLbls() override { return dataType == DataType::Int; }
@@ -345,13 +377,12 @@ public:
 class AddressModePtr : public AddressMode {
 public:
   AddressModePtr(DataType dt, std::string symb_in)
-      : AddressMode(AddressMode::ModeType::Ptr, dt),
-        symbol(std::move(symb_in)) {}
+      : AddressMode(AddressMode::ModeType::Ptr, dt), symbol(mv(symb_in)) {}
 
   std::string modeStr() override { return "ptr"; }
   std::string suffix() override { return dataTypeStr() + "p"; }
-  std::unique_ptr<AddressMode> clone() override {
-    return std::make_unique<AddressModePtr>(dataType, symbol);
+  up<AddressMode> clone() override {
+    return makeup<AddressModePtr>(dataType, symbol);
   }
   bool isPtrFlt() override { return dataType == DataType::Flt; }
   bool isPtrInt() override { return dataType == DataType::Int; }

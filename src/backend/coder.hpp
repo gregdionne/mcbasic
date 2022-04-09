@@ -87,10 +87,28 @@ public:
   std::string operate(InstLd &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
+  std::string operate(InstOne &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstTrue &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstClr &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstInc &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstDec &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
   std::string operate(InstAbs &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstNeg &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstMul3 &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstCom &inst) override {
@@ -100,6 +118,9 @@ public:
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstPeek &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstPeekWord &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstSqr &inst) override {
@@ -150,10 +171,19 @@ public:
   std::string operate(InstMem &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
+  std::string operate(InstPos &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstTimer &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
   std::string operate(InstAdd &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstSub &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstRSub &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstMul &inst) override {
@@ -183,13 +213,7 @@ public:
   std::string operate(InstLdNe &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
-  std::string operate(InstLdLo &inst) override {
-    return defaultCode(static_cast<Instruction *>(&inst));
-  }
   std::string operate(InstLdLt &inst) override {
-    return defaultCode(static_cast<Instruction *>(&inst));
-  }
-  std::string operate(InstLdHs &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstLdGe &inst) override {
@@ -241,6 +265,15 @@ public:
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstFor &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstForOne &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstForTrue &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstForClr &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstTo &inst) override {

@@ -24,7 +24,6 @@ public:
   void absorb(const PrintCRExpr &e) override;
   void absorb(const NumericArrayExpr &e) override;
   void absorb(const StringArrayExpr &e) override;
-  void absorb(const NegatedExpr &e) override;
   void absorb(const PowerExpr &e) override;
   void absorb(const IntegerDivisionExpr &e) override;
   void absorb(const MultiplicativeExpr &e) override {
@@ -58,6 +57,9 @@ public:
   void absorb(const PointExpr &e) override;
   void absorb(const InkeyExpr &e) override;
   void absorb(const MemExpr &e) override;
+  void absorb(const TimerExpr &e) override;
+  void absorb(const PosExpr &e) override;
+  void absorb(const PeekWordExpr &e) override;
   int &n;
 };
 
@@ -78,8 +80,9 @@ public:
   void absorb(const Dim &s) override;
   void absorb(const Read &s) override;
   void absorb(const Let &s) override;
-  void absorb(const Inc &s) override;
-  void absorb(const Dec &s) override;
+  void absorb(const Accum &s) override;
+  void absorb(const Decum &s) override;
+  void absorb(const Necum &s) override;
   void absorb(const Run &s) override;
   void absorb(const Restore &s) override;
   void absorb(const Return &s) override;

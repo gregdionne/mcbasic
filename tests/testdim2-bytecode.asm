@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -121,8 +122,7 @@ LINE_20
 	.byte	bytecode_arrref2_ir1_ix
 	.byte	bytecode_INTARR_X
 
-	.byte	bytecode_ld_ip_pb
-	.byte	1
+	.byte	bytecode_one_ip
 
 	; X(0,1)=2
 
@@ -765,8 +765,7 @@ LINE_30
 	.byte	bytecode_arrref2_ir1_ix
 	.byte	bytecode_INTARR_X
 
-	.byte	bytecode_ld_ip_pb
-	.byte	0
+	.byte	bytecode_clr_ip
 
 LLAST
 
@@ -779,23 +778,27 @@ bytecode_arrdim2_ir1_ix	.equ	0
 bytecode_arrref2_ir1_ix	.equ	1
 bytecode_arrval2_ir1_ix	.equ	2
 bytecode_clear	.equ	3
-bytecode_ld_ip_pb	.equ	4
-bytecode_ld_ir1_pb	.equ	5
-bytecode_ld_ir2_pb	.equ	6
-bytecode_pr_sr1	.equ	7
-bytecode_pr_ss	.equ	8
-bytecode_progbegin	.equ	9
-bytecode_progend	.equ	10
-bytecode_str_sr1_ir1	.equ	11
+bytecode_clr_ip	.equ	4
+bytecode_ld_ip_pb	.equ	5
+bytecode_ld_ir1_pb	.equ	6
+bytecode_ld_ir2_pb	.equ	7
+bytecode_one_ip	.equ	8
+bytecode_pr_sr1	.equ	9
+bytecode_pr_ss	.equ	10
+bytecode_progbegin	.equ	11
+bytecode_progend	.equ	12
+bytecode_str_sr1_ir1	.equ	13
 
 catalog
 	.word	arrdim2_ir1_ix
 	.word	arrref2_ir1_ix
 	.word	arrval2_ir1_ix
 	.word	clear
+	.word	clr_ip
 	.word	ld_ip_pb
 	.word	ld_ir1_pb
 	.word	ld_ir2_pb
+	.word	one_ip
 	.word	pr_sr1
 	.word	pr_ss
 	.word	progbegin
@@ -948,6 +951,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -1165,6 +1206,8 @@ _dec
 	rts
 
 	.module	mdmul12
+; multiply words in TMP1 and TMP2
+; result in TMP3
 mul12
 	ldaa	tmp1+1
 	ldab	tmp2+1
@@ -1543,7 +1586,16 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_ip_pb			; numCalls = 21
+clr_ip			; numCalls = 1
+	.module	modclr_ip
+	jsr	noargs
+	ldx	letptr
+	ldd	#0
+	stab	0,x
+	std	1,x
+	rts
+
+ld_ip_pb			; numCalls = 19
 	.module	modld_ip_pb
 	jsr	getbyte
 	ldx	letptr
@@ -1566,6 +1618,15 @@ ld_ir2_pb			; numCalls = 42
 	stab	r2+2
 	ldd	#0
 	std	r2
+	rts
+
+one_ip			; numCalls = 1
+	.module	modone_ip
+	jsr	noargs
+	ldx	letptr
+	ldd	#1
+	staa	0,x
+	std	1,x
 	rts
 
 pr_sr1			; numCalls = 20

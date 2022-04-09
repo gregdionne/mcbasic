@@ -8,9 +8,9 @@ template <typename T> void prune(T &expr, ExprSymbolPruner *that) {
   if (that->isMissing) {
     that->isMissing = false;
     if (expr->isString()) {
-      expr = std::make_unique<StringConstantExpr>("");
+      expr = makeup<StringConstantExpr>("");
     } else {
-      expr = std::make_unique<NumericConstantExpr>(0);
+      expr = makeup<NumericConstantExpr>(0);
     }
   }
 }
@@ -20,7 +20,7 @@ template <typename T> void numPrune(T &expr, ExprSymbolPruner *that) {
   expr->mutate(that);
   if (that->isMissing) {
     that->isMissing = false;
-    expr = std::make_unique<NumericConstantExpr>(0);
+    expr = makeup<NumericConstantExpr>(0);
   }
 }
 
@@ -29,7 +29,7 @@ template <typename T> void strPrune(T &expr, ExprSymbolPruner *that) {
   expr->mutate(that);
   if (that->isMissing) {
     that->isMissing = false;
-    expr = std::make_unique<StringConstantExpr>("");
+    expr = makeup<StringConstantExpr>("");
   }
 }
 
@@ -164,8 +164,6 @@ void ExprSymbolPruner::mutate(ShiftExpr &e) {
   numPrune(e.count, this);
 }
 
-void ExprSymbolPruner::mutate(NegatedExpr &e) { numPrune(e.expr, this); }
-
 void ExprSymbolPruner::mutate(ComplementedExpr &e) { numPrune(e.expr, this); }
 
 void ExprSymbolPruner::mutate(SgnExpr &e) { numPrune(e.expr, this); }
@@ -278,12 +276,17 @@ void StatementSymbolPruner::mutate(Let &s) {
   prune(s.rhs, that);
 }
 
-void StatementSymbolPruner::mutate(Inc &s) {
+void StatementSymbolPruner::mutate(Accum &s) {
   s.lhs->mutate(that);
   numPrune(s.rhs, that);
 }
 
-void StatementSymbolPruner::mutate(Dec &s) {
+void StatementSymbolPruner::mutate(Decum &s) {
+  s.lhs->mutate(that);
+  numPrune(s.rhs, that);
+}
+
+void StatementSymbolPruner::mutate(Necum &s) {
   s.lhs->mutate(that);
   numPrune(s.rhs, that);
 }

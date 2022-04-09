@@ -45,8 +45,8 @@ public:
 
   std::string regInt_regStr_immStr(InstLdEq &inst) override;
   std::string regInt_regStr_immStr(InstLdNe &inst) override;
-  std::string regInt_regStr_immStr(InstLdLo &inst) override;
-  std::string regInt_regStr_immStr(InstLdHs &inst) override;
+  std::string regInt_regStr_immStr(InstLdLt &inst) override;
+  std::string regInt_regStr_immStr(InstLdGe &inst) override;
 
   std::string ptrInt_posByte(InstTo &inst) override;
   std::string ptrInt_negByte(InstTo &inst) override;

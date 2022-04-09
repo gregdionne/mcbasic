@@ -21,7 +21,6 @@ public:
   void inspect(const PrintSpaceExpr &) const override {}
   void inspect(const PrintCRExpr &) const override {}
   void inspect(const PrintCommaExpr &) const override {}
-  void inspect(const NegatedExpr &) const override {}
   void inspect(const PowerExpr &) const override {}
   void inspect(const IntegerDivisionExpr &) const override {}
   void inspect(const MultiplicativeExpr &) const override {}
@@ -53,6 +52,9 @@ public:
   void inspect(const PointExpr &) const override {}
   void inspect(const InkeyExpr &) const override {}
   void inspect(const MemExpr &) const override {}
+  void inspect(const TimerExpr &) const override {}
+  void inspect(const PosExpr &) const override {}
+  void inspect(const PeekWordExpr &) const override {}
 };
 
 #endif

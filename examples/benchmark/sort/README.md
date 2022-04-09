@@ -22,4 +22,10 @@ load the equivalent .c10 files into your favorite emulator.
 
 CLOADM and EXEC as you would a normal machine language program.
 
+Timing for quicksort may vary depending on what is on screen.
 
+               bubblesort   quicksort
+interpreted:  1435 seconds  18 seconds
+bytecode:      135 seconds   2 seconds
+native:         76 seconds   1 seconds
+hand-coded:      4 seconds   ?

@@ -80,6 +80,7 @@ void Optimizer::optimize(Program &p) {
 
   Accumulizer a(Announcer(options.v, "verbose"));
   a.operate(p);
+
   m.operate(p);
 
   ConstTabulator ct(constTable);

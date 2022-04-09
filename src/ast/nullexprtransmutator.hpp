@@ -6,144 +6,143 @@
 
 #include "expression.hpp"
 
-class NullExprTransmutator : public ExprMutator<std::unique_ptr<NumericExpr>,
-                                                std::unique_ptr<StringExpr>> {
+class NullExprTransmutator
+    : public ExprMutator<up<NumericExpr>, up<StringExpr>> {
 public:
-  virtual std::unique_ptr<NumericExpr> mutate(ArrayIndicesExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(ArrayIndicesExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(NumericConstantExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(NumericConstantExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(StringConstantExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<StringExpr> mutate(StringConstantExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(NumericArrayExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(NumericArrayExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(StringArrayExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<StringExpr> mutate(StringArrayExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(NumericVariableExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(NumericVariableExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(StringVariableExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<StringExpr> mutate(StringVariableExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(NaryNumericExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(NaryNumericExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<StringExpr>
-  mutate(StringConcatenationExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<StringExpr> mutate(StringConcatenationExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(PrintTabExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<StringExpr> mutate(PrintTabExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(PrintSpaceExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<StringExpr> mutate(PrintSpaceExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(PrintCRExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<StringExpr> mutate(PrintCRExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(PrintCommaExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<StringExpr> mutate(PrintCommaExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(NegatedExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(PowerExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(PowerExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(IntegerDivisionExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(IntegerDivisionExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(MultiplicativeExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(MultiplicativeExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(AdditiveExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(AdditiveExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(ComplementedExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(ComplementedExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(RelationalExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(RelationalExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(AndExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(AndExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(OrExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(OrExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(ShiftExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(ShiftExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(SgnExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(SgnExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(IntExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(IntExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(AbsExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(AbsExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(SqrExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(SqrExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(ExpExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(ExpExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(LogExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(LogExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(SinExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(SinExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(CosExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(CosExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(TanExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(TanExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(RndExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(RndExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(PeekExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(PeekExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(LenExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(LenExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<StringExpr> mutate(StrExpr & /*expr*/) { return up<StringExpr>(); }
+  virtual up<NumericExpr> mutate(ValExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(StrExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<NumericExpr> mutate(AscExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(ValExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<StringExpr> mutate(ChrExpr & /*expr*/) { return up<StringExpr>(); }
+  virtual up<StringExpr> mutate(LeftExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(AscExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<StringExpr> mutate(RightExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(ChrExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<StringExpr> mutate(MidExpr & /*expr*/) { return up<StringExpr>(); }
+  virtual up<NumericExpr> mutate(PointExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(LeftExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<StringExpr> mutate(InkeyExpr & /*expr*/) {
+    return up<StringExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(RightExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<NumericExpr> mutate(MemExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(MidExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
+  virtual up<NumericExpr> mutate(TimerExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<NumericExpr> mutate(PointExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(PosExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
-  virtual std::unique_ptr<StringExpr> mutate(InkeyExpr & /*expr*/) {
-    return std::unique_ptr<StringExpr>();
-  }
-  virtual std::unique_ptr<NumericExpr> mutate(MemExpr & /*expr*/) {
-    return std::unique_ptr<NumericExpr>();
+  virtual up<NumericExpr> mutate(PeekWordExpr & /*expr*/) {
+    return up<NumericExpr>();
   }
 };
 

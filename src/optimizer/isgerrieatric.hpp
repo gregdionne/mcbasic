@@ -12,7 +12,6 @@
 class ExprIsGerrieatric : public PessimisticExprChecker {
 public:
   bool inspect(const AdditiveExpr &e) const override;
-  bool inspect(const NegatedExpr &e) const override;
 };
 
 #endif

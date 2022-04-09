@@ -3,18 +3,18 @@
 #ifndef AST_STATEMENT_HPP
 #define AST_STATEMENT_HPP
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "expression.hpp"
+#include "utils/memutils.hpp" // up<T>, makeup<T>, mv()
 
-// Forward-declare for visitors
+// forward declarations for visitors
+
 class Statement;
 class Rem;
 class For;
 class Go;
-class When;
 class If;
 class Data;
 class Print;
@@ -25,8 +25,6 @@ class Next;
 class Dim;
 class Read;
 class Let;
-class Inc;
-class Dec;
 class Run;
 class Restore;
 class Return;
@@ -38,7 +36,35 @@ class Reset;
 class Cls;
 class Sound;
 class Exec;
+
+// extensions
+class When;
+class Accum;
+class Decum;
+class Necum;
 class Error;
+
+// Statement Visitors
+//
+// The abstract syntax tree (AST) has a few visitors
+// to help with const correctness and friendly return values.
+//
+//  ASTVisitor | visit()   | visitor  | AST
+// ------------+-----------+----------+---------
+//   inspector | inspect() | const    | const
+//   absorber  | absorb()  | mutable  | const
+// * exuder    | exude()   | const    | mutable
+//   mutator   | mutate()  | mutable  | mutable
+//
+// * not yet implemented.
+//
+// The accept methods have more diverse names depending on return values.
+//
+//   check()       - calls an inspector with boolean return
+//   inspect()     - calls an inspector with no (void) return
+//   soak()        - calls an absorber with no (void) return
+//   mutate()      - calls a mutator with no (void) return
+//   transmutate() - calls a mutator that returns a new branch of the AST.
 
 // StatementMutater
 //   change a statement in-place
@@ -59,8 +85,9 @@ public:
   virtual T mutate(Dim & /*s*/) = 0;
   virtual T mutate(Read & /*s*/) = 0;
   virtual T mutate(Let & /*s*/) = 0;
-  virtual T mutate(Inc & /*s*/) = 0;
-  virtual T mutate(Dec & /*s*/) = 0;
+  virtual T mutate(Accum & /*s*/) = 0;
+  virtual T mutate(Decum & /*s*/) = 0;
+  virtual T mutate(Necum & /*s*/) = 0;
   virtual T mutate(Run & /*s*/) = 0;
   virtual T mutate(Restore & /*s*/) = 0;
   virtual T mutate(Return & /*s*/) = 0;
@@ -94,8 +121,9 @@ public:
   virtual T inspect(const Dim & /*s*/) const = 0;
   virtual T inspect(const Read & /*s*/) const = 0;
   virtual T inspect(const Let & /*s*/) const = 0;
-  virtual T inspect(const Inc & /*s*/) const = 0;
-  virtual T inspect(const Dec & /*s*/) const = 0;
+  virtual T inspect(const Accum & /*s*/) const = 0;
+  virtual T inspect(const Decum & /*s*/) const = 0;
+  virtual T inspect(const Necum & /*s*/) const = 0;
   virtual T inspect(const Run & /*s*/) const = 0;
   virtual T inspect(const Restore & /*s*/) const = 0;
   virtual T inspect(const Return & /*s*/) const = 0;
@@ -129,8 +157,9 @@ public:
   virtual T absorb(const Dim & /*s*/) = 0;
   virtual T absorb(const Read & /*s*/) = 0;
   virtual T absorb(const Let & /*s*/) = 0;
-  virtual T absorb(const Inc & /*s*/) = 0;
-  virtual T absorb(const Dec & /*s*/) = 0;
+  virtual T absorb(const Accum & /*s*/) = 0;
+  virtual T absorb(const Decum & /*s*/) = 0;
+  virtual T absorb(const Necum & /*s*/) = 0;
   virtual T absorb(const Run & /*s*/) = 0;
   virtual T absorb(const Restore & /*s*/) = 0;
   virtual T absorb(const Return & /*s*/) = 0;
@@ -155,8 +184,8 @@ public:
   Statement &operator=(Statement &&) = default;
   virtual ~Statement() = default;
 
-  virtual std::unique_ptr<Statement>
-  mutate(StatementMutator<std::unique_ptr<Statement>> * /*transmutator*/) = 0;
+  virtual up<Statement>
+  transmutate(StatementMutator<up<Statement>> * /*transmutator*/) = 0;
   virtual void mutate(StatementMutator<void> * /*op*/) = 0;
   virtual bool check(const StatementInspector<bool> * /*checker*/) const = 0;
   virtual void
@@ -167,8 +196,7 @@ public:
 
 template <typename T> class OperableStatement : public Statement {
 public:
-  std::unique_ptr<Statement>
-  mutate(StatementMutator<std::unique_ptr<Statement>> *mutator) override {
+  up<Statement> transmutate(StatementMutator<up<Statement>> *mutator) override {
     return mutator->mutate(*static_cast<T *>(this));
   }
   void mutate(StatementMutator<void> *mutator) override {
@@ -187,10 +215,10 @@ public:
 
 class For : public OperableStatement<For> {
 public:
-  std::unique_ptr<NumericVariableExpr> iter;
-  std::unique_ptr<NumericExpr> from;
-  std::unique_ptr<NumericExpr> to;
-  std::unique_ptr<NumericExpr> step;
+  up<NumericVariableExpr> iter;
+  up<NumericExpr> from;
+  up<NumericExpr> to;
+  up<NumericExpr> step;
   std::string statementName() const override { return "FOR"; }
 };
 
@@ -212,7 +240,7 @@ public:
 class When : public OperableStatement<When> {
 public:
   bool isSub;
-  std::unique_ptr<NumericExpr> predicate;
+  up<NumericExpr> predicate;
   int lineNumber;
   std::string statementName() const override {
     return isSub ? "WHEN..GOSUB" : "WHEN..GOTO";
@@ -221,28 +249,28 @@ public:
 
 class If : public OperableStatement<If> {
 public:
-  std::unique_ptr<NumericExpr> predicate;
-  std::vector<std::unique_ptr<Statement>> consequent;
+  up<NumericExpr> predicate;
+  std::vector<up<Statement>> consequent;
   std::string statementName() const override { return "IF"; }
 };
 
 class Data : public OperableStatement<Data> {
 public:
-  std::vector<std::unique_ptr<StringConstantExpr>> records;
+  std::vector<up<StringConstantExpr>> records;
   std::string statementName() const override { return "DATA"; }
 };
 
 class Print : public OperableStatement<Print> {
 public:
-  std::unique_ptr<NumericExpr> at;
-  std::vector<std::unique_ptr<StringExpr>> printExpr;
+  up<NumericExpr> at;
+  std::vector<up<StringExpr>> printExpr;
   std::string statementName() const override { return "PRINT"; }
 };
 
 class Input : public OperableStatement<Input> {
 public:
-  std::unique_ptr<StringConstantExpr> prompt;
-  std::vector<std::unique_ptr<Expr>> variables;
+  up<StringConstantExpr> prompt;
+  std::vector<up<Expr>> variables;
   std::string statementName() const override { return "INPUT"; }
 };
 
@@ -253,7 +281,7 @@ public:
 
 class On : public OperableStatement<On> {
 public:
-  std::unique_ptr<NumericExpr> branchIndex;
+  up<NumericExpr> branchIndex;
   std::vector<int> branchTable;
   bool isSub;
   std::string statementName() const override {
@@ -263,28 +291,27 @@ public:
 
 class Next : public OperableStatement<Next> {
 public:
-  std::vector<std::unique_ptr<NumericVariableExpr>> variables;
+  std::vector<up<NumericVariableExpr>> variables;
   std::string statementName() const override { return "NEXT"; }
 };
 
 class Dim : public OperableStatement<Dim> {
 public:
-  std::vector<std::unique_ptr<Expr>> variables;
+  std::vector<up<Expr>> variables;
   std::string statementName() const override { return "DIM"; }
 };
 
 class Read : public OperableStatement<Read> {
 public:
-  std::vector<std::unique_ptr<Expr>> variables;
+  std::vector<up<Expr>> variables;
   std::string statementName() const override { return "READ"; }
 };
 
 class Let : public OperableStatement<Let> {
 public:
-  std::unique_ptr<Expr> lhs;
-  std::unique_ptr<Expr> rhs;
-  Let(std::unique_ptr<Expr> l, std::unique_ptr<Expr> r)
-      : lhs(std::move(l)), rhs(std::move(r)) {}
+  up<Expr> lhs;
+  up<Expr> rhs;
+  Let(up<Expr> l, up<Expr> r) : lhs(mv(l)), rhs(mv(r)) {}
   std::string statementName() const override { return "LET"; }
 };
 
@@ -295,22 +322,28 @@ public:
   std::string statementName() const override { return "RUN"; }
 };
 
-class Inc : public OperableStatement<Inc> {
+class Accum : public OperableStatement<Accum> {
 public:
-  std::unique_ptr<Expr> lhs;
-  std::unique_ptr<Expr> rhs;
-  Inc(std::unique_ptr<Expr> l, std::unique_ptr<Expr> r)
-      : lhs(std::move(l)), rhs(std::move(r)) {}
-  std::string statementName() const override { return "LET"; }
+  up<Expr> lhs;
+  up<Expr> rhs;
+  Accum(up<Expr> l, up<Expr> r) : lhs(mv(l)), rhs(mv(r)) {}
+  std::string statementName() const override { return "ACCUM"; }
 };
 
-class Dec : public OperableStatement<Dec> {
+class Decum : public OperableStatement<Decum> {
 public:
-  std::unique_ptr<Expr> lhs;
-  std::unique_ptr<Expr> rhs;
-  Dec(std::unique_ptr<Expr> l, std::unique_ptr<Expr> r)
-      : lhs(std::move(l)), rhs(std::move(r)) {}
-  std::string statementName() const override { return "LET"; }
+  up<Expr> lhs;
+  up<Expr> rhs;
+  Decum(up<Expr> l, up<Expr> r) : lhs(mv(l)), rhs(mv(r)) {}
+  std::string statementName() const override { return "DECUM"; }
+};
+
+class Necum : public OperableStatement<Necum> {
+public:
+  up<Expr> lhs;
+  up<Expr> rhs;
+  explicit Necum(up<Expr> l, up<Expr> r) : lhs(mv(l)), rhs(mv(r)) {}
+  std::string statementName() const override { return "NECUM"; }
 };
 
 class Restore : public OperableStatement<Restore> {
@@ -330,54 +363,54 @@ public:
 
 class Poke : public OperableStatement<Poke> {
 public:
-  std::unique_ptr<NumericExpr> dest;
-  std::unique_ptr<NumericExpr> val;
+  up<NumericExpr> dest;
+  up<NumericExpr> val;
   std::string statementName() const override { return "POKE"; }
 };
 
 class Clear : public OperableStatement<Clear> {
 public:
-  std::unique_ptr<NumericExpr> size;
+  up<NumericExpr> size;
   std::string statementName() const override { return "CLEAR"; }
 };
 
 class Set : public OperableStatement<Set> {
 public:
-  std::unique_ptr<NumericExpr> x;
-  std::unique_ptr<NumericExpr> y;
-  std::unique_ptr<NumericExpr> c;
+  up<NumericExpr> x;
+  up<NumericExpr> y;
+  up<NumericExpr> c;
   std::string statementName() const override { return "SET"; }
 };
 
 class Reset : public OperableStatement<Reset> {
 public:
-  std::unique_ptr<NumericExpr> x;
-  std::unique_ptr<NumericExpr> y;
+  up<NumericExpr> x;
+  up<NumericExpr> y;
   std::string statementName() const override { return "RESET"; }
 };
 
 class Cls : public OperableStatement<Cls> {
 public:
-  std::unique_ptr<NumericExpr> color;
+  up<NumericExpr> color;
   std::string statementName() const override { return "CLS"; }
 };
 
 class Sound : public OperableStatement<Sound> {
 public:
-  std::unique_ptr<NumericExpr> pitch;
-  std::unique_ptr<NumericExpr> duration;
+  up<NumericExpr> pitch;
+  up<NumericExpr> duration;
   std::string statementName() const override { return "SOUND"; }
 };
 
 class Exec : public OperableStatement<Exec> {
 public:
-  std::unique_ptr<NumericExpr> address;
+  up<NumericExpr> address;
   std::string statementName() const override { return "EXEC"; }
 };
 
 class Error : public OperableStatement<Error> {
 public:
-  std::unique_ptr<NumericExpr> errorCode;
+  up<NumericExpr> errorCode;
   std::string statementName() const override { return "ERROR"; }
 };
 #endif

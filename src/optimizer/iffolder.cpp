@@ -42,8 +42,7 @@ void IfStatementFolder::mutate(If &s) {
   needsReplacement = false;
 }
 
-void IfStatementFolder::fold(
-    std::vector<std::unique_ptr<Statement>> &statements) {
+void IfStatementFolder::fold(std::vector<up<Statement>> &statements) {
   auto it = statements.begin();
   while (it != statements.end()) {
     needsReplacement = false;

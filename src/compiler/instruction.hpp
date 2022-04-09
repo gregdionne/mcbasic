@@ -3,8 +3,8 @@
 #ifndef COMPILER_INSTRUCTION_HPP
 #define COMPILER_INSTRUCTION_HPP
 
+#include "utils/memutils.hpp"
 #include <set>
-#include <utility>
 
 #include "addressmode.hpp"
 
@@ -30,12 +30,18 @@ class InstArrayDim;
 class InstArrayRef;
 class InstArrayVal;
 class InstLd;
+class InstOne;
+class InstTrue;
+class InstClr;
+class InstInc;
+class InstDec;
 class InstAbs;
 class InstShift;
 class InstNeg;
 class InstCom;
 class InstSgn;
 class InstPeek;
+class InstPeekWord;
 class InstSqr;
 class InstInv;
 class InstLog;
@@ -52,9 +58,13 @@ class InstLen;
 class InstChr;
 class InstInkey;
 class InstMem;
+class InstPos;
+class InstTimer;
 class InstAdd;
 class InstSub;
+class InstRSub;
 class InstMul;
+class InstMul3;
 class InstDiv;
 class InstIDiv;
 class InstIDiv3;
@@ -63,9 +73,9 @@ class InstIDiv5S;
 class InstPow;
 class InstLdEq;
 class InstLdNe;
-class InstLdLo;
 class InstLdLt;
-class InstLdHs;
+class InstLdLt;
+class InstLdGe;
 class InstLdGe;
 class InstAnd;
 class InstOr;
@@ -83,6 +93,9 @@ class InstPrCR;
 class InstPrAt;
 class InstPr;
 class InstFor;
+class InstForOne;
+class InstForTrue;
+class InstForClr;
 class InstTo;
 class InstStep;
 class InstNext;
@@ -139,12 +152,18 @@ public:
   virtual std::string operate(InstArrayRef &inst) = 0;
   virtual std::string operate(InstArrayVal &inst) = 0;
   virtual std::string operate(InstLd &inst) = 0;
+  virtual std::string operate(InstOne &inst) = 0;
+  virtual std::string operate(InstTrue &inst) = 0;
+  virtual std::string operate(InstClr &inst) = 0;
+  virtual std::string operate(InstInc &inst) = 0;
+  virtual std::string operate(InstDec &inst) = 0;
   virtual std::string operate(InstAbs &inst) = 0;
   virtual std::string operate(InstShift &inst) = 0;
   virtual std::string operate(InstNeg &inst) = 0;
   virtual std::string operate(InstCom &inst) = 0;
   virtual std::string operate(InstSgn &inst) = 0;
   virtual std::string operate(InstPeek &inst) = 0;
+  virtual std::string operate(InstPeekWord &inst) = 0;
   virtual std::string operate(InstSqr &inst) = 0;
   virtual std::string operate(InstInv &inst) = 0;
   virtual std::string operate(InstLog &inst) = 0;
@@ -161,9 +180,13 @@ public:
   virtual std::string operate(InstChr &inst) = 0;
   virtual std::string operate(InstInkey &inst) = 0;
   virtual std::string operate(InstMem &inst) = 0;
+  virtual std::string operate(InstPos &inst) = 0;
+  virtual std::string operate(InstTimer &inst) = 0;
   virtual std::string operate(InstAdd &inst) = 0;
   virtual std::string operate(InstSub &inst) = 0;
+  virtual std::string operate(InstRSub &inst) = 0;
   virtual std::string operate(InstMul &inst) = 0;
+  virtual std::string operate(InstMul3 &inst) = 0;
   virtual std::string operate(InstDiv &inst) = 0;
   virtual std::string operate(InstIDiv &inst) = 0;
   virtual std::string operate(InstIDiv3 &inst) = 0;
@@ -172,9 +195,7 @@ public:
   virtual std::string operate(InstPow &inst) = 0;
   virtual std::string operate(InstLdEq &inst) = 0;
   virtual std::string operate(InstLdNe &inst) = 0;
-  virtual std::string operate(InstLdLo &inst) = 0;
   virtual std::string operate(InstLdLt &inst) = 0;
-  virtual std::string operate(InstLdHs &inst) = 0;
   virtual std::string operate(InstLdGe &inst) = 0;
   virtual std::string operate(InstAnd &inst) = 0;
   virtual std::string operate(InstOr &inst) = 0;
@@ -192,6 +213,9 @@ public:
   virtual std::string operate(InstPrAt &inst) = 0;
   virtual std::string operate(InstPr &inst) = 0;
   virtual std::string operate(InstFor &inst) = 0;
+  virtual std::string operate(InstForOne &inst) = 0;
+  virtual std::string operate(InstForTrue &inst) = 0;
+  virtual std::string operate(InstForClr &inst) = 0;
   virtual std::string operate(InstTo &inst) = 0;
   virtual std::string operate(InstStep &inst) = 0;
   virtual std::string operate(InstNext &inst) = 0;
@@ -228,26 +252,20 @@ public:
 class Instruction {
 public:
   explicit Instruction(std::string mnem)
-      : mnemonic(std::move(mnem)), arg1(std::make_unique<AddressModeInh>()),
-        arg2(std::make_unique<AddressModeInh>()),
-        arg3(std::make_unique<AddressModeInh>()),
-        result(std::make_unique<AddressModeInh>()) {}
-  Instruction(std::string mnem, std::unique_ptr<AddressMode> arg1_in)
-      : mnemonic(std::move(mnem)), arg1(std::move(arg1_in)),
-        arg2(std::make_unique<AddressModeInh>()),
-        arg3(std::make_unique<AddressModeInh>()),
-        result(std::make_unique<AddressModeInh>()) {}
-  Instruction(std::string mnem, std::unique_ptr<AddressMode> arg1_in,
-              std::unique_ptr<AddressMode> arg2_in)
-      : mnemonic(std::move(mnem)), arg1(std::move(arg1_in)),
-        arg2(std::move(arg2_in)), arg3(std::make_unique<AddressModeInh>()),
-        result(std::make_unique<AddressModeInh>()) {}
-  Instruction(std::string mnem, std::unique_ptr<AddressMode> arg1_in,
-              std::unique_ptr<AddressMode> arg2_in,
-              std::unique_ptr<AddressMode> arg3_in)
-      : mnemonic(std::move(mnem)), arg1(std::move(arg1_in)),
-        arg2(std::move(arg2_in)), arg3(std::move(arg3_in)),
-        result(std::make_unique<AddressModeInh>()) {}
+      : mnemonic(mv(mnem)), arg1(makeup<AddressModeInh>()),
+        arg2(makeup<AddressModeInh>()), arg3(makeup<AddressModeInh>()),
+        result(makeup<AddressModeInh>()) {}
+  Instruction(std::string mnem, up<AddressMode> arg1_in)
+      : mnemonic(mv(mnem)), arg1(mv(arg1_in)), arg2(makeup<AddressModeInh>()),
+        arg3(makeup<AddressModeInh>()), result(makeup<AddressModeInh>()) {}
+  Instruction(std::string mnem, up<AddressMode> arg1_in,
+              up<AddressMode> arg2_in)
+      : mnemonic(mv(mnem)), arg1(mv(arg1_in)), arg2(mv(arg2_in)),
+        arg3(makeup<AddressModeInh>()), result(makeup<AddressModeInh>()) {}
+  Instruction(std::string mnem, up<AddressMode> arg1_in,
+              up<AddressMode> arg2_in, up<AddressMode> arg3_in)
+      : mnemonic(mv(mnem)), arg1(mv(arg1_in)), arg2(mv(arg2_in)),
+        arg3(mv(arg3_in)), result(makeup<AddressModeInh>()) {}
 
   Instruction() = delete;
   Instruction(const Instruction &) = delete;
@@ -260,6 +278,10 @@ public:
     return "\t!unimplemented\n";
   }
 
+  bool isIndFlt() const;
+  bool isIndInt() const;
+  bool isExtFlt() const;
+  bool isExtInt() const;
   bool isExtFlt_extFlt() const;
   bool isExtFlt_negByte() const;
   bool isExtFlt_negWord() const;
@@ -275,6 +297,10 @@ public:
   bool isExtInt_regInt() const;
   bool isExtStr_immStr() const;
   bool isExtStr_regStr() const;
+  bool isDexFlt_extFlt() const;
+  bool isDexFlt_extInt() const;
+  bool isDexInt_extInt() const;
+  bool isDexStr_extStr() const;
   bool isIndFlt_indFlt() const;
   bool isIndFlt_negByte() const;
   bool isIndFlt_negWord() const;
@@ -387,6 +413,14 @@ public:
   bool isRegFlt_regInt_posWord() const;
   bool isRegFlt_regInt_regFlt() const;
   bool isRegFlt_regInt_regInt() const;
+  bool isRegFlt_extFlt_dexFlt() const;
+  bool isRegFlt_extFlt_dexInt() const;
+  bool isRegFlt_extInt_dexFlt() const;
+  bool isRegInt_extInt_dexInt() const;
+  bool isRegInt_extInt_dexFlt() const;
+  bool isRegInt_extFlt_dexFlt() const;
+  bool isRegInt_extFlt_dexInt() const;
+  bool isRegInt_extStr_dexStr() const;
   bool isRegInt_extInt_negByte() const;
   bool isRegInt_extInt_negWord() const;
   bool isRegInt_extInt_posByte() const;
@@ -437,30 +471,27 @@ public:
   std::string comment;
   std::string label;
   std::string mnemonic;
-  std::unique_ptr<AddressMode> arg1;
-  std::unique_ptr<AddressMode> arg2;
-  std::unique_ptr<AddressMode> arg3;
-  std::unique_ptr<AddressMode> result;
+  up<AddressMode> arg1;
+  up<AddressMode> arg2;
+  up<AddressMode> arg3;
+  up<AddressMode> result;
   std::set<std::string> dependencies;
 };
 
 template <typename T> class OperableInstruction : public Instruction {
 public:
-  explicit OperableInstruction(std::string mnem)
-      : Instruction(std::move(mnem)) {}
+  explicit OperableInstruction(std::string mnem) : Instruction(mv(mnem)) {}
 
-  OperableInstruction(std::string mnem, std::unique_ptr<AddressMode> arg1_in)
-      : Instruction(std::move(mnem), std::move(arg1_in)) {}
+  OperableInstruction(std::string mnem, up<AddressMode> arg1_in)
+      : Instruction(mv(mnem), mv(arg1_in)) {}
 
-  OperableInstruction(std::string mnem, std::unique_ptr<AddressMode> arg1_in,
-                      std::unique_ptr<AddressMode> arg2_in)
-      : Instruction(std::move(mnem), std::move(arg1_in), std::move(arg2_in)) {}
+  OperableInstruction(std::string mnem, up<AddressMode> arg1_in,
+                      up<AddressMode> arg2_in)
+      : Instruction(mv(mnem), mv(arg1_in), mv(arg2_in)) {}
 
-  OperableInstruction(std::string mnem, std::unique_ptr<AddressMode> arg1_in,
-                      std::unique_ptr<AddressMode> arg2_in,
-                      std::unique_ptr<AddressMode> arg3_in)
-      : Instruction(std::move(mnem), std::move(arg1_in), std::move(arg2_in),
-                    std::move(arg3_in)) {}
+  OperableInstruction(std::string mnem, up<AddressMode> arg1_in,
+                      up<AddressMode> arg2_in, up<AddressMode> arg3_in)
+      : Instruction(mv(mnem), mv(arg1_in), mv(arg2_in), mv(arg3_in)) {}
 
   std::string operate(InstructionOp *iop) override {
     return iop->operate(*static_cast<T *>(this));
@@ -476,9 +507,8 @@ public:
 
 class InstLabel : public OperableInstruction<InstLabel> {
 public:
-  InstLabel(std::unique_ptr<AddressMode> lineNum, bool g)
-      : OperableInstruction(g ? "label" : "", std::move(lineNum)),
-        generateLines(g) {
+  InstLabel(up<AddressMode> lineNum, bool g)
+      : OperableInstruction(g ? "label" : "", mv(lineNum)), generateLines(g) {
     labelArg();
   }
   bool generateLines;
@@ -486,18 +516,14 @@ public:
 
 class InstArrayDim1 : public OperableInstruction<InstArrayDim1> {
 public:
-  InstArrayDim1(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrdim1", std::move(firstArg),
-                            std::move(arraySymbol)) {}
+  InstArrayDim1(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrdim1", mv(firstArg), mv(arraySymbol)) {}
 };
 
 class InstArrayRef1 : public OperableInstruction<InstArrayRef1> {
 public:
-  InstArrayRef1(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrref1", std::move(firstArg),
-                            std::move(arraySymbol)) {
+  InstArrayRef1(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrref1", mv(firstArg), mv(arraySymbol)) {
     arrayArg();
   }
   void arrayArg();
@@ -505,10 +531,8 @@ public:
 
 class InstArrayVal1 : public OperableInstruction<InstArrayVal1> {
 public:
-  InstArrayVal1(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrval1", std::move(firstArg),
-                            std::move(arraySymbol)) {
+  InstArrayVal1(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrval1", mv(firstArg), mv(arraySymbol)) {
     arrayArg();
   }
   void arrayArg();
@@ -516,18 +540,14 @@ public:
 
 class InstArrayDim2 : public OperableInstruction<InstArrayDim2> {
 public:
-  InstArrayDim2(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrdim2", std::move(firstArg),
-                            std::move(arraySymbol)) {}
+  InstArrayDim2(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrdim2", mv(firstArg), mv(arraySymbol)) {}
 };
 
 class InstArrayRef2 : public OperableInstruction<InstArrayRef2> {
 public:
-  InstArrayRef2(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrref2", std::move(firstArg),
-                            std::move(arraySymbol)) {
+  InstArrayRef2(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrref2", mv(firstArg), mv(arraySymbol)) {
     arrayArg();
   }
   void arrayArg();
@@ -535,10 +555,8 @@ public:
 
 class InstArrayVal2 : public OperableInstruction<InstArrayVal2> {
 public:
-  InstArrayVal2(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrval2", std::move(firstArg),
-                            std::move(arraySymbol)) {
+  InstArrayVal2(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrval2", mv(firstArg), mv(arraySymbol)) {
     arrayArg();
   }
   void arrayArg();
@@ -546,18 +564,14 @@ public:
 
 class InstArrayDim3 : public OperableInstruction<InstArrayDim3> {
 public:
-  InstArrayDim3(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrdim3", std::move(firstArg),
-                            std::move(arraySymbol)) {}
+  InstArrayDim3(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrdim3", mv(firstArg), mv(arraySymbol)) {}
 };
 
 class InstArrayRef3 : public OperableInstruction<InstArrayRef3> {
 public:
-  InstArrayRef3(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrref3", std::move(firstArg),
-                            std::move(arraySymbol)) {
+  InstArrayRef3(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrref3", mv(firstArg), mv(arraySymbol)) {
     arrayArg();
   }
   void arrayArg();
@@ -565,10 +579,8 @@ public:
 
 class InstArrayVal3 : public OperableInstruction<InstArrayVal3> {
 public:
-  InstArrayVal3(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrval3", std::move(firstArg),
-                            std::move(arraySymbol)) {
+  InstArrayVal3(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrval3", mv(firstArg), mv(arraySymbol)) {
     arrayArg();
   }
   void arrayArg();
@@ -576,18 +588,14 @@ public:
 
 class InstArrayDim4 : public OperableInstruction<InstArrayDim4> {
 public:
-  InstArrayDim4(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrdim4", std::move(firstArg),
-                            std::move(arraySymbol)) {}
+  InstArrayDim4(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrdim4", mv(firstArg), mv(arraySymbol)) {}
 };
 
 class InstArrayRef4 : public OperableInstruction<InstArrayRef4> {
 public:
-  InstArrayRef4(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrref4", std::move(firstArg),
-                            std::move(arraySymbol)) {
+  InstArrayRef4(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrref4", mv(firstArg), mv(arraySymbol)) {
     arrayArg();
   }
   void arrayArg();
@@ -595,10 +603,8 @@ public:
 
 class InstArrayVal4 : public OperableInstruction<InstArrayVal4> {
 public:
-  InstArrayVal4(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrval4", std::move(firstArg),
-                            std::move(arraySymbol)) {
+  InstArrayVal4(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrval4", mv(firstArg), mv(arraySymbol)) {
     arrayArg();
   }
   void arrayArg();
@@ -606,18 +612,14 @@ public:
 
 class InstArrayDim5 : public OperableInstruction<InstArrayDim5> {
 public:
-  InstArrayDim5(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrdim5", std::move(firstArg),
-                            std::move(arraySymbol)) {}
+  InstArrayDim5(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrdim5", mv(firstArg), mv(arraySymbol)) {}
 };
 
 class InstArrayRef5 : public OperableInstruction<InstArrayRef5> {
 public:
-  InstArrayRef5(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrref5", std::move(firstArg),
-                            std::move(arraySymbol)) {
+  InstArrayRef5(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrref5", mv(firstArg), mv(arraySymbol)) {
     arrayArg();
   }
   void arrayArg();
@@ -625,10 +627,8 @@ public:
 
 class InstArrayVal5 : public OperableInstruction<InstArrayVal5> {
 public:
-  InstArrayVal5(std::unique_ptr<AddressMode> firstArg,
-                std::unique_ptr<AddressMode> arraySymbol)
-      : OperableInstruction("arrval5", std::move(firstArg),
-                            std::move(arraySymbol)) {
+  InstArrayVal5(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
+      : OperableInstruction("arrval5", mv(firstArg), mv(arraySymbol)) {
     arrayArg();
   }
   void arrayArg();
@@ -636,20 +636,18 @@ public:
 
 class InstArrayDim : public OperableInstruction<InstArrayDim> {
 public:
-  InstArrayDim(std::unique_ptr<AddressMode> firstArg,
-               std::unique_ptr<AddressMode> arraySymbol,
-               std::unique_ptr<AddressModeImm> argCount)
-      : OperableInstruction("arrdim", std::move(firstArg),
-                            std::move(arraySymbol), std::move(argCount)) {}
+  InstArrayDim(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+               up<AddressModeImm> argCount)
+      : OperableInstruction("arrdim", mv(firstArg), mv(arraySymbol),
+                            mv(argCount)) {}
 };
 
 class InstArrayRef : public OperableInstruction<InstArrayRef> {
 public:
-  InstArrayRef(std::unique_ptr<AddressMode> firstArg,
-               std::unique_ptr<AddressMode> arraySymbol,
-               std::unique_ptr<AddressModeImm> argCount)
-      : OperableInstruction("arrref", std::move(firstArg),
-                            std::move(arraySymbol), std::move(argCount)) {
+  InstArrayRef(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+               up<AddressModeImm> argCount)
+      : OperableInstruction("arrref", mv(firstArg), mv(arraySymbol),
+                            mv(argCount)) {
     arrayArg();
   }
   void arrayArg();
@@ -657,11 +655,10 @@ public:
 
 class InstArrayVal : public OperableInstruction<InstArrayVal> {
 public:
-  InstArrayVal(std::unique_ptr<AddressMode> firstArg,
-               std::unique_ptr<AddressMode> arraySymbol,
-               std::unique_ptr<AddressModeImm> argCount)
-      : OperableInstruction("arrval", std::move(firstArg),
-                            std::move(arraySymbol), std::move(argCount)) {
+  InstArrayVal(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+               up<AddressModeImm> argCount)
+      : OperableInstruction("arrval", mv(firstArg), mv(arraySymbol),
+                            mv(argCount)) {
     arrayArg();
   }
   void arrayArg();
@@ -669,10 +666,8 @@ public:
 
 class InstShift : public OperableInstruction<InstShift> {
 public:
-  InstShift(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-            std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("shift", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstShift(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("shift", mv(dest), mv(am1), mv(am2)) {
     resultShift();
   }
 };
@@ -681,24 +676,69 @@ public:
 
 class InstLd : public OperableInstruction<InstLd> {
 public:
-  InstLd(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("ld", std::move(dest), std::move(am)) {
+  InstLd(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("ld", mv(dest), mv(am)) {
     resultLet();
+  }
+};
+
+class InstOne : public OperableInstruction<InstOne> {
+public:
+  InstOne(up<AddressMode> dest) : OperableInstruction("one", mv(dest)) {
+    resultLet();
+  }
+};
+
+class InstTrue : public OperableInstruction<InstTrue> {
+public:
+  InstTrue(up<AddressMode> dest) : OperableInstruction("true", mv(dest)) {
+    resultLet();
+  }
+};
+
+class InstClr : public OperableInstruction<InstClr> {
+public:
+  InstClr(up<AddressMode> dest) : OperableInstruction("clr", mv(dest)) {
+    resultLet();
+  }
+};
+
+class InstInc : public OperableInstruction<InstInc> {
+public:
+  InstInc(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("inc", mv(dest), mv(am)) {
+    resultArg();
+  }
+};
+
+class InstDec : public OperableInstruction<InstDec> {
+public:
+  InstDec(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("dec", mv(dest), mv(am)) {
+    resultArg();
   }
 };
 
 class InstAbs : public OperableInstruction<InstAbs> {
 public:
-  InstAbs(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("abs", std::move(dest), std::move(am)) {
+  InstAbs(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("abs", mv(dest), mv(am)) {
     resultArg();
   }
 };
 
 class InstNeg : public OperableInstruction<InstNeg> {
 public:
-  InstNeg(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("neg", std::move(dest), std::move(am)) {
+  InstNeg(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("neg", mv(dest), mv(am)) {
+    resultArg();
+  }
+};
+
+class InstMul3 : public OperableInstruction<InstMul3> {
+public:
+  InstMul3(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("mul3", mv(dest), mv(am)) {
     resultArg();
   }
 };
@@ -707,24 +747,32 @@ public:
 
 class InstCom : public OperableInstruction<InstCom> {
 public:
-  InstCom(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("com", std::move(dest), std::move(am)) {
+  InstCom(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("com", mv(dest), mv(am)) {
     resultInt();
   }
 };
 
 class InstSgn : public OperableInstruction<InstSgn> {
 public:
-  InstSgn(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("sgn", std::move(dest), std::move(am)) {
+  InstSgn(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("sgn", mv(dest), mv(am)) {
     resultInt();
   }
 };
 
 class InstPeek : public OperableInstruction<InstPeek> {
 public:
-  InstPeek(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("peek", std::move(dest), std::move(am)) {
+  InstPeek(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("peek", mv(dest), mv(am)) {
+    resultInt();
+  }
+};
+
+class InstPeekWord : public OperableInstruction<InstPeekWord> {
+public:
+  InstPeekWord(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("peekw", mv(dest), mv(am)) {
     resultInt();
   }
 };
@@ -733,56 +781,56 @@ public:
 
 class InstSqr : public OperableInstruction<InstSqr> {
 public:
-  InstSqr(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("sqr", std::move(dest), std::move(am)) {
+  InstSqr(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("sqr", mv(dest), mv(am)) {
     resultFlt();
   }
 };
 
 class InstInv : public OperableInstruction<InstInv> {
 public:
-  InstInv(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("inv", std::move(dest), std::move(am)) {
+  InstInv(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("inv", mv(dest), mv(am)) {
     resultFlt();
   }
 };
 
 class InstLog : public OperableInstruction<InstLog> {
 public:
-  InstLog(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("log", std::move(dest), std::move(am)) {
+  InstLog(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("log", mv(dest), mv(am)) {
     resultFlt();
   }
 };
 
 class InstExp : public OperableInstruction<InstExp> {
 public:
-  InstExp(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("exp", std::move(dest), std::move(am)) {
+  InstExp(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("exp", mv(dest), mv(am)) {
     resultFlt();
   }
 };
 
 class InstSin : public OperableInstruction<InstSin> {
 public:
-  InstSin(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("sin", std::move(dest), std::move(am)) {
+  InstSin(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("sin", mv(dest), mv(am)) {
     resultFlt();
   }
 };
 
 class InstCos : public OperableInstruction<InstCos> {
 public:
-  InstCos(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("cos", std::move(dest), std::move(am)) {
+  InstCos(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("cos", mv(dest), mv(am)) {
     resultFlt();
   }
 };
 
 class InstTan : public OperableInstruction<InstTan> {
 public:
-  InstTan(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("tan", std::move(dest), std::move(am)) {
+  InstTan(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("tan", mv(dest), mv(am)) {
     resultFlt();
   }
 };
@@ -791,16 +839,16 @@ public:
 
 class InstIRnd : public OperableInstruction<InstIRnd> {
 public:
-  InstIRnd(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("irnd", std::move(dest), std::move(am)) {
+  InstIRnd(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("irnd", mv(dest), mv(am)) {
     resultInt();
   }
 };
 
 class InstRnd : public OperableInstruction<InstRnd> {
 public:
-  InstRnd(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("rnd", std::move(dest), std::move(am)) {
+  InstRnd(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("rnd", mv(dest), mv(am)) {
     resultFlt();
   }
 };
@@ -808,8 +856,8 @@ public:
 // Unary (string)
 class InstStr : public OperableInstruction<InstStr> {
 public:
-  InstStr(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("str", std::move(dest), std::move(am)) {
+  InstStr(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("str", mv(dest), mv(am)) {
     resultStr();
   }
 };
@@ -817,8 +865,8 @@ public:
 // Unary (float)
 class InstVal : public OperableInstruction<InstVal> {
 public:
-  InstVal(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("val", std::move(dest), std::move(am)) {
+  InstVal(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("val", mv(dest), mv(am)) {
     resultFlt();
   }
 };
@@ -826,8 +874,8 @@ public:
 // Unary (int)
 class InstAsc : public OperableInstruction<InstAsc> {
 public:
-  InstAsc(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("asc", std::move(dest), std::move(am)) {
+  InstAsc(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("asc", mv(dest), mv(am)) {
     resultInt();
   }
 };
@@ -835,8 +883,8 @@ public:
 // Unary (int)
 class InstLen : public OperableInstruction<InstLen> {
 public:
-  InstLen(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("len", std::move(dest), std::move(am)) {
+  InstLen(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("len", mv(dest), mv(am)) {
     resultInt();
   }
 };
@@ -844,24 +892,41 @@ public:
 // Unary (string)
 class InstChr : public OperableInstruction<InstChr> {
 public:
-  InstChr(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am)
-      : OperableInstruction("chr", std::move(dest), std::move(am)) {
+  InstChr(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("chr", mv(dest), mv(am)) {
     resultStr();
   }
 };
 
 class InstInkey : public OperableInstruction<InstInkey> {
 public:
-  explicit InstInkey(std::unique_ptr<AddressMode> dest)
-      : OperableInstruction("inkey", std::move(dest)) {
+  explicit InstInkey(up<AddressMode> dest)
+      : OperableInstruction("inkey", mv(dest)) {
     resultStr();
   }
 };
 
+// Inherent (int)
 class InstMem : public OperableInstruction<InstMem> {
 public:
-  explicit InstMem(std::unique_ptr<AddressMode> dest)
-      : OperableInstruction("mem", std::move(dest)) {
+  explicit InstMem(up<AddressMode> dest)
+      : OperableInstruction("mem", mv(dest)) {
+    resultInt();
+  }
+};
+
+class InstPos : public OperableInstruction<InstPos> {
+public:
+  explicit InstPos(up<AddressMode> dest)
+      : OperableInstruction("pos", mv(dest)) {
+    resultInt();
+  }
+};
+
+class InstTimer : public OperableInstruction<InstTimer> {
+public:
+  explicit InstTimer(up<AddressMode> dest)
+      : OperableInstruction("timer", mv(dest)) {
     resultInt();
   }
 };
@@ -869,40 +934,40 @@ public:
 // Binary (promote float)
 class InstAdd : public OperableInstruction<InstAdd> {
 public:
-  InstAdd(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-          std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("add", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstAdd(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("add", mv(dest), mv(am1), mv(am2)) {
     resultPromoteFlt();
   }
 };
 
 class InstSub : public OperableInstruction<InstSub> {
 public:
-  InstSub(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-          std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("sub", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstSub(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("sub", mv(dest), mv(am1), mv(am2)) {
+    resultPromoteFlt();
+  }
+};
+
+class InstRSub : public OperableInstruction<InstRSub> {
+public:
+  InstRSub(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("rsub", mv(dest), mv(am1), mv(am2)) {
     resultPromoteFlt();
   }
 };
 
 class InstMul : public OperableInstruction<InstMul> {
 public:
-  InstMul(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-          std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("mul", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstMul(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("mul", mv(dest), mv(am1), mv(am2)) {
     resultPromoteFlt();
   }
 };
 
 class InstPow : public OperableInstruction<InstPow> {
 public:
-  InstPow(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-          std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("pow", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstPow(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("pow", mv(dest), mv(am1), mv(am2)) {
     resultPow();
   }
 };
@@ -911,30 +976,24 @@ public:
 
 class InstDiv : public OperableInstruction<InstDiv> {
 public:
-  InstDiv(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-          std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("div", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstDiv(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("div", mv(dest), mv(am1), mv(am2)) {
     resultFlt();
   }
 };
 
 class InstIDiv : public OperableInstruction<InstIDiv> {
 public:
-  InstIDiv(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-           std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("idiv", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstIDiv(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("idiv", mv(dest), mv(am1), mv(am2)) {
     resultInt();
   }
 };
 
 class InstIDiv5S : public OperableInstruction<InstIDiv5S> {
 public:
-  InstIDiv5S(std::unique_ptr<AddressMode> dest,
-             std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("idiv5s", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstIDiv5S(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("idiv5s", mv(dest), mv(am1), mv(am2)) {
     resultInt();
   }
 };
@@ -942,16 +1001,16 @@ public:
 // Unary (int)
 class InstIDiv3 : public OperableInstruction<InstIDiv3> {
 public:
-  InstIDiv3(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1)
-      : OperableInstruction("idiv3", std::move(dest), std::move(am1)) {
+  InstIDiv3(up<AddressMode> dest, up<AddressMode> am1)
+      : OperableInstruction("idiv3", mv(dest), mv(am1)) {
     resultInt();
   }
 };
 
 class InstIDiv5 : public OperableInstruction<InstIDiv5> {
 public:
-  InstIDiv5(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1)
-      : OperableInstruction("idiv5", std::move(dest), std::move(am1)) {
+  InstIDiv5(up<AddressMode> dest, up<AddressMode> am1)
+      : OperableInstruction("idiv5", mv(dest), mv(am1)) {
     resultInt();
   }
 };
@@ -960,60 +1019,32 @@ public:
 
 class InstLdEq : public OperableInstruction<InstLdEq> {
 public:
-  InstLdEq(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-           std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("ldeq", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstLdEq(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("ldeq", mv(dest), mv(am1), mv(am2)) {
     resultInt();
   }
 };
 
 class InstLdNe : public OperableInstruction<InstLdNe> {
 public:
-  InstLdNe(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-           std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("ldne", std::move(dest), std::move(am1),
-                            std::move(am2)) {
-    resultInt();
-  }
-};
-
-class InstLdLo : public OperableInstruction<InstLdLo> {
-public:
-  InstLdLo(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-           std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("ldlo", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstLdNe(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("ldne", mv(dest), mv(am1), mv(am2)) {
     resultInt();
   }
 };
 
 class InstLdLt : public OperableInstruction<InstLdLt> {
 public:
-  InstLdLt(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-           std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("ldlt", std::move(dest), std::move(am1),
-                            std::move(am2)) {
-    resultInt();
-  }
-};
-
-class InstLdHs : public OperableInstruction<InstLdHs> {
-public:
-  InstLdHs(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-           std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("ldhs", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstLdLt(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("ldlt", mv(dest), mv(am1), mv(am2)) {
     resultInt();
   }
 };
 
 class InstLdGe : public OperableInstruction<InstLdGe> {
 public:
-  InstLdGe(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-           std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("ldge", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstLdGe(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("ldge", mv(dest), mv(am1), mv(am2)) {
     resultInt();
   }
 };
@@ -1022,20 +1053,16 @@ public:
 
 class InstAnd : public OperableInstruction<InstAnd> {
 public:
-  InstAnd(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-          std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("and", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstAnd(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("and", mv(dest), mv(am1), mv(am2)) {
     resultInt();
   }
 };
 
 class InstOr : public OperableInstruction<InstOr> {
 public:
-  InstOr(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-         std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("or", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstOr(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("or", mv(dest), mv(am1), mv(am2)) {
     resultInt();
   }
 };
@@ -1044,10 +1071,8 @@ public:
 
 class InstPoint : public OperableInstruction<InstPoint> {
 public:
-  InstPoint(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-            std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("point", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstPoint(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("point", mv(dest), mv(am1), mv(am2)) {
     resultInt();
   }
 };
@@ -1056,9 +1081,8 @@ public:
 
 class InstStrInit : public OperableInstruction<InstStrInit> {
 public:
-  InstStrInit(std::unique_ptr<AddressMode> dest,
-              std::unique_ptr<AddressMode> am1)
-      : OperableInstruction("strinit", std::move(dest), std::move(am1)) {
+  InstStrInit(up<AddressMode> dest, up<AddressMode> am1)
+      : OperableInstruction("strinit", mv(dest), mv(am1)) {
     resultStr();
   }
 };
@@ -1067,10 +1091,8 @@ public:
 
 class InstStrCat : public OperableInstruction<InstStrCat> {
 public:
-  InstStrCat(std::unique_ptr<AddressMode> dest,
-             std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("strcat", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstStrCat(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("strcat", mv(dest), mv(am1), mv(am2)) {
     resultStr();
   }
 };
@@ -1079,30 +1101,24 @@ public:
 
 class InstLeft : public OperableInstruction<InstLeft> {
 public:
-  InstLeft(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-           std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("left", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstLeft(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("left", mv(dest), mv(am1), mv(am2)) {
     resultStr();
   }
 };
 
 class InstRight : public OperableInstruction<InstRight> {
 public:
-  InstRight(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-            std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("right", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstRight(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("right", mv(dest), mv(am1), mv(am2)) {
     resultStr();
   }
 };
 
 class InstMid : public OperableInstruction<InstMid> {
 public:
-  InstMid(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-          std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("mid", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstMid(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("mid", mv(dest), mv(am1), mv(am2)) {
     resultStr();
   }
 };
@@ -1110,10 +1126,8 @@ public:
 // Ternary
 class InstMidT : public OperableInstruction<InstMidT> {
 public:
-  InstMidT(std::unique_ptr<AddressMode> dest, std::unique_ptr<AddressMode> am1,
-           std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("midT", std::move(dest), std::move(am1),
-                            std::move(am2)) {
+  InstMidT(up<AddressMode> dest, up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("midT", mv(dest), mv(am1), mv(am2)) {
     resultStr();
   }
 };
@@ -1122,8 +1136,8 @@ public:
 
 class InstPrTab : public OperableInstruction<InstPrTab> {
 public:
-  explicit InstPrTab(std::unique_ptr<AddressMode> am)
-      : OperableInstruction("prtab", std::move(am)) {}
+  explicit InstPrTab(up<AddressMode> am)
+      : OperableInstruction("prtab", mv(am)) {}
 };
 
 class InstPrComma : public OperableInstruction<InstPrComma> {
@@ -1143,30 +1157,47 @@ public:
 
 class InstPrAt : public OperableInstruction<InstPrAt> {
 public:
-  explicit InstPrAt(std::unique_ptr<AddressMode> am)
-      : OperableInstruction("prat", std::move(am)) {}
+  explicit InstPrAt(up<AddressMode> am) : OperableInstruction("prat", mv(am)) {}
 };
 
 class InstPr : public OperableInstruction<InstPr> {
 public:
-  explicit InstPr(std::unique_ptr<AddressMode> am)
-      : OperableInstruction("pr", std::move(am)) {}
+  explicit InstPr(up<AddressMode> am) : OperableInstruction("pr", mv(am)) {}
 };
 
 class InstFor : public OperableInstruction<InstFor> {
 public:
-  InstFor(std::unique_ptr<AddressMode> iter, std::unique_ptr<AddressMode> start)
-      : OperableInstruction("for", std::move(iter), std::move(start)) {
+  InstFor(up<AddressMode> iter, up<AddressMode> start)
+      : OperableInstruction("for", mv(iter), mv(start)) {
+    resultPtr();
+  }
+};
+
+class InstForOne : public OperableInstruction<InstForOne> {
+public:
+  InstForOne(up<AddressMode> iter) : OperableInstruction("forone", mv(iter)) {
+    resultPtr();
+  }
+};
+
+class InstForTrue : public OperableInstruction<InstForTrue> {
+public:
+  InstForTrue(up<AddressMode> iter) : OperableInstruction("fortrue", mv(iter)) {
+    resultPtr();
+  }
+};
+
+class InstForClr : public OperableInstruction<InstForClr> {
+public:
+  InstForClr(up<AddressMode> iter) : OperableInstruction("forclr", mv(iter)) {
     resultPtr();
   }
 };
 
 class InstTo : public OperableInstruction<InstTo> {
 public:
-  InstTo(std::unique_ptr<AddressMode> iterptr, std::unique_ptr<AddressMode> to,
-         bool g)
-      : OperableInstruction("to", std::move(iterptr), std::move(to)),
-        generateLines(g) {
+  InstTo(up<AddressMode> iterptr, up<AddressMode> to, bool g)
+      : OperableInstruction("to", mv(iterptr), mv(to)), generateLines(g) {
     resultArg1();
   }
   bool generateLines;
@@ -1174,9 +1205,8 @@ public:
 
 class InstStep : public OperableInstruction<InstStep> {
 public:
-  InstStep(std::unique_ptr<AddressMode> iterptr,
-           std::unique_ptr<AddressMode> step)
-      : OperableInstruction("step", std::move(iterptr), std::move(step)) {}
+  InstStep(up<AddressMode> iterptr, up<AddressMode> step)
+      : OperableInstruction("step", mv(iterptr), mv(step)) {}
 };
 
 class InstNext : public OperableInstruction<InstNext> {
@@ -1187,65 +1217,58 @@ public:
 
 class InstNextVar : public OperableInstruction<InstNextVar> {
 public:
-  InstNextVar(std::unique_ptr<AddressMode> am, bool g)
-      : OperableInstruction("nextvar", std::move(am)), generateLines(g) {}
+  InstNextVar(up<AddressMode> am, bool g)
+      : OperableInstruction("nextvar", mv(am)), generateLines(g) {}
   bool generateLines;
 };
 
 class InstGoTo : public OperableInstruction<InstGoTo> {
 public:
-  explicit InstGoTo(std::unique_ptr<AddressMode> am)
-      : OperableInstruction("goto", std::move(am)) {}
+  explicit InstGoTo(up<AddressMode> am) : OperableInstruction("goto", mv(am)) {}
 };
 
 class InstGoSub : public OperableInstruction<InstGoSub> {
 public:
-  InstGoSub(std::unique_ptr<AddressMode> am, bool g)
-      : OperableInstruction("gosub", std::move(am)), generateLines(g) {}
+  InstGoSub(up<AddressMode> am, bool g)
+      : OperableInstruction("gosub", mv(am)), generateLines(g) {}
   bool generateLines;
 };
 
 class InstOnGoTo : public OperableInstruction<InstOnGoTo> {
 public:
-  InstOnGoTo(std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("ongoto", std::move(am1), std::move(am2)) {}
+  InstOnGoTo(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("ongoto", mv(am1), mv(am2)) {}
 };
 
 class InstOnGoSub : public OperableInstruction<InstOnGoSub> {
 public:
-  InstOnGoSub(std::unique_ptr<AddressMode> am1,
-              std::unique_ptr<AddressMode> am2, bool g)
-      : OperableInstruction("ongosub", std::move(am1), std::move(am2)),
-        generateLines(g) {}
+  InstOnGoSub(up<AddressMode> am1, up<AddressMode> am2, bool g)
+      : OperableInstruction("ongosub", mv(am1), mv(am2)), generateLines(g) {}
   bool generateLines;
 };
 
 class InstJsrIfEqual : public OperableInstruction<InstJsrIfEqual> {
 public:
-  InstJsrIfEqual(std::unique_ptr<AddressMode> am1,
-                 std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("jsreq", std::move(am1), std::move(am2)) {}
+  InstJsrIfEqual(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("jsreq", mv(am1), mv(am2)) {}
 };
 
 class InstJsrIfNotEqual : public OperableInstruction<InstJsrIfNotEqual> {
 public:
-  InstJsrIfNotEqual(std::unique_ptr<AddressMode> am1,
-                    std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("jsrne", std::move(am1), std::move(am2)) {}
+  InstJsrIfNotEqual(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("jsrne", mv(am1), mv(am2)) {}
 };
 
 class InstJmpIfEqual : public OperableInstruction<InstJmpIfEqual> {
 public:
-  InstJmpIfEqual(std::unique_ptr<AddressMode> am1,
-                 std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("jmpeq", std::move(am1), std::move(am2)) {}
+  InstJmpIfEqual(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("jmpeq", mv(am1), mv(am2)) {}
 };
 
 class InstJmpIfNotEqual : public OperableInstruction<InstJmpIfNotEqual> {
 public:
-  InstJmpIfNotEqual(std::unique_ptr<AddressMode> am1,
-                    std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("jmpne", std::move(am1), std::move(am2)) {}
+  InstJmpIfNotEqual(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("jmpne", mv(am1), mv(am2)) {}
 };
 
 class InstInputBuf : public OperableInstruction<InstInputBuf> {
@@ -1255,8 +1278,8 @@ public:
 
 class InstReadBuf : public OperableInstruction<InstReadBuf> {
 public:
-  explicit InstReadBuf(std::unique_ptr<AddressMode> am)
-      : OperableInstruction("readbuf", std::move(am)) {}
+  explicit InstReadBuf(up<AddressMode> am)
+      : OperableInstruction("readbuf", mv(am)) {}
 };
 
 class InstIgnoreExtra : public OperableInstruction<InstIgnoreExtra> {
@@ -1266,8 +1289,7 @@ public:
 
 class InstRead : public OperableInstruction<InstRead> {
 public:
-  explicit InstRead(std::unique_ptr<AddressMode> am)
-      : OperableInstruction("read", std::move(am)) {}
+  explicit InstRead(up<AddressMode> am) : OperableInstruction("read", mv(am)) {}
   bool pureUnsigned{false};
   bool pureByte{false};
   bool pureWord{false};
@@ -1298,28 +1320,25 @@ public:
 
 class InstClsN : public OperableInstruction<InstClsN> {
 public:
-  explicit InstClsN(std::unique_ptr<AddressMode> am)
-      : OperableInstruction("clsn", std::move(am)) {}
+  explicit InstClsN(up<AddressMode> am) : OperableInstruction("clsn", mv(am)) {}
 };
 
 class InstSet : public OperableInstruction<InstSet> {
 public:
-  InstSet(std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("set", std::move(am1), std::move(am2)) {}
+  InstSet(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("set", mv(am1), mv(am2)) {}
 };
 
 class InstSetC : public OperableInstruction<InstSetC> {
 public:
-  InstSetC(std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2,
-           std::unique_ptr<AddressMode> am3)
-      : OperableInstruction("setc", std::move(am1), std::move(am2),
-                            std::move(am3)) {}
+  InstSetC(up<AddressMode> am1, up<AddressMode> am2, up<AddressMode> am3)
+      : OperableInstruction("setc", mv(am1), mv(am2), mv(am3)) {}
 };
 
 class InstReset : public OperableInstruction<InstReset> {
 public:
-  InstReset(std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("reset", std::move(am1), std::move(am2)) {}
+  InstReset(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("reset", mv(am1), mv(am2)) {}
 };
 
 class InstStop : public OperableInstruction<InstStop> {
@@ -1329,26 +1348,26 @@ public:
 
 class InstPoke : public OperableInstruction<InstPoke> {
 public:
-  InstPoke(std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("poke", std::move(am1), std::move(am2)) {}
+  InstPoke(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("poke", mv(am1), mv(am2)) {}
 };
 
 class InstSound : public OperableInstruction<InstSound> {
 public:
-  InstSound(std::unique_ptr<AddressMode> am1, std::unique_ptr<AddressMode> am2)
-      : OperableInstruction("sound", std::move(am1), std::move(am2)) {}
+  InstSound(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("sound", mv(am1), mv(am2)) {}
 };
 
 class InstExec : public OperableInstruction<InstExec> {
 public:
-  explicit InstExec(std::unique_ptr<AddressMode> am)
-      : OperableInstruction("execn", std::move(am)) {}
+  explicit InstExec(up<AddressMode> am)
+      : OperableInstruction("execn", mv(am)) {}
 };
 
 class InstError : public OperableInstruction<InstError> {
 public:
-  explicit InstError(std::unique_ptr<AddressMode> am)
-      : OperableInstruction("error", std::move(am)) {}
+  explicit InstError(up<AddressMode> am)
+      : OperableInstruction("error", mv(am)) {}
 };
 
 class InstBegin : public OperableInstruction<InstBegin> {

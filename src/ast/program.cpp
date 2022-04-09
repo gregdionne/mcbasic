@@ -6,8 +6,7 @@
 
 void Program::sortLines() {
   struct {
-    bool operator()(const std::unique_ptr<Line> &a,
-                    const std::unique_ptr<Line> &b) const {
+    bool operator()(const up<Line> &a, const up<Line> &b) const {
       return a->lineNumber < b->lineNumber;
     }
   } linecmp;

@@ -7,8 +7,6 @@
 #include <stdlib.h> //perror
 #include <string.h> //strlen
 
-#include "assembler.hpp"
-
 void Writer::init() {
   opts.init(argc, argv);
   argcnt = opts.argcnt;

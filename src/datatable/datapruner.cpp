@@ -15,8 +15,7 @@ void DataPruner::operate(Line &l) {
 
 void StatementDataPruner::mutate(If &s) { prune(s.consequent); }
 
-void StatementDataPruner::prune(
-    std::vector<std::unique_ptr<Statement>> &statements) {
+void StatementDataPruner::prune(std::vector<up<Statement>> &statements) {
 
   auto it = statements.begin();
   while (it != statements.end()) {

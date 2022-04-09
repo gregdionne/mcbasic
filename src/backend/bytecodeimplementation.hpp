@@ -54,8 +54,8 @@ public:
 
   std::string regInt_regStr_immStr(InstLdNe &inst) override;
 
-  std::string regInt_regStr_immStr(InstLdLo &inst) override;
-  std::string regInt_regStr_immStr(InstLdHs &inst) override;
+  std::string regInt_regStr_immStr(InstLdLt &inst) override;
+  std::string regInt_regStr_immStr(InstLdGe &inst) override;
 
   std::string ptrInt_posByte(InstTo &inst) override;
   std::string ptrInt_negByte(InstTo &inst) override;
@@ -107,6 +107,8 @@ private:
   static bool isExtWord(Instruction &inst);
   static bool isByteExt(Instruction &inst);
   static bool isWordExt(Instruction &inst);
+  static bool isExtDex(Instruction &inst);
+  static bool isDexExt(Instruction &inst);
   static bool isNoArgs(Instruction &inst);
 };
 

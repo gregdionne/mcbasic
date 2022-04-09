@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -99,9 +100,8 @@ LINE_10
 
 	; A=-1
 
-	.byte	bytecode_ld_ix_nb
+	.byte	bytecode_true_ix
 	.byte	bytecode_INTVAR_A
-	.byte	-1
 
 	; B=2
 
@@ -270,15 +270,15 @@ bytecode_goto_ix	.equ	4
 bytecode_jmpeq_ir1_ix	.equ	5
 bytecode_ld_ir1_ix	.equ	6
 bytecode_ld_ir2_ix	.equ	7
-bytecode_ld_ix_nb	.equ	8
-bytecode_ld_ix_pb	.equ	9
-bytecode_ldeq_ir1_ir1_nb	.equ	10
-bytecode_ldeq_ir1_ir1_pb	.equ	11
-bytecode_or_ir1_ir1_ir2	.equ	12
-bytecode_or_ir1_ir1_ix	.equ	13
-bytecode_pr_ss	.equ	14
-bytecode_progbegin	.equ	15
-bytecode_progend	.equ	16
+bytecode_ld_ix_pb	.equ	8
+bytecode_ldeq_ir1_ir1_nb	.equ	9
+bytecode_ldeq_ir1_ir1_pb	.equ	10
+bytecode_or_ir1_ir1_ir2	.equ	11
+bytecode_or_ir1_ir1_ix	.equ	12
+bytecode_pr_ss	.equ	13
+bytecode_progbegin	.equ	14
+bytecode_progend	.equ	15
+bytecode_true_ix	.equ	16
 
 catalog
 	.word	add_fr2_ir2_fx
@@ -289,7 +289,6 @@ catalog
 	.word	jmpeq_ir1_ix
 	.word	ld_ir1_ix
 	.word	ld_ir2_ix
-	.word	ld_ix_nb
 	.word	ld_ix_pb
 	.word	ldeq_ir1_ir1_nb
 	.word	ldeq_ir1_ir1_pb
@@ -298,6 +297,7 @@ catalog
 	.word	pr_ss
 	.word	progbegin
 	.word	progend
+	.word	true_ix
 
 	.module	mdbcode
 noargs
@@ -388,6 +388,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -552,14 +590,6 @@ ld_ir2_ix			; numCalls = 2
 	stab	r2
 	rts
 
-ld_ix_nb			; numCalls = 1
-	.module	modld_ix_nb
-	jsr	extbyte
-	stab	2,x
-	ldd	#-1
-	std	0,x
-	rts
-
 ld_ix_pb			; numCalls = 1
 	.module	modld_ix_pb
 	jsr	extbyte
@@ -683,6 +713,14 @@ DD_ERROR	.equ	18
 LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
+
+true_ix			; numCalls = 1
+	.module	modtrue_ix
+	jsr	extend
+	ldd	#-1
+	stab	0,x
+	std	1,x
+	rts
 
 ; data table
 startdata

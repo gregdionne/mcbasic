@@ -15,7 +15,7 @@ protected:
   std::string generateSymbolCatalog(ConstTable &constTable,
                                     SymbolTable &symbolTable) override;
   void extendDirectPage(Assembler &tasm) override;
-  std::unique_ptr<Dispatcher> makeDispatcher() override;
+  up<Dispatcher> makeDispatcher() override;
 };
 
 #endif

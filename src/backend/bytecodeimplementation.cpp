@@ -317,8 +317,9 @@ std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdNe &inst) {
   return tasm.source();
 }
 
-std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdLo &inst) {
+std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdLt &inst) {
   inst.dependencies.insert("mdstrlobs");
+  inst.dependencies.insert("mdgetlo");
 
   Assembler tasm;
   tasm.ldab(inst.arg2->sbyte());
@@ -326,21 +327,16 @@ std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdLo &inst) {
   tasm.ldd(inst.arg2->lword());
   tasm.std("1+argv");
   tasm.jsr("strlobs");
-  tasm.blo("_1");
-  tasm.ldd("#0");
-  tasm.std(inst.arg1->lword());
-  tasm.stab(inst.arg1->sbyte());
-  tasm.rts();
-  tasm.label("_1");
-  tasm.ldd("#-1");
+  tasm.jsr("getlo");
   tasm.std(inst.arg1->lword());
   tasm.stab(inst.arg1->sbyte());
   tasm.rts();
   return tasm.source();
 }
 
-std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdHs &inst) {
+std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdGe &inst) {
   inst.dependencies.insert("mdstrlobs");
+  inst.dependencies.insert("mdgeths");
 
   Assembler tasm;
   tasm.ldab(inst.arg2->sbyte());
@@ -348,13 +344,7 @@ std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdHs &inst) {
   tasm.ldd(inst.arg2->lword());
   tasm.std("1+argv");
   tasm.jsr("strlobs");
-  tasm.bhs("_1");
-  tasm.ldd("#0");
-  tasm.std(inst.arg1->lword());
-  tasm.stab(inst.arg1->sbyte());
-  tasm.rts();
-  tasm.label("_1");
-  tasm.ldd("#-1");
+  tasm.jsr("geths");
   tasm.std(inst.arg1->lword());
   tasm.stab(inst.arg1->sbyte());
   tasm.rts();
@@ -722,116 +712,118 @@ std::string ByteCodeImplementation::inherent(InstNext &inst) {
   tasm.jmp("error");
   tasm.label("_ok");
   tasm.cmpb(inst.generateLines ? "#13" : "#11");
-  tasm.bne("_flt"); //                [0]        [1,2]      [3,4]
-                    //                [5,6,7]    [8,9,10]
-  tasm.ldd("9,x");  // 1 + 2 + 2 + 3  0,x == rz; 1,x == ip; 3,x ==
-                    // ret; 5,x == to; 8,x == step
-  tasm.std("r1+1");
-  tasm.ldab("8,x");
-  tasm.stab("r1");
-  tasm.ldx("1,x");
-  tasm.ldd("r1+1");
-  tasm.addd("1,x");
-  tasm.std("r1+1");
-  tasm.std("1,x");
-  tasm.ldab("r1");
-  tasm.adcb(",x");
-  tasm.stab("r1");
-  tasm.stab(",x");
-  tasm.tsx();
-  tasm.tst("8,x");
-  tasm.bpl("_iopp");
-  tasm.ldd("r1+1"); // 1 + 2 + 2
-  tasm.subd("6,x"); // 1 + 2 + 2
-  tasm.ldab("r1");
-  tasm.sbcb("5,x");
-  tasm.blt("_idone");
+  tasm.bne("_flt");
+  //   0,x (byte) rec length
+  //   1,x (word) index variable pointer
+  //   3,x (word) loop destination
+  //   5,x (trip) "to" limit
+  //   8,x (trip) step amount
+  // [11,x (word) line number of destination]
+  tasm.ldab("8,x");  // save sign byte of step in r1
+  tasm.stab("r1");   //
+  tasm.ldd("9,x");   // get lower word
+  tasm.ldx("1,x");   // get pointer to index variable
+  tasm.addd("1,x");  // add to lower word of index variable
+  tasm.std("r1+1");  // save in r1
+  tasm.std("1,x");   // ...and index variable
+  tasm.ldab("r1");   // get saved sign byte of step
+  tasm.adcb(",x");   // add with sign byte of index variable
+  tasm.stab("r1");   // save in r1
+  tasm.stab(",x");   // ...and in index variable
+  tasm.tsx();        // point back to stack
+  tasm.tst("8,x");   // check sign byte of step
+  tasm.bpl("_iopp"); // go if positive
+  tasm.ldd("r1+1");  // compare against "to" limit
+  tasm.subd("6,x");  //
+  tasm.ldab("r1");   //
+  tasm.sbcb("5,x");  //
+  tasm.blt("_done"); // bail if past limit
   if (inst.generateLines) {
-    tasm.ldd("11,x");
-    tasm.std("DP_LNUM");
+    tasm.ldd("11,x");    // transfer destination line number
+    tasm.std("DP_LNUM"); // when using "-g" compiler flag
   }
-  tasm.ldx("3,x");
+  tasm.ldx("3,x"); // go to destination
   tasm.stx("nxtinst");
   tasm.jmp("mainloop");
   tasm.label("_iopp");
-  tasm.ldd("6,x");   // 1 + 2 + 2
-  tasm.subd("r1+1"); // 1 + 2 + 2
-  tasm.ldab("5,x");
-  tasm.sbcb("r1");
-  tasm.blt("_idone");
+  tasm.ldd("6,x");   // compare against "to" limit
+  tasm.subd("r1+1"); //
+  tasm.ldab("5,x");  //
+  tasm.sbcb("r1");   //
+  tasm.blt("_done"); // bail if past limit
   if (inst.generateLines) {
-    tasm.ldd("11,x");
-    tasm.std("DP_LNUM");
+    tasm.ldd("11,x");    // transfer destination line number
+    tasm.std("DP_LNUM"); // when using "-g" compiler flag
   }
-  tasm.ldx("3,x");
+  tasm.ldx("3,x"); // go to destination
   tasm.stx("nxtinst");
   tasm.jmp("mainloop");
-  tasm.label("_idone");
-  tasm.ldab(inst.generateLines ? "#13" : "#11");
-  tasm.bra("_done");
-  tasm.label("_flt"); //                [0]        [1,2]      [3,4]
-                      //                [5,6,7,8,9] [10,11,12,13,14]
-  tasm.ldd("13,x");   // 1 + 2 + 2 + 5  0,x == rz; 1,x == ip; 3,x ==
-                      // ret; 5,x == to; 10,x == step
-  tasm.std("r1+3");
-  tasm.ldd("11,x"); // 1 + 2 + 2 + 5  0,x == rz; 1,x == ip; 3,x ==
-                    // ret; 5,x == to; 10,x == step
-  tasm.std("r1+1");
-  tasm.ldab("10,x");
-  tasm.stab("r1");
-  tasm.ldx("1,x");
-  tasm.ldd("r1+3");
-  tasm.addd("3,x");
-  tasm.std("r1+3");
-  tasm.std("3,x");
-  tasm.ldd("1,x");
-  tasm.adcb("r1+2");
-  tasm.adca("r1+1");
-  tasm.std("r1+1");
-  tasm.std("1,x");
-  tasm.ldab("r1");
-  tasm.adcb(",x");
-  tasm.stab("r1");
-  tasm.stab(",x");
-  tasm.tsx();
-  tasm.tst("10,x");
-  tasm.bpl("_fopp");
-  tasm.ldd("r1+3"); // 1 + 2 + 2
-  tasm.subd("8,x"); // 1 + 2 + 2
-  tasm.ldd("r1+1"); // 1 + 2 + 2
-  tasm.sbcb("7,x"); // 1 + 2 + 2
-  tasm.sbca("6,x"); // 1 + 2 + 2
-  tasm.ldab("r1");
-  tasm.sbcb("5,x");
-  tasm.blt("_fdone");
-  if (inst.generateLines) {
-    tasm.ldd("15,x");
-    tasm.std("DP_LNUM");
-  }
-  tasm.ldx("3,x");
-  tasm.stx("nxtinst");
-  tasm.jmp("mainloop");
-  tasm.label("_fopp");
-  tasm.ldd("8,x");   // 1 + 2 + 2
-  tasm.subd("r1+3"); // 1 + 2 + 2
-  tasm.ldd("6,x");   // 1 + 2 + 2
-  tasm.sbcb("r1+2"); // 1 + 2 + 2
-  tasm.sbca("r1+1"); // 1 + 2 + 2
-  tasm.ldab("5,x");
-  tasm.sbcb("r1");
-  tasm.blt("_fdone");
-  if (inst.generateLines) {
-    tasm.ldd("15,x");
-    tasm.std("DP_LNUM");
-  }
-  tasm.ldx("3,x");
-  tasm.stx("nxtinst");
-  tasm.jmp("mainloop");
-  tasm.label("_fdone");
-  tasm.ldab(inst.generateLines ? "#17" : "#15");
+
   tasm.label("_done");
-  tasm.abx();
-  tasm.txs();
+  tasm.ldab("0,x");     // get record length
+  tasm.abx();           // add offset to stack
+  tasm.txs();           //
+  tasm.jmp("mainloop"); // return
+
+  tasm.label("_flt");
+  //   0,x (byte) rec length
+  //   1,x (word) index variable pointer
+  //   3,x (word) loop destination
+  //   5,x (pent) "to" limit
+  //  10,x (pent) step amount
+  // [15,x (word) line number of destination]
+  tasm.ldab("10,x"); // save sign byte of "step" in r1
+  tasm.stab("r1");   //
+  tasm.ldd("11,x");  // save lower word in r1
+  tasm.std("r1+1");  //
+  tasm.ldd("13,x");  // load fraction word
+  tasm.ldx("1,x");   // get pointer to index variable
+  tasm.addd("3,x");  // add to fraction word
+  tasm.std("r1+3");  // store in r1
+  tasm.std("3,x");   // ... and index variable
+  tasm.ldd("1,x");   // add lower words
+  tasm.adcb("r1+2"); //
+  tasm.adca("r1+1"); //
+  tasm.std("r1+1");  // store in r1
+  tasm.std("1,x");   // ... and index variable
+  tasm.ldab("r1");   // add sign bytes
+  tasm.adcb(",x");   //
+  tasm.stab("r1");   // store in r1
+  tasm.stab(",x");   // ... and index variable
+  tasm.tsx();
+  tasm.tst("10,x");  // check sign byte of "step"
+  tasm.bpl("_fopp"); // go if positive
+  tasm.ldd("r1+3");  // compare against "to" limit
+  tasm.subd("8,x");  //
+  tasm.ldd("r1+1");  //
+  tasm.sbcb("7,x");  //
+  tasm.sbca("6,x");  //
+  tasm.ldab("r1");   //
+  tasm.sbcb("5,x");  //
+  tasm.blt("_done"); // bail if past the limit
+  if (inst.generateLines) {
+    tasm.ldd("15,x");    // transfer destination line number
+    tasm.std("DP_LNUM"); // when using "-g" debug flag
+  }
+  tasm.ldx("3,x"); // go to loop destination
+  tasm.stx("nxtinst");
+  tasm.jmp("mainloop");
+
+  tasm.label("_fopp");
+  tasm.ldd("8,x");   // compare against "to" limit
+  tasm.subd("r1+3"); //
+  tasm.ldd("6,x");   //
+  tasm.sbcb("r1+2"); //
+  tasm.sbca("r1+1"); //
+  tasm.ldab("5,x");  //
+  tasm.sbcb("r1");   //
+  tasm.blt("_done"); // bail if past limit
+  if (inst.generateLines) {
+    tasm.ldd("15,x");    // transfer destination line number
+    tasm.std("DP_LNUM"); // when using "-g" debug flag
+  }
+  tasm.ldx("3,x"); // go to loop destination
+  tasm.stx("nxtinst");
   tasm.jmp("mainloop");
   return tasm.source();
 }
@@ -1127,11 +1119,17 @@ bool ByteCodeImplementation::isExtend(Instruction &inst) {
   auto &arg2 = inst.arg2;
   auto &arg3 = inst.arg3;
 
-  bool in1 = arg1->isExtended() && !arg2->isImmediate() && !arg3->isImmediate();
-  bool in2 = !arg1->isImmediate() && arg2->isExtended() && !arg3->isImmediate();
-  bool in3 = !arg1->isImmediate() && !arg2->isImmediate() && arg3->isExtended();
+  bool in1 = arg1->isExtended() && arg2->isInherent() && arg3->isInherent();
+  bool in2 = arg1->isExtended() && arg2->isRegister() && arg3->isInherent();
+  bool in3 = arg1->isExtended() && arg2->isRegister() && arg3->isExtended();
+  bool in4 = arg1->isExtended() && arg2->isIndirect() && arg3->isInherent();
+  bool in5 = arg1->isExtended() && arg2->isExtended() && arg3->isInherent();
+  bool in6 = arg1->isExtended() && arg2->isExtended() && arg3->isRegister();
+  bool in7 = arg1->isRegister() && arg2->isExtended() && arg3->isInherent();
+  bool in8 = arg1->isRegister() && arg2->isRegister() && arg3->isExtended();
+  bool in9 = arg1->isIndirect() && arg2->isExtended() && arg3->isInherent();
 
-  return in1 || in2 || in3;
+  return in1 || in2 || in3 || in4 || in5 || in6 || in7 || in8 || in9;
 }
 
 bool ByteCodeImplementation::isGetByte(Instruction &inst) {
@@ -1163,9 +1161,11 @@ bool ByteCodeImplementation::isByteExt(Instruction &inst) {
   auto &arg2 = inst.arg2;
   auto &arg3 = inst.arg3;
 
-  bool in1 = arg1->isByte() && (arg2->isExtended() || arg3->isExtended());
-  bool in2 = arg1->isExtended() && arg2->isByte() && arg3->isExtended();
-  return in1 || in2;
+  bool in1 = arg1->isByte() && arg2->isExtended() && arg3->isInherent();
+  bool in2 = arg1->isRegister() && arg2->isByte() && arg3->isExtended();
+  bool in3 = arg1->isExtended() && arg2->isByte() && arg3->isExtended();
+  bool in4 = arg1->isIndirect() && arg2->isByte() && arg3->isExtended();
+  return in1 || in2 || in3 || in4;
 }
 
 bool ByteCodeImplementation::isWordExt(Instruction &inst) {
@@ -1173,9 +1173,11 @@ bool ByteCodeImplementation::isWordExt(Instruction &inst) {
   auto &arg2 = inst.arg2;
   auto &arg3 = inst.arg3;
 
-  bool in1 = arg1->isWord() && (arg2->isExtended() || arg3->isExtended());
-  bool in2 = arg1->isExtended() && arg2->isWord() && arg3->isExtended();
-  return in1 || in2;
+  bool in1 = arg1->isWord() && arg2->isExtended() && arg3->isInherent();
+  bool in2 = arg1->isRegister() && arg2->isWord() && arg3->isExtended();
+  bool in3 = arg1->isExtended() && arg2->isWord() && arg3->isExtended();
+  bool in4 = arg1->isIndirect() && arg2->isWord() && arg3->isExtended();
+  return in1 || in2 || in3 || in4;
 }
 
 bool ByteCodeImplementation::isExtByte(Instruction &inst) {
@@ -1183,9 +1185,11 @@ bool ByteCodeImplementation::isExtByte(Instruction &inst) {
   auto &arg2 = inst.arg2;
   auto &arg3 = inst.arg3;
 
-  bool in1 = arg1->isExtended() && (arg2->isByte() || arg3->isByte());
-  bool in2 = !arg1->isByte() && arg2->isExtended() && arg3->isByte();
-  return in1 || in2;
+  bool in1 = arg1->isExtended() && arg2->isByte() && arg3->isInherent();
+  bool in2 = arg1->isRegister() && arg2->isExtended() && arg3->isByte();
+  bool in3 = arg1->isExtended() && arg2->isExtended() && arg3->isByte();
+  bool in4 = arg1->isIndirect() && arg2->isExtended() && arg3->isByte();
+  return in1 || in2 || in3 || in4;
 }
 
 bool ByteCodeImplementation::isExtWord(Instruction &inst) {
@@ -1193,9 +1197,35 @@ bool ByteCodeImplementation::isExtWord(Instruction &inst) {
   auto &arg2 = inst.arg2;
   auto &arg3 = inst.arg3;
 
-  bool in1 = arg1->isExtended() && (arg2->isWord() || arg3->isWord());
-  bool in2 = !arg1->isWord() && arg2->isExtended() && arg3->isWord();
-  return in1 || in2;
+  bool in1 = arg1->isExtended() && arg2->isWord() && arg3->isInherent();
+  bool in2 = arg1->isRegister() && arg2->isExtended() && arg3->isWord();
+  bool in3 = arg1->isExtended() && arg2->isExtended() && arg3->isWord();
+  bool in4 = arg1->isIndirect() && arg2->isExtended() && arg3->isWord();
+  return in1 || in2 || in3 || in4;
+}
+
+bool ByteCodeImplementation::isExtDex(Instruction &inst) {
+  auto &arg1 = inst.arg1;
+  auto &arg2 = inst.arg2;
+  auto &arg3 = inst.arg3;
+
+  bool in1 = arg1->isExtended() && arg2->isDoubleEx() && arg3->isInherent();
+  bool in2 = arg1->isRegister() && arg2->isExtended() && arg3->isDoubleEx();
+  bool in3 = arg1->isExtended() && arg2->isExtended() && arg3->isDoubleEx();
+  bool in4 = arg1->isIndirect() && arg2->isExtended() && arg3->isDoubleEx();
+  return in1 || in2 || in3 || in4;
+}
+
+bool ByteCodeImplementation::isDexExt(Instruction &inst) {
+  auto &arg1 = inst.arg1;
+  auto &arg2 = inst.arg2;
+  auto &arg3 = inst.arg3;
+
+  bool in1 = arg1->isDoubleEx() && arg2->isExtended() && arg3->isInherent();
+  bool in2 = arg1->isRegister() && arg2->isDoubleEx() && arg3->isExtended();
+  bool in3 = arg1->isExtended() && arg2->isDoubleEx() && arg3->isExtended();
+  bool in4 = arg1->isIndirect() && arg2->isDoubleEx() && arg3->isExtended();
+  return in1 || in2 || in3 || in4;
 }
 
 bool ByteCodeImplementation::isNoArgs(Instruction &inst) {
@@ -1217,6 +1247,8 @@ void ByteCodeImplementation::preamble(Assembler &tasm, Instruction &inst) {
          : isWordExt(inst) ? "wordext"
          : isExtByte(inst) ? "extbyte"
          : isExtWord(inst) ? "extword"
+         : isExtDex(inst)  ? "extdex"
+         : isDexExt(inst)  ? "dexext"
          : isNoArgs(inst)  ? "noargs"
                            : "!unknown";
   tasm.jsr(addr);

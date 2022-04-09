@@ -18,8 +18,7 @@
 
 class Dispatcher : public InstructionOp {
 public:
-  explicit Dispatcher(std::unique_ptr<Implementation> interp)
-      : implementation(std::move(interp)) {}
+  explicit Dispatcher(up<Implementation> interp) : implementation(mv(interp)) {}
 
   // because the "rule-of-five"
   Dispatcher() = delete;
@@ -54,11 +53,17 @@ public:
   std::string operate(InstArrayVal &inst) override;
   std::string operate(InstShift &inst) override;
   std::string operate(InstLd &inst) override;
+  std::string operate(InstOne &inst) override;
+  std::string operate(InstTrue &inst) override;
+  std::string operate(InstClr &inst) override;
+  std::string operate(InstInc &inst) override;
+  std::string operate(InstDec &inst) override;
   std::string operate(InstAbs &inst) override;
   std::string operate(InstNeg &inst) override;
   std::string operate(InstCom &inst) override;
   std::string operate(InstSgn &inst) override;
   std::string operate(InstPeek &inst) override;
+  std::string operate(InstPeekWord &inst) override;
   std::string operate(InstInv &inst) override;
   std::string operate(InstSqr &inst) override;
   std::string operate(InstExp &inst) override;
@@ -75,9 +80,13 @@ public:
   std::string operate(InstChr &inst) override;
   std::string operate(InstInkey &inst) override;
   std::string operate(InstMem &inst) override;
+  std::string operate(InstPos &inst) override;
+  std::string operate(InstTimer &inst) override;
   std::string operate(InstAdd &inst) override;
   std::string operate(InstSub &inst) override;
+  std::string operate(InstRSub &inst) override;
   std::string operate(InstMul &inst) override;
+  std::string operate(InstMul3 &inst) override;
   std::string operate(InstDiv &inst) override;
   std::string operate(InstIDiv &inst) override;
   std::string operate(InstIDiv3 &inst) override;
@@ -86,9 +95,7 @@ public:
   std::string operate(InstPow &inst) override;
   std::string operate(InstLdEq &inst) override;
   std::string operate(InstLdNe &inst) override;
-  std::string operate(InstLdLo &inst) override;
   std::string operate(InstLdLt &inst) override;
-  std::string operate(InstLdHs &inst) override;
   std::string operate(InstLdGe &inst) override;
   std::string operate(InstAnd &inst) override;
   std::string operate(InstOr &inst) override;
@@ -106,6 +113,9 @@ public:
   std::string operate(InstPrAt &inst) override;
   std::string operate(InstPr &inst) override;
   std::string operate(InstFor &inst) override;
+  std::string operate(InstForOne &inst) override;
+  std::string operate(InstForTrue &inst) override;
+  std::string operate(InstForClr &inst) override;
   std::string operate(InstTo &inst) override;
   std::string operate(InstStep &inst) override;
   std::string operate(InstNext &inst) override;
@@ -139,7 +149,7 @@ public:
   std::string operate(InstEnd &inst) override;
 
 protected:
-  std::unique_ptr<Implementation> implementation;
+  up<Implementation> implementation;
 };
 
 #endif

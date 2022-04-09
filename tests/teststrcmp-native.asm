@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -230,10 +231,8 @@ LINE_100
 	.text	1, "<"
 
 	ldx	#STRVAR_A
-	jsr	ld_sr1_sx
-
-	ldx	#STRVAR_B
-	jsr	ldlo_ir1_sr1_sx
+	ldd	#STRVAR_B
+	jsr	ldlt_ir1_sx_sd
 
 	jsr	str_sr1_ir1
 
@@ -243,10 +242,8 @@ LINE_100
 	.text	3, " <="
 
 	ldx	#STRVAR_B
-	jsr	ld_sr1_sx
-
-	ldx	#STRVAR_A
-	jsr	ldhs_ir1_sr1_sx
+	ldd	#STRVAR_A
+	jsr	ldge_ir1_sx_sd
 
 	jsr	str_sr1_ir1
 
@@ -256,10 +253,8 @@ LINE_100
 	.text	2, " ="
 
 	ldx	#STRVAR_A
-	jsr	ld_sr1_sx
-
-	ldx	#STRVAR_B
-	jsr	ldeq_ir1_sr1_sx
+	ldd	#STRVAR_B
+	jsr	ldeq_ir1_sx_sd
 
 	jsr	str_sr1_ir1
 
@@ -269,10 +264,8 @@ LINE_100
 	.text	3, " =>"
 
 	ldx	#STRVAR_A
-	jsr	ld_sr1_sx
-
-	ldx	#STRVAR_B
-	jsr	ldhs_ir1_sr1_sx
+	ldd	#STRVAR_B
+	jsr	ldge_ir1_sx_sd
 
 	jsr	str_sr1_ir1
 
@@ -282,10 +275,8 @@ LINE_100
 	.text	2, " >"
 
 	ldx	#STRVAR_B
-	jsr	ld_sr1_sx
-
-	ldx	#STRVAR_A
-	jsr	ldlo_ir1_sr1_sx
+	ldd	#STRVAR_A
+	jsr	ldlt_ir1_sx_sd
 
 	jsr	str_sr1_ir1
 
@@ -295,10 +286,8 @@ LINE_100
 	.text	3, " <>"
 
 	ldx	#STRVAR_A
-	jsr	ld_sr1_sx
-
-	ldx	#STRVAR_B
-	jsr	ldne_ir1_sr1_sx
+	ldd	#STRVAR_B
+	jsr	ldne_ir1_sx_sd
 
 	jsr	str_sr1_ir1
 
@@ -510,6 +499,24 @@ _shift
 	.module	mdgeteq
 geteq
 	beq	_1
+	ldd	#0
+	rts
+_1
+	ldd	#-1
+	rts
+
+	.module	mdgeths
+geths
+	bhs	_1
+	ldd	#0
+	rts
+_1
+	ldd	#-1
+	rts
+
+	.module	mdgetlo
+getlo
+	blo	_1
 	ldd	#0
 	rts
 _1
@@ -1114,14 +1121,6 @@ ld_sr1_ss			; numCalls = 12
 	abx
 	jmp	,x
 
-ld_sr1_sx			; numCalls = 6
-	.module	modld_sr1_sx
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_sx_sr1			; numCalls = 12
 	.module	modld_sx_sr1
 	ldab	r1
@@ -1130,60 +1129,56 @@ ld_sx_sr1			; numCalls = 12
 	std	1+argv
 	jmp	strprm
 
-ldeq_ir1_sr1_sx			; numCalls = 1
-	.module	modldeq_ir1_sr1_sx
-	ldab	r1
+ldeq_ir1_sx_sd			; numCalls = 1
+	.module	modldeq_ir1_sx_sd
+	std	tmp3
+	ldab	0,x
 	stab	tmp1+1
-	ldd	r1+1
+	ldd	1,x
 	std	tmp2
+	ldx	tmp3
 	jsr	streqx
 	jsr	geteq
 	std	r1+1
 	stab	r1
 	rts
 
-ldhs_ir1_sr1_sx			; numCalls = 2
-	.module	modldhs_ir1_sr1_sx
-	ldab	r1
+ldge_ir1_sx_sd			; numCalls = 2
+	.module	modldge_ir1_sx_sd
+	std	tmp1
+	ldab	0,x
 	stab	0+argv
-	ldd	r1+1
+	ldd	1,x
 	std	1+argv
+	ldx	tmp1
 	jsr	strlox
-	bhs	_1
-	ldd	#0
-	std	r1+1
-	stab	r1
-	rts
-_1
-	ldd	#-1
+	jsr	geths
 	std	r1+1
 	stab	r1
 	rts
 
-ldlo_ir1_sr1_sx			; numCalls = 2
-	.module	modldlo_ir1_sr1_sx
-	ldab	r1
+ldlt_ir1_sx_sd			; numCalls = 2
+	.module	modldlt_ir1_sx_sd
+	std	tmp1
+	ldab	0,x
 	stab	0+argv
-	ldd	r1+1
+	ldd	1,x
 	std	1+argv
+	ldx	tmp1
 	jsr	strlox
-	blo	_1
-	ldd	#0
-	std	r1+1
-	stab	r1
-	rts
-_1
-	ldd	#-1
+	jsr	getlo
 	std	r1+1
 	stab	r1
 	rts
 
-ldne_ir1_sr1_sx			; numCalls = 1
-	.module	modldne_ir1_sr1_sx
-	ldab	r1
+ldne_ir1_sx_sd			; numCalls = 1
+	.module	modldne_ir1_sx_sd
+	std	tmp3
+	ldab	0,x
 	stab	tmp1+1
-	ldd	r1+1
+	ldd	1,x
 	std	tmp2
+	ldx	tmp3
 	jsr	streqx
 	jsr	getne
 	std	r1+1

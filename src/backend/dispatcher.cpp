@@ -178,6 +178,10 @@ std::string Dispatcher::operate(InstLd &inst) {
          : inst.isExtInt_regInt()  ? implementation->extInt_regInt(inst)
          : inst.isExtStr_immStr()  ? implementation->extStr_immStr(inst)
          : inst.isExtStr_regStr()  ? implementation->extStr_regStr(inst)
+         : inst.isDexFlt_extFlt()  ? implementation->dexFlt_extFlt(inst)
+         : inst.isDexFlt_extInt()  ? implementation->dexFlt_extInt(inst)
+         : inst.isDexInt_extInt()  ? implementation->dexInt_extInt(inst)
+         : inst.isDexStr_extStr()  ? implementation->dexStr_extStr(inst)
          : inst.isIndFlt_posByte() ? implementation->indFlt_posByte(inst)
          : inst.isIndFlt_negByte() ? implementation->indFlt_negByte(inst)
          : inst.isIndFlt_posWord() ? implementation->indFlt_posWord(inst)
@@ -194,6 +198,54 @@ std::string Dispatcher::operate(InstLd &inst) {
                                    : implementation->unimplemented(inst);
 }
 
+std::string Dispatcher::operate(InstOne &inst) {
+  return inst.isIndFlt()   ? implementation->indFlt(inst)
+         : inst.isIndInt() ? implementation->indInt(inst)
+         : inst.isExtFlt() ? implementation->extFlt(inst)
+         : inst.isExtInt() ? implementation->extInt(inst)
+                           : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstTrue &inst) {
+  return inst.isIndFlt()   ? implementation->indFlt(inst)
+         : inst.isIndInt() ? implementation->indInt(inst)
+         : inst.isExtFlt() ? implementation->extFlt(inst)
+         : inst.isExtInt() ? implementation->extInt(inst)
+                           : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstClr &inst) {
+  return inst.isIndFlt()   ? implementation->indFlt(inst)
+         : inst.isIndInt() ? implementation->indInt(inst)
+         : inst.isExtFlt() ? implementation->extFlt(inst)
+         : inst.isExtInt() ? implementation->extInt(inst)
+                           : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstInc &inst) {
+  return inst.isIndFlt_indFlt()   ? implementation->indFlt_indFlt(inst)
+         : inst.isIndInt_indInt() ? implementation->indInt_indInt(inst)
+         : inst.isExtFlt_extFlt() ? implementation->extFlt_extFlt(inst)
+         : inst.isExtInt_extInt() ? implementation->extInt_extInt(inst)
+         : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+         : inst.isRegInt_regInt() ? implementation->regInt_regInt(inst)
+         : inst.isRegFlt_extFlt() ? implementation->regFlt_extFlt(inst)
+         : inst.isRegInt_extInt() ? implementation->regInt_extInt(inst)
+                                  : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstDec &inst) {
+  return inst.isIndFlt_indFlt()   ? implementation->indFlt_indFlt(inst)
+         : inst.isIndInt_indInt() ? implementation->indInt_indInt(inst)
+         : inst.isExtFlt_extFlt() ? implementation->extFlt_extFlt(inst)
+         : inst.isExtInt_extInt() ? implementation->extInt_extInt(inst)
+         : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+         : inst.isRegInt_regInt() ? implementation->regInt_regInt(inst)
+         : inst.isRegFlt_extFlt() ? implementation->regFlt_extFlt(inst)
+         : inst.isRegInt_extInt() ? implementation->regInt_extInt(inst)
+                                  : implementation->unimplemented(inst);
+}
+
 std::string Dispatcher::operate(InstAbs &inst) {
   return inst.isRegFlt_regFlt()   ? implementation->regFlt_regFlt(inst)
          : inst.isRegInt_regInt() ? implementation->regInt_regInt(inst)
@@ -203,7 +255,11 @@ std::string Dispatcher::operate(InstAbs &inst) {
 }
 
 std::string Dispatcher::operate(InstNeg &inst) {
-  return inst.isRegFlt_regFlt()   ? implementation->regFlt_regFlt(inst)
+  return inst.isIndFlt_indFlt()   ? implementation->indFlt_indFlt(inst)
+         : inst.isIndInt_indInt() ? implementation->indInt_indInt(inst)
+         : inst.isExtFlt_extFlt() ? implementation->extFlt_extFlt(inst)
+         : inst.isExtInt_extInt() ? implementation->extInt_extInt(inst)
+         : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
          : inst.isRegInt_regInt() ? implementation->regInt_regInt(inst)
          : inst.isRegFlt_extFlt() ? implementation->regFlt_extFlt(inst)
          : inst.isRegInt_extInt() ? implementation->regInt_extInt(inst)
@@ -225,6 +281,14 @@ std::string Dispatcher::operate(InstSgn &inst) {
 }
 
 std::string Dispatcher::operate(InstPeek &inst) {
+  return inst.isRegInt_regInt()    ? implementation->regInt_regInt(inst)
+         : inst.isRegInt_extInt()  ? implementation->regInt_extInt(inst)
+         : inst.isRegInt_posByte() ? implementation->regInt_posByte(inst)
+         : inst.isRegInt_posWord() ? implementation->regInt_posWord(inst)
+                                   : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstPeekWord &inst) {
   return inst.isRegInt_regInt()    ? implementation->regInt_regInt(inst)
          : inst.isRegInt_extInt()  ? implementation->regInt_extInt(inst)
          : inst.isRegInt_posByte() ? implementation->regInt_posByte(inst)
@@ -324,8 +388,10 @@ std::string Dispatcher::operate(InstChr &inst) {
 }
 
 std::string Dispatcher::operate(InstInkey &inst) {
-  return inst.arg1->isRegStr() ? implementation->regStr(inst)
-                               : implementation->unimplemented(inst);
+  return inst.arg1->isRegStr()   ? implementation->regStr(inst)
+         : inst.arg1->isExtStr() ? implementation->extStr(inst)
+         : inst.arg1->isIndStr() ? implementation->indStr(inst)
+                                 : implementation->unimplemented(inst);
 }
 
 std::string Dispatcher::operate(InstMem &inst) {
@@ -333,8 +399,138 @@ std::string Dispatcher::operate(InstMem &inst) {
                                : implementation->unimplemented(inst);
 }
 
+std::string Dispatcher::operate(InstPos &inst) {
+  return inst.arg1->isRegInt() ? implementation->regInt(inst)
+                               : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstTimer &inst) {
+  return inst.arg1->isRegInt() ? implementation->regInt(inst)
+                               : implementation->unimplemented(inst);
+}
+
 std::string Dispatcher::operate(InstAdd &inst) {
 
+  return inst.isIndFlt_indFlt_regFlt()
+             ? implementation->indFlt_indFlt_regFlt(inst)
+         : inst.isIndFlt_indFlt_regInt()
+             ? implementation->indFlt_indFlt_regInt(inst)
+         : inst.isIndFlt_indFlt_posByte()
+             ? implementation->indFlt_indFlt_posByte(inst)
+         : inst.isIndFlt_indFlt_negByte()
+             ? implementation->indFlt_indFlt_negByte(inst)
+         : inst.isIndFlt_indFlt_posWord()
+             ? implementation->indFlt_indFlt_posWord(inst)
+         : inst.isIndFlt_indFlt_negWord()
+             ? implementation->indFlt_indFlt_negWord(inst)
+         : inst.isIndInt_indInt_regInt()
+             ? implementation->indInt_indInt_regInt(inst)
+         : inst.isIndInt_indInt_posByte()
+             ? implementation->indInt_indInt_posByte(inst)
+         : inst.isIndInt_indInt_negByte()
+             ? implementation->indInt_indInt_negByte(inst)
+         : inst.isIndInt_indInt_posWord()
+             ? implementation->indInt_indInt_posWord(inst)
+         : inst.isIndInt_indInt_negWord()
+             ? implementation->indInt_indInt_negWord(inst)
+         : inst.isExtFlt_extFlt_regFlt()
+             ? implementation->extFlt_extFlt_regFlt(inst)
+         : inst.isExtFlt_extFlt_regInt()
+             ? implementation->extFlt_extFlt_regInt(inst)
+         : inst.isExtFlt_extFlt_posByte()
+             ? implementation->extFlt_extFlt_posByte(inst)
+         : inst.isExtFlt_extFlt_negByte()
+             ? implementation->extFlt_extFlt_negByte(inst)
+         : inst.isExtFlt_extFlt_posWord()
+             ? implementation->extFlt_extFlt_posWord(inst)
+         : inst.isExtFlt_extFlt_negWord()
+             ? implementation->extFlt_extFlt_negWord(inst)
+         : inst.isExtInt_extInt_regInt()
+             ? implementation->extInt_extInt_regInt(inst)
+         : inst.isExtInt_extInt_posByte()
+             ? implementation->extInt_extInt_posByte(inst)
+         : inst.isExtInt_extInt_negByte()
+             ? implementation->extInt_extInt_negByte(inst)
+         : inst.isExtInt_extInt_posWord()
+             ? implementation->extInt_extInt_posWord(inst)
+         : inst.isExtInt_extInt_negWord()
+             ? implementation->extInt_extInt_negWord(inst)
+         : inst.isRegFlt_regFlt_regFlt()
+             ? implementation->regFlt_regFlt_regFlt(inst)
+         : inst.isRegFlt_regFlt_regInt()
+             ? implementation->regFlt_regFlt_regInt(inst)
+         : inst.isRegFlt_regInt_regFlt()
+             ? implementation->regFlt_regInt_regFlt(inst)
+         : inst.isRegInt_regInt_regInt()
+             ? implementation->regInt_regInt_regInt(inst)
+         : inst.isRegFlt_regFlt_extFlt()
+             ? implementation->regFlt_regFlt_extFlt(inst)
+         : inst.isRegFlt_regFlt_extInt()
+             ? implementation->regFlt_regFlt_extInt(inst)
+         : inst.isRegFlt_regInt_extFlt()
+             ? implementation->regFlt_regInt_extFlt(inst)
+         : inst.isRegInt_regInt_extInt()
+             ? implementation->regInt_regInt_extInt(inst)
+         : inst.isRegFlt_regFlt_posByte()
+             ? implementation->regFlt_regFlt_posByte(inst)
+         : inst.isRegFlt_regFlt_negByte()
+             ? implementation->regFlt_regFlt_negByte(inst)
+         : inst.isRegFlt_regFlt_posWord()
+             ? implementation->regFlt_regFlt_posWord(inst)
+         : inst.isRegFlt_regFlt_negWord()
+             ? implementation->regFlt_regFlt_negWord(inst)
+         : inst.isRegInt_regInt_posByte()
+             ? implementation->regInt_regInt_posByte(inst)
+         : inst.isRegInt_regInt_negByte()
+             ? implementation->regInt_regInt_negByte(inst)
+         : inst.isRegInt_regInt_posWord()
+             ? implementation->regInt_regInt_posWord(inst)
+         : inst.isRegInt_regInt_negWord()
+             ? implementation->regInt_regInt_negWord(inst)
+         : inst.isRegFlt_extFlt_posByte()
+             ? implementation->regFlt_extFlt_posByte(inst)
+         : inst.isRegFlt_extFlt_negByte()
+             ? implementation->regFlt_extFlt_negByte(inst)
+         : inst.isRegFlt_extFlt_posWord()
+             ? implementation->regFlt_extFlt_posWord(inst)
+         : inst.isRegFlt_extFlt_negWord()
+             ? implementation->regFlt_extFlt_negWord(inst)
+         : inst.isRegInt_extInt_posByte()
+             ? implementation->regInt_extInt_posByte(inst)
+         : inst.isRegInt_extInt_negByte()
+             ? implementation->regInt_extInt_negByte(inst)
+         : inst.isRegInt_extInt_posWord()
+             ? implementation->regInt_extInt_posWord(inst)
+         : inst.isRegInt_extInt_negWord()
+             ? implementation->regInt_extInt_negWord(inst)
+         : inst.isRegFlt_posByte_extFlt()
+             ? implementation->regFlt_posByte_extFlt(inst)
+         : inst.isRegFlt_negByte_extFlt()
+             ? implementation->regFlt_negByte_extFlt(inst)
+         : inst.isRegFlt_posWord_extFlt()
+             ? implementation->regFlt_posWord_extFlt(inst)
+         : inst.isRegFlt_negWord_extFlt()
+             ? implementation->regFlt_negWord_extFlt(inst)
+         : inst.isRegInt_posByte_extInt()
+             ? implementation->regInt_posByte_extInt(inst)
+         : inst.isRegInt_negByte_extInt()
+             ? implementation->regInt_negByte_extInt(inst)
+         : inst.isRegInt_posWord_extInt()
+             ? implementation->regInt_posWord_extInt(inst)
+         : inst.isRegInt_negWord_extInt()
+             ? implementation->regInt_negWord_extInt(inst)
+         : inst.isRegFlt_extFlt_dexFlt()
+             ? implementation->regFlt_extFlt_dexFlt(inst)
+         : inst.isRegFlt_extFlt_dexInt()
+             ? implementation->regFlt_extFlt_dexInt(inst)
+         : inst.isRegFlt_extInt_dexFlt()
+             ? implementation->regFlt_extInt_dexFlt(inst)
+         : inst.isRegInt_extInt_dexInt()
+             ? implementation->regInt_extInt_dexInt(inst)
+             : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstRSub &inst) {
   return inst.isIndFlt_indFlt_regFlt()
              ? implementation->indFlt_indFlt_regFlt(inst)
          : inst.isIndFlt_indFlt_regInt()
@@ -555,6 +751,14 @@ std::string Dispatcher::operate(InstSub &inst) {
              ? implementation->regInt_posWord_extInt(inst)
          : inst.isRegInt_negWord_extInt()
              ? implementation->regInt_negWord_extInt(inst)
+         : inst.isRegFlt_extFlt_dexFlt()
+             ? implementation->regFlt_extFlt_dexFlt(inst)
+         : inst.isRegFlt_extFlt_dexInt()
+             ? implementation->regFlt_extFlt_dexInt(inst)
+         : inst.isRegFlt_extInt_dexFlt()
+             ? implementation->regFlt_extInt_dexFlt(inst)
+         : inst.isRegInt_extInt_dexInt()
+             ? implementation->regInt_extInt_dexInt(inst)
              : implementation->unimplemented(inst);
 }
 
@@ -592,6 +796,14 @@ std::string Dispatcher::operate(InstMul &inst) {
          : inst.isRegInt_regInt_negWord()
              ? implementation->regInt_regInt_negWord(inst)
              : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstMul3 &inst) {
+  return inst.isRegFlt_regFlt()   ? implementation->regFlt_regFlt(inst)
+         : inst.isRegInt_regInt() ? implementation->regInt_regInt(inst)
+         : inst.isRegFlt_extFlt() ? implementation->regFlt_extFlt(inst)
+         : inst.isRegInt_extInt() ? implementation->regInt_extInt(inst)
+                                  : implementation->unimplemented(inst);
 }
 
 std::string Dispatcher::operate(InstDiv &inst) {
@@ -753,10 +965,20 @@ std::string Dispatcher::operate(InstLdEq &inst) {
              ? implementation->regInt_regFlt_regFlt(inst)
          : inst.isRegInt_regFlt_extFlt()
              ? implementation->regInt_regFlt_extFlt(inst)
+         : inst.isRegInt_extInt_dexInt()
+             ? implementation->regInt_extInt_dexInt(inst)
+         : inst.isRegInt_extInt_dexFlt()
+             ? implementation->regInt_extInt_dexFlt(inst)
+         : inst.isRegInt_extFlt_dexInt()
+             ? implementation->regInt_extFlt_dexInt(inst)
+         : inst.isRegInt_extFlt_dexFlt()
+             ? implementation->regInt_extFlt_dexFlt(inst)
          : inst.isRegInt_regStr_regStr()
              ? implementation->regInt_regStr_regStr(inst)
          : inst.isRegInt_regStr_extStr()
              ? implementation->regInt_regStr_extStr(inst)
+         : inst.isRegInt_extStr_dexStr()
+             ? implementation->regInt_extStr_dexStr(inst)
          : inst.isRegInt_regStr_immStr()
              ? implementation->regInt_regStr_immStr(inst)
              : implementation->unimplemented(inst);
@@ -795,28 +1017,18 @@ std::string Dispatcher::operate(InstLdNe &inst) {
              ? implementation->regInt_regFlt_regFlt(inst)
          : inst.isRegInt_regFlt_extFlt()
              ? implementation->regInt_regFlt_extFlt(inst)
+         : inst.isRegInt_extInt_dexInt()
+             ? implementation->regInt_extInt_dexInt(inst)
+         : inst.isRegInt_extInt_dexFlt()
+             ? implementation->regInt_extInt_dexFlt(inst)
+         : inst.isRegInt_extFlt_dexInt()
+             ? implementation->regInt_extFlt_dexInt(inst)
+         : inst.isRegInt_extFlt_dexFlt()
+             ? implementation->regInt_extFlt_dexFlt(inst)
          : inst.isRegInt_regStr_regStr()
              ? implementation->regInt_regStr_regStr(inst)
-         : inst.isRegInt_regStr_extStr()
-             ? implementation->regInt_regStr_extStr(inst)
-         : inst.isRegInt_regStr_immStr()
-             ? implementation->regInt_regStr_immStr(inst)
-             : implementation->unimplemented(inst);
-}
-
-std::string Dispatcher::operate(InstLdLo &inst) {
-  return inst.isRegInt_regStr_regStr()
-             ? implementation->regInt_regStr_regStr(inst)
-         : inst.isRegInt_regStr_extStr()
-             ? implementation->regInt_regStr_extStr(inst)
-         : inst.isRegInt_regStr_immStr()
-             ? implementation->regInt_regStr_immStr(inst)
-             : implementation->unimplemented(inst);
-}
-
-std::string Dispatcher::operate(InstLdHs &inst) {
-  return inst.isRegInt_regStr_regStr()
-             ? implementation->regInt_regStr_regStr(inst)
+         : inst.isRegInt_extStr_dexStr()
+             ? implementation->regInt_extStr_dexStr(inst)
          : inst.isRegInt_regStr_extStr()
              ? implementation->regInt_regStr_extStr(inst)
          : inst.isRegInt_regStr_immStr()
@@ -857,6 +1069,22 @@ std::string Dispatcher::operate(InstLdLt &inst) {
              ? implementation->regInt_regFlt_regFlt(inst)
          : inst.isRegInt_regFlt_extFlt()
              ? implementation->regInt_regFlt_extFlt(inst)
+         : inst.isRegInt_extInt_dexInt()
+             ? implementation->regInt_extInt_dexInt(inst)
+         : inst.isRegInt_extInt_dexFlt()
+             ? implementation->regInt_extInt_dexFlt(inst)
+         : inst.isRegInt_extFlt_dexInt()
+             ? implementation->regInt_extFlt_dexInt(inst)
+         : inst.isRegInt_extFlt_dexFlt()
+             ? implementation->regInt_extFlt_dexFlt(inst)
+         : inst.isRegInt_regStr_regStr()
+             ? implementation->regInt_regStr_regStr(inst)
+         : inst.isRegInt_regStr_extStr()
+             ? implementation->regInt_regStr_extStr(inst)
+         : inst.isRegInt_extStr_dexStr()
+             ? implementation->regInt_extStr_dexStr(inst)
+         : inst.isRegInt_regStr_immStr()
+             ? implementation->regInt_regStr_immStr(inst)
              : implementation->unimplemented(inst);
 }
 
@@ -893,6 +1121,22 @@ std::string Dispatcher::operate(InstLdGe &inst) {
              ? implementation->regInt_regFlt_regFlt(inst)
          : inst.isRegInt_regFlt_extFlt()
              ? implementation->regInt_regFlt_extFlt(inst)
+         : inst.isRegInt_extInt_dexInt()
+             ? implementation->regInt_extInt_dexInt(inst)
+         : inst.isRegInt_extInt_dexFlt()
+             ? implementation->regInt_extInt_dexFlt(inst)
+         : inst.isRegInt_extFlt_dexInt()
+             ? implementation->regInt_extFlt_dexInt(inst)
+         : inst.isRegInt_extFlt_dexFlt()
+             ? implementation->regInt_extFlt_dexFlt(inst)
+         : inst.isRegInt_regStr_regStr()
+             ? implementation->regInt_regStr_regStr(inst)
+         : inst.isRegInt_regStr_extStr()
+             ? implementation->regInt_regStr_extStr(inst)
+         : inst.isRegInt_extStr_dexStr()
+             ? implementation->regInt_extStr_dexStr(inst)
+         : inst.isRegInt_regStr_immStr()
+             ? implementation->regInt_regStr_immStr(inst)
              : implementation->unimplemented(inst);
 }
 
@@ -1029,7 +1273,28 @@ std::string Dispatcher::operate(InstFor &inst) {
          : inst.isExtFlt_negWord() ? implementation->extFlt_negWord(inst)
          : inst.isExtFlt_regInt()  ? implementation->extFlt_regInt(inst)
          : inst.isExtFlt_regFlt()  ? implementation->extFlt_regFlt(inst)
+         : inst.isDexInt_extInt()  ? implementation->dexInt_extInt(inst)
+         : inst.isDexFlt_extInt()  ? implementation->dexFlt_extInt(inst)
+         : inst.isDexFlt_extFlt()  ? implementation->dexFlt_extFlt(inst)
                                    : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstForOne &inst) {
+  return inst.isExtFlt()   ? implementation->extFlt(inst)
+         : inst.isExtInt() ? implementation->extInt(inst)
+                           : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstForTrue &inst) {
+  return inst.isExtFlt()   ? implementation->extFlt(inst)
+         : inst.isExtInt() ? implementation->extInt(inst)
+                           : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstForClr &inst) {
+  return inst.isExtFlt()   ? implementation->extFlt(inst)
+         : inst.isExtInt() ? implementation->extInt(inst)
+                           : implementation->unimplemented(inst);
 }
 
 std::string Dispatcher::operate(InstTo &inst) {
@@ -1198,6 +1463,7 @@ std::string Dispatcher::operate(InstPoke &inst) {
          : inst.isRegInt_extInt()  ? implementation->regInt_extInt(inst)
          : inst.isExtInt_posByte() ? implementation->extInt_posByte(inst)
          : inst.isExtInt_regInt()  ? implementation->extInt_regInt(inst)
+         : inst.isDexInt_extInt()  ? implementation->dexInt_extInt(inst)
                                    : implementation->unimplemented(inst);
 }
 

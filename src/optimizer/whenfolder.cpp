@@ -14,27 +14,26 @@ void WhenFolder::operate(Line &l) {
   wsf.fold(l.statements);
 }
 
-std::unique_ptr<Statement> WhenStatementFolder::mutate(If &s) {
+up<Statement> WhenStatementFolder::mutate(If &s) {
   fold(s.consequent);
-  return std::unique_ptr<Statement>();
+  return up<Statement>();
 }
 
-std::unique_ptr<Statement> WhenStatementFolder::mutate(When &s) {
+up<Statement> WhenStatementFolder::mutate(When &s) {
   ConstInspector constInspector;
   if (auto predicate = s.predicate->constify(&constInspector)) {
-    auto go = std::make_unique<Go>();
+    auto go = makeup<Go>();
     go->isSub = s.isSub;
     go->lineNumber = *predicate == 0 ? -1 : s.lineNumber;
     return go;
   }
-  return std::unique_ptr<Statement>();
+  return up<Statement>();
 }
 
-void WhenStatementFolder::fold(
-    std::vector<std::unique_ptr<Statement>> &statements) {
+void WhenStatementFolder::fold(std::vector<up<Statement>> &statements) {
   auto it = statements.begin();
   while (it != statements.end()) {
-    if (auto statement = (*it)->mutate(this)) {
+    if (auto statement = (*it)->transmutate(this)) {
       announcer.start(lineNumber);
       announcer.say("%s ", (*it)->statementName().c_str());
       auto *go = dynamic_cast<Go *>(statement.get());
@@ -44,7 +43,7 @@ void WhenStatementFolder::fold(
       } else {
         announcer.finish("replaced with %s %i.", go->statementName().c_str(),
                          go->lineNumber);
-        *it = std::move(statement);
+        *it = mv(statement);
         ++it;
       }
     } else {

@@ -27,7 +27,6 @@ public:
   void mutate(PrintCRExpr &) override {}
   void mutate(NumericArrayExpr &e) override;
   void mutate(StringArrayExpr &e) override;
-  void mutate(NegatedExpr &e) override;
   void mutate(PowerExpr &e) override;
   void mutate(IntegerDivisionExpr &e) override;
   void mutate(MultiplicativeExpr &e) override {
@@ -81,8 +80,9 @@ public:
   void mutate(Dim &s) override;
   void mutate(Read &s) override;
   void mutate(Let &s) override;
-  void mutate(Inc &s) override;
-  void mutate(Dec &s) override;
+  void mutate(Accum &s) override;
+  void mutate(Decum &s) override;
+  void mutate(Necum &s) override;
   void mutate(Run &) override {}
   void mutate(Restore &) override {}
   void mutate(Return &) override {}

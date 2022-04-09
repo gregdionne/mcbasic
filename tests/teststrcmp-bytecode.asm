@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -245,10 +246,8 @@ LINE_100
 	.byte	bytecode_pr_ss
 	.text	1, "<"
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldlt_ir1_sx_sd
 	.byte	bytecode_STRVAR_A
-
-	.byte	bytecode_ldlo_ir1_sr1_sx
 	.byte	bytecode_STRVAR_B
 
 	.byte	bytecode_str_sr1_ir1
@@ -258,10 +257,8 @@ LINE_100
 	.byte	bytecode_pr_ss
 	.text	3, " <="
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldge_ir1_sx_sd
 	.byte	bytecode_STRVAR_B
-
-	.byte	bytecode_ldhs_ir1_sr1_sx
 	.byte	bytecode_STRVAR_A
 
 	.byte	bytecode_str_sr1_ir1
@@ -271,10 +268,8 @@ LINE_100
 	.byte	bytecode_pr_ss
 	.text	2, " ="
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldeq_ir1_sx_sd
 	.byte	bytecode_STRVAR_A
-
-	.byte	bytecode_ldeq_ir1_sr1_sx
 	.byte	bytecode_STRVAR_B
 
 	.byte	bytecode_str_sr1_ir1
@@ -284,10 +279,8 @@ LINE_100
 	.byte	bytecode_pr_ss
 	.text	3, " =>"
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldge_ir1_sx_sd
 	.byte	bytecode_STRVAR_A
-
-	.byte	bytecode_ldhs_ir1_sr1_sx
 	.byte	bytecode_STRVAR_B
 
 	.byte	bytecode_str_sr1_ir1
@@ -297,10 +290,8 @@ LINE_100
 	.byte	bytecode_pr_ss
 	.text	2, " >"
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldlt_ir1_sx_sd
 	.byte	bytecode_STRVAR_B
-
-	.byte	bytecode_ldlo_ir1_sr1_sx
 	.byte	bytecode_STRVAR_A
 
 	.byte	bytecode_str_sr1_ir1
@@ -310,10 +301,8 @@ LINE_100
 	.byte	bytecode_pr_ss
 	.text	3, " <>"
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldne_ir1_sx_sd
 	.byte	bytecode_STRVAR_A
-
-	.byte	bytecode_ldne_ir1_sr1_sx
 	.byte	bytecode_STRVAR_B
 
 	.byte	bytecode_str_sr1_ir1
@@ -339,29 +328,27 @@ LLAST
 bytecode_clear	.equ	0
 bytecode_gosub_ix	.equ	1
 bytecode_ld_sr1_ss	.equ	2
-bytecode_ld_sr1_sx	.equ	3
-bytecode_ld_sx_sr1	.equ	4
-bytecode_ldeq_ir1_sr1_sx	.equ	5
-bytecode_ldhs_ir1_sr1_sx	.equ	6
-bytecode_ldlo_ir1_sr1_sx	.equ	7
-bytecode_ldne_ir1_sr1_sx	.equ	8
-bytecode_pr_sr1	.equ	9
-bytecode_pr_ss	.equ	10
-bytecode_progbegin	.equ	11
-bytecode_progend	.equ	12
-bytecode_return	.equ	13
-bytecode_str_sr1_ir1	.equ	14
+bytecode_ld_sx_sr1	.equ	3
+bytecode_ldeq_ir1_sx_sd	.equ	4
+bytecode_ldge_ir1_sx_sd	.equ	5
+bytecode_ldlt_ir1_sx_sd	.equ	6
+bytecode_ldne_ir1_sx_sd	.equ	7
+bytecode_pr_sr1	.equ	8
+bytecode_pr_ss	.equ	9
+bytecode_progbegin	.equ	10
+bytecode_progend	.equ	11
+bytecode_return	.equ	12
+bytecode_str_sr1_ir1	.equ	13
 
 catalog
 	.word	clear
 	.word	gosub_ix
 	.word	ld_sr1_ss
-	.word	ld_sr1_sx
 	.word	ld_sx_sr1
-	.word	ldeq_ir1_sr1_sx
-	.word	ldhs_ir1_sr1_sx
-	.word	ldlo_ir1_sr1_sx
-	.word	ldne_ir1_sr1_sx
+	.word	ldeq_ir1_sx_sd
+	.word	ldge_ir1_sx_sd
+	.word	ldlt_ir1_sx_sd
+	.word	ldne_ir1_sx_sd
 	.word	pr_sr1
 	.word	pr_ss
 	.word	progbegin
@@ -521,6 +508,44 @@ wordext
 	ldx	,x
 	pulb
 	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
 immstr
 	ldx	curinst
 	inx
@@ -666,6 +691,24 @@ _shift
 	.module	mdgeteq
 geteq
 	beq	_1
+	ldd	#0
+	rts
+_1
+	ldd	#-1
+	rts
+
+	.module	mdgeths
+geths
+	bhs	_1
+	ldd	#0
+	rts
+_1
+	ldd	#-1
+	rts
+
+	.module	mdgetlo
+getlo
+	blo	_1
 	ldd	#0
 	rts
 _1
@@ -1279,15 +1322,6 @@ ld_sr1_ss			; numCalls = 12
 	stx	nxtinst
 	rts
 
-ld_sr1_sx			; numCalls = 6
-	.module	modld_sr1_sx
-	jsr	extend
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_sx_sr1			; numCalls = 12
 	.module	modld_sx_sr1
 	jsr	extend
@@ -1297,64 +1331,60 @@ ld_sx_sr1			; numCalls = 12
 	std	1+argv
 	jmp	strprm
 
-ldeq_ir1_sr1_sx			; numCalls = 1
-	.module	modldeq_ir1_sr1_sx
-	jsr	extend
-	ldab	r1
+ldeq_ir1_sx_sd			; numCalls = 1
+	.module	modldeq_ir1_sx_sd
+	jsr	extdex
+	std	tmp3
+	ldab	0,x
 	stab	tmp1+1
-	ldd	r1+1
+	ldd	1,x
 	std	tmp2
+	ldx	tmp3
 	jsr	streqx
 	jsr	geteq
 	std	r1+1
 	stab	r1
 	rts
 
-ldhs_ir1_sr1_sx			; numCalls = 2
-	.module	modldhs_ir1_sr1_sx
-	jsr	extend
-	ldab	r1
+ldge_ir1_sx_sd			; numCalls = 2
+	.module	modldge_ir1_sx_sd
+	jsr	extdex
+	std	tmp1
+	ldab	0,x
 	stab	0+argv
-	ldd	r1+1
+	ldd	1,x
 	std	1+argv
+	ldx	tmp1
 	jsr	strlox
-	bhs	_1
-	ldd	#0
-	std	r1+1
-	stab	r1
-	rts
-_1
-	ldd	#-1
+	jsr	geths
 	std	r1+1
 	stab	r1
 	rts
 
-ldlo_ir1_sr1_sx			; numCalls = 2
-	.module	modldlo_ir1_sr1_sx
-	jsr	extend
-	ldab	r1
+ldlt_ir1_sx_sd			; numCalls = 2
+	.module	modldlt_ir1_sx_sd
+	jsr	extdex
+	std	tmp1
+	ldab	0,x
 	stab	0+argv
-	ldd	r1+1
+	ldd	1,x
 	std	1+argv
+	ldx	tmp1
 	jsr	strlox
-	blo	_1
-	ldd	#0
-	std	r1+1
-	stab	r1
-	rts
-_1
-	ldd	#-1
+	jsr	getlo
 	std	r1+1
 	stab	r1
 	rts
 
-ldne_ir1_sr1_sx			; numCalls = 1
-	.module	modldne_ir1_sr1_sx
-	jsr	extend
-	ldab	r1
+ldne_ir1_sx_sd			; numCalls = 1
+	.module	modldne_ir1_sx_sd
+	jsr	extdex
+	std	tmp3
+	ldab	0,x
 	stab	tmp1+1
-	ldd	r1+1
+	ldd	1,x
 	std	tmp2
+	ldx	tmp3
 	jsr	streqx
 	jsr	getne
 	std	r1+1

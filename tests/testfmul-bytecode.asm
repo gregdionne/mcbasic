@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -98,19 +99,15 @@ LINE_10
 
 	; A=4335.45
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_4335p45199
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
+	.byte	bytecode_FLT_4335p45199
 
 	; B=543.124
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_543p12399
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_543p12399
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -144,19 +141,15 @@ LINE_20
 
 	; A=-4335.45
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_m4335p45199
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
+	.byte	bytecode_FLT_m4335p45199
 
 	; B=543.124
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_543p12399
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_543p12399
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -190,19 +183,15 @@ LINE_30
 
 	; A=4335.45
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_4335p45199
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
+	.byte	bytecode_FLT_4335p45199
 
 	; B=-543.124
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_m543p12399
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_m543p12399
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -236,19 +225,15 @@ LINE_40
 
 	; A=-4335.45
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_m4335p45199
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
+	.byte	bytecode_FLT_m4335p45199
 
 	; B=-543.124
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_m543p12399
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_m543p12399
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -282,19 +267,15 @@ LINE_110
 
 	; A=5.452
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_5p45199
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
+	.byte	bytecode_FLT_5p45199
 
 	; B=3.124
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_3p12399
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_3p12399
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -328,19 +309,15 @@ LINE_120
 
 	; A=-5.452
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_m5p45199
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
+	.byte	bytecode_FLT_m5p45199
 
 	; B=3.124
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_3p12399
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_3p12399
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -374,19 +351,15 @@ LINE_130
 
 	; A=5.452
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_5p45199
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
+	.byte	bytecode_FLT_5p45199
 
 	; B=-3.124
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_m3p12399
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_m3p12399
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -420,19 +393,15 @@ LINE_140
 
 	; A=-5.452
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_m5p45199
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
+	.byte	bytecode_FLT_m5p45199
 
 	; B=-3.124
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_m3p12399
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_m3p12399
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -472,11 +441,9 @@ LINE_400
 
 	; B=0.5
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_0p50000
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_0p50000
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -516,11 +483,9 @@ LINE_410
 
 	; B=0.5
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_0p50000
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_0p50000
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -560,11 +525,9 @@ LINE_420
 
 	; B=-0.5
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_m0p50000
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_m0p50000
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -604,11 +567,9 @@ LINE_430
 
 	; B=-0.5
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLT_m0p50000
-
-	.byte	bytecode_ld_fx_fr1
+	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
+	.byte	bytecode_FLT_m0p50000
 
 	; PRINT STR$(A*B);" ";STR$(B*A);" \r";
 
@@ -646,8 +607,8 @@ LLAST
 
 ; Library Catalog
 bytecode_clear	.equ	0
-bytecode_ld_fr1_fx	.equ	1
-bytecode_ld_fx_fr1	.equ	2
+bytecode_ld_fd_fx	.equ	1
+bytecode_ld_fr1_fx	.equ	2
 bytecode_ld_fx_nw	.equ	3
 bytecode_ld_fx_pw	.equ	4
 bytecode_mul_fr1_fr1_fx	.equ	5
@@ -659,8 +620,8 @@ bytecode_str_sr1_fr1	.equ	10
 
 catalog
 	.word	clear
+	.word	ld_fd_fx
 	.word	ld_fr1_fx
-	.word	ld_fx_fr1
 	.word	ld_fx_nw
 	.word	ld_fx_pw
 	.word	mul_fr1_fr1_fx
@@ -759,6 +720,44 @@ wordext
 	ldd	1,x
 	pshb
 	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
 	ldx	#symtbl
 	abx
 	abx
@@ -1173,14 +1172,12 @@ mulint
 	ldaa	2+argv
 	ldab	1,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	1+argv
 	ldab	2,x
 	mul
-	addb	tmp2
-	adca	tmp1+1
+	addd	tmp1+1
 	std	tmp1+1
 	ldaa	2+argv
 	ldab	0,x
@@ -1480,7 +1477,24 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_fr1_fx			; numCalls = 44
+ld_fd_fx			; numCalls = 20
+	.module	modld_fd_fx
+	jsr	dexext
+	std	tmp1
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	ldx	tmp1
+	std	3,x
+	ldd	1+argv
+	std	1,x
+	ldab	0+argv
+	stab	0,x
+	rts
+
+ld_fr1_fx			; numCalls = 24
 	.module	modld_fr1_fx
 	jsr	extend
 	ldd	3,x
@@ -1489,17 +1503,6 @@ ld_fr1_fx			; numCalls = 44
 	std	r1+1
 	ldab	0,x
 	stab	r1
-	rts
-
-ld_fx_fr1			; numCalls = 20
-	.module	modld_fx_fr1
-	jsr	extend
-	ldd	r1+3
-	std	3,x
-	ldd	r1+1
-	std	1,x
-	ldab	r1
-	stab	0,x
 	rts
 
 ld_fx_nw			; numCalls = 2

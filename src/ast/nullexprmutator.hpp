@@ -21,7 +21,6 @@ public:
   virtual void mutate(PrintSpaceExpr & /*expr*/) override {}
   virtual void mutate(PrintCRExpr & /*expr*/) override {}
   virtual void mutate(PrintCommaExpr & /*expr*/) override {}
-  virtual void mutate(NegatedExpr & /*expr*/) override {}
   virtual void mutate(PowerExpr & /*expr*/) override {}
   virtual void mutate(IntegerDivisionExpr & /*expr*/) override {}
   virtual void mutate(MultiplicativeExpr & /*expr*/) override {}
@@ -53,5 +52,8 @@ public:
   virtual void mutate(PointExpr & /*expr*/) override {}
   virtual void mutate(InkeyExpr & /*expr*/) override {}
   virtual void mutate(MemExpr & /*expr*/) override {}
+  virtual void mutate(TimerExpr & /*expr*/) override {}
+  virtual void mutate(PosExpr & /*expr*/) override {}
+  virtual void mutate(PeekWordExpr & /*expr*/) override {}
 };
 #endif

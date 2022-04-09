@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -67,7 +68,6 @@ tmp4	.block	2
 tmp5	.block	2
 	.org	$af
 r1	.block	5
-r2	.block	5
 rend
 argv	.block	10
 
@@ -91,14 +91,12 @@ LINE_10
 
 LINE_20
 
-	; PRINT STR$(X$=INKEY$);" \r";
+	; PRINT STR$(INKEY$=X$);" \r";
+
+	jsr	inkey_sr1
 
 	ldx	#STRVAR_X
-	jsr	ld_sr1_sx
-
-	jsr	inkey_sr2
-
-	jsr	ldeq_ir1_sr1_sr2
+	jsr	ldeq_ir1_sr1_sx
 
 	jsr	str_sr1_ir1
 
@@ -853,18 +851,18 @@ goto_ix			; numCalls = 1
 	ins
 	jmp	,x
 
-inkey_sr2			; numCalls = 1
-	.module	modinkey_sr2
+inkey_sr1			; numCalls = 1
+	.module	modinkey_sr1
 	ldd	#$0100+(charpage>>8)
-	std	r2
+	std	r1
 	ldaa	M_IKEY
 	bne	_gotkey
 	jsr	R_KEYIN
 _gotkey
 	clr	M_IKEY
-	staa	r2+2
+	staa	r1+2
 	bne	_rts
-	staa	r2
+	staa	r1
 _rts
 	rts
 
@@ -878,14 +876,6 @@ ld_sr1_ss			; numCalls = 1
 	abx
 	jmp	,x
 
-ld_sr1_sx			; numCalls = 1
-	.module	modld_sr1_sx
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_sx_sr1			; numCalls = 1
 	.module	modld_sx_sr1
 	ldab	r1
@@ -894,13 +884,12 @@ ld_sx_sr1			; numCalls = 1
 	std	1+argv
 	jmp	strprm
 
-ldeq_ir1_sr1_sr2			; numCalls = 1
-	.module	modldeq_ir1_sr1_sr2
+ldeq_ir1_sr1_sx			; numCalls = 1
+	.module	modldeq_ir1_sr1_sx
 	ldab	r1
 	stab	tmp1+1
 	ldd	r1+1
 	std	tmp2
-	ldx	#r2
 	jsr	streqx
 	jsr	geteq
 	std	r1+1

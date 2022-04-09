@@ -7,25 +7,21 @@
 
 bool IsFloat::inspect(const ValExpr &e) const {
   IsChar isChar;
-  return !e.expr->inspect(&isChar);
+  return !e.expr->check(&isChar);
 }
 
-bool IsFloat::inspect(const AbsExpr &e) const { return e.expr->inspect(this); }
+bool IsFloat::inspect(const AbsExpr &e) const { return e.expr->check(this); }
 
 bool IsFloat::inspect(const ShiftExpr &e) const {
   ConstInspector constInspector;
   auto value = e.count->constify(&constInspector);
-  return !value || !FixedPoint(*value).isPosWord() || e.expr->inspect(this);
-}
-
-bool IsFloat::inspect(const NegatedExpr &e) const {
-  return e.expr->inspect(this);
+  return !value || !FixedPoint(*value).isPosWord() || e.expr->check(this);
 }
 
 bool IsFloat::inspect(const PowerExpr &e) const {
   ConstInspector constInspector;
   auto value = e.exponent->constify(&constInspector);
-  return !value || !FixedPoint(*value).isPosWord() || e.base->inspect(this);
+  return !value || !FixedPoint(*value).isPosWord() || e.base->check(this);
 }
 
 bool IsFloat::inspect(const MultiplicativeExpr &e) const {
@@ -34,7 +30,7 @@ bool IsFloat::inspect(const MultiplicativeExpr &e) const {
   }
 
   for (auto &operand : e.operands) {
-    if (operand->inspect(this)) {
+    if (operand->check(this)) {
       return true;
     }
   }
@@ -44,13 +40,13 @@ bool IsFloat::inspect(const MultiplicativeExpr &e) const {
 
 bool IsFloat::inspect(const AdditiveExpr &e) const {
   for (auto &operand : e.operands) {
-    if (operand->inspect(this)) {
+    if (operand->check(this)) {
       return true;
     }
   }
 
   for (auto &operand : e.invoperands) {
-    if (operand->inspect(this)) {
+    if (operand->check(this)) {
       return true;
     }
   }

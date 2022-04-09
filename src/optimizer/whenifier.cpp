@@ -13,7 +13,7 @@ void Whenifier::operate(Line &l) {
   gls.whenify(l.statements);
 }
 
-std::unique_ptr<Statement> StatementWhenifier::mutate(If &s) {
+up<Statement> StatementWhenifier::mutate(If &s) {
 
   if (s.consequent.size() == 1) {
     if (auto *go = dynamic_cast<Go *>(s.consequent.back().get())) {
@@ -21,9 +21,9 @@ std::unique_ptr<Statement> StatementWhenifier::mutate(If &s) {
       announcer.finish("trailing IF..%s replaced with WHEN..%s",
                        go->statementName().c_str(),
                        go->statementName().c_str());
-      auto when = std::make_unique<When>();
+      auto when = makeup<When>();
       when->isSub = go->isSub;
-      when->predicate = std::move(s.predicate);
+      when->predicate = mv(s.predicate);
       when->lineNumber = go->lineNumber;
       return when;
     }
@@ -31,14 +31,13 @@ std::unique_ptr<Statement> StatementWhenifier::mutate(If &s) {
 
   whenify(s.consequent);
 
-  return std::unique_ptr<Statement>();
+  return up<Statement>();
 }
 
-void StatementWhenifier::whenify(
-    std::vector<std::unique_ptr<Statement>> &statements) {
+void StatementWhenifier::whenify(std::vector<up<Statement>> &statements) {
   for (auto &statement : statements) {
-    if (auto when = statement->mutate(this)) {
-      statement = std::move(when);
+    if (auto when = statement->transmutate(this)) {
+      statement = mv(when);
     }
   }
 }

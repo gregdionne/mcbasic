@@ -7,14 +7,14 @@ bool IsBoolean::inspect(const NumericConstantExpr &expr) const {
 }
 
 bool IsBoolean::inspect(const ComplementedExpr &expr) const {
-  return expr.inspect(this);
+  return expr.check(this);
 }
 
 bool IsBoolean::inspect(const RelationalExpr & /*expr*/) const { return true; }
 
 bool IsBoolean::inspect(const AndExpr &expr) const {
   for (auto &operand : expr.operands) {
-    if (!operand->inspect(this)) {
+    if (!operand->check(this)) {
       return false;
     }
   }
@@ -23,7 +23,7 @@ bool IsBoolean::inspect(const AndExpr &expr) const {
 
 bool IsBoolean::inspect(const OrExpr &expr) const {
   for (auto &operand : expr.operands) {
-    if (!operand->inspect(this)) {
+    if (!operand->check(this)) {
       return false;
     }
   }

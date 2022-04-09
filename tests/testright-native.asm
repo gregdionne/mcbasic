@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -110,10 +111,7 @@ LINE_20
 	.text	4, "FRED"
 
 	ldx	#INTVAR_X
-	jsr	ld_ir2_ix
-
-	ldab	#1
-	jsr	sub_ir2_ir2_pb
+	jsr	dec_ir2_ix
 
 	jsr	right_sr1_sr1_ir2
 
@@ -130,10 +128,8 @@ LINE_30
 	.text	4, "FRED"
 
 	ldx	#INTVAR_X
-	jsr	ld_ir2_ix
-
 	ldab	#2
-	jsr	sub_ir2_ir2_pb
+	jsr	sub_ir2_ix_pb
 
 	jsr	right_sr1_sr1_ir2
 
@@ -150,10 +146,8 @@ LINE_40
 	.text	4, "FRED"
 
 	ldx	#INTVAR_X
-	jsr	ld_ir2_ix
-
 	ldab	#3
-	jsr	sub_ir2_ir2_pb
+	jsr	sub_ir2_ix_pb
 
 	jsr	right_sr1_sr1_ir2
 
@@ -261,11 +255,13 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_ir2_ix			; numCalls = 3
-	.module	modld_ir2_ix
+dec_ir2_ix			; numCalls = 1
+	.module	moddec_ir2_ix
 	ldd	1,x
+	subd	#1
 	std	r2+1
 	ldab	0,x
+	sbcb	#0
 	stab	r2
 	rts
 
@@ -412,14 +408,14 @@ _zero
 _rts
 	rts
 
-sub_ir2_ir2_pb			; numCalls = 3
-	.module	modsub_ir2_ir2_pb
+sub_ir2_ix_pb			; numCalls = 2
+	.module	modsub_ir2_ix_pb
 	stab	tmp1
-	ldd	r2+1
+	ldd	1,x
 	subb	tmp1
 	sbca	#0
 	std	r2+1
-	ldab	r2
+	ldab	0,x
 	sbcb	#0
 	stab	r2
 	rts

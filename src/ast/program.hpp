@@ -18,13 +18,13 @@ public:
 class Line {
 public:
   int lineNumber;
-  std::vector<std::unique_ptr<Statement>> statements;
+  std::vector<up<Statement>> statements;
   void operate(ProgramOp *op) { op->operate(*this); }
 };
 
 class Program {
 public:
-  std::vector<std::unique_ptr<Line>> lines;
+  std::vector<up<Line>> lines;
   void operate(ProgramOp *op) { op->operate(*this); }
   void sortLines();
   void removeDuplicateLines(bool warn);

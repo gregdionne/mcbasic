@@ -4,6 +4,7 @@
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
 ; Direct page equates
+DP_TIMR	.equ	$09	; value of MC6801/6803 counter
 DP_DATA	.equ	$AD	; pointer to where READ gets next value
 DP_LNUM	.equ	$E2	; current line in BASIC
 DP_TABW	.equ	$E4	; current tab width on console
@@ -116,17 +117,15 @@ LINE_10
 
 	; L=0
 
-	.byte	bytecode_ld_ix_pb
+	.byte	bytecode_clr_ix
 	.byte	bytecode_INTVAR_L
-	.byte	0
 
 LINE_20
 
 	; FOR K=0 TO 1
 
-	.byte	bytecode_for_ix_pb
+	.byte	bytecode_forclr_ix
 	.byte	bytecode_INTVAR_K
-	.byte	0
 
 	.byte	bytecode_to_ip_pb
 	.byte	1
@@ -135,9 +134,8 @@ LINE_30
 
 	; FOR J=0 TO 2
 
-	.byte	bytecode_for_ix_pb
+	.byte	bytecode_forclr_ix
 	.byte	bytecode_INTVAR_J
-	.byte	0
 
 	.byte	bytecode_to_ip_pb
 	.byte	2
@@ -146,9 +144,8 @@ LINE_40
 
 	; FOR I=0 TO 4
 
-	.byte	bytecode_for_ix_pb
+	.byte	bytecode_forclr_ix
 	.byte	bytecode_INTVAR_I
-	.byte	0
 
 	.byte	bytecode_to_ip_pb
 	.byte	4
@@ -157,9 +154,8 @@ LINE_50
 
 	; L+=1
 
-	.byte	bytecode_add_ix_ix_pb
+	.byte	bytecode_inc_ix_ix
 	.byte	bytecode_INTVAR_L
-	.byte	1
 
 LINE_66
 
@@ -207,30 +203,31 @@ LLAST
 	.byte	bytecode_progend
 
 ; Library Catalog
-bytecode_add_ix_ix_pb	.equ	0
-bytecode_arrdim3_ir1_ix	.equ	1
-bytecode_arrref3_ir1_ix	.equ	2
-bytecode_clear	.equ	3
-bytecode_for_ix_pb	.equ	4
-bytecode_ld_ip_ir1	.equ	5
-bytecode_ld_ir1_ix	.equ	6
-bytecode_ld_ir1_pb	.equ	7
-bytecode_ld_ir2_ix	.equ	8
-bytecode_ld_ir2_pb	.equ	9
-bytecode_ld_ir3_ix	.equ	10
-bytecode_ld_ir3_pb	.equ	11
-bytecode_ld_ix_pb	.equ	12
+bytecode_arrdim3_ir1_ix	.equ	0
+bytecode_arrref3_ir1_ix	.equ	1
+bytecode_clear	.equ	2
+bytecode_clr_ix	.equ	3
+bytecode_forclr_ix	.equ	4
+bytecode_inc_ix_ix	.equ	5
+bytecode_ld_ip_ir1	.equ	6
+bytecode_ld_ir1_ix	.equ	7
+bytecode_ld_ir1_pb	.equ	8
+bytecode_ld_ir2_ix	.equ	9
+bytecode_ld_ir2_pb	.equ	10
+bytecode_ld_ir3_ix	.equ	11
+bytecode_ld_ir3_pb	.equ	12
 bytecode_next	.equ	13
 bytecode_progbegin	.equ	14
 bytecode_progend	.equ	15
 bytecode_to_ip_pb	.equ	16
 
 catalog
-	.word	add_ix_ix_pb
 	.word	arrdim3_ir1_ix
 	.word	arrref3_ir1_ix
 	.word	clear
-	.word	for_ix_pb
+	.word	clr_ix
+	.word	forclr_ix
+	.word	inc_ix_ix
 	.word	ld_ip_ir1
 	.word	ld_ir1_ix
 	.word	ld_ir1_pb
@@ -238,7 +235,6 @@ catalog
 	.word	ld_ir2_pb
 	.word	ld_ir3_ix
 	.word	ld_ir3_pb
-	.word	ld_ix_pb
 	.word	next
 	.word	progbegin
 	.word	progend
@@ -396,6 +392,44 @@ wordext
 	ldx	,x
 	pulb
 	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
 immstr
 	ldx	curinst
 	inx
@@ -408,6 +442,8 @@ immstr
 	rts
 
 	.module	mdmul12
+; multiply words in TMP1 and TMP2
+; result in TMP3
 mul12
 	ldaa	tmp1+1
 	ldab	tmp2+1
@@ -530,17 +566,6 @@ _done
 	ldx	tmp1
 	jmp	,x
 
-add_ix_ix_pb			; numCalls = 1
-	.module	modadd_ix_ix_pb
-	jsr	extbyte
-	clra
-	addd	1,x
-	std	1,x
-	ldab	#0
-	adcb	0,x
-	stab	0,x
-	rts
-
 arrdim3_ir1_ix			; numCalls = 1
 	.module	modarrdim3_ir1_ix
 	jsr	extend
@@ -608,13 +633,32 @@ _start
 	stx	DP_DATA
 	rts
 
-for_ix_pb			; numCalls = 3
-	.module	modfor_ix_pb
-	jsr	extbyte
-	stx	letptr
-	clra
-	staa	0,x
+clr_ix			; numCalls = 1
+	.module	modclr_ix
+	jsr	extend
+	ldd	#0
+	stab	0,x
 	std	1,x
+	rts
+
+forclr_ix			; numCalls = 3
+	.module	modforclr_ix
+	jsr	extend
+	stx	letptr
+	ldd	#0
+	stab	0,x
+	std	1,x
+	rts
+
+inc_ix_ix			; numCalls = 1
+	.module	modinc_ix_ix
+	jsr	extend
+	inc	2,x
+	bne	_rts
+	inc	1,x
+	bne	_rts
+	inc	0,x
+_rts
 	rts
 
 ld_ip_ir1			; numCalls = 1
@@ -678,14 +722,6 @@ ld_ir3_pb			; numCalls = 1
 	std	r3
 	rts
 
-ld_ix_pb			; numCalls = 1
-	.module	modld_ix_pb
-	jsr	extbyte
-	stab	2,x
-	ldd	#0
-	std	0,x
-	rts
-
 next			; numCalls = 3
 	.module	modnext
 	jsr	noargs
@@ -699,12 +735,10 @@ next			; numCalls = 3
 _ok
 	cmpb	#11
 	bne	_flt
-	ldd	9,x
-	std	r1+1
 	ldab	8,x
 	stab	r1
+	ldd	9,x
 	ldx	1,x
-	ldd	r1+1
 	addd	1,x
 	std	r1+1
 	std	1,x
@@ -719,7 +753,7 @@ _ok
 	subd	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
@@ -728,22 +762,22 @@ _iopp
 	subd	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_idone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
-_idone
-	ldab	#11
-	bra	_done
+_done
+	ldab	0,x
+	abx
+	txs
+	jmp	mainloop
 _flt
-	ldd	13,x
-	std	r1+3
-	ldd	11,x
-	std	r1+1
 	ldab	10,x
 	stab	r1
+	ldd	11,x
+	std	r1+1
+	ldd	13,x
 	ldx	1,x
-	ldd	r1+3
 	addd	3,x
 	std	r1+3
 	std	3,x
@@ -766,7 +800,7 @@ _flt
 	sbca	6,x
 	ldab	r1
 	sbcb	5,x
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
 	jmp	mainloop
@@ -778,15 +812,9 @@ _fopp
 	sbca	r1+1
 	ldab	5,x
 	sbcb	r1
-	blt	_fdone
+	blt	_done
 	ldx	3,x
 	stx	nxtinst
-	jmp	mainloop
-_fdone
-	ldab	#15
-_done
-	abx
-	txs
 	jmp	mainloop
 
 progbegin			; numCalls = 1

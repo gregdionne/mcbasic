@@ -27,7 +27,7 @@ bool IsEqual::inspect(const ArrayIndicesExpr &expr) const {
   bool result = tgt != nullptr;
   for (std::size_t i = 0; result && i < expr.operands.size(); i++) {
     IsEqual isIndexEqual(tgt->operands[i].get());
-    result &= expr.operands[i]->inspect(&isIndexEqual);
+    result &= expr.operands[i]->check(&isIndexEqual);
   }
   return result;
 }
@@ -37,7 +37,7 @@ bool IsEqual::inspect(const NumericArrayExpr &expr) const {
   bool result = tgt != nullptr && tgt->varexp->varname == expr.varexp->varname;
   if (result) {
     IsEqual areIndicesEqual(tgt->indices.get());
-    result &= expr.indices->inspect(&areIndicesEqual);
+    result &= expr.indices->check(&areIndicesEqual);
   }
   return result;
 }
@@ -47,7 +47,7 @@ bool IsEqual::inspect(const StringArrayExpr &expr) const {
   bool result = tgt != nullptr && tgt->varexp->varname == expr.varexp->varname;
   if (result) {
     IsEqual areIndicesEqual(tgt->indices.get());
-    result &= expr.indices->inspect(&areIndicesEqual);
+    result &= expr.indices->check(&areIndicesEqual);
   }
   return result;
 }

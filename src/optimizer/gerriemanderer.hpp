@@ -24,8 +24,7 @@
 
 class ExprGerriemanderer : public NullExprTransmutator {
 public:
-  std::unique_ptr<NumericExpr> mutate(AdditiveExpr &e) override;
-  std::unique_ptr<NumericExpr> mutate(NegatedExpr &e) override;
+  up<NumericExpr> mutate(AdditiveExpr &e) override;
 
 private:
   using NullExprTransmutator::mutate;
@@ -35,10 +34,10 @@ class StatementGerriemanderer : public NullStatementTransmutator {
 public:
   StatementGerriemanderer(const Announcer &a, int linenum)
       : announcer(a), lineNumber(linenum) {}
-  std::unique_ptr<Statement> mutate(If &s) override;
-  std::unique_ptr<Statement> mutate(On &s) override;
+  up<Statement> mutate(If &s) override;
+  up<Statement> mutate(On &s) override;
 
-  void gerriemander(std::vector<std::unique_ptr<Statement>> &s);
+  void gerriemander(std::vector<up<Statement>> &s);
 
 private:
   using NullStatementTransmutator::mutate;

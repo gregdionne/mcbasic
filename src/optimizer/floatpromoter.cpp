@@ -27,7 +27,7 @@ void StatementFloatPromoter::mutate(If &s) {
 }
 
 void StatementFloatPromoter::mutate(Let &s) {
-  if (s.rhs->inspect(&isFloat)) {
+  if (s.rhs->check(&isFloat)) {
     fe.lineNumber = this->lineNumber;
     s.lhs->mutate(that);
   }
@@ -35,7 +35,7 @@ void StatementFloatPromoter::mutate(Let &s) {
 
 void StatementFloatPromoter::mutate(For &s) {
   // we really don't need s.to
-  if (s.from->inspect(&isFloat) || (s.step && s.step->inspect(&isFloat))) {
+  if (s.from->check(&isFloat) || (s.step && s.step->check(&isFloat))) {
     fe.lineNumber = this->lineNumber;
     s.iter->mutate(that);
   }

@@ -33,10 +33,8 @@ int main(int argc, char *argv[]) {
     Compiler c(dataTable, constTable, symbolTable, q, opts.g);
     c.operate(p);
 
-    auto target =
-        opts.native
-            ? std::unique_ptr<Target>(std::make_unique<NativeTarget>())
-            : std::unique_ptr<Target>(std::make_unique<ByteCodeTarget>());
+    auto target = opts.native ? up<Target>(makeup<NativeTarget>())
+                              : up<Target>(makeup<ByteCodeTarget>());
 
     out.openNext();
     out.writeHeader();

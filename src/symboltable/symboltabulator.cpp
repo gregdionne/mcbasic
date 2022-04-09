@@ -45,7 +45,7 @@ void StatementSymbolTabulator::inspect(const Input &s) const {
 }
 
 void StatementSymbolTabulator::delve(
-    const std::vector<std::unique_ptr<Statement>> &statements) const {
+    const std::vector<up<Statement>> &statements) const {
   for (auto &statement : statements) {
     statement->inspect(this);
   }

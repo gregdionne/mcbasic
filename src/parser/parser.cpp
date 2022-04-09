@@ -12,7 +12,7 @@
 //  The author has given it just enough attention to survive being called
 //  from classes created in C++11 and then C++14.
 //
-//  It could use more const correctness and std::unique_ptr<> hints.
+//  It could use more const correctness and up<> hints.
 //  It probably could call a more modern "fetcher" that also
 //  wasn't originally written in K&R C and begrudgingly upgraded.
 //
@@ -84,19 +84,19 @@ int Parser::getLineNumber() {
   return lineNumber;
 }
 
-std::unique_ptr<StringConstantExpr> Parser::getUnquotedDataRecord() {
+up<StringConstantExpr> Parser::getUnquotedDataRecord() {
   std::string s;
   in.skipWhitespace();
   while (!in.isChar(',') && !in.iseol()) {
     s += in.getChar();
   }
-  return std::make_unique<StringConstantExpr>(s);
+  return makeup<StringConstantExpr>(s);
 }
 
-std::unique_ptr<ArrayIndicesExpr> Parser::getArrayIndices() {
+up<ArrayIndicesExpr> Parser::getArrayIndices() {
   in.skipWhitespace();
   in.matchChar('(');
-  std::unique_ptr<ArrayIndicesExpr> expr = std::make_unique<ArrayIndicesExpr>();
+  up<ArrayIndicesExpr> expr = makeup<ArrayIndicesExpr>();
   do {
     expr->operands.emplace_back(numeric(&Parser::getOrExpression));
     in.skipWhitespace();
@@ -106,40 +106,40 @@ std::unique_ptr<ArrayIndicesExpr> Parser::getArrayIndices() {
   return expr;
 }
 
-std::unique_ptr<NumericConstantExpr> Parser::seekNumericConst() {
+up<NumericConstantExpr> Parser::seekNumericConst() {
   in.skipWhitespace();
   if (in.isBasicFloat()) {
-    return std::make_unique<NumericConstantExpr>(in.getBasicFloat());
+    return makeup<NumericConstantExpr>(in.getBasicFloat());
   }
 
-  return std::unique_ptr<NumericConstantExpr>();
+  return up<NumericConstantExpr>();
 }
 
-std::unique_ptr<StringConstantExpr> Parser::seekStringConst() {
+up<StringConstantExpr> Parser::seekStringConst() {
   in.skipWhitespace();
   if (in.skipChar('"')) {
     std::string s;
     while (!in.skipChar('"') && !in.iseol()) {
       s += in.getChar();
     }
-    return std::make_unique<StringConstantExpr>(s);
+    return makeup<StringConstantExpr>(s);
   }
-  return std::unique_ptr<StringConstantExpr>();
+  return up<StringConstantExpr>();
 }
 
-std::unique_ptr<Expr> Parser::seekConst() {
-  if (std::unique_ptr<Expr> numConst = seekNumericConst()) {
+up<Expr> Parser::seekConst() {
+  if (up<Expr> numConst = seekNumericConst()) {
     return numConst;
   }
 
-  if (std::unique_ptr<Expr> strConst = seekStringConst()) {
+  if (up<Expr> strConst = seekStringConst()) {
     return strConst;
   }
 
-  return std::unique_ptr<Expr>();
+  return up<Expr>();
 }
 
-std::unique_ptr<Expr> Parser::seekDataVar() {
+up<Expr> Parser::seekDataVar() {
   in.skipWhitespace();
   if (!in.peekKeyword(keywords) && in.isAlpha()) {
     std::string name;
@@ -152,11 +152,8 @@ std::unique_ptr<Expr> Parser::seekDataVar() {
     }
 
     in.skipWhitespace();
-    auto expr =
-        in.skipChar('$')
-            ? std::unique_ptr<Expr>(std::make_unique<StringVariableExpr>(name))
-            : std::unique_ptr<Expr>(
-                  std::make_unique<NumericVariableExpr>(name));
+    auto expr = in.skipChar('$') ? up<Expr>(makeup<StringVariableExpr>(name))
+                                 : up<Expr>(makeup<NumericVariableExpr>(name));
 
     in.skipWhitespace();
     if (in.isChar('(')) {
@@ -165,10 +162,10 @@ std::unique_ptr<Expr> Parser::seekDataVar() {
 
     return expr;
   }
-  return std::unique_ptr<Expr>();
+  return up<Expr>();
 }
 
-std::unique_ptr<Expr> Parser::seekVarOrArray() {
+up<Expr> Parser::seekVarOrArray() {
   in.skipWhitespace();
   if (!in.peekKeyword(keywords) && in.isAlpha()) {
     std::string name;
@@ -184,33 +181,33 @@ std::unique_ptr<Expr> Parser::seekVarOrArray() {
     if (in.skipChar('$')) {
       in.skipWhitespace();
       if (in.isChar('(')) {
-        auto arrexpr = std::make_unique<StringArrayExpr>();
-        arrexpr->varexp = std::make_unique<StringVariableExpr>(name);
+        auto arrexpr = makeup<StringArrayExpr>();
+        arrexpr->varexp = makeup<StringVariableExpr>(name);
         in.skipWhitespace();
         arrexpr->indices = getArrayIndices();
         return arrexpr;
       } else {
-        return std::make_unique<StringVariableExpr>(name);
+        return makeup<StringVariableExpr>(name);
       }
     } else {
       if (in.isChar('(')) {
-        auto arrexpr = std::make_unique<NumericArrayExpr>();
-        arrexpr->varexp = std::make_unique<NumericVariableExpr>(name);
+        auto arrexpr = makeup<NumericArrayExpr>();
+        arrexpr->varexp = makeup<NumericVariableExpr>(name);
         in.skipWhitespace();
         arrexpr->indices = getArrayIndices();
         return arrexpr;
       } else {
-        return std::make_unique<NumericVariableExpr>(name);
+        return makeup<NumericVariableExpr>(name);
       }
     }
   }
-  return std::unique_ptr<Expr>();
+  return up<Expr>();
 }
 
-std::unique_ptr<Expr> Parser::seekParenthetical() {
+up<Expr> Parser::seekParenthetical() {
   in.skipWhitespace();
   if (!in.skipChar('(')) {
-    return std::unique_ptr<Expr>();
+    return up<Expr>();
   }
   auto expr = getOrExpression();
   in.skipWhitespace();
@@ -218,7 +215,7 @@ std::unique_ptr<Expr> Parser::seekParenthetical() {
   return expr;
 }
 
-std::unique_ptr<NumericExpr> Parser::numeric(std::unique_ptr<Expr> expr) {
+up<NumericExpr> Parser::numeric(up<Expr> expr) {
   auto *nexpr = dynamic_cast<NumericExpr *>(expr.get());
 
   if (nexpr == nullptr) {
@@ -226,13 +223,12 @@ std::unique_ptr<NumericExpr> Parser::numeric(std::unique_ptr<Expr> expr) {
   }
 
   static_cast<void>(expr.release());
-  return std::unique_ptr<NumericExpr>(nexpr);
+  return up<NumericExpr>(nexpr);
 }
 
-std::unique_ptr<NumericExpr>
-Parser::numeric(std::unique_ptr<Expr> (Parser::*expr)()) {
+up<NumericExpr> Parser::numeric(up<Expr> (Parser::*expr)()) {
   int savecol = in.colnum;
-  std::unique_ptr<Expr> e = (this->*expr)();
+  up<Expr> e = (this->*expr)();
   auto *nexpr = dynamic_cast<NumericExpr *>(e.get());
 
   if (nexpr == nullptr) {
@@ -241,36 +237,34 @@ Parser::numeric(std::unique_ptr<Expr> (Parser::*expr)()) {
   }
 
   static_cast<void>(e.release());
-  return std::unique_ptr<NumericExpr>(nexpr);
+  return up<NumericExpr>(nexpr);
 }
 
-std::unique_ptr<StringExpr> Parser::string(std::unique_ptr<Expr> expr) {
+up<StringExpr> Parser::string(up<Expr> expr) {
   auto *sexpr = dynamic_cast<StringExpr *>(expr.get());
   if (sexpr == nullptr) {
     in.die("string expression expected");
   }
 
   static_cast<void>(expr.release());
-  return std::unique_ptr<StringExpr>(sexpr);
+  return up<StringExpr>(sexpr);
 }
 
-std::unique_ptr<StringExpr>
-Parser::string(std::unique_ptr<Expr> (Parser::*expr)()) {
+up<StringExpr> Parser::string(up<Expr> (Parser::*expr)()) {
   int savecol = in.colnum;
-  std::unique_ptr<Expr> e = (this->*expr)();
+  up<Expr> e = (this->*expr)();
   auto *sexpr = dynamic_cast<StringExpr *>(e.get());
   if (sexpr == nullptr) {
     in.colnum = savecol;
     in.die("numeric expression expected");
   }
   static_cast<void>(e.release());
-  return std::unique_ptr<StringExpr>(sexpr);
+  return up<StringExpr>(sexpr);
 }
 
-std::unique_ptr<Expr>
-Parser::matchTypes(Expr *lhs, std::unique_ptr<Expr> (Parser::*expr)()) {
+up<Expr> Parser::matchTypes(Expr *lhs, up<Expr> (Parser::*expr)()) {
   int savecol = in.colnum;
-  std::unique_ptr<Expr> rhs = (this->*expr)();
+  up<Expr> rhs = (this->*expr)();
 
   if ((lhs->isString() && !rhs->isString()) ||
       (!lhs->isString() && rhs->isString())) {
@@ -280,7 +274,7 @@ Parser::matchTypes(Expr *lhs, std::unique_ptr<Expr> (Parser::*expr)()) {
   return rhs;
 }
 
-std::unique_ptr<NumericVariableExpr> Parser::getIterationVar() {
+up<NumericVariableExpr> Parser::getIterationVar() {
   in.skipWhitespace();
   if (!in.peekKeyword(keywords) && in.isAlpha()) {
     std::string name;
@@ -298,7 +292,7 @@ std::unique_ptr<NumericVariableExpr> Parser::getIterationVar() {
       in.die("iteration variable must be numeric");
     }
 
-    auto expr = std::make_unique<NumericVariableExpr>(name);
+    auto expr = makeup<NumericVariableExpr>(name);
 
     in.skipWhitespace();
 
@@ -308,29 +302,29 @@ std::unique_ptr<NumericVariableExpr> Parser::getIterationVar() {
 
     return expr;
   }
-  return std::unique_ptr<NumericVariableExpr>();
+  return up<NumericVariableExpr>();
 }
 
-std::unique_ptr<Expr> Parser::getVarOrArray() {
+up<Expr> Parser::getVarOrArray() {
   if (auto expr = seekVarOrArray()) {
     return expr;
   }
 
   in.die("variable or array expected");
-  return std::unique_ptr<Expr>();
+  return up<Expr>();
 }
 
-std::unique_ptr<Expr> Parser::getParenthetical() {
+up<Expr> Parser::getParenthetical() {
   in.skipWhitespace();
   in.matchChar('(');
-  std::unique_ptr<Expr> expr = getOrExpression();
+  up<Expr> expr = getOrExpression();
   in.skipWhitespace();
   in.matchChar(')');
   in.skipWhitespace();
   return expr;
 }
 
-std::unique_ptr<Expr> Parser::getPrimitive() {
+up<Expr> Parser::getPrimitive() {
   if (auto expr = seekParenthetical()) {
     return expr;
   }
@@ -344,107 +338,107 @@ std::unique_ptr<Expr> Parser::getPrimitive() {
   }
 
   in.die("constant, variable, or array expected");
-  return std::unique_ptr<Expr>();
+  return up<Expr>();
 }
 
-std::unique_ptr<Expr> Parser::getSgnFunction() {
-  auto e = std::make_unique<SgnExpr>();
+up<Expr> Parser::getSgnFunction() {
+  auto e = makeup<SgnExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getIntFunction() {
-  auto e = std::make_unique<IntExpr>();
+up<Expr> Parser::getIntFunction() {
+  auto e = makeup<IntExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getAbsFunction() {
-  auto e = std::make_unique<AbsExpr>();
+up<Expr> Parser::getAbsFunction() {
+  auto e = makeup<AbsExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getRndFunction() {
-  auto e = std::make_unique<RndExpr>();
+up<Expr> Parser::getRndFunction() {
+  auto e = makeup<RndExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getSqrFunction() {
-  auto e = std::make_unique<SqrExpr>();
+up<Expr> Parser::getSqrFunction() {
+  auto e = makeup<SqrExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getLogFunction() {
-  auto e = std::make_unique<LogExpr>();
+up<Expr> Parser::getLogFunction() {
+  auto e = makeup<LogExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getExpFunction() {
-  auto e = std::make_unique<ExpExpr>();
+up<Expr> Parser::getExpFunction() {
+  auto e = makeup<ExpExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getSinFunction() {
-  auto e = std::make_unique<SinExpr>();
+up<Expr> Parser::getSinFunction() {
+  auto e = makeup<SinExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getCosFunction() {
-  auto e = std::make_unique<CosExpr>();
+up<Expr> Parser::getCosFunction() {
+  auto e = makeup<CosExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getTanFunction() {
-  auto e = std::make_unique<TanExpr>();
+up<Expr> Parser::getTanFunction() {
+  auto e = makeup<TanExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getPeekFunction() {
-  auto e = std::make_unique<PeekExpr>();
+up<Expr> Parser::getPeekFunction() {
+  auto e = makeup<PeekExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getLenFunction() {
-  auto e = std::make_unique<LenExpr>();
+up<Expr> Parser::getLenFunction() {
+  auto e = makeup<LenExpr>();
   e->expr = string(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getStrFunction() {
-  auto e = std::make_unique<StrExpr>();
+up<Expr> Parser::getStrFunction() {
+  auto e = makeup<StrExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getValFunction() {
-  auto e = std::make_unique<ValExpr>();
+up<Expr> Parser::getValFunction() {
+  auto e = makeup<ValExpr>();
   e->expr = string(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getAscFunction() {
-  auto e = std::make_unique<AscExpr>();
+up<Expr> Parser::getAscFunction() {
+  auto e = makeup<AscExpr>();
   e->expr = string(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getChrFunction() {
-  auto e = std::make_unique<ChrExpr>();
+up<Expr> Parser::getChrFunction() {
+  auto e = makeup<ChrExpr>();
   e->expr = numeric(&Parser::getParenthetical);
   return e;
 }
 
-std::unique_ptr<Expr> Parser::getPointFunction() {
-  auto point = std::make_unique<PointExpr>();
+up<Expr> Parser::getPointFunction() {
+  auto point = makeup<PointExpr>();
   in.skipWhitespace();
   in.matchChar('(');
   point->x = numeric(&Parser::getOrExpression);
@@ -454,33 +448,33 @@ std::unique_ptr<Expr> Parser::getPointFunction() {
   return point;
 }
 
-std::unique_ptr<Expr> Parser::getLeftFunction() {
-  auto left = std::make_unique<LeftExpr>();
+up<Expr> Parser::getLeftFunction() {
+  auto left = makeup<LeftExpr>();
   in.skipWhitespace();
   in.matchChar('(');
-  left->str = std::unique_ptr<StringExpr>(string(&Parser::getOrExpression));
+  left->str = up<StringExpr>(string(&Parser::getOrExpression));
   in.matchChar(',');
   left->len = numeric(&Parser::getOrExpression);
   in.matchChar(')');
   return left;
 }
 
-std::unique_ptr<Expr> Parser::getRightFunction() {
-  std::unique_ptr<RightExpr> right = std::make_unique<RightExpr>();
+up<Expr> Parser::getRightFunction() {
+  up<RightExpr> right = makeup<RightExpr>();
   in.skipWhitespace();
   in.matchChar('(');
-  right->str = std::unique_ptr<StringExpr>(string(&Parser::getOrExpression));
+  right->str = up<StringExpr>(string(&Parser::getOrExpression));
   in.matchChar(',');
   right->len = numeric(&Parser::getOrExpression);
   in.matchChar(')');
   return right;
 }
 
-std::unique_ptr<Expr> Parser::getMidFunction() {
-  std::unique_ptr<MidExpr> mid = std::make_unique<MidExpr>();
+up<Expr> Parser::getMidFunction() {
+  up<MidExpr> mid = makeup<MidExpr>();
   in.skipWhitespace();
   in.matchChar('(');
-  mid->str = std::unique_ptr<StringExpr>(string(&Parser::getOrExpression));
+  mid->str = up<StringExpr>(string(&Parser::getOrExpression));
   in.matchChar(',');
   mid->start = numeric(&Parser::getOrExpression);
   if (in.skipChar(',')) {
@@ -490,12 +484,12 @@ std::unique_ptr<Expr> Parser::getMidFunction() {
   return mid;
 }
 
-std::unique_ptr<Expr> Parser::unimplementedKeywordExpression() {
+up<Expr> Parser::unimplementedKeywordExpression() {
   in.die("unimplemented keyword: \"%s\"", keywords[in.keyID]);
   return nullptr;
 }
 
-std::unique_ptr<Expr> Parser::getFunction() {
+up<Expr> Parser::getFunction() {
   return !in.peekKeyword(keywords) ? getPrimitive()
          : skipKeyword("SGN")      ? getSgnFunction()
          : skipKeyword("INT")      ? getIntFunction()
@@ -517,23 +511,23 @@ std::unique_ptr<Expr> Parser::getFunction() {
          : skipKeyword("RIGHT$")   ? getRightFunction()
          : skipKeyword("MID$")     ? getMidFunction()
          : skipKeyword("POINT")    ? getPointFunction()
-         : skipKeyword("MEM")      ? (std::make_unique<MemExpr>())
-         : skipKeyword("INKEY$")   ? (std::make_unique<InkeyExpr>())
+         : skipKeyword("MEM")      ? (makeup<MemExpr>())
+         : skipKeyword("INKEY$")   ? (makeup<InkeyExpr>())
                                    : unimplementedKeywordExpression();
 }
 
-std::unique_ptr<Expr> Parser::getPowerExpression() {
-  std::unique_ptr<Expr> expr = getFunction();
+up<Expr> Parser::getPowerExpression() {
+  up<Expr> expr = getFunction();
 
   if (skipKeyword("^")) {
-    expr = std::make_unique<PowerExpr>(numeric(std::move(expr)),
-                                       numeric(&Parser::getSignedFactor));
+    expr =
+        makeup<PowerExpr>(numeric(mv(expr)), numeric(&Parser::getSignedFactor));
   }
 
   return expr;
 }
 
-std::unique_ptr<Expr> Parser::getSignedFactor() {
+up<Expr> Parser::getSignedFactor() {
   bool negate = false;
 
   while (skipKeyword("+") || isKeyword("-")) {
@@ -542,17 +536,23 @@ std::unique_ptr<Expr> Parser::getSignedFactor() {
     }
   }
 
-  return negate ? std::make_unique<NegatedExpr>(
-                      numeric(&Parser::getPowerExpression))
-                : getPowerExpression();
+  up<Expr> expr = getPowerExpression();
+
+  if (negate) {
+    auto addExpr = makeup<AdditiveExpr>();
+    addExpr->invoperands.emplace_back(numeric(mv(expr)));
+    expr = mv(addExpr);
+  }
+
+  return expr;
 }
 
-std::unique_ptr<Expr> Parser::getTerm() {
-  std::unique_ptr<Expr> expr = getSignedFactor();
+up<Expr> Parser::getTerm() {
+  up<Expr> expr = getSignedFactor();
 
   if (isKeyword("*") || isKeyword("/")) {
-    std::unique_ptr<MultiplicativeExpr> mulExpr =
-        std::make_unique<MultiplicativeExpr>(numeric(std::move(expr)));
+    up<MultiplicativeExpr> mulExpr =
+        makeup<MultiplicativeExpr>(numeric(mv(expr)));
     while (isKeyword("*") || isKeyword("/")) {
       if (matchEitherKeyword("*", "/")) {
         mulExpr->operands.emplace_back(numeric(&Parser::getSignedFactor));
@@ -560,25 +560,24 @@ std::unique_ptr<Expr> Parser::getTerm() {
         mulExpr->invoperands.emplace_back(numeric(&Parser::getSignedFactor));
       }
     }
-    expr = std::move(mulExpr);
+    expr = mv(mulExpr);
   }
 
   return expr;
 }
 
-std::unique_ptr<Expr> Parser::getAdditiveExpression() {
-  std::unique_ptr<Expr> expr = getTerm();
+up<Expr> Parser::getAdditiveExpression() {
+  up<Expr> expr = getTerm();
 
   if (isKeyword("+") && expr->isString()) {
-    std::unique_ptr<StringConcatenationExpr> catExpr =
-        std::make_unique<StringConcatenationExpr>(string(std::move(expr)));
+    up<StringConcatenationExpr> catExpr =
+        makeup<StringConcatenationExpr>(string(mv(expr)));
     while (skipKeyword("+")) {
       catExpr->operands.emplace_back(string(&Parser::getTerm));
     }
-    expr = std::move(catExpr);
+    expr = mv(catExpr);
   } else if (isKeyword("+") || isKeyword("-")) {
-    std::unique_ptr<AdditiveExpr> addExpr =
-        std::make_unique<AdditiveExpr>(numeric(std::move(expr)));
+    up<AdditiveExpr> addExpr = makeup<AdditiveExpr>(numeric(mv(expr)));
     while (isKeyword("+") || isKeyword("-")) {
       if (matchEitherKeyword("+", "-")) {
         addExpr->operands.emplace_back(numeric(&Parser::getTerm));
@@ -586,60 +585,58 @@ std::unique_ptr<Expr> Parser::getAdditiveExpression() {
         addExpr->invoperands.emplace_back(numeric(&Parser::getTerm));
       }
     }
-    expr = std::move(addExpr);
+    expr = mv(addExpr);
   }
   return expr;
 }
 
-std::unique_ptr<Expr> Parser::getRelationalExpression() {
-  std::unique_ptr<Expr> expr = getAdditiveExpression();
+up<Expr> Parser::getRelationalExpression() {
+  up<Expr> expr = getAdditiveExpression();
 
   while (skipKeyword("<>") || skipKeyword("<=") || skipKeyword(">=") ||
          skipKeyword("><") || skipKeyword("=>") || skipKeyword("=<") ||
          skipKeyword("<") || skipKeyword("=") || skipKeyword(">")) {
     const char *keyword = keywords[in.keyID];
     auto rhs = matchTypes(expr.get(), &Parser::getAdditiveExpression);
-    expr = std::make_unique<RelationalExpr>(keyword, std::move(expr),
-                                            std::move(rhs));
+    expr = makeup<RelationalExpr>(keyword, mv(expr), mv(rhs));
   }
 
   return expr;
 }
 
-std::unique_ptr<Expr> Parser::getNotExpression() {
-  return skipKeyword("NOT") ? static_cast<std::unique_ptr<Expr>>(
-                                  std::make_unique<ComplementedExpr>(numeric(
-                                      &Parser::getRelationalExpression)))
+up<Expr> Parser::getNotExpression() {
+  return skipKeyword("NOT") ? static_cast<up<Expr>>(makeup<ComplementedExpr>(
+                                  numeric(&Parser::getRelationalExpression)))
                             : getRelationalExpression();
 }
 
-std::unique_ptr<Expr> Parser::getAndExpression() {
-  std::unique_ptr<Expr> expr = getNotExpression();
+up<Expr> Parser::getAndExpression() {
+  up<Expr> expr = getNotExpression();
   if (isKeyword("AND")) {
-    auto andExpr = std::make_unique<AndExpr>(numeric(std::move(expr)));
+    auto andExpr = makeup<AndExpr>(numeric(mv(expr)));
     while (skipKeyword("AND")) {
       andExpr->operands.emplace_back(numeric(&Parser::getNotExpression));
     }
-    expr = std::move(andExpr);
+    expr = mv(andExpr);
   }
   return expr;
 }
 
-std::unique_ptr<Expr> Parser::getOrExpression() {
-  std::unique_ptr<Expr> expr = getAndExpression();
+up<Expr> Parser::getOrExpression() {
+  up<Expr> expr = getAndExpression();
   if (isKeyword("OR")) {
-    auto orExpr = std::make_unique<OrExpr>(numeric(std::move(expr)));
+    auto orExpr = makeup<OrExpr>(numeric(mv(expr)));
     while (skipKeyword("OR")) {
       orExpr->operands.emplace_back(numeric(&Parser::getAndExpression));
     }
-    expr = std::move(orExpr);
+    expr = mv(orExpr);
   }
   in.skipWhitespace();
   return expr;
 }
 
-std::unique_ptr<Statement> Parser::getFor() {
-  auto forloop = std::make_unique<For>();
+up<Statement> Parser::getFor() {
+  auto forloop = makeup<For>();
   forloop->iter = getIterationVar();
 
   in.skipWhitespace();
@@ -656,15 +653,15 @@ std::unique_ptr<Statement> Parser::getFor() {
   return forloop;
 }
 
-std::unique_ptr<Statement> Parser::getGoto(bool isSub) {
-  auto go = std::make_unique<Go>();
+up<Statement> Parser::getGoto(bool isSub) {
+  auto go = makeup<Go>();
   go->isSub = isSub;
   go->lineNumber = getLineNumber();
   return go;
 }
 
-std::unique_ptr<Statement> Parser::getRem() {
-  auto rem = std::make_unique<Rem>();
+up<Statement> Parser::getRem() {
+  auto rem = makeup<Rem>();
   rem->comment = in.peekLine();
   while (!in.iseol()) {
     in.getChar();
@@ -672,8 +669,8 @@ std::unique_ptr<Statement> Parser::getRem() {
   return rem;
 }
 
-std::unique_ptr<Statement> Parser::getIf() {
-  auto ifthen = std::make_unique<If>();
+up<Statement> Parser::getIf() {
+  auto ifthen = makeup<If>();
 
   ifthen->predicate = numeric(&Parser::getOrExpression);
 
@@ -702,11 +699,11 @@ std::unique_ptr<Statement> Parser::getIf() {
   return ifthen;
 }
 
-std::unique_ptr<Statement> Parser::getData() {
-  auto data = std::make_unique<Data>();
+up<Statement> Parser::getData() {
+  auto data = makeup<Data>();
   do {
     if (auto record = seekStringConst()) {
-      data->records.emplace_back(std::move(record));
+      data->records.emplace_back(mv(record));
     } else {
       data->records.emplace_back(getUnquotedDataRecord());
     }
@@ -716,8 +713,8 @@ std::unique_ptr<Statement> Parser::getData() {
   return data;
 }
 
-std::unique_ptr<Statement> Parser::getPrint() {
-  auto print = std::make_unique<Print>();
+up<Statement> Parser::getPrint() {
+  auto print = makeup<Print>();
 
   bool needsCR = true;
 
@@ -736,40 +733,40 @@ std::unique_ptr<Statement> Parser::getPrint() {
     needsCR = true;
     if (skipKeyword("TAB(")) {
       print->printExpr.emplace_back(
-          std::make_unique<PrintTabExpr>(numeric(&Parser::getOrExpression)));
+          makeup<PrintTabExpr>(numeric(&Parser::getOrExpression)));
       in.matchChar(')');
       needsCR = false;
     } else if (in.skipChar(',')) {
-      print->printExpr.emplace_back(std::make_unique<PrintCommaExpr>());
+      print->printExpr.emplace_back(makeup<PrintCommaExpr>());
     } else if (in.skipChar(';')) {
       needsCR = false;
     } else {
-      std::unique_ptr<Expr> exp = getOrExpression();
+      up<Expr> exp = getOrExpression();
       if (exp->isString()) {
-        print->printExpr.emplace_back(string(std::move(exp)));
+        print->printExpr.emplace_back(string(mv(exp)));
       } else {
-        std::unique_ptr<StrExpr> se = std::make_unique<StrExpr>();
-        se->expr = numeric(std::move(exp));
-        print->printExpr.emplace_back(std::move(se));
-        print->printExpr.emplace_back(std::make_unique<PrintSpaceExpr>());
+        up<StrExpr> se = makeup<StrExpr>();
+        se->expr = numeric(mv(exp));
+        print->printExpr.emplace_back(mv(se));
+        print->printExpr.emplace_back(makeup<PrintSpaceExpr>());
       }
     }
     in.skipWhitespace();
   }
 
   if (needsCR) {
-    print->printExpr.emplace_back(std::make_unique<PrintCRExpr>());
+    print->printExpr.emplace_back(makeup<PrintCRExpr>());
   }
 
   return print;
 }
 
-std::unique_ptr<Statement> Parser::getInput() {
-  auto input = std::make_unique<Input>();
-  std::unique_ptr<StringConstantExpr> prompt;
+up<Statement> Parser::getInput() {
+  auto input = makeup<Input>();
+  up<StringConstantExpr> prompt;
 
   if (auto prompt = seekStringConst()) {
-    input->prompt = std::move(prompt);
+    input->prompt = mv(prompt);
     in.skipWhitespace();
     in.matchChar(';');
   }
@@ -782,19 +779,19 @@ std::unique_ptr<Statement> Parser::getInput() {
   return input;
 }
 
-std::unique_ptr<Statement> Parser::getEnd() {
+up<Statement> Parser::getEnd() {
   in.skipWhitespace();
-  return std::make_unique<End>();
+  return makeup<End>();
 }
 
-std::unique_ptr<Statement> Parser::getError(uint8_t errorCode) {
-  auto error = std::make_unique<Error>();
-  error->errorCode = std::make_unique<NumericConstantExpr>(errorCode);
+up<Statement> Parser::getError(uint8_t errorCode) {
+  auto error = makeup<Error>();
+  error->errorCode = makeup<NumericConstantExpr>(errorCode);
   return error;
 }
 
-std::unique_ptr<Statement> Parser::getOn() {
-  auto on = std::make_unique<On>();
+up<Statement> Parser::getOn() {
+  auto on = makeup<On>();
   on->branchIndex = numeric(&Parser::getOrExpression);
 
   on->isSub = skipKeyword("GOSUB");
@@ -810,9 +807,9 @@ std::unique_ptr<Statement> Parser::getOn() {
   return on;
 }
 
-std::unique_ptr<Statement> Parser::getNext() {
-  auto next = std::make_unique<Next>();
-  std::unique_ptr<NumericVariableExpr> iter;
+up<Statement> Parser::getNext() {
+  auto next = makeup<Next>();
+  up<NumericVariableExpr> iter;
   if (!in.iseol() && !in.isChar(':')) {
     do {
       next->variables.emplace_back(getIterationVar());
@@ -822,8 +819,8 @@ std::unique_ptr<Statement> Parser::getNext() {
   return next;
 }
 
-std::unique_ptr<Statement> Parser::getDim() {
-  auto dim = std::make_unique<Dim>();
+up<Statement> Parser::getDim() {
+  auto dim = makeup<Dim>();
   do {
     dim->variables.emplace_back(getVarOrArray());
     in.skipWhitespace();
@@ -831,8 +828,8 @@ std::unique_ptr<Statement> Parser::getDim() {
   return dim;
 }
 
-std::unique_ptr<Statement> Parser::getRead() {
-  auto read = std::make_unique<Read>();
+up<Statement> Parser::getRead() {
+  auto read = makeup<Read>();
   in.skipWhitespace();
   do {
     read->variables.emplace_back(getVarOrArray());
@@ -841,16 +838,16 @@ std::unique_ptr<Statement> Parser::getRead() {
   return read;
 }
 
-std::unique_ptr<Statement> Parser::getLet() {
+up<Statement> Parser::getLet() {
   auto lhs = getVarOrArray();
   in.skipWhitespace();
   in.matchChar('=');
   auto rhs = matchTypes(lhs.get(), &Parser::getOrExpression);
-  return std::make_unique<Let>(std::move(lhs), std::move(rhs));
+  return makeup<Let>(mv(lhs), mv(rhs));
 }
 
-std::unique_ptr<Statement> Parser::getRun() {
-  auto run = std::make_unique<Run>();
+up<Statement> Parser::getRun() {
+  auto run = makeup<Run>();
   in.skipWhitespace();
   run->hasLineNumber = !in.iseol() && !in.isChar(':');
   if (run->hasLineNumber) {
@@ -859,23 +856,23 @@ std::unique_ptr<Statement> Parser::getRun() {
   return run;
 }
 
-std::unique_ptr<Statement> Parser::getRestore() {
+up<Statement> Parser::getRestore() {
   in.skipWhitespace();
-  return std::make_unique<Restore>();
+  return makeup<Restore>();
 }
 
-std::unique_ptr<Statement> Parser::getReturn() {
+up<Statement> Parser::getReturn() {
   in.skipWhitespace();
-  return std::make_unique<Return>();
+  return makeup<Return>();
 }
 
-std::unique_ptr<Statement> Parser::getStop() {
+up<Statement> Parser::getStop() {
   in.skipWhitespace();
-  return std::make_unique<Stop>();
+  return makeup<Stop>();
 }
 
-std::unique_ptr<Statement> Parser::getPoke() {
-  auto poke = std::make_unique<Poke>();
+up<Statement> Parser::getPoke() {
+  auto poke = makeup<Poke>();
 
   in.skipWhitespace();
   poke->dest = numeric(&Parser::getOrExpression);
@@ -885,8 +882,8 @@ std::unique_ptr<Statement> Parser::getPoke() {
   return poke;
 }
 
-std::unique_ptr<Statement> Parser::getClear() {
-  auto clear = std::make_unique<Clear>();
+up<Statement> Parser::getClear() {
+  auto clear = makeup<Clear>();
   in.skipWhitespace();
   if (!in.iseol() && !in.isChar(':')) {
     clear->size = numeric(&Parser::getOrExpression);
@@ -894,8 +891,8 @@ std::unique_ptr<Statement> Parser::getClear() {
   return clear;
 }
 
-std::unique_ptr<Statement> Parser::getSet() {
-  auto set = std::make_unique<Set>();
+up<Statement> Parser::getSet() {
+  auto set = makeup<Set>();
   in.skipWhitespace();
   in.matchChar('(');
   set->x = numeric(&Parser::getOrExpression);
@@ -909,8 +906,8 @@ std::unique_ptr<Statement> Parser::getSet() {
   return set;
 }
 
-std::unique_ptr<Statement> Parser::getReset() {
-  auto reset = std::make_unique<Reset>();
+up<Statement> Parser::getReset() {
+  auto reset = makeup<Reset>();
   in.skipWhitespace();
   in.matchChar('(');
   reset->x = numeric(&Parser::getOrExpression);
@@ -921,8 +918,8 @@ std::unique_ptr<Statement> Parser::getReset() {
   return reset;
 }
 
-std::unique_ptr<Statement> Parser::getCls() {
-  auto cls = std::make_unique<Cls>();
+up<Statement> Parser::getCls() {
+  auto cls = makeup<Cls>();
   in.skipWhitespace();
   if (!in.iseol() && !in.isChar(':')) {
     cls->color = numeric(&Parser::getOrExpression);
@@ -930,8 +927,8 @@ std::unique_ptr<Statement> Parser::getCls() {
   return cls;
 }
 
-std::unique_ptr<Statement> Parser::getSound() {
-  auto sound = std::make_unique<Sound>();
+up<Statement> Parser::getSound() {
+  auto sound = makeup<Sound>();
 
   in.skipWhitespace();
   sound->pitch = numeric(&Parser::getOrExpression);
@@ -940,7 +937,7 @@ std::unique_ptr<Statement> Parser::getSound() {
   return sound;
 }
 
-std::unique_ptr<Statement> Parser::getExec() {
+up<Statement> Parser::getExec() {
   if (!enableMachineCode) {
     in.sputter(
         "error: machine code invocation without '-mcode' compiler flag.");
@@ -982,7 +979,7 @@ std::unique_ptr<Statement> Parser::getExec() {
     exit(0);
   }
 
-  auto exec = std::make_unique<Exec>();
+  auto exec = makeup<Exec>();
   in.skipWhitespace();
   if (in.iseol() || in.isChar(':')) {
     in.die("the compiler requires an address when invoking EXEC");
@@ -992,12 +989,12 @@ std::unique_ptr<Statement> Parser::getExec() {
   return exec;
 }
 
-std::unique_ptr<Statement> Parser::unimplementedKeyword() {
+up<Statement> Parser::unimplementedKeyword() {
   in.die("unimplemented keyword: \"%s\"", keywords[in.keyID]);
-  return std::unique_ptr<Statement>();
+  return up<Statement>();
 }
 
-std::unique_ptr<Statement> Parser::getStatement() {
+up<Statement> Parser::getStatement() {
   do {
     in.skipWhitespace();
   } while (in.skipChar(':'));
@@ -1038,7 +1035,7 @@ void Parser::getLine(Program &p) {
     return;
   }
 
-  auto line = std::make_unique<Line>();
+  auto line = makeup<Line>();
   line->lineNumber = getLineNumber();
 
   while (!in.iseol()) {
@@ -1048,20 +1045,20 @@ void Parser::getLine(Program &p) {
       in.matchChar(':');
     }
   }
-  p.lines.emplace_back(std::move(line));
+  p.lines.emplace_back(mv(line));
 }
 
 void Parser::getEndLines(Program &p) {
-  auto line = std::make_unique<Line>();
+  auto line = makeup<Line>();
   line->lineNumber = constants::lastLineNumber;
   line->statements.emplace_back(getEnd());
-  p.lines.emplace_back(std::move(line));
+  p.lines.emplace_back(mv(line));
 
   if (unlistedLineNumbers) {
-    line = std::make_unique<Line>();
+    line = makeup<Line>();
     line->lineNumber = constants::unlistedLineNumber;
     line->statements.emplace_back(getError(constants::ULError));
-    p.lines.emplace_back(std::move(line));
+    p.lines.emplace_back(mv(line));
   }
 }
 
