@@ -23,7 +23,7 @@ template <typename T> static inline std::string list(T &t) {
 // construction by casting the result to up<BaseType>.
 
 template <typename T, typename... Args>
-static inline up<AddressMode> makeAddrMode(Args &&...args) {
+static inline up<AddressMode> makeupAM(Args &&...args) {
   return makeup<T>(std::forward<Args>(args)...);
 }
 
@@ -617,11 +617,10 @@ void StatementCompiler::absorb(const Error &s) {
 void ExprCompiler::absorb(const NumericConstantExpr &e) {
   FixedPoint f(e.value);
 
-  result = f.isPosWord()   ? makeAddrMode<AddressModeImm>(false, f.wholenum)
-           : f.isNegWord() ? makeAddrMode<AddressModeImm>(true, f.wholenum)
-           : f.isInteger()
-               ? makeAddrMode<AddressModeExt>(DataType::Int, f.label())
-               : makeAddrMode<AddressModeExt>(DataType::Flt, f.label());
+  result = f.isPosWord()   ? makeupAM<AddressModeImm>(false, f.wholenum)
+           : f.isNegWord() ? makeupAM<AddressModeImm>(true, f.wholenum)
+           : f.isInteger() ? makeupAM<AddressModeExt>(DataType::Int, f.label())
+                           : makeupAM<AddressModeExt>(DataType::Flt, f.label());
 }
 
 void ExprCompiler::absorb(const StringConstantExpr &e) {
