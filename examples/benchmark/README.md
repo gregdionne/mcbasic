@@ -9,3 +9,7 @@ The "sort" folder contains identical versions of the classic bubblesort and quic
 # For-Loop Benchmark
 
 The "forloop" folder contains a program that flashes a cursor using an empty for-loop as a delay routine.
+
+# Mandelbrot Benchmark
+
+The "mandelbrot" folder contains a program by Jim Gerrie that displays the mandelbrot set.
