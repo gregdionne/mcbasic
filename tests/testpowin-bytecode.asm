@@ -154,13 +154,10 @@ LINE_30
 
 LINE_40
 
-	; PRINT STR$(X^2);" \r";
+	; PRINT STR$(SQ(X));" \r";
 
-	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_sq_ir1_ix
 	.byte	bytecode_INTVAR_X
-
-	.byte	bytecode_pow_ir1_ir1_pb
-	.byte	2
 
 	.byte	bytecode_str_sr1_ir1
 
@@ -235,8 +232,9 @@ bytecode_pr_sr1	.equ	4
 bytecode_pr_ss	.equ	5
 bytecode_progbegin	.equ	6
 bytecode_progend	.equ	7
-bytecode_str_sr1_ir1	.equ	8
-bytecode_str_sr1_ix	.equ	9
+bytecode_sq_ir1_ix	.equ	8
+bytecode_str_sr1_ir1	.equ	9
+bytecode_str_sr1_ix	.equ	10
 
 catalog
 	.word	clear
@@ -247,6 +245,7 @@ catalog
 	.word	pr_ss
 	.word	progbegin
 	.word	progend
+	.word	sq_ir1_ix
 	.word	str_sr1_ir1
 	.word	str_sr1_ix
 
@@ -925,6 +924,17 @@ _panic
 	ldab	#1
 	jmp	error
 
+	.module	mdtmp2xi
+; copy integer tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2
+;   EXIT   Y copied to 0,x 1,x 2,x
+tmp2xi
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	rts
+
 	.module	mdx2arg
 ; copy [X] to argv
 ;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
@@ -962,7 +972,7 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_ir1_ix			; numCalls = 6
+ld_ir1_ix			; numCalls = 5
 	.module	modld_ir1_ix
 	jsr	extend
 	ldd	1,x
@@ -979,7 +989,7 @@ ld_ix_pb			; numCalls = 1
 	std	0,x
 	rts
 
-pow_ir1_ir1_pb			; numCalls = 6
+pow_ir1_ir1_pb			; numCalls = 5
 	.module	modpow_ir1_ir1_pb
 	jsr	getbyte
 	clra
@@ -1064,6 +1074,14 @@ DD_ERROR	.equ	18
 LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
+
+sq_ir1_ix			; numCalls = 1
+	.module	modsq_ir1_ix
+	jsr	extend
+	jsr	x2arg
+	jsr	mulint
+	ldx	#r1
+	jmp	tmp2xi
 
 str_sr1_ir1			; numCalls = 6
 	.module	modstr_sr1_ir1

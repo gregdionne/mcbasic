@@ -53,6 +53,7 @@ public:
   void mutate(MidExpr &e) override;
   void mutate(PointExpr &e) override;
   void mutate(InkeyExpr &) override {}
+  void mutate(SquareExpr &e) override;
 
   bool isMissing{false};
 

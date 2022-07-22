@@ -138,13 +138,10 @@ LINE_30
 
 LINE_40
 
-	; PRINT STR$(X^2);" \r";
+	; PRINT STR$(SQ(X));" \r";
 
 	ldx	#INTVAR_X
-	jsr	ld_ir1_ix
-
-	ldab	#2
-	jsr	pow_ir1_ir1_pb
+	jsr	sq_ir1_ix
 
 	jsr	str_sr1_ir1
 
@@ -741,6 +738,17 @@ _panic
 	ldab	#1
 	jmp	error
 
+	.module	mdtmp2xi
+; copy integer tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2
+;   EXIT   Y copied to 0,x 1,x 2,x
+tmp2xi
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	rts
+
 	.module	mdx2arg
 ; copy [X] to argv
 ;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
@@ -777,7 +785,7 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_ir1_ix			; numCalls = 6
+ld_ir1_ix			; numCalls = 5
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -792,7 +800,7 @@ ld_ix_pb			; numCalls = 1
 	std	0,x
 	rts
 
-pow_ir1_ir1_pb			; numCalls = 6
+pow_ir1_ir1_pb			; numCalls = 5
 	.module	modpow_ir1_ir1_pb
 	clra
 	ldx	#r1
@@ -869,6 +877,13 @@ DD_ERROR	.equ	18
 LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
+
+sq_ir1_ix			; numCalls = 1
+	.module	modsq_ir1_ix
+	jsr	x2arg
+	jsr	mulint
+	ldx	#r1
+	jmp	tmp2xi
 
 str_sr1_ir1			; numCalls = 6
 	.module	modstr_sr1_ir1

@@ -206,19 +206,15 @@ LINE_120
 	ldx	#FLTVAR_X
 	jsr	add_fr1_fr1_fx
 
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fr1
 
 	ldx	#FLTVAR_X
 	jsr	ld_fx_fr1
 
-	; Y=SHIFT((3-(Y*Y*S/M/M))*Y,-1)
+	; Y=SHIFT((3-(SQ(Y)*S/M/M))*Y,-1)
 
 	ldx	#FLTVAR_Y
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_Y
-	jsr	mul_fr1_fr1_fx
+	jsr	sq_fr1_fx
 
 	ldx	#FLTVAR_S
 	jsr	mul_fr1_fr1_fx
@@ -235,8 +231,7 @@ LINE_120
 	ldx	#FLTVAR_Y
 	jsr	mul_fr1_fr1_fx
 
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fr1
 
 	ldx	#FLTVAR_Y
 	jsr	ld_fx_fr1
@@ -862,40 +857,6 @@ _loop
 	bne	_loop
 	rts
 
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
-	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
-	rts
-
 	.module	mdsqr
 ; X = SQR(X)
 ;   ENTRY  X in 0,X 1,X 2,X 3,X 4,X
@@ -1333,6 +1294,19 @@ _tblten
 	.byte	$0F,$42,$40
 	.byte	$98,$96,$80
 
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
+	rts
+
 	.module	mdtonat
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
@@ -1390,6 +1364,20 @@ _flt
 _done
 	ldx	tmp1
 	jmp	,x
+
+	.module	mdx2arg
+; copy [X] to argv
+;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
+;   EXIT   Y copied to 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+	; copy x to argv
+x2arg
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	std	3+argv
+	rts
 
 add_fr1_fr1_fx			; numCalls = 1
 	.module	modadd_fr1_fr1_fx
@@ -1482,6 +1470,16 @@ goto_ix			; numCalls = 1
 	ins
 	jmp	,x
 
+hlf_fr1_fr1			; numCalls = 2
+	.module	modhlf_fr1_fr1
+	ldx	#r1
+	asr	0,x
+	ror	1,x
+	ror	2,x
+	ror	3,x
+	ror	4,x
+	rts
+
 ignxtra			; numCalls = 1
 	.module	modignxtra
 	ldx	inptptr
@@ -1501,7 +1499,7 @@ input			; numCalls = 1
 	std	redoptr
 	jmp	inputqs
 
-ld_fr1_fx			; numCalls = 4
+ld_fr1_fx			; numCalls = 3
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -1536,7 +1534,7 @@ ld_ix_pw			; numCalls = 1
 	stab	0,x
 	rts
 
-mul_fr1_fr1_fx			; numCalls = 4
+mul_fr1_fr1_fx			; numCalls = 3
 	.module	modmul_fr1_fr1_fx
 	ldab	0,x
 	stab	0+argv
@@ -1786,11 +1784,12 @@ rsub_fr1_fr1_pb			; numCalls = 1
 	std	r1
 	rts
 
-shift_fr1_fr1_nb			; numCalls = 2
-	.module	modshift_fr1_fr1_nb
+sq_fr1_fx			; numCalls = 1
+	.module	modsq_fr1_fx
+	jsr	x2arg
+	jsr	mulfltt
 	ldx	#r1
-	negb
-	jmp	shrflt
+	jmp	tmp2xf
 
 sqr_fr1_fr1			; numCalls = 1
 	.module	modsqr_fr1_fr1

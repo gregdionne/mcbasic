@@ -270,6 +270,36 @@ bool ExprMerger::mergeWithPos(PeekExpr *peek1,
   return false;
 }
 
+void ExprMerger::reduceSquaredMultiplication(
+    std::vector<up<NumericExpr>> &ops) {
+  for (auto iOp1 = ops.begin(); iOp1 != ops.end(); ++iOp1) {
+    IsEqual isEqual(iOp1->get());
+    auto iOp2 = std::next(iOp1);
+    while (iOp2 != ops.end()) {
+      if ((*iOp2)->check(&isEqual)) {
+        iOp2 = ops.erase(iOp2);
+        auto sq = makeup<SquareExpr>();
+        sq->expr = mv(*iOp1);
+        *iOp1 = std::move(sq);
+        break;
+      } else {
+        ++iOp2;
+      }
+    }
+  }
+}
+
+void ExprMerger::reduceSquarePower(up<NumericExpr> &expr) {
+  if (auto *pexpr = dynamic_cast<PowerExpr *>(expr.get())) {
+    ConstInspector constInspector;
+    if (constInspector.isEqual(pexpr->exponent.get(), 2)) {
+      auto sq = makeup<SquareExpr>();
+      sq->expr = mv(pexpr->base);
+      expr = mv(sq);
+    }
+  }
+}
+
 bool ExprMerger::mergeDoublePeek(std::vector<up<NumericExpr>> &ops) {
 
   for (auto iOp1 = ops.begin(); iOp1 != ops.end(); ++iOp1) {
@@ -378,6 +408,7 @@ void ExprMerger::merge(up<NumericExpr> &expr) {
   reducePowerOfTwo(expr, isFloat);
   reduceRelationalMultiplication(expr, isFloat);
   reducePowerOfTwoMultiplication(expr);
+  reduceSquarePower(expr);
   reduceIntegerDivision(expr);
 }
 
@@ -650,6 +681,8 @@ void ExprMerger::mutate(AdditiveExpr &e) {
 
 void ExprMerger::mutate(MultiplicativeExpr &e) {
   merge(e);
+  reduceSquaredMultiplication(e.operands);
+  reduceSquaredMultiplication(e.operands);
   knead(e.operands);
   knead(e.invoperands);
 }
@@ -697,3 +730,5 @@ void ExprMerger::mutate(RelationalExpr &e) {
 }
 
 void ExprMerger::mutate(PrintTabExpr &e) { merge(e.tabstop); }
+
+void ExprMerger::mutate(SquareExpr &e) { merge(e.expr); }

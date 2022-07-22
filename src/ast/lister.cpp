@@ -258,6 +258,10 @@ void ExprLister::absorb(const InkeyExpr & /*expr*/) { result = "INKEY$"; }
 
 void ExprLister::absorb(const MemExpr & /*expr*/) { result = "MEM"; }
 
+void ExprLister::absorb(const SquareExpr &e) {
+  result = "SQ(" + list(e.expr) + ')';
+}
+
 void ExprLister::absorb(const TimerExpr & /*expr*/) { result = "TIMER"; }
 
 void ExprLister::absorb(const PosExpr & /*expr*/) { result = "POS"; }

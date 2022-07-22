@@ -105,6 +105,15 @@ public:
   std::string operate(InstAbs &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
+  std::string operate(InstDbl &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstHlf &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstSq &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
   std::string operate(InstNeg &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }

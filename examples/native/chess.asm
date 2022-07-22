@@ -408,8 +408,7 @@ LINE_70
 
 	jsr	inc_fr1_fr1
 
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fr1
 
 	ldx	#FLTVAR_B7
 	jsr	ld_fx_fr1
@@ -3962,11 +3961,9 @@ LINE_910
 	ldd	#INTVAR_Y
 	jsr	add_ir2_ix_id
 
-	ldab	#-1
-	jsr	shift_fr2_ir2_nb
+	jsr	hlf_fr2_ir2
 
-	ldab	#1
-	jsr	shift_ir2_ir2_pb
+	jsr	dbl_ir2_ir2
 
 	jsr	ldeq_ir1_ir1_ir2
 
@@ -6436,10 +6433,7 @@ LINE_2044
 	; B7=SHIFT(B8,-1)
 
 	ldx	#FLTVAR_B8
-	jsr	ld_fr1_fx
-
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fx
 
 	ldx	#FLTVAR_B7
 	jsr	ld_fx_fr1
@@ -8007,40 +8001,6 @@ _shlbit
 	bne	_shlbit
 	rts
 
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
-	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
-	rts
-
 	.module	mdstrdel
 ; remove a permanent string
 ; then re-link trailing strings
@@ -9109,6 +9069,14 @@ cls			; numCalls = 6
 	.module	modcls
 	jmp	R_CLS
 
+dbl_ir2_ir2			; numCalls = 1
+	.module	moddbl_ir2_ir2
+	ldx	#r2
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
 dec_ir1_ix			; numCalls = 11
 	.module	moddec_ir1_ix
 	ldd	1,x
@@ -9192,6 +9160,41 @@ goto_ix			; numCalls = 51
 	ins
 	ins
 	jmp	,x
+
+hlf_fr1_fr1			; numCalls = 1
+	.module	modhlf_fr1_fr1
+	ldx	#r1
+	asr	0,x
+	ror	1,x
+	ror	2,x
+	ror	3,x
+	ror	4,x
+	rts
+
+hlf_fr1_fx			; numCalls = 1
+	.module	modhlf_fr1_fx
+	ldab	0,x
+	asrb
+	stab	r1
+	ldd	1,x
+	rora
+	rorb
+	std	r1+1
+	ldd	3,x
+	rora
+	rorb
+	std	r1+3
+	rts
+
+hlf_fr2_ir2			; numCalls = 1
+	.module	modhlf_fr2_ir2
+	asr	r2
+	ror	r2+1
+	ror	r2+2
+	ldd	#0
+	rora
+	std	r2+3
+	rts
 
 ignxtra			; numCalls = 8
 	.module	modignxtra
@@ -9359,7 +9362,7 @@ ld_fd_fx			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 4
+ld_fr1_fx			; numCalls = 3
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -10275,7 +10278,7 @@ pr_sx			; numCalls = 7
 	ldab	0,x
 	beq	_rts
 	ldx	1,x
-	jsr	print
+	jmp	print
 _rts
 	rts
 
@@ -10556,24 +10559,12 @@ _done
 	std	r2
 	rts
 
-shift_fr1_fr1_nb			; numCalls = 2
-	.module	modshift_fr1_fr1_nb
-	ldx	#r1
-	negb
-	jmp	shrflt
-
-shift_fr2_ir2_nb			; numCalls = 1
-	.module	modshift_fr2_ir2_nb
-	ldx	#r2
-	negb
-	jmp	shrint
-
 shift_ir1_ir1_pb			; numCalls = 1
 	.module	modshift_ir1_ir1_pb
 	ldx	#r1
 	jmp	shlint
 
-shift_ir2_ir2_pb			; numCalls = 2
+shift_ir2_ir2_pb			; numCalls = 1
 	.module	modshift_ir2_ir2_pb
 	ldx	#r2
 	jmp	shlint

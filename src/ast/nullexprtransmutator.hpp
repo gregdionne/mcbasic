@@ -135,6 +135,9 @@ public:
   virtual up<NumericExpr> mutate(MemExpr & /*expr*/) {
     return up<NumericExpr>();
   }
+  virtual up<NumericExpr> mutate(SquareExpr & /*expr*/) {
+    return up<NumericExpr>();
+  }
   virtual up<NumericExpr> mutate(TimerExpr & /*expr*/) {
     return up<NumericExpr>();
   }

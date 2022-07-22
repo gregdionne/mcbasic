@@ -89,13 +89,10 @@ LINE_10
 
 LINE_20
 
-	; X=(T*T)+T
+	; X=SQ(T)+T
 
 	ldx	#FLTVAR_T
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_T
-	jsr	mul_fr1_fr1_fx
+	jsr	sq_fr1_fx
 
 	ldx	#FLTVAR_T
 	jsr	add_fr1_fr1_fx
@@ -1029,6 +1026,19 @@ _panic
 	ldab	#1
 	jmp	error
 
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
+	rts
+
 	.module	mdtonat
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
@@ -1086,6 +1096,20 @@ _flt
 _done
 	ldx	tmp1
 	jmp	,x
+
+	.module	mdx2arg
+; copy [X] to argv
+;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
+;   EXIT   Y copied to 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+	; copy x to argv
+x2arg
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	std	3+argv
+	rts
 
 add_fr1_fr1_fx			; numCalls = 1
 	.module	modadd_fr1_fr1_fx
@@ -1149,16 +1173,6 @@ ld_fd_fx			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 1
-	.module	modld_fr1_fx
-	ldd	3,x
-	std	r1+3
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_fx_fr1			; numCalls = 1
 	.module	modld_fx_fr1
 	ldd	r1+3
@@ -1194,17 +1208,6 @@ len_ir1_sx			; numCalls = 1
 	ldd	#0
 	std	r1
 	rts
-
-mul_fr1_fr1_fx			; numCalls = 1
-	.module	modmul_fr1_fr1_fx
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldd	3,x
-	std	3+argv
-	ldx	#r1
-	jmp	mulfltx
 
 next			; numCalls = 1
 	.module	modnext
@@ -1369,6 +1372,13 @@ DD_ERROR	.equ	18
 LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
+
+sq_fr1_fx			; numCalls = 1
+	.module	modsq_fr1_fx
+	jsr	x2arg
+	jsr	mulfltt
+	ldx	#r1
+	jmp	tmp2xf
 
 str_sr1_fx			; numCalls = 1
 	.module	modstr_sr1_fx

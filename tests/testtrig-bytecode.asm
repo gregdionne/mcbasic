@@ -149,12 +149,9 @@ LINE_60
 
 LINE_100
 
-	; TS=TH*TH
+	; TS=SQ(TH)
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_TH
-
-	.byte	bytecode_mul_fr1_fr1_fx
+	.byte	bytecode_sq_fr1_fx
 	.byte	bytecode_FLTVAR_TH
 
 	.byte	bytecode_ld_fx_fr1
@@ -326,11 +323,12 @@ bytecode_progend	.equ	15
 bytecode_return	.equ	16
 bytecode_rsub_fr1_fr1_pw	.equ	17
 bytecode_sin_fr1_fr1	.equ	18
-bytecode_str_sr1_fr1	.equ	19
-bytecode_str_sr1_fx	.equ	20
-bytecode_sub_fr1_pb_fx	.equ	21
-bytecode_tan_fr1_fr1	.equ	22
-bytecode_to_ip_pb	.equ	23
+bytecode_sq_fr1_fx	.equ	19
+bytecode_str_sr1_fr1	.equ	20
+bytecode_str_sr1_fx	.equ	21
+bytecode_sub_fr1_pb_fx	.equ	22
+bytecode_tan_fr1_fr1	.equ	23
+bytecode_to_ip_pb	.equ	24
 
 catalog
 	.word	clear
@@ -352,6 +350,7 @@ catalog
 	.word	return
 	.word	rsub_fr1_fr1_pw
 	.word	sin_fr1_fr1
+	.word	sq_fr1_fx
 	.word	str_sr1_fr1
 	.word	str_sr1_fx
 	.word	sub_fr1_pb_fx
@@ -1435,6 +1434,19 @@ tan
 	pulx
 	jmp	divflt
 
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
+	rts
+
 	.module	mdtobc
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
@@ -1606,7 +1618,7 @@ ld_fd_fx			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 6
+ld_fr1_fx			; numCalls = 5
 	.module	modld_fr1_fx
 	jsr	extend
 	ldd	3,x
@@ -1628,7 +1640,7 @@ ld_fx_fr1			; numCalls = 4
 	stab	0,x
 	rts
 
-mul_fr1_fr1_fx			; numCalls = 7
+mul_fr1_fr1_fx			; numCalls = 6
 	.module	modmul_fr1_fr1_fx
 	jsr	extend
 	ldab	0,x
@@ -1855,6 +1867,14 @@ sin_fr1_fr1			; numCalls = 1
 	jsr	noargs
 	ldx	#r1
 	jmp	sin
+
+sq_fr1_fx			; numCalls = 1
+	.module	modsq_fr1_fx
+	jsr	extend
+	jsr	x2arg
+	jsr	mulfltt
+	ldx	#r1
+	jmp	tmp2xf
 
 str_sr1_fr1			; numCalls = 4
 	.module	modstr_sr1_fr1

@@ -52,6 +52,7 @@ public:
   void inspect(const PointExpr &) const override {}
   void inspect(const InkeyExpr &) const override {}
   void inspect(const MemExpr &) const override {}
+  void inspect(const SquareExpr &) const override {}
   void inspect(const TimerExpr &) const override {}
   void inspect(const PosExpr &) const override {}
   void inspect(const PeekWordExpr &) const override {}

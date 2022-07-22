@@ -187,8 +187,7 @@ LINE_130
 	.byte	bytecode_INTVAR_H
 	.byte	bytecode_INTVAR_L
 
-	.byte	bytecode_shift_fr1_ir1_nb
-	.byte	-1
+	.byte	bytecode_hlf_fr1_ir1
 
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_Z
@@ -538,33 +537,33 @@ bytecode_clr_ix	.equ	6
 bytecode_dec_ix_ix	.equ	7
 bytecode_gosub_ix	.equ	8
 bytecode_goto_ix	.equ	9
-bytecode_inc_ir1_ix	.equ	10
-bytecode_inc_ix_ix	.equ	11
-bytecode_jmpeq_ir1_ix	.equ	12
-bytecode_jmpne_ir1_ix	.equ	13
-bytecode_ld_id_ix	.equ	14
-bytecode_ld_ip_ir1	.equ	15
-bytecode_ld_ir1_ix	.equ	16
-bytecode_ld_ir1_pb	.equ	17
-bytecode_ld_ix_ir1	.equ	18
-bytecode_ld_ix_pw	.equ	19
-bytecode_ldeq_ir1_ix_id	.equ	20
-bytecode_ldeq_ir2_ix_id	.equ	21
-bytecode_ldge_ir1_ir1_ix	.equ	22
-bytecode_ldlt_ir1_ir1_ir2	.equ	23
-bytecode_ldlt_ir1_ir1_ix	.equ	24
-bytecode_ldlt_ir1_ir1_pb	.equ	25
-bytecode_ldlt_ir1_ix_id	.equ	26
-bytecode_ldne_ir1_ir1_ix	.equ	27
-bytecode_or_ir1_ir1_ir2	.equ	28
-bytecode_peek_ir1_ix	.equ	29
-bytecode_peek_ir2_ix	.equ	30
-bytecode_poke_id_ix	.equ	31
-bytecode_poke_ix_ir1	.equ	32
-bytecode_progbegin	.equ	33
-bytecode_progend	.equ	34
-bytecode_return	.equ	35
-bytecode_shift_fr1_ir1_nb	.equ	36
+bytecode_hlf_fr1_ir1	.equ	10
+bytecode_inc_ir1_ix	.equ	11
+bytecode_inc_ix_ix	.equ	12
+bytecode_jmpeq_ir1_ix	.equ	13
+bytecode_jmpne_ir1_ix	.equ	14
+bytecode_ld_id_ix	.equ	15
+bytecode_ld_ip_ir1	.equ	16
+bytecode_ld_ir1_ix	.equ	17
+bytecode_ld_ir1_pb	.equ	18
+bytecode_ld_ix_ir1	.equ	19
+bytecode_ld_ix_pw	.equ	20
+bytecode_ldeq_ir1_ix_id	.equ	21
+bytecode_ldeq_ir2_ix_id	.equ	22
+bytecode_ldge_ir1_ir1_ix	.equ	23
+bytecode_ldlt_ir1_ir1_ir2	.equ	24
+bytecode_ldlt_ir1_ir1_ix	.equ	25
+bytecode_ldlt_ir1_ir1_pb	.equ	26
+bytecode_ldlt_ir1_ix_id	.equ	27
+bytecode_ldne_ir1_ir1_ix	.equ	28
+bytecode_or_ir1_ir1_ir2	.equ	29
+bytecode_peek_ir1_ix	.equ	30
+bytecode_peek_ir2_ix	.equ	31
+bytecode_poke_id_ix	.equ	32
+bytecode_poke_ix_ir1	.equ	33
+bytecode_progbegin	.equ	34
+bytecode_progend	.equ	35
+bytecode_return	.equ	36
 bytecode_sub_ir1_ix_id	.equ	37
 bytecode_sub_ix_ix_pb	.equ	38
 
@@ -579,6 +578,7 @@ catalog
 	.word	dec_ix_ix
 	.word	gosub_ix
 	.word	goto_ix
+	.word	hlf_fr1_ir1
 	.word	inc_ir1_ix
 	.word	inc_ix_ix
 	.word	jmpeq_ir1_ix
@@ -605,7 +605,6 @@ catalog
 	.word	progbegin
 	.word	progend
 	.word	return
-	.word	shift_fr1_ir1_nb
 	.word	sub_ir1_ix_id
 	.word	sub_ix_ix_pb
 
@@ -912,40 +911,6 @@ refint
 	std	tmp1
 	rts
 
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
-	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
-	rts
-
 add_ix_ix_ir1			; numCalls = 1
 	.module	modadd_ix_ix_ir1
 	jsr	extend
@@ -1069,6 +1034,17 @@ goto_ix			; numCalls = 5
 	.module	modgoto_ix
 	jsr	getaddr
 	stx	nxtinst
+	rts
+
+hlf_fr1_ir1			; numCalls = 1
+	.module	modhlf_fr1_ir1
+	jsr	noargs
+	asr	r1
+	ror	r1+1
+	ror	r1+2
+	ldd	#0
+	rora
+	std	r1+3
 	rts
 
 inc_ir1_ix			; numCalls = 2
@@ -1410,13 +1386,6 @@ _ok
 	pulx
 	stx	nxtinst
 	jmp	mainloop
-
-shift_fr1_ir1_nb			; numCalls = 1
-	.module	modshift_fr1_ir1_nb
-	jsr	getbyte
-	ldx	#r1
-	negb
-	jmp	shrint
 
 sub_ir1_ix_id			; numCalls = 1
 	.module	modsub_ir1_ix_id

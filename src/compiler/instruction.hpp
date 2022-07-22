@@ -36,6 +36,9 @@ class InstClr;
 class InstInc;
 class InstDec;
 class InstAbs;
+class InstDbl;
+class InstHlf;
+class InstSq;
 class InstShift;
 class InstNeg;
 class InstCom;
@@ -158,6 +161,9 @@ public:
   virtual std::string operate(InstInc &inst) = 0;
   virtual std::string operate(InstDec &inst) = 0;
   virtual std::string operate(InstAbs &inst) = 0;
+  virtual std::string operate(InstDbl &inst) = 0;
+  virtual std::string operate(InstHlf &inst) = 0;
+  virtual std::string operate(InstSq &inst) = 0;
   virtual std::string operate(InstShift &inst) = 0;
   virtual std::string operate(InstNeg &inst) = 0;
   virtual std::string operate(InstCom &inst) = 0;
@@ -727,6 +733,22 @@ public:
   }
 };
 
+class InstDbl : public OperableInstruction<InstDbl> {
+public:
+  InstDbl(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("dbl", mv(dest), mv(am)) {
+    resultArg();
+  }
+};
+
+class InstSq : public OperableInstruction<InstSq> {
+public:
+  InstSq(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("sq", mv(dest), mv(am)) {
+    resultArg();
+  }
+};
+
 class InstNeg : public OperableInstruction<InstNeg> {
 public:
   InstNeg(up<AddressMode> dest, up<AddressMode> am)
@@ -778,6 +800,14 @@ public:
 };
 
 // Unary (float)
+
+class InstHlf : public OperableInstruction<InstHlf> {
+public:
+  InstHlf(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("hlf", mv(dest), mv(am)) {
+    resultFlt();
+  }
+};
 
 class InstSqr : public OperableInstruction<InstSqr> {
 public:

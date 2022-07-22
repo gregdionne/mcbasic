@@ -154,13 +154,10 @@ LINE_30
 
 LINE_40
 
-	; PRINT STR$(X^2);" \r";
+	; PRINT STR$(SQ(X));" \r";
 
-	.byte	bytecode_ld_fr1_fx
+	.byte	bytecode_sq_fr1_fx
 	.byte	bytecode_FLTVAR_X
-
-	.byte	bytecode_pow_fr1_fr1_pb
-	.byte	2
 
 	.byte	bytecode_str_sr1_fr1
 
@@ -235,8 +232,9 @@ bytecode_pr_sr1	.equ	4
 bytecode_pr_ss	.equ	5
 bytecode_progbegin	.equ	6
 bytecode_progend	.equ	7
-bytecode_str_sr1_fr1	.equ	8
-bytecode_str_sr1_fx	.equ	9
+bytecode_sq_fr1_fx	.equ	8
+bytecode_str_sr1_fr1	.equ	9
+bytecode_str_sr1_fx	.equ	10
 
 catalog
 	.word	clear
@@ -247,6 +245,7 @@ catalog
 	.word	pr_ss
 	.word	progbegin
 	.word	progend
+	.word	sq_fr1_fx
 	.word	str_sr1_fr1
 	.word	str_sr1_fx
 
@@ -1117,6 +1116,19 @@ _panic
 	ldab	#1
 	jmp	error
 
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
+	rts
+
 	.module	mdx2arg
 ; copy [X] to argv
 ;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
@@ -1171,7 +1183,7 @@ ld_fd_fx			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 6
+ld_fr1_fx			; numCalls = 5
 	.module	modld_fr1_fx
 	jsr	extend
 	ldd	3,x
@@ -1182,7 +1194,7 @@ ld_fr1_fx			; numCalls = 6
 	stab	r1
 	rts
 
-pow_fr1_fr1_pb			; numCalls = 6
+pow_fr1_fr1_pb			; numCalls = 5
 	.module	modpow_fr1_fr1_pb
 	jsr	getbyte
 	clra
@@ -1267,6 +1279,14 @@ DD_ERROR	.equ	18
 LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
+
+sq_fr1_fx			; numCalls = 1
+	.module	modsq_fr1_fx
+	jsr	extend
+	jsr	x2arg
+	jsr	mulfltt
+	ldx	#r1
+	jmp	tmp2xf
 
 str_sr1_fr1			; numCalls = 6
 	.module	modstr_sr1_fr1

@@ -133,13 +133,10 @@ LINE_60
 
 LINE_100
 
-	; TS=TH*TH
+	; TS=SQ(TH)
 
 	ldx	#FLTVAR_TH
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_TH
-	jsr	mul_fr1_fr1_fx
+	jsr	sq_fr1_fx
 
 	ldx	#FLTVAR_TS
 	jsr	ld_fx_fr1
@@ -1223,6 +1220,19 @@ tan
 	pulx
 	jmp	divflt
 
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
+	rts
+
 	.module	mdtonat
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
@@ -1381,7 +1391,7 @@ ld_fd_fx			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 6
+ld_fr1_fx			; numCalls = 5
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -1401,7 +1411,7 @@ ld_fx_fr1			; numCalls = 4
 	stab	0,x
 	rts
 
-mul_fr1_fr1_fx			; numCalls = 7
+mul_fr1_fr1_fx			; numCalls = 6
 	.module	modmul_fr1_fr1_fx
 	ldab	0,x
 	stab	0+argv
@@ -1613,6 +1623,13 @@ sin_fr1_fr1			; numCalls = 1
 	.module	modsin_fr1_fr1
 	ldx	#r1
 	jmp	sin
+
+sq_fr1_fx			; numCalls = 1
+	.module	modsq_fr1_fx
+	jsr	x2arg
+	jsr	mulfltt
+	ldx	#r1
+	jmp	tmp2xf
 
 str_sr1_fr1			; numCalls = 4
 	.module	modstr_sr1_fr1

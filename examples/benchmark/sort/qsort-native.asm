@@ -171,8 +171,7 @@ LINE_130
 	ldd	#INTVAR_L
 	jsr	sub_ir1_ix_id
 
-	ldab	#-1
-	jsr	shift_fr1_ir1_nb
+	jsr	hlf_fr1_ir1
 
 	ldx	#INTVAR_Z
 	jsr	ld_ix_ir1
@@ -670,40 +669,6 @@ refint
 	std	tmp1
 	rts
 
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
-	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
-	rts
-
 add_ix_ix_ir1			; numCalls = 1
 	.module	modadd_ix_ix_ir1
 	ldd	1,x
@@ -814,6 +779,16 @@ goto_ix			; numCalls = 5
 	ins
 	ins
 	jmp	,x
+
+hlf_fr1_ir1			; numCalls = 1
+	.module	modhlf_fr1_ir1
+	asr	r1
+	ror	r1+1
+	ror	r1+2
+	ldd	#0
+	rora
+	std	r1+3
+	rts
 
 inc_ir1_ix			; numCalls = 2
 	.module	modinc_ir1_ix
@@ -1130,12 +1105,6 @@ _ok
 	inx
 	txs
 	rts
-
-shift_fr1_ir1_nb			; numCalls = 1
-	.module	modshift_fr1_ir1_nb
-	ldx	#r1
-	negb
-	jmp	shrint
 
 sub_ir1_ix_id			; numCalls = 1
 	.module	modsub_ir1_ix_id

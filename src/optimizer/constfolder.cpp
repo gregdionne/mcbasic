@@ -714,3 +714,9 @@ void ExprConstFolder::mutate(RelationalExpr &e) {
     gotConst = false;
   }
 }
+
+void ExprConstFolder::mutate(SquareExpr &e) {
+  if (fold(e.expr)) {
+    dvalue *= dvalue;
+  }
+}

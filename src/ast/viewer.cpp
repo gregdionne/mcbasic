@@ -255,6 +255,11 @@ void ExprViewer::absorb(const InkeyExpr & /*expr*/) { printtab(n, "INKEY$"); }
 
 void ExprViewer::absorb(const MemExpr & /*expr*/) { printtab(n, "MEM"); }
 
+void ExprViewer::absorb(const SquareExpr &e) {
+  printtab(n, "SQ");
+  indentOp(e.expr, this);
+}
+
 void ExprViewer::absorb(const TimerExpr & /*expr*/) { printtab(n, "TIMER"); }
 
 void ExprViewer::absorb(const PosExpr & /*expr*/) { printtab(n, "POS"); }

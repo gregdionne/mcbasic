@@ -101,6 +101,9 @@ public:
     return nullptr;
   }
   const NumericExpr *inspect(const MemExpr &) const override { return nullptr; }
+  const NumericExpr *inspect(const SquareExpr &) const override {
+    return nullptr;
+  }
   const NumericExpr *inspect(const TimerExpr &) const override {
     return nullptr;
   }

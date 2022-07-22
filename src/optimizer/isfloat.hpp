@@ -27,6 +27,7 @@ public:
   bool inspect(const NumericConstantExpr &e) const override;
   bool inspect(const NumericVariableExpr &e) const override;
   bool inspect(const NumericArrayExpr &e) const override;
+  bool inspect(const SquareExpr &e) const override;
 };
 
 #endif

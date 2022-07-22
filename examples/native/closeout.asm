@@ -849,8 +849,7 @@ LINE_23
 	ldab	#6
 	jsr	mul_fr1_fr1_pb
 
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ir1
 
 	ldab	#2
 	jsr	add_ir1_ir1_pb
@@ -865,8 +864,7 @@ LINE_23
 
 	jsr	mul3_fr1_fr1
 
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ir1
 
 	ldab	#2
 	jsr	add_ir1_ir1_pb
@@ -1949,16 +1947,10 @@ LINE_44
 	jsr	ldeq_ir2_ix_id
 
 	ldx	#INTVAR_Z
-	jsr	ld_ir3_ix
-
-	ldab	#-1
-	jsr	shift_fr3_ir3_nb
+	jsr	hlf_fr3_ix
 
 	ldx	#INTVAR_Z
-	jsr	ld_ir4_ix
-
-	ldab	#-1
-	jsr	shift_fr4_ir4_nb
+	jsr	hlf_fr4_ix
 
 	jsr	ldeq_ir3_fr3_ir4
 
@@ -3438,8 +3430,7 @@ LINE_310
 	ldab	#5
 	jsr	irnd_ir1_pb
 
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ir1
 
 	jsr	inc_ir1_ir1
 
@@ -3578,8 +3569,7 @@ LINE_320
 	ldab	#5
 	jsr	irnd_ir1_pb
 
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ir1
 
 	jsr	inc_ir1_ir1
 
@@ -4580,40 +4570,6 @@ _shlbit
 	bne	_shlbit
 	rts
 
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
-	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
-	rts
-
 	.module	mdstrdel
 ; remove a permanent string
 ; then re-link trailing strings
@@ -5578,6 +5534,14 @@ com_ir2_ir2			; numCalls = 5
 	com	r2
 	rts
 
+dbl_ir1_ir1			; numCalls = 4
+	.module	moddbl_ir1_ir1
+	ldx	#r1
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
 dec_ix_ix			; numCalls = 3
 	.module	moddec_ix_ix
 	ldd	1,x
@@ -5651,6 +5615,34 @@ goto_ix			; numCalls = 9
 	ins
 	ins
 	jmp	,x
+
+hlf_fr3_ix			; numCalls = 1
+	.module	modhlf_fr3_ix
+	ldab	0,x
+	asrb
+	stab	r3
+	ldd	1,x
+	rora
+	rorb
+	std	r3+1
+	ldd	#0
+	rora
+	std	r3+3
+	rts
+
+hlf_fr4_ix			; numCalls = 1
+	.module	modhlf_fr4_ix
+	ldab	0,x
+	asrb
+	stab	r4
+	ldd	1,x
+	rora
+	rorb
+	std	r4+1
+	ldd	#0
+	rora
+	std	r4+3
+	rts
 
 inc_ir1_ir1			; numCalls = 2
 	.module	modinc_ir1_ir1
@@ -5856,22 +5848,6 @@ ld_ir2_pb			; numCalls = 9
 	stab	r2+2
 	ldd	#0
 	std	r2
-	rts
-
-ld_ir3_ix			; numCalls = 1
-	.module	modld_ir3_ix
-	ldd	1,x
-	std	r3+1
-	ldab	0,x
-	stab	r3
-	rts
-
-ld_ir4_ix			; numCalls = 1
-	.module	modld_ir4_ix
-	ldd	1,x
-	std	r4+1
-	ldab	0,x
-	stab	r4
 	rts
 
 ld_ix_ir1			; numCalls = 30
@@ -6751,19 +6727,7 @@ _done
 	std	r1
 	rts
 
-shift_fr3_ir3_nb			; numCalls = 1
-	.module	modshift_fr3_ir3_nb
-	ldx	#r3
-	negb
-	jmp	shrint
-
-shift_fr4_ir4_nb			; numCalls = 1
-	.module	modshift_fr4_ir4_nb
-	ldx	#r4
-	negb
-	jmp	shrint
-
-shift_ir1_ir1_pb			; numCalls = 6
+shift_ir1_ir1_pb			; numCalls = 2
 	.module	modshift_ir1_ir1_pb
 	ldx	#r1
 	jmp	shlint

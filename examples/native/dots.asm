@@ -146,13 +146,9 @@ LINE_17
 	; C1=SHIFT(INT(SHIFT(LC,-1)),1)<>LC
 
 	ldx	#INTVAR_LC
-	jsr	ld_ir1_ix
+	jsr	hlf_fr1_ix
 
-	ldab	#-1
-	jsr	shift_fr1_ir1_nb
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ir1
 
 	ldx	#INTVAR_LC
 	jsr	ldne_ir1_ir1_ix
@@ -2988,40 +2984,6 @@ _shlbit
 	bne	_shlbit
 	rts
 
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
-	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
-	rts
-
 	.module	mdstrdel
 ; remove a permanent string
 ; then re-link trailing strings
@@ -3704,6 +3666,14 @@ com_ir1_ix			; numCalls = 1
 	stab	r1
 	rts
 
+dbl_ir1_ir1			; numCalls = 1
+	.module	moddbl_ir1_ir1
+	ldx	#r1
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
 dec_ir1_ix			; numCalls = 10
 	.module	moddec_ir1_ix
 	ldd	1,x
@@ -3770,6 +3740,20 @@ goto_ix			; numCalls = 21
 	ins
 	ins
 	jmp	,x
+
+hlf_fr1_ix			; numCalls = 1
+	.module	modhlf_fr1_ix
+	ldab	0,x
+	asrb
+	stab	r1
+	ldd	1,x
+	rora
+	rorb
+	std	r1+1
+	ldd	#0
+	rora
+	std	r1+3
+	rts
 
 ignxtra			; numCalls = 1
 	.module	modignxtra
@@ -3914,7 +3898,7 @@ ld_id_ix			; numCalls = 9
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 34
+ld_ir1_ix			; numCalls = 33
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -4589,13 +4573,7 @@ rsub_fr1_fr1_pb			; numCalls = 1
 	std	r1
 	rts
 
-shift_fr1_ir1_nb			; numCalls = 1
-	.module	modshift_fr1_ir1_nb
-	ldx	#r1
-	negb
-	jmp	shrint
-
-shift_ir1_ir1_pb			; numCalls = 4
+shift_ir1_ir1_pb			; numCalls = 3
 	.module	modshift_ir1_ir1_pb
 	ldx	#r1
 	jmp	shlint

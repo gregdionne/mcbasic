@@ -254,6 +254,22 @@ std::string Dispatcher::operate(InstAbs &inst) {
                                   : implementation->unimplemented(inst);
 }
 
+std::string Dispatcher::operate(InstDbl &inst) {
+  return inst.isRegFlt_regFlt()   ? implementation->regFlt_regFlt(inst)
+         : inst.isRegInt_regInt() ? implementation->regInt_regInt(inst)
+         : inst.isRegFlt_extFlt() ? implementation->regFlt_extFlt(inst)
+         : inst.isRegInt_extInt() ? implementation->regInt_extInt(inst)
+                                  : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstSq &inst) {
+  return inst.isRegFlt_regFlt()   ? implementation->regFlt_regFlt(inst)
+         : inst.isRegInt_regInt() ? implementation->regInt_regInt(inst)
+         : inst.isRegFlt_extFlt() ? implementation->regFlt_extFlt(inst)
+         : inst.isRegInt_extInt() ? implementation->regInt_extInt(inst)
+                                  : implementation->unimplemented(inst);
+}
+
 std::string Dispatcher::operate(InstNeg &inst) {
   return inst.isIndFlt_indFlt()   ? implementation->indFlt_indFlt(inst)
          : inst.isIndInt_indInt() ? implementation->indInt_indInt(inst)
@@ -299,6 +315,14 @@ std::string Dispatcher::operate(InstPeekWord &inst) {
 std::string Dispatcher::operate(InstInv &inst) {
   return inst.isRegFlt_regInt()   ? implementation->regFlt_regInt(inst)
          : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+                                  : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstHlf &inst) {
+  return inst.isRegFlt_regFlt()   ? implementation->regFlt_regFlt(inst)
+         : inst.isRegFlt_regInt() ? implementation->regFlt_regInt(inst)
+         : inst.isRegFlt_extFlt() ? implementation->regFlt_extFlt(inst)
+         : inst.isRegFlt_extInt() ? implementation->regFlt_extInt(inst)
                                   : implementation->unimplemented(inst);
 }
 

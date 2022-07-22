@@ -1,4 +1,4 @@
-; Assembly for testval2-native.bas
+; Assembly for testsq-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
@@ -81,134 +81,120 @@ argv	.block	10
 
 LINE_10
 
-	; A$="25"
+	; X=4
 
-	jsr	ld_sr1_ss
-	.text	2, "25"
-
-	ldx	#STRVAR_A
-	jsr	ld_sx_sr1
+	ldx	#INTVAR_X
+	ldab	#4
+	jsr	ld_ix_pb
 
 LINE_20
 
-	; PRINT STR$(VAL(A$));" \r";
+	; Y=SQ(X)
 
-	ldx	#STRVAR_A
-	jsr	val_fr1_sx
+	ldx	#INTVAR_X
+	jsr	sq_ir1_ix
 
-	jsr	str_sr1_fr1
+	ldx	#INTVAR_Y
+	jsr	ld_ix_ir1
+
+LINE_30
+
+	; PRINT STR$(Y);" \r";
+
+	ldx	#INTVAR_Y
+	jsr	str_sr1_ix
 
 	jsr	pr_sr1
 
 	jsr	pr_ss
 	.text	2, " \r"
+
+LINE_40
+
+	; XF=4.1
+
+	ldd	#FLTVAR_XF
+	ldx	#FLT_4p10000
+	jsr	ld_fd_fx
+
+LINE_50
+
+	; Z=SQ(XF)*Y
+
+	ldx	#FLTVAR_XF
+	jsr	sq_fr1_fx
+
+	ldx	#INTVAR_Y
+	jsr	mul_fr1_fr1_ix
+
+	ldx	#FLTVAR_Z
+	jsr	ld_fx_fr1
+
+LINE_60
+
+	; PRINT STR$(Z);" \r";
+
+	ldx	#FLTVAR_Z
+	jsr	str_sr1_fx
+
+	jsr	pr_sr1
+
+	jsr	pr_ss
+	.text	2, " \r"
+
+LINE_70
+
+	; Z=SQ(XF-1)
+
+	ldx	#FLTVAR_XF
+	jsr	dec_fr1_fx
+
+	jsr	sq_fr1_fr1
+
+	ldx	#FLTVAR_Z
+	jsr	ld_fx_fr1
+
+LINE_80
+
+	; PRINT STR$(Z);" \r";
+
+	ldx	#FLTVAR_Z
+	jsr	str_sr1_fx
+
+	jsr	pr_sr1
+
+	jsr	pr_ss
+	.text	2, " \r"
+
+LINE_90
+
+	; Y=SQ(X+1)
+
+	ldx	#INTVAR_X
+	jsr	inc_ir1_ix
+
+	jsr	sq_ir1_ir1
+
+	ldx	#INTVAR_Y
+	jsr	ld_ix_ir1
 
 LINE_100
 
-	; A$=INKEY$
+	; PRINT STR$(Y);" \r";
 
-	ldx	#STRVAR_A
-	jsr	inkey_sx
-
-LINE_105
-
-	; WHEN A$="" GOTO 100
-
-	ldx	#STRVAR_A
-	jsr	ld_sr1_sx
-
-	jsr	ldeq_ir1_sr1_ss
-	.text	0, ""
-
-	ldx	#LINE_100
-	jsr	jmpne_ir1_ix
-
-LINE_200
-
-	; PRINT A$;STR$(VAL(A$));" \r";
-
-	ldx	#STRVAR_A
-	jsr	pr_sx
-
-	ldx	#STRVAR_A
-	jsr	val_fr1_sx
-
-	jsr	str_sr1_fr1
+	ldx	#INTVAR_Y
+	jsr	str_sr1_ix
 
 	jsr	pr_sr1
 
 	jsr	pr_ss
 	.text	2, " \r"
-
-LINE_300
-
-	; GOTO 100
-
-	ldx	#LINE_100
-	jsr	goto_ix
 
 LLAST
 
 	; END
 
 	jsr	progend
-
-	.module	mdalloc
-; alloc D bytes in array memory.
-; then relink strings.
-alloc
-	std	tmp1
-	ldx	strfree
-	addd	strfree
-	std	strfree
-	ldd	strend
-	addd	tmp1
-	std	strend
-	sts	tmp2
-	subd	tmp2
-	blo	_ok
-	ldab	#OM_ERROR
-	jmp	error
-_ok
-	lds	strfree
-	des
-_again
-	dex
-	dex
-	ldd	,x
-	pshb
-	psha
-	cpx	strbuf
-	bhi	_again
-	lds	tmp2
-	ldx	strbuf
-	ldd	strbuf
-	addd	tmp1
-	std	strbuf
-	clra
-_nxtz
-	staa	,x
-	inx
-	cpx	strbuf
-	blo	_nxtz
-	ldx	strbuf
-; relink permanent strings
-; ENTRY:  X points to offending link word in strbuf
-; EXIT:   X points to strend
-strlink
-	cpx	strend
-	bhs	_rts
-	stx	tmp1
-	ldd	tmp1
-	addd	#2
-	ldx	,x
-	std	1,x
-	ldab	0,x
-	ldx	1,x
-	abx
-	bra	strlink
-_rts
-	rts
 
 	.module	mddivflt
 ; divide X by Y
@@ -341,15 +327,6 @@ _shift
 	rol	5,x
 	rts
 
-	.module	mdgeteq
-geteq
-	beq	_1
-	ldd	#0
-	rts
-_1
-	ldd	#-1
-	rts
-
 	.module	mdidivb
 ; fast integer division by three or five
 ; ENTRY+EXIT:  int in tmp1+1,tmp2,tmp2+1
@@ -416,6 +393,230 @@ _dec
 	bhs	_dec
 	aba
 	tst	tmp1+1
+	rts
+
+	.module	mdmulflt
+mulfltx
+	bsr	mulfltt
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
+	rts
+mulfltt
+	jsr	mulhlf
+	clr	tmp4
+_4_3
+	ldaa	4+argv
+	beq	_3_4
+	ldab	3,x
+	bsr	_m43
+_4_1
+	ldaa	4+argv
+	ldab	1,x
+	bsr	_m41
+_4_2
+	ldaa	4+argv
+	ldab	2,x
+	bsr	_m42
+_4_0
+	ldaa	4+argv
+	ldab	0,x
+	bsr	_m40
+	ldab	0,x
+	bpl	_4_4
+	ldd	tmp1+1
+	subb	4+argv
+	sbca	#0
+	std	tmp1+1
+_4_4
+	ldaa	4+argv
+	ldab	4,x
+	beq	_rndup
+	mul
+	lslb
+	adca	tmp4
+	staa	tmp4
+	bsr	mulflt3
+_3_4
+	ldab	4,x
+	beq	_rndup
+	ldaa	3+argv
+	bsr	_m43
+_1_4
+	ldab	4,x
+	ldaa	1+argv
+	bsr	_m41
+_2_4
+	ldab	4,x
+	ldaa	2+argv
+	bsr	_m42
+_0_4
+	ldab	4,x
+	ldaa	0+argv
+	bsr	_m40
+	ldaa	0+argv
+	bpl	_rndup
+	ldd	tmp1+1
+	subb	4,x
+	sbca	#0
+	std	tmp1+1
+_rndup
+	ldaa	tmp4
+	lsla
+mulflt3
+	ldd	tmp3
+	adcb	#0
+	adca	#0
+	std	tmp3
+	ldd	tmp2
+	adcb	#0
+	adca	#0
+	jmp	mulhlf2
+_m43
+	mul
+	addd	tmp3+1
+	std	tmp3+1
+	rol	tmp4+1
+	rts
+_m41
+	mul
+	lsr	tmp4+1
+	adcb	tmp3
+	adca	tmp2+1
+	std	tmp2+1
+	ldd	tmp1+1
+	adcb	#0
+	adca	#0
+	std	tmp1+1
+	rts
+_m42
+	mul
+	addd	tmp3
+	std	tmp3
+	rol	tmp4+1
+	rts
+_m40
+	mul
+	lsr	tmp4+1
+	adcb	tmp2+1
+	adca	tmp2
+	bra	mulhlf2
+
+	.module	mdmulhlf
+mulhlf
+	bsr	mulint
+	ldd	#0
+	std	tmp3
+	stab	tmp4+1
+_3_2
+	ldaa	3+argv
+	beq	_2_3
+	ldab	2,x
+	bsr	_m32
+_3_0
+	ldaa	3+argv
+	ldab	0,x
+	bsr	_m30
+	ldab	0,x
+	bpl	_3_3
+	ldab	tmp1+1
+	subb	3+argv
+	stab	tmp1+1
+_3_3
+	ldaa	3+argv
+	ldab	3,x
+	mul
+	adda	tmp3
+	std	tmp3
+	rol	tmp4+1
+_3_1
+	ldaa	3+argv
+	ldab	1,x
+	bsr	_m31
+_2_3
+	ldab	3,x
+	beq	_rts
+	ldaa	2+argv
+	bsr	_m32
+_0_3
+	ldab	3,x
+	ldaa	0+argv
+	bsr	_m30
+	ldaa	0+argv
+	bpl	_1_3
+	ldab	tmp1+1
+	subb	3,x
+	stab	tmp1+1
+_1_3
+	ldab	3,x
+	ldaa	1+argv
+	clr	tmp4+1
+_m31
+	mul
+	lsr	tmp4+1
+	adcb	tmp2+1
+	adca	tmp2
+mulhlf2
+	std	tmp2
+	ldab	tmp1+1
+	adcb	#0
+	stab	tmp1+1
+	rts
+_m32
+	mul
+	addd	tmp2+1
+	std	tmp2+1
+	rol	tmp4+1
+	rts
+_m30
+	mul
+	lsr	tmp4+1
+	adcb	tmp2
+	adca	tmp1+1
+	std	tmp1+1
+_rts
+	rts
+
+	.module	mdmulint
+mulint
+	ldaa	2+argv
+	ldab	2,x
+	mul
+	std	tmp2
+	ldaa	1+argv
+	ldab	1,x
+	mul
+	stab	tmp1+1
+	ldaa	2+argv
+	ldab	1,x
+	mul
+	addd	tmp1+1
+	std	tmp1+1
+	ldaa	1+argv
+	ldab	2,x
+	mul
+	addd	tmp1+1
+	std	tmp1+1
+	ldaa	2+argv
+	ldab	0,x
+	mul
+	addb	tmp1+1
+	stab	tmp1+1
+	ldaa	0+argv
+	ldab	2,x
+	mul
+	addb	tmp1+1
+	stab	tmp1+1
+	rts
+mulintx
+	bsr	mulint
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
 	rts
 
 	.module	mdnegargv
@@ -493,95 +694,6 @@ _loop
 	inx
 	decb
 	bne	_loop
-	rts
-
-	.module	mdstrdel
-; remove a permanent string
-; then re-link trailing strings
-strdel
-	ldd	1,x
-	subd	strbuf
-	blo	_rts
-	ldd	1,x
-	subd	strend
-	bhs	_rts
-	ldd	strend
-	subd	#2
-	subb	0,x
-	sbca	#0
-	std	strend
-	ldab	0,x
-	ldx	1,x
-	dex
-	dex
-	stx	tmp1
-	abx
-	inx
-	inx
-	sts	tmp2
-	txs
-	ldx	tmp1
-_nxtwrd
-	pula
-	pulb
-	std	,x
-	inx
-	inx
-	cpx	strend
-	blo	_nxtwrd
-	lds	tmp2
-	ldx	tmp1
-	jmp	strlink
-_rts
-	rts
-
-	.module	mdstreqs
-; compare string against stack
-; ENTRY: top of stack is return to caller (ld<ne/eq>_ir1_sr1_ss)
-;        next two bytes address of string length+payload
-; EXIT:  we modify those two bytes to point to code beyond payload so caller can just RTS
-;        we return correct Z flag for caller
-streqs
-	ldx	tmp2
-	jsr	strrel
-	sts	tmp3
-	tsx
-	ldx	2,x
-	ldab	,x
-	cmpb	tmp1+1
-	bne	_ne
-	tstb
-	beq	_eq
-	tsx
-	ldx	2,x
-	inx
-	txs
-	ldx	tmp2
-_nxtchr
-	pula
-	cmpa	,x
-	bne	_ne
-	inx
-	decb
-	bne	_nxtchr
-_eq
-	lds	tmp3
-	bsr	_fudge
-	clra
-	rts
-_ne
-	lds	tmp3
-	bsr	_fudge
-	rts
-_fudge
-	tsx
-	ldd	4,x
-	ldx	4,x
-	sec
-	adcb	,x
-	adca	#0
-	tsx
-	std	4,x
 	rts
 
 	.module	mdstrflt
@@ -730,114 +842,6 @@ _fdone
 	pulx
 	rts
 
-	.module	mdstrprm
-; make a permanent string
-; ENTRY: argv -  input string descriptor
-;          X  - output string descriptor
-strprm
-	stx	tmp1
-	ldab	0+argv
-	beq	_null
-	decb
-	beq	_char
-	ldx	1+argv
-	cpx	#M_LBUF
-	blo	_const
-	cpx	#M_MSTR
-	blo	_trans
-	cpx	strbuf
-	blo	_const
-_trans
-	ldx	tmp1
-	ldab	0,x
-	ldx	1,x
-	cpx	strbuf
-	blo	_nalloc
-	cmpb	0+argv
-	beq	_copyip
-_nalloc
-	cpx	1+argv
-	bhs	_notmp
-	ldx	1+argv
-	cpx	strend
-	bhs	_notmp
-	ldx	strend
-	inx
-	inx
-	stx	strfree
-	bsr	_copy
-	ldd	strfree
-	std	1+argv
-_notmp
-	ldx	tmp1
-	pshx
-	jsr	strdel
-	pulx
-	stx	tmp1
-	ldx	strend
-	ldd	tmp1
-	std	,x
-	inx
-	inx
-	stx	strfree
-	cpx	argv+1
-	beq	_nocopy
-	bsr	_copy
-	bra	_ready
-_nocopy
-	ldab	0+argv
-	abx
-_ready
-	stx	strend
-	ldd	strfree
-	inx
-	inx
-	stx	strfree
-	clr	strtcnt
-	ldx	tmp1
-	std	1,x
-	ldab	0+argv
-	stab	0,x
-	rts
-_char
-	ldx	1+argv
-	ldab	,x
-_null
-	ldaa	#charpage>>8
-	std	1+argv
-_const
-	ldx	tmp1
-	pshx
-	jsr	strdel
-	pulx
-	ldab	0+argv
-	stab	0,x
-	ldd	1+argv
-	std	1,x
-	clr	strtcnt
-	rts
-_copyip
-	dex
-	dex
-	ldd	tmp1
-	std	,x
-	inx
-	inx
-_copy
-	sts	tmp2
-	ldab	0+argv
-	lds	1+argv
-	des
-_nxtchr
-	pula
-	staa	,x
-	inx
-	decb
-	bne	_nxtchr
-	lds	tmp2
-	clr	strtcnt
-	rts
-
 	.module	mdstrrel
 ; release a temporary string
 ; ENTRY: X holds string start
@@ -871,160 +875,43 @@ _panic
 	ldab	#1
 	jmp	error
 
-	.module	mdstrval
-strval
-	ldab	0,x
-	ldx	1,x
-	jsr	strrel
-inptval
-	clr	tmp1
-	bsr	_getsgn
-	jsr	_getint
-	tstb
-	beq	_dosign
-	ldaa	,x
-	cmpa	#'.'
-	bne	_dosign
-	inx
-	decb
-	beq	_dosign
-	stab	tmp5
-	ldd	tmp2
-	pshb
-	psha
-	ldd	tmp1
-	pshb
-	psha
-	ldab	tmp5
-	bsr	_getint
-	stx	tmp5
-	ldab	tmp4
-	ldx	#_tblten
-	abx
-	abx
-	abx
-	ldab	,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldd	#0
-	std	3+argv
-	sts	tmp4
-	ldd	tmp4
-	subd	#10
-	std	tmp4
-	lds	tmp4
-	tsx
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
 	ldab	tmp1+1
 	stab	0,x
 	ldd	tmp2
 	std	1,x
-	ldd	#0
-	std	3,x
-	stab	tmp4
-	jsr	divuflt
-	ldd	3,x
-	std	tmp3
-	ldab	#10
-	tsx
-	abx
-	txs
-	pula
-	pulb
-	std	tmp1
-	pula
-	pulb
-	std	tmp2
-	ldx	tmp5
-_dosign
-	tst	tmp1
-	beq	_srts
-	jmp	negtmp
-_getsgn
-	tstb
-	beq	_srts
-	ldaa	,x
-	cmpa	#' '
-	bne	_trysgn
-	inx
-	decb
-	bra	_getsgn
-_trysgn
-	cmpa	#'+'
-	beq	_prts
-	cmpa	#'-'
-	bne	_srts
-	dec	tmp1
-_prts
-	inx
-	decb
-_srts
-	rts
-_getint
-	clra
-	staa	tmp1+1
-	staa	tmp2
-	staa	tmp2+1
-	staa	tmp4
-_nxtdig
-	tstb
-	beq	_crts
-	ldaa	,x
-	suba	#'0'
-	blo	_crts
-	cmpa	#10
-	bhs	_crts
-	inx
-	decb
-	pshb
-	psha
-	ldd	tmp2
-	std	tmp3
-	ldab	tmp1+1
-	stab	tmp4+1
-	bsr	_dbl
-	bsr	_dbl
 	ldd	tmp3
-	addd	tmp2
-	std	tmp2
-	ldab	tmp4+1
-	adcb	tmp1+1
-	stab	tmp1+1
-	bsr	_dbl
-	pulb
-	clra
-	addd	tmp2
-	std	tmp2
+	std	3,x
+	rts
+
+	.module	mdtmp2xi
+; copy integer tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2
+;   EXIT   Y copied to 0,x 1,x 2,x
+tmp2xi
 	ldab	tmp1+1
-	adcb	#0
-	stab	tmp1+1
-	inc	tmp4
-	ldd	tmp1+1
-	subd	#$0CCC
-	pulb
-	blo	_nxtdig
-	ldaa	tmp2+1
-	cmpa	#$CC
-	blo	_nxtdig
-_crts
-	clra
-	staa	tmp3
-	staa	tmp3+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
 	rts
-_dbl
-	lsl	tmp2+1
-	rol	tmp2
-	rol	tmp1+1
+
+	.module	mdx2arg
+; copy [X] to argv
+;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
+;   EXIT   Y copied to 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+	; copy x to argv
+x2arg
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	std	3+argv
 	rts
-_tblten
-	.byte	$00,$00,$01
-	.byte	$00,$00,$0A
-	.byte	$00,$00,$64
-	.byte	$00,$03,$E8
-	.byte	$00,$27,$10
-	.byte	$01,$86,$A0
-	.byte	$0F,$42,$40
-	.byte	$98,$96,$80
 
 clear			; numCalls = 1
 	.module	modclear
@@ -1048,79 +935,81 @@ _start
 	stx	DP_DATA
 	rts
 
-goto_ix			; numCalls = 1
-	.module	modgoto_ix
-	ins
-	ins
-	jmp	,x
-
-inkey_sx			; numCalls = 1
-	.module	modinkey_sx
-	jsr	strdel
-	ldd	#$0100+(charpage>>8)
-	std	0,x
-	ldaa	M_IKEY
-	bne	_gotkey
-	jsr	R_KEYIN
-_gotkey
-	clr	M_IKEY
-	staa	2,x
-	bne	_rts
-	staa	0,x
-_rts
-	rts
-
-jmpne_ir1_ix			; numCalls = 1
-	.module	modjmpne_ir1_ix
-	ldd	r1+1
-	bne	_go
-	ldaa	r1
-	bne	_go
-	rts
-_go
-	ins
-	ins
-	jmp	,x
-
-ld_sr1_ss			; numCalls = 1
-	.module	modld_sr1_ss
-	pulx
-	ldab	,x
-	stab	r1
-	inx
-	stx	r1+1
-	abx
-	jmp	,x
-
-ld_sr1_sx			; numCalls = 1
-	.module	modld_sr1_sx
+dec_fr1_fx			; numCalls = 1
+	.module	moddec_fr1_fx
+	ldd	3,x
+	std	r1+3
 	ldd	1,x
+	subd	#1
 	std	r1+1
 	ldab	0,x
+	sbcb	#0
 	stab	r1
 	rts
 
-ld_sx_sr1			; numCalls = 1
-	.module	modld_sx_sr1
-	ldab	r1
-	stab	0+argv
-	ldd	r1+1
-	std	1+argv
-	jmp	strprm
-
-ldeq_ir1_sr1_ss			; numCalls = 1
-	.module	modldeq_ir1_sr1_ss
-	ldab	r1
-	stab	tmp1+1
-	ldd	r1+1
-	std	tmp2
-	jsr	streqs
-	jsr	geteq
+inc_ir1_ix			; numCalls = 1
+	.module	modinc_ir1_ix
+	ldd	1,x
+	addd	#1
 	std	r1+1
+	ldab	0,x
+	adcb	#0
 	stab	r1
 	rts
 
-pr_sr1			; numCalls = 2
+ld_fd_fx			; numCalls = 1
+	.module	modld_fd_fx
+	std	tmp1
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	ldx	tmp1
+	std	3,x
+	ldd	1+argv
+	std	1,x
+	ldab	0+argv
+	stab	0,x
+	rts
+
+ld_fx_fr1			; numCalls = 2
+	.module	modld_fx_fr1
+	ldd	r1+3
+	std	3,x
+	ldd	r1+1
+	std	1,x
+	ldab	r1
+	stab	0,x
+	rts
+
+ld_ix_ir1			; numCalls = 2
+	.module	modld_ix_ir1
+	ldd	r1+1
+	std	1,x
+	ldab	r1
+	stab	0,x
+	rts
+
+ld_ix_pb			; numCalls = 1
+	.module	modld_ix_pb
+	stab	2,x
+	ldd	#0
+	std	0,x
+	rts
+
+mul_fr1_fr1_ix			; numCalls = 1
+	.module	modmul_fr1_fr1_ix
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	#0
+	std	3+argv
+	ldx	#r1
+	jmp	mulfltx
+
+pr_sr1			; numCalls = 4
 	.module	modpr_sr1
 	ldab	r1
 	beq	_rts
@@ -1131,7 +1020,7 @@ pr_sr1			; numCalls = 2
 _rts
 	rts
 
-pr_ss			; numCalls = 2
+pr_ss			; numCalls = 4
 	.module	modpr_ss
 	pulx
 	ldab	,x
@@ -1141,15 +1030,6 @@ pr_ss			; numCalls = 2
 	jmp	,x
 _null
 	jmp	1,x
-
-pr_sx			; numCalls = 1
-	.module	modpr_sx
-	ldab	0,x
-	beq	_rts
-	ldx	1,x
-	jmp	print
-_rts
-	rts
 
 progbegin			; numCalls = 1
 	.module	modprogbegin
@@ -1201,13 +1081,39 @@ LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 
-str_sr1_fr1			; numCalls = 2
-	.module	modstr_sr1_fr1
-	ldd	r1+1
+sq_fr1_fr1			; numCalls = 1
+	.module	modsq_fr1_fr1
+	ldx	#r1
+	jsr	x2arg
+	jmp	mulfltx
+
+sq_fr1_fx			; numCalls = 1
+	.module	modsq_fr1_fx
+	jsr	x2arg
+	jsr	mulfltt
+	ldx	#r1
+	jmp	tmp2xf
+
+sq_ir1_ir1			; numCalls = 1
+	.module	modsq_ir1_ir1
+	ldx	#r1
+	jsr	x2arg
+	jmp	mulintx
+
+sq_ir1_ix			; numCalls = 1
+	.module	modsq_ir1_ix
+	jsr	x2arg
+	jsr	mulint
+	ldx	#r1
+	jmp	tmp2xi
+
+str_sr1_fx			; numCalls = 2
+	.module	modstr_sr1_fx
+	ldd	1,x
 	std	tmp2
-	ldab	r1
+	ldab	0,x
 	stab	tmp1+1
-	ldd	r1+3
+	ldd	3,x
 	std	tmp3
 	jsr	strflt
 	std	r1+1
@@ -1215,15 +1121,18 @@ str_sr1_fr1			; numCalls = 2
 	stab	r1
 	rts
 
-val_fr1_sx			; numCalls = 2
-	.module	modval_fr1_sx
-	jsr	strval
-	ldab	tmp1+1
-	stab	r1
-	ldd	tmp2
+str_sr1_ix			; numCalls = 2
+	.module	modstr_sr1_ix
+	ldd	1,x
+	std	tmp2
+	ldab	0,x
+	stab	tmp1+1
+	ldd	#0
+	std	tmp3
+	jsr	strflt
 	std	r1+1
-	ldd	tmp3
-	std	r1+3
+	ldab	tmp1
+	stab	r1
 	rts
 
 ; data table
@@ -1231,12 +1140,18 @@ startdata
 enddata
 
 
+; fixed-point constants
+FLT_4p10000	.byte	$00, $00, $04, $19, $9a
+
 ; block started by symbol
 bss
 
 ; Numeric Variables
+INTVAR_X	.block	3
+INTVAR_Y	.block	3
+FLTVAR_XF	.block	5
+FLTVAR_Z	.block	5
 ; String Variables
-STRVAR_A	.block	3
 ; Numeric Arrays
 ; String Arrays
 

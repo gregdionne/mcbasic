@@ -378,16 +378,10 @@ LINE_6
 	; WHEN POINT(SHIFT(X,1),SHIFT(Y,1))=R GOSUB 3
 
 	ldx	#INTVAR_X
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#INTVAR_Y
-	jsr	ld_ir2_ix
-
-	ldab	#1
-	jsr	shift_ir2_ir2_pb
+	jsr	dbl_ir2_ix
 
 	jsr	point_ir1_ir1_ir2
 
@@ -416,17 +410,13 @@ LINE_7
 	; IF POINT(SHIFT(X,1),SHIFT(J-S,1))=R THEN
 
 	ldx	#INTVAR_X
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#INTVAR_J
 	ldd	#INTVAR_S
 	jsr	sub_ir2_ix_id
 
-	ldab	#1
-	jsr	shift_ir2_ir2_pb
+	jsr	dbl_ir2_ir2
 
 	jsr	point_ir1_ir1_ir2
 
@@ -479,14 +469,10 @@ LINE_8
 	ldd	#INTVAR_S
 	jsr	add_ir1_ix_id
 
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ir1
 
 	ldx	#INTVAR_J
-	jsr	ld_ir2_ix
-
-	ldab	#1
-	jsr	shift_ir2_ir2_pb
+	jsr	dbl_ir2_ix
 
 	jsr	point_ir1_ir1_ir2
 
@@ -538,14 +524,10 @@ LINE_9
 	ldd	#INTVAR_S
 	jsr	sub_ir1_ix_id
 
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ir1
 
 	ldx	#INTVAR_J
-	jsr	ld_ir2_ix
-
-	ldab	#1
-	jsr	shift_ir2_ir2_pb
+	jsr	dbl_ir2_ix
 
 	jsr	point_ir1_ir1_ir2
 
@@ -632,13 +614,10 @@ LINE_820
 	ldx	#INTVAR_B
 	jsr	ld_ix_ir1
 
-	; MB=B*B
+	; MB=SQ(B)
 
 	ldx	#INTVAR_B
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_B
-	jsr	mul_ir1_ir1_ix
+	jsr	sq_ir1_ix
 
 	ldx	#INTVAR_MB
 	jsr	ld_ix_ir1
@@ -1537,13 +1516,10 @@ LINE_2780
 
 LINE_2785
 
-	; MB=B*B
+	; MB=SQ(B)
 
 	ldx	#INTVAR_B
-	jsr	ld_ir1_ix
-
-	ldx	#INTVAR_B
-	jsr	mul_ir1_ir1_ix
+	jsr	sq_ir1_ix
 
 	ldx	#INTVAR_MB
 	jsr	ld_ix_ir1
@@ -3227,6 +3203,17 @@ _tblten
 	.byte	$0F,$42,$40
 	.byte	$98,$96,$80
 
+	.module	mdtmp2xi
+; copy integer tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2
+;   EXIT   Y copied to 0,x 1,x 2,x
+tmp2xi
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	rts
+
 	.module	mdtonat
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
@@ -3284,6 +3271,20 @@ _flt
 _done
 	ldx	tmp1
 	jmp	,x
+
+	.module	mdx2arg
+; copy [X] to argv
+;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
+;   EXIT   Y copied to 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+	; copy x to argv
+x2arg
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	std	3+argv
+	rts
 
 add_ip_ip_ir1			; numCalls = 2
 	.module	modadd_ip_ip_ir1
@@ -3471,6 +3472,42 @@ cls			; numCalls = 2
 clsn_pb			; numCalls = 1
 	.module	modclsn_pb
 	jmp	R_CLSN
+
+dbl_ir1_ir1			; numCalls = 2
+	.module	moddbl_ir1_ir1
+	ldx	#r1
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
+dbl_ir1_ix			; numCalls = 2
+	.module	moddbl_ir1_ix
+	ldd	1,x
+	lsld
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
+dbl_ir2_ir2			; numCalls = 1
+	.module	moddbl_ir2_ir2
+	ldx	#r2
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
+dbl_ir2_ix			; numCalls = 3
+	.module	moddbl_ir2_ix
+	ldd	1,x
+	lsld
+	std	r2+1
+	ldab	0,x
+	rolb
+	stab	r2
+	rts
 
 dec_ir1_ix			; numCalls = 1
 	.module	moddec_ir1_ix
@@ -3702,7 +3739,7 @@ ld_ip_ir1			; numCalls = 2
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 41
+ld_ir1_ix			; numCalls = 37
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -3724,7 +3761,7 @@ ld_ir1_pw			; numCalls = 3
 	stab	r1
 	rts
 
-ld_ir2_ix			; numCalls = 4
+ld_ir2_ix			; numCalls = 1
 	.module	modld_ir2_ix
 	ldd	1,x
 	std	r2+1
@@ -3919,7 +3956,7 @@ ldlt_ir2_ir2_ix			; numCalls = 2
 	stab	r2
 	rts
 
-mul_ir1_ir1_ix			; numCalls = 4
+mul_ir1_ir1_ix			; numCalls = 2
 	.module	modmul_ir1_ir1_ix
 	ldab	0,x
 	stab	0+argv
@@ -4316,12 +4353,12 @@ _flt
 	stab	r1
 	rts
 
-shift_ir1_ir1_pb			; numCalls = 8
+shift_ir1_ir1_pb			; numCalls = 4
 	.module	modshift_ir1_ir1_pb
 	ldx	#r1
 	jmp	shlint
 
-shift_ir2_ir2_pb			; numCalls = 5
+shift_ir2_ir2_pb			; numCalls = 1
 	.module	modshift_ir2_ir2_pb
 	ldx	#r2
 	jmp	shlint
@@ -4331,6 +4368,13 @@ sound_ir1_ir2			; numCalls = 3
 	ldaa	r1+2
 	ldab	r2+2
 	jmp	R_SOUND
+
+sq_ir1_ix			; numCalls = 2
+	.module	modsq_ir1_ix
+	jsr	x2arg
+	jsr	mulint
+	ldx	#r1
+	jmp	tmp2xi
 
 step_ip_ir1			; numCalls = 1
 	.module	modstep_ip_ir1

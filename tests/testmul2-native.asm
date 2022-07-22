@@ -207,17 +207,13 @@ LINE_70
 
 LINE_75
 
-	; T1=(1-T)*(1-T)
+	; T1=SQ(1-T)
 
 	ldab	#1
 	ldx	#FLTVAR_T
 	jsr	sub_fr1_pb_fx
 
-	ldab	#1
-	ldx	#FLTVAR_T
-	jsr	sub_fr2_pb_fx
-
-	jsr	mul_fr1_fr1_fr2
+	jsr	sq_fr1_fr1
 
 	ldx	#FLTVAR_T1
 	jsr	ld_fx_fr1
@@ -231,19 +227,15 @@ LINE_75
 	ldx	#FLTVAR_T
 	jsr	mul_fr1_fr1_fx
 
-	ldab	#1
-	jsr	shift_fr1_fr1_pb
+	jsr	dbl_fr1_fr1
 
 	ldx	#FLTVAR_T2
 	jsr	ld_fx_fr1
 
-	; T3=T*T
+	; T3=SQ(T)
 
 	ldx	#FLTVAR_T
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_T
-	jsr	mul_fr1_fr1_fx
+	jsr	sq_fr1_fx
 
 	ldx	#FLTVAR_T3
 	jsr	ld_fx_fr1
@@ -308,17 +300,13 @@ LINE_77
 
 LINE_80
 
-	; X=((1-T)*(1-T)*SP)+SHIFT((1-T)*XP*T,1)+(T*T*EP)
+	; X=(SQ(1-T)*SP)+SHIFT((1-T)*XP*T,1)+(SQ(T)*EP)
 
 	ldab	#1
 	ldx	#FLTVAR_T
 	jsr	sub_fr1_pb_fx
 
-	ldab	#1
-	ldx	#FLTVAR_T
-	jsr	sub_fr2_pb_fx
-
-	jsr	mul_fr1_fr1_fr2
+	jsr	sq_fr1_fr1
 
 	ldx	#INTVAR_SP
 	jsr	mul_fr1_fr1_ix
@@ -333,16 +321,12 @@ LINE_80
 	ldx	#FLTVAR_T
 	jsr	mul_fr2_fr2_fx
 
-	ldab	#1
-	jsr	shift_fr2_fr2_pb
+	jsr	dbl_fr2_fr2
 
 	jsr	add_fr1_fr1_fr2
 
 	ldx	#FLTVAR_T
-	jsr	ld_fr2_fx
-
-	ldx	#FLTVAR_T
-	jsr	mul_fr2_fr2_fx
+	jsr	sq_fr2_fx
 
 	ldx	#INTVAR_EP
 	jsr	mul_fr2_fr2_ix
@@ -354,17 +338,13 @@ LINE_80
 
 LINE_90
 
-	; Y=((1-T)*(1-T)*TP)+SHIFT((1-T)*YP*T,1)+(T*T*FP)
+	; Y=(SQ(1-T)*TP)+SHIFT((1-T)*YP*T,1)+(SQ(T)*FP)
 
 	ldab	#1
 	ldx	#FLTVAR_T
 	jsr	sub_fr1_pb_fx
 
-	ldab	#1
-	ldx	#FLTVAR_T
-	jsr	sub_fr2_pb_fx
-
-	jsr	mul_fr1_fr1_fr2
+	jsr	sq_fr1_fr1
 
 	ldx	#INTVAR_TP
 	jsr	mul_fr1_fr1_ix
@@ -379,16 +359,12 @@ LINE_90
 	ldx	#FLTVAR_T
 	jsr	mul_fr2_fr2_fx
 
-	ldab	#1
-	jsr	shift_fr2_fr2_pb
+	jsr	dbl_fr2_fr2
 
 	jsr	add_fr1_fr1_fr2
 
 	ldx	#FLTVAR_T
-	jsr	ld_fr2_fx
-
-	ldx	#FLTVAR_T
-	jsr	mul_fr2_fr2_fx
+	jsr	sq_fr2_fx
 
 	ldx	#INTVAR_FP
 	jsr	mul_fr2_fr2_ix
@@ -1107,34 +1083,6 @@ _done
 _rts
 	rts
 
-	.module	mdshlflt
-; multiply X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shlflt
-	cmpb	#8
-	blo	_shlbit
-	stab	tmp1
-	ldd	1,x
-	std	0,x
-	ldd	3,x
-	std	2,x
-	clr	4,x
-	ldab	tmp1
-	subb	#8
-	bne	shlflt
-	rts
-_shlbit
-	lsl	4,x
-	rol	3,x
-	rol	2,x
-	rol	1,x
-	rol	0,x
-	decb
-	bne	_shlbit
-	rts
-
 	.module	mdstreqs
 ; compare string against stack
 ; ENTRY: top of stack is return to caller (ld<ne/eq>_ir1_sr1_ss)
@@ -1363,6 +1311,19 @@ _panic
 	ldab	#1
 	jmp	error
 
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
+	rts
+
 	.module	mdtonat
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
@@ -1420,6 +1381,20 @@ _flt
 _done
 	ldx	tmp1
 	jmp	,x
+
+	.module	mdx2arg
+; copy [X] to argv
+;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
+;   EXIT   Y copied to 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+	; copy x to argv
+x2arg
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	std	3+argv
+	rts
 
 abs_ir1_ir1			; numCalls = 1
 	.module	modabs_ir1_ir1
@@ -1496,6 +1471,26 @@ cls			; numCalls = 1
 	.module	modcls
 	jmp	R_CLS
 
+dbl_fr1_fr1			; numCalls = 1
+	.module	moddbl_fr1_fr1
+	ldx	#r1
+	lsl	4,x
+	rol	3,x
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
+dbl_fr2_fr2			; numCalls = 2
+	.module	moddbl_fr2_fr2
+	ldx	#r2
+	lsl	4,x
+	rol	3,x
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
 forclr_fx			; numCalls = 1
 	.module	modforclr_fx
 	stx	letptr
@@ -1543,7 +1538,7 @@ _go
 	ins
 	jmp	,x
 
-ld_fr1_fx			; numCalls = 4
+ld_fr1_fx			; numCalls = 3
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -1553,7 +1548,7 @@ ld_fr1_fx			; numCalls = 4
 	stab	r1
 	rts
 
-ld_fr2_fx			; numCalls = 6
+ld_fr2_fx			; numCalls = 4
 	.module	modld_fr2_fx
 	ldd	3,x
 	std	r2+3
@@ -1614,18 +1609,7 @@ ldeq_ir1_sr1_ss			; numCalls = 1
 	stab	r1
 	rts
 
-mul_fr1_fr1_fr2			; numCalls = 3
-	.module	modmul_fr1_fr1_fr2
-	ldab	r2
-	stab	0+argv
-	ldd	r2+1
-	std	1+argv
-	ldd	r2+3
-	std	3+argv
-	ldx	#r1
-	jmp	mulfltx
-
-mul_fr1_fr1_fx			; numCalls = 2
+mul_fr1_fr1_fx			; numCalls = 1
 	.module	modmul_fr1_fr1_fx
 	ldab	0,x
 	stab	0+argv
@@ -1647,7 +1631,7 @@ mul_fr1_fr1_ix			; numCalls = 4
 	ldx	#r1
 	jmp	mulfltx
 
-mul_fr2_fr2_fx			; numCalls = 4
+mul_fr2_fr2_fx			; numCalls = 2
 	.module	modmul_fr2_fr2_fx
 	ldab	0,x
 	stab	0+argv
@@ -1840,15 +1824,25 @@ LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 
-shift_fr1_fr1_pb			; numCalls = 1
-	.module	modshift_fr1_fr1_pb
+sq_fr1_fr1			; numCalls = 3
+	.module	modsq_fr1_fr1
 	ldx	#r1
-	jmp	shlflt
+	jsr	x2arg
+	jmp	mulfltx
 
-shift_fr2_fr2_pb			; numCalls = 2
-	.module	modshift_fr2_fr2_pb
+sq_fr1_fx			; numCalls = 1
+	.module	modsq_fr1_fx
+	jsr	x2arg
+	jsr	mulfltt
+	ldx	#r1
+	jmp	tmp2xf
+
+sq_fr2_fx			; numCalls = 2
+	.module	modsq_fr2_fx
+	jsr	x2arg
+	jsr	mulfltt
 	ldx	#r2
-	jmp	shlflt
+	jmp	tmp2xf
 
 step_fp_fr1			; numCalls = 1
 	.module	modstep_fp_fr1
@@ -1892,7 +1886,7 @@ sub_fr1_pb_fx			; numCalls = 4
 	std	r1
 	rts
 
-sub_fr2_pb_fx			; numCalls = 5
+sub_fr2_pb_fx			; numCalls = 2
 	.module	modsub_fr2_pb_fx
 	stab	tmp1
 	ldd	#0

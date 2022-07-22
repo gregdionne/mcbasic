@@ -2761,8 +2761,7 @@ LINE_63
 	ldab	#6
 	jsr	rsub_ir1_ir1_pb
 
-	ldab	#-1
-	jsr	shift_fr1_ir1_nb
+	jsr	hlf_fr1_ir1
 
 	ldx	#INTVAR_S
 	jsr	ld_ix_ir1
@@ -2786,10 +2785,7 @@ LINE_63
 	; IF SHIFT(R,-1)<>G THEN
 
 	ldx	#INTVAR_R
-	jsr	ld_ir1_ix
-
-	ldab	#-1
-	jsr	shift_fr1_ir1_nb
+	jsr	hlf_fr1_ix
 
 	ldx	#INTVAR_G
 	jsr	ldne_ir1_fr1_ix
@@ -6344,6 +6340,30 @@ goto_ix			; numCalls = 8
 	ins
 	jmp	,x
 
+hlf_fr1_ir1			; numCalls = 1
+	.module	modhlf_fr1_ir1
+	asr	r1
+	ror	r1+1
+	ror	r1+2
+	ldd	#0
+	rora
+	std	r1+3
+	rts
+
+hlf_fr1_ix			; numCalls = 1
+	.module	modhlf_fr1_ix
+	ldab	0,x
+	asrb
+	stab	r1
+	ldd	1,x
+	rora
+	rorb
+	std	r1+1
+	ldd	#0
+	rora
+	std	r1+3
+	rts
+
 idiv_ir1_ir1_ir2			; numCalls = 1
 	.module	modidiv_ir1_ir1_ir2
 	ldab	r2
@@ -6508,7 +6528,7 @@ ld_ip_pb			; numCalls = 11
 	std	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 34
+ld_ir1_ix			; numCalls = 33
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -7319,7 +7339,7 @@ pr_sx			; numCalls = 6
 	ldab	0,x
 	beq	_rts
 	ldx	1,x
-	jsr	print
+	jmp	print
 _rts
 	rts
 
@@ -7517,7 +7537,7 @@ shift_fr1_fr1_nb			; numCalls = 1
 	negb
 	jmp	shrflt
 
-shift_fr1_ir1_nb			; numCalls = 3
+shift_fr1_ir1_nb			; numCalls = 1
 	.module	modshift_fr1_ir1_nb
 	ldx	#r1
 	negb

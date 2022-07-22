@@ -620,7 +620,7 @@ LINE_145
 	ldx	#LINE_150
 	jsr	jmpeq_ir1_ix
 
-	; M(H+X,V+Y)=M(H+X,V+Y)+1
+	; M(H+X,V+Y)+=1
 
 	ldx	#FLTVAR_H
 	ldd	#FLTVAR_X
@@ -633,20 +633,7 @@ LINE_145
 	ldx	#INTARR_M
 	jsr	arrref2_ir1_ix
 
-	ldx	#FLTVAR_H
-	ldd	#FLTVAR_X
-	jsr	add_fr1_fx_fd
-
-	ldx	#FLTVAR_V
-	ldd	#FLTVAR_Y
-	jsr	add_fr2_fx_fd
-
-	ldx	#INTARR_M
-	jsr	arrval2_ir1_ix
-
-	jsr	inc_ir1_ir1
-
-	jsr	ld_ip_ir1
+	jsr	inc_ip_ip
 
 LINE_150
 
@@ -3362,7 +3349,7 @@ add_fr1_fr1_ix			; numCalls = 5
 	stab	r1
 	rts
 
-add_fr1_fx_fd			; numCalls = 4
+add_fr1_fx_fd			; numCalls = 3
 	.module	modadd_fr1_fx_fd
 	std	tmp1
 	ldab	0,x
@@ -3406,7 +3393,7 @@ add_fr2_fr2_ix			; numCalls = 3
 	stab	r2
 	rts
 
-add_fr2_fx_fd			; numCalls = 4
+add_fr2_fx_fd			; numCalls = 3
 	.module	modadd_fr2_fx_fd
 	std	tmp1
 	ldab	0,x
@@ -3589,7 +3576,7 @@ arrval1_ir1_fx			; numCalls = 2
 	std	r1+3
 	rts
 
-arrval2_ir1_ix			; numCalls = 12
+arrval2_ir1_ix			; numCalls = 11
 	.module	modarrval2_ir1_ix
 	ldd	r1+1
 	std	0+argv
@@ -3802,13 +3789,14 @@ inc_fx_fx			; numCalls = 2
 _rts
 	rts
 
-inc_ir1_ir1			; numCalls = 1
-	.module	modinc_ir1_ir1
-	inc	r1+2
+inc_ip_ip			; numCalls = 1
+	.module	modinc_ip_ip
+	ldx	letptr
+	inc	2,x
 	bne	_rts
-	inc	r1+1
+	inc	1,x
 	bne	_rts
-	inc	r1
+	inc	0,x
 _rts
 	rts
 
@@ -4005,15 +3993,6 @@ ld_id_ix			; numCalls = 1
 	ldx	tmp1
 	std	1,x
 	ldab	0+argv
-	stab	0,x
-	rts
-
-ld_ip_ir1			; numCalls = 1
-	.module	modld_ip_ir1
-	ldx	letptr
-	ldd	r1+1
-	std	1,x
-	ldab	r1
 	stab	0,x
 	rts
 

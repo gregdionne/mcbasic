@@ -2720,6 +2720,112 @@ std::string CoreImplementation::regInt_extInt(InstAbs &inst) {
   return tasm.source();
 }
 
+std::string CoreImplementation::regFlt_regFlt(InstDbl &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.lsl("4,x");
+  tasm.rol("3,x");
+  tasm.rol("2,x");
+  tasm.rol("1,x");
+  tasm.rol("0,x");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt(InstDbl &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.rol("2,x");
+  tasm.rol("1,x");
+  tasm.rol("0,x");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_extFlt(InstDbl &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd(inst.arg2->fract());
+  tasm.lsld();
+  tasm.std(inst.arg1->fract());
+  tasm.ldd(inst.arg2->lword());
+  tasm.rolb();
+  tasm.rola();
+  tasm.std(inst.arg1->lword());
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.rolb();
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_extInt(InstDbl &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd(inst.arg2->lword());
+  tasm.lsld();
+  tasm.std(inst.arg1->lword());
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.rolb();
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regFlt(InstSq &inst) {
+  inst.dependencies.insert("mdx2arg");
+  inst.dependencies.insert("mdmulflt");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jsr("x2arg");
+  tasm.jmp("mulfltx");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_regInt(InstSq &inst) {
+  inst.dependencies.insert("mdx2arg");
+  inst.dependencies.insert("mdmulint");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jsr("x2arg");
+  tasm.jmp("mulintx");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_extFlt(InstSq &inst) {
+  inst.dependencies.insert("mdx2arg");
+  inst.dependencies.insert("mdmulflt");
+  inst.dependencies.insert("mdtmp2xf");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.jsr("x2arg");
+  tasm.jsr("mulfltt");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("tmp2xf");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_extInt(InstSq &inst) {
+  inst.dependencies.insert("mdx2arg");
+  inst.dependencies.insert("mdmulint");
+  inst.dependencies.insert("mdtmp2xi");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.jsr("x2arg");
+  tasm.jsr("mulint");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("tmp2xi");
+  return tasm.source();
+}
+
 std::string CoreImplementation::regInt_regInt_posByte(InstOr &inst) {
   Assembler tasm;
   preamble(tasm, inst);
@@ -3055,6 +3161,67 @@ std::string CoreImplementation::regFlt_regFlt(InstInv &inst) {
   tasm.std(inst.arg1->fract());
   tasm.ldx("#" + inst.arg1->sbyte());
   tasm.jmp("invflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regFlt(InstHlf &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.asr("0,x");
+  tasm.ror("1,x");
+  tasm.ror("2,x");
+  tasm.ror("3,x");
+  tasm.ror("4,x");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regInt(InstHlf &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.asr(inst.arg1->sbyte());
+  tasm.ror(inst.arg1->hbyte());
+  tasm.ror(inst.arg1->lbyte());
+  tasm.ldd("#0");
+  tasm.rora();
+  tasm.std(inst.arg1->fract());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_extFlt(InstHlf &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.asrb();
+  tasm.stab(inst.arg1->sbyte());
+  tasm.ldd(inst.arg2->lword());
+  tasm.rora();
+  tasm.rorb();
+  tasm.std(inst.arg1->lword());
+  tasm.ldd(inst.arg2->fract());
+  tasm.rora();
+  tasm.rorb();
+  tasm.std(inst.arg1->fract());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_extInt(InstHlf &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.asrb();
+  tasm.stab(inst.arg1->sbyte());
+  tasm.ldd(inst.arg2->lword());
+  tasm.rora();
+  tasm.rorb();
+  tasm.std(inst.arg1->lword());
+  tasm.ldd("#0");
+  tasm.rora();
+  tasm.std(inst.arg1->fract());
+  tasm.rts();
   return tasm.source();
 }
 
@@ -6206,7 +6373,7 @@ std::string CoreImplementation::extStr(InstPr &inst) {
   tasm.ldab(inst.arg1->sbyte());
   tasm.beq("_rts");
   tasm.ldx(inst.arg1->lword());
-  tasm.jsr("print");
+  tasm.jmp("print");
   tasm.label("_rts");
   tasm.rts();
   return tasm.source();

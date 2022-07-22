@@ -209,11 +209,8 @@ LINE_4
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_dbl_ir1_ix
 	.byte	bytecode_INTVAR_N
-
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
 
 	.byte	bytecode_add_ip_ip_ir1
 
@@ -231,11 +228,8 @@ LINE_4
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_dbl_ir1_ix
 	.byte	bytecode_INTVAR_N
-
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
 
 	.byte	bytecode_add_ip_ip_ir1
 
@@ -253,11 +247,8 @@ LINE_4
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_dbl_ir1_ix
 	.byte	bytecode_INTVAR_N
-
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
 
 	.byte	bytecode_add_ip_ip_ir1
 
@@ -297,8 +288,7 @@ LINE_6
 	.byte	bytecode_dec_ir1_ix
 	.byte	bytecode_INTVAR_X
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_dec_ir2_ix
 	.byte	bytecode_INTVAR_Y
@@ -584,8 +574,7 @@ LINE_10
 
 	.byte	bytecode_dec_ir1_ir1
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -987,7 +976,7 @@ LINE_71
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_Z
 
-	; L(X-1,Y,Z)=L(X-1,Y,Z)-1
+	; L(X-1,Y,Z)-=1
 
 	.byte	bytecode_dec_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -1001,23 +990,9 @@ LINE_71
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_dec_ir1_ix
-	.byte	bytecode_INTVAR_X
+	.byte	bytecode_dec_ip_ip
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_Y
-
-	.byte	bytecode_ld_ir3_ix
-	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_arrval3_ir1_ix
-	.byte	bytecode_INTARR_L
-
-	.byte	bytecode_dec_ir1_ir1
-
-	.byte	bytecode_ld_ip_ir1
-
-	; L(X+1,Y,Z)=L(X+1,Y,Z)-1
+	; L(X+1,Y,Z)-=1
 
 	.byte	bytecode_inc_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -1031,23 +1006,9 @@ LINE_71
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_inc_ir1_ix
-	.byte	bytecode_INTVAR_X
+	.byte	bytecode_dec_ip_ip
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_Y
-
-	.byte	bytecode_ld_ir3_ix
-	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_arrval3_ir1_ix
-	.byte	bytecode_INTARR_L
-
-	.byte	bytecode_dec_ir1_ir1
-
-	.byte	bytecode_ld_ip_ir1
-
-	; L(X,Y,Z-1)=L(X,Y,Z-1)-2
+	; L(X,Y,Z-1)-=2
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -1061,22 +1022,8 @@ LINE_71
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_X
-
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_Y
-
-	.byte	bytecode_dec_ir3_ix
-	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_arrval3_ir1_ix
-	.byte	bytecode_INTARR_L
-
-	.byte	bytecode_sub_ir1_ir1_pb
+	.byte	bytecode_sub_ip_ip_pb
 	.byte	2
-
-	.byte	bytecode_ld_ip_ir1
 
 	; WHEN L(X,Y,Z)<0 GOSUB 1
 
@@ -1202,7 +1149,7 @@ LINE_73
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_Z
 
-	; L(X-1,Y,Z)=L(X-1,Y,Z)-1
+	; L(X-1,Y,Z)-=1
 
 	.byte	bytecode_dec_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -1216,23 +1163,9 @@ LINE_73
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_dec_ir1_ix
-	.byte	bytecode_INTVAR_X
+	.byte	bytecode_dec_ip_ip
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_Y
-
-	.byte	bytecode_ld_ir3_ix
-	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_arrval3_ir1_ix
-	.byte	bytecode_INTARR_L
-
-	.byte	bytecode_dec_ir1_ir1
-
-	.byte	bytecode_ld_ip_ir1
-
-	; L(X+1,Y,Z)=L(X+1,Y,Z)-1
+	; L(X+1,Y,Z)-=1
 
 	.byte	bytecode_inc_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -1246,23 +1179,9 @@ LINE_73
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_inc_ir1_ix
-	.byte	bytecode_INTVAR_X
+	.byte	bytecode_dec_ip_ip
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_Y
-
-	.byte	bytecode_ld_ir3_ix
-	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_arrval3_ir1_ix
-	.byte	bytecode_INTARR_L
-
-	.byte	bytecode_dec_ir1_ir1
-
-	.byte	bytecode_ld_ip_ir1
-
-	; L(X,Y,Z-1)=L(X,Y,Z-1)-2
+	; L(X,Y,Z-1)-=2
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -1276,22 +1195,8 @@ LINE_73
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_X
-
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_Y
-
-	.byte	bytecode_dec_ir3_ix
-	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_arrval3_ir1_ix
-	.byte	bytecode_INTARR_L
-
-	.byte	bytecode_sub_ir1_ir1_pb
+	.byte	bytecode_sub_ip_ip_pb
 	.byte	2
-
-	.byte	bytecode_ld_ip_ir1
 
 	; WHEN L(X,Y,Z)<0 GOSUB 1
 
@@ -1671,8 +1576,7 @@ LINE_90
 
 	.byte	bytecode_dec_ir1_ir1
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -1753,8 +1657,7 @@ LINE_95
 	.byte	bytecode_dec_ir1_ix
 	.byte	bytecode_INTVAR_T
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -2030,8 +1933,7 @@ LINE_133
 
 	.byte	bytecode_dec_ir1_ir1
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -2959,7 +2861,7 @@ LINE_270
 
 LINE_271
 
-	; L(X-1,Y,Z)=L(X-1,Y,Z)-1
+	; L(X-1,Y,Z)-=1
 
 	.byte	bytecode_dec_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -2973,23 +2875,9 @@ LINE_271
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_dec_ir1_ix
-	.byte	bytecode_INTVAR_X
+	.byte	bytecode_dec_ip_ip
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_Y
-
-	.byte	bytecode_ld_ir3_ix
-	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_arrval3_ir1_ix
-	.byte	bytecode_INTARR_L
-
-	.byte	bytecode_dec_ir1_ir1
-
-	.byte	bytecode_ld_ip_ir1
-
-	; L(X+1,Y,Z)=L(X+1,Y,Z)-1
+	; L(X+1,Y,Z)-=1
 
 	.byte	bytecode_inc_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -3003,23 +2891,9 @@ LINE_271
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_inc_ir1_ix
-	.byte	bytecode_INTVAR_X
+	.byte	bytecode_dec_ip_ip
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_Y
-
-	.byte	bytecode_ld_ir3_ix
-	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_arrval3_ir1_ix
-	.byte	bytecode_INTARR_L
-
-	.byte	bytecode_dec_ir1_ir1
-
-	.byte	bytecode_ld_ip_ir1
-
-	; L(X,Y,Z-1)=L(X,Y,Z-1)-2
+	; L(X,Y,Z-1)-=2
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -3033,22 +2907,8 @@ LINE_271
 	.byte	bytecode_arrref3_ir1_ix
 	.byte	bytecode_INTARR_L
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_X
-
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_Y
-
-	.byte	bytecode_dec_ir3_ix
-	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_arrval3_ir1_ix
-	.byte	bytecode_INTARR_L
-
-	.byte	bytecode_sub_ir1_ir1_pb
+	.byte	bytecode_sub_ip_ip_pb
 	.byte	2
-
-	.byte	bytecode_ld_ip_ir1
 
 	; WHEN L(X,Y,Z)<0 GOSUB 1
 
@@ -3349,8 +3209,7 @@ LINE_281
 	.byte	bytecode_dec_ir1_ix
 	.byte	bytecode_INTVAR_T
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -3450,8 +3309,7 @@ LINE_289
 	.byte	bytecode_dec_ir1_ix
 	.byte	bytecode_INTVAR_T
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -3875,8 +3733,7 @@ LINE_430
 
 	.byte	bytecode_dec_ir1_ir1
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -4211,8 +4068,7 @@ LINE_560
 
 	.byte	bytecode_dec_ir1_ir1
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -4267,8 +4123,7 @@ LINE_560
 
 	.byte	bytecode_dec_ir1_ir1
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -4311,8 +4166,7 @@ LINE_565
 
 	.byte	bytecode_dec_ir1_ir1
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -4376,8 +4230,7 @@ LINE_565
 
 	.byte	bytecode_dec_ir1_ir1
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -6323,8 +6176,7 @@ LINE_2140
 	.byte	bytecode_INTVAR_A
 	.byte	-55
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_inc_ir1_ir1
 
@@ -6339,8 +6191,7 @@ LINE_2150
 	.byte	bytecode_INTVAR_T
 	.byte	3
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_add_ir1_ir1_pb
 	.byte	225
@@ -6367,8 +6218,7 @@ LINE_2150
 	.byte	bytecode_INTVAR_T
 	.byte	3
 
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
+	.byte	bytecode_dbl_ir1_ir1
 
 	.byte	bytecode_add_ir1_ir1_pw
 	.word	257
@@ -7096,102 +6946,103 @@ bytecode_clr_ip	.equ	33
 bytecode_clr_ix	.equ	34
 bytecode_cls	.equ	35
 bytecode_clsn_pb	.equ	36
-bytecode_dec_ip_ip	.equ	37
-bytecode_dec_ir1_ir1	.equ	38
-bytecode_dec_ir1_ix	.equ	39
-bytecode_dec_ir2_ix	.equ	40
-bytecode_dec_ir3_ix	.equ	41
-bytecode_dec_ix_ix	.equ	42
-bytecode_for_ix_pb	.equ	43
-bytecode_forclr_ix	.equ	44
-bytecode_forone_ix	.equ	45
-bytecode_gosub_ix	.equ	46
-bytecode_goto_ix	.equ	47
-bytecode_inc_ip_ip	.equ	48
-bytecode_inc_ir1_ir1	.equ	49
-bytecode_inc_ir1_ix	.equ	50
-bytecode_inc_ir3_ix	.equ	51
-bytecode_inc_ix_ix	.equ	52
-bytecode_inkey_sx	.equ	53
-bytecode_jmpeq_ir1_ix	.equ	54
-bytecode_jmpne_ir1_ix	.equ	55
-bytecode_jsrne_ir1_ix	.equ	56
-bytecode_ld_fx_fr1	.equ	57
-bytecode_ld_id_ix	.equ	58
-bytecode_ld_ip_ir1	.equ	59
-bytecode_ld_ip_nb	.equ	60
-bytecode_ld_ip_pb	.equ	61
-bytecode_ld_ir1_ix	.equ	62
-bytecode_ld_ir1_pb	.equ	63
-bytecode_ld_ir2_ix	.equ	64
-bytecode_ld_ir2_pb	.equ	65
-bytecode_ld_ir3_ix	.equ	66
-bytecode_ld_ir3_pb	.equ	67
-bytecode_ld_ir4_ix	.equ	68
-bytecode_ld_ir4_pb	.equ	69
-bytecode_ld_ix_ir1	.equ	70
-bytecode_ld_ix_pb	.equ	71
-bytecode_ld_ix_pw	.equ	72
-bytecode_ld_sp_sr1	.equ	73
-bytecode_ld_sr1_ss	.equ	74
-bytecode_ld_sr1_sx	.equ	75
-bytecode_ld_sr2_sx	.equ	76
-bytecode_ldeq_ir1_ir1_ir2	.equ	77
-bytecode_ldeq_ir1_ir1_ix	.equ	78
-bytecode_ldeq_ir1_ir1_pb	.equ	79
-bytecode_ldeq_ir1_ix_id	.equ	80
-bytecode_ldeq_ir1_sr1_ss	.equ	81
-bytecode_ldeq_ir2_ir2_pb	.equ	82
-bytecode_ldeq_ir2_sr2_ss	.equ	83
-bytecode_ldlt_ir1_ir1_ir2	.equ	84
-bytecode_ldlt_ir1_ir1_ix	.equ	85
-bytecode_ldlt_ir1_ir1_pb	.equ	86
-bytecode_ldlt_ir2_ir2_ix	.equ	87
-bytecode_ldlt_ir2_ir2_pb	.equ	88
-bytecode_ldne_ir1_ir1_ir2	.equ	89
-bytecode_ldne_ir1_ir1_pb	.equ	90
-bytecode_ldne_ir1_sr1_ss	.equ	91
-bytecode_left_sr1_sr1_ir2	.equ	92
-bytecode_midT_sr1_sr1_pb	.equ	93
-bytecode_mid_sr1_sr1_pb	.equ	94
-bytecode_mid_sr2_sr2_ir3	.equ	95
-bytecode_mul3_ir1_ix	.equ	96
-bytecode_neg_ir1_ir1	.equ	97
-bytecode_next	.equ	98
-bytecode_one_ix	.equ	99
-bytecode_ongoto_ir1_is	.equ	100
-bytecode_or_ir1_ir1_ir2	.equ	101
-bytecode_poke_ir1_ir2	.equ	102
-bytecode_poke_pw_ir1	.equ	103
-bytecode_pr_sr1	.equ	104
-bytecode_pr_ss	.equ	105
-bytecode_prat_ir1	.equ	106
-bytecode_prat_ix	.equ	107
-bytecode_prat_pb	.equ	108
-bytecode_prat_pw	.equ	109
-bytecode_progbegin	.equ	110
-bytecode_progend	.equ	111
-bytecode_return	.equ	112
-bytecode_rnd_fr1_ir1	.equ	113
-bytecode_rnd_fr1_ix	.equ	114
-bytecode_rsub_ir1_ir1_pb	.equ	115
-bytecode_shift_ir1_ir1_pb	.equ	116
-bytecode_shift_ir2_ir2_pb	.equ	117
-bytecode_sound_ir1_ir2	.equ	118
-bytecode_stop	.equ	119
-bytecode_str_sr1_ir1	.equ	120
-bytecode_str_sr1_ix	.equ	121
-bytecode_strcat_sr1_sr1_sr2	.equ	122
-bytecode_strinit_sr1_sr1	.equ	123
-bytecode_sub_ip_ip_pb	.equ	124
-bytecode_sub_ir1_ir1_pb	.equ	125
-bytecode_sub_ir1_ix_id	.equ	126
-bytecode_timer_ir1	.equ	127
-bytecode_to_ip_ix	.equ	128
-bytecode_to_ip_pb	.equ	129
-bytecode_to_ip_pw	.equ	130
-bytecode_true_ix	.equ	131
-bytecode_val_fr1_sr1	.equ	132
+bytecode_dbl_ir1_ir1	.equ	37
+bytecode_dbl_ir1_ix	.equ	38
+bytecode_dec_ip_ip	.equ	39
+bytecode_dec_ir1_ir1	.equ	40
+bytecode_dec_ir1_ix	.equ	41
+bytecode_dec_ir2_ix	.equ	42
+bytecode_dec_ir3_ix	.equ	43
+bytecode_dec_ix_ix	.equ	44
+bytecode_for_ix_pb	.equ	45
+bytecode_forclr_ix	.equ	46
+bytecode_forone_ix	.equ	47
+bytecode_gosub_ix	.equ	48
+bytecode_goto_ix	.equ	49
+bytecode_inc_ip_ip	.equ	50
+bytecode_inc_ir1_ir1	.equ	51
+bytecode_inc_ir1_ix	.equ	52
+bytecode_inc_ir3_ix	.equ	53
+bytecode_inc_ix_ix	.equ	54
+bytecode_inkey_sx	.equ	55
+bytecode_jmpeq_ir1_ix	.equ	56
+bytecode_jmpne_ir1_ix	.equ	57
+bytecode_jsrne_ir1_ix	.equ	58
+bytecode_ld_fx_fr1	.equ	59
+bytecode_ld_id_ix	.equ	60
+bytecode_ld_ip_ir1	.equ	61
+bytecode_ld_ip_nb	.equ	62
+bytecode_ld_ip_pb	.equ	63
+bytecode_ld_ir1_ix	.equ	64
+bytecode_ld_ir1_pb	.equ	65
+bytecode_ld_ir2_ix	.equ	66
+bytecode_ld_ir2_pb	.equ	67
+bytecode_ld_ir3_ix	.equ	68
+bytecode_ld_ir3_pb	.equ	69
+bytecode_ld_ir4_ix	.equ	70
+bytecode_ld_ir4_pb	.equ	71
+bytecode_ld_ix_ir1	.equ	72
+bytecode_ld_ix_pb	.equ	73
+bytecode_ld_ix_pw	.equ	74
+bytecode_ld_sp_sr1	.equ	75
+bytecode_ld_sr1_ss	.equ	76
+bytecode_ld_sr1_sx	.equ	77
+bytecode_ld_sr2_sx	.equ	78
+bytecode_ldeq_ir1_ir1_ir2	.equ	79
+bytecode_ldeq_ir1_ir1_ix	.equ	80
+bytecode_ldeq_ir1_ir1_pb	.equ	81
+bytecode_ldeq_ir1_ix_id	.equ	82
+bytecode_ldeq_ir1_sr1_ss	.equ	83
+bytecode_ldeq_ir2_ir2_pb	.equ	84
+bytecode_ldeq_ir2_sr2_ss	.equ	85
+bytecode_ldlt_ir1_ir1_ir2	.equ	86
+bytecode_ldlt_ir1_ir1_ix	.equ	87
+bytecode_ldlt_ir1_ir1_pb	.equ	88
+bytecode_ldlt_ir2_ir2_ix	.equ	89
+bytecode_ldlt_ir2_ir2_pb	.equ	90
+bytecode_ldne_ir1_ir1_ir2	.equ	91
+bytecode_ldne_ir1_ir1_pb	.equ	92
+bytecode_ldne_ir1_sr1_ss	.equ	93
+bytecode_left_sr1_sr1_ir2	.equ	94
+bytecode_midT_sr1_sr1_pb	.equ	95
+bytecode_mid_sr1_sr1_pb	.equ	96
+bytecode_mid_sr2_sr2_ir3	.equ	97
+bytecode_mul3_ir1_ix	.equ	98
+bytecode_neg_ir1_ir1	.equ	99
+bytecode_next	.equ	100
+bytecode_one_ix	.equ	101
+bytecode_ongoto_ir1_is	.equ	102
+bytecode_or_ir1_ir1_ir2	.equ	103
+bytecode_poke_ir1_ir2	.equ	104
+bytecode_poke_pw_ir1	.equ	105
+bytecode_pr_sr1	.equ	106
+bytecode_pr_ss	.equ	107
+bytecode_prat_ir1	.equ	108
+bytecode_prat_ix	.equ	109
+bytecode_prat_pb	.equ	110
+bytecode_prat_pw	.equ	111
+bytecode_progbegin	.equ	112
+bytecode_progend	.equ	113
+bytecode_return	.equ	114
+bytecode_rnd_fr1_ir1	.equ	115
+bytecode_rnd_fr1_ix	.equ	116
+bytecode_rsub_ir1_ir1_pb	.equ	117
+bytecode_shift_ir1_ir1_pb	.equ	118
+bytecode_shift_ir2_ir2_pb	.equ	119
+bytecode_sound_ir1_ir2	.equ	120
+bytecode_stop	.equ	121
+bytecode_str_sr1_ir1	.equ	122
+bytecode_str_sr1_ix	.equ	123
+bytecode_strcat_sr1_sr1_sr2	.equ	124
+bytecode_strinit_sr1_sr1	.equ	125
+bytecode_sub_ip_ip_pb	.equ	126
+bytecode_sub_ir1_ix_id	.equ	127
+bytecode_timer_ir1	.equ	128
+bytecode_to_ip_ix	.equ	129
+bytecode_to_ip_pb	.equ	130
+bytecode_to_ip_pw	.equ	131
+bytecode_true_ix	.equ	132
+bytecode_val_fr1_sr1	.equ	133
 
 catalog
 	.word	abs_ir1_ir1
@@ -7231,6 +7082,8 @@ catalog
 	.word	clr_ix
 	.word	cls
 	.word	clsn_pb
+	.word	dbl_ir1_ir1
+	.word	dbl_ir1_ix
 	.word	dec_ip_ip
 	.word	dec_ir1_ir1
 	.word	dec_ir1_ix
@@ -7319,7 +7172,6 @@ catalog
 	.word	strcat_sr1_sr1_sr2
 	.word	strinit_sr1_sr1
 	.word	sub_ip_ip_pb
-	.word	sub_ir1_ir1_pb
 	.word	sub_ir1_ix_id
 	.word	timer_ir1
 	.word	to_ip_ix
@@ -9014,7 +8866,7 @@ arrval2_ir2_sx			; numCalls = 3
 	std	r2+1
 	rts
 
-arrval3_ir1_ix			; numCalls = 55
+arrval3_ir1_ix			; numCalls = 46
 	.module	modarrval3_ir1_ix
 	jsr	extend
 	ldd	r1+1
@@ -9149,7 +9001,27 @@ clsn_pb			; numCalls = 3
 	jsr	getbyte
 	jmp	R_CLSN
 
-dec_ip_ip			; numCalls = 1
+dbl_ir1_ir1			; numCalls = 15
+	.module	moddbl_ir1_ir1
+	jsr	noargs
+	ldx	#r1
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
+dbl_ir1_ix			; numCalls = 3
+	.module	moddbl_ir1_ix
+	jsr	extend
+	ldd	1,x
+	lsld
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
+dec_ip_ip			; numCalls = 7
 	.module	moddec_ip_ip
 	jsr	noargs
 	ldx	letptr
@@ -9161,7 +9033,7 @@ dec_ip_ip			; numCalls = 1
 	stab	0,x
 	rts
 
-dec_ir1_ir1			; numCalls = 14
+dec_ir1_ir1			; numCalls = 8
 	.module	moddec_ir1_ir1
 	jsr	noargs
 	ldd	r1+1
@@ -9172,7 +9044,7 @@ dec_ir1_ir1			; numCalls = 14
 	stab	r1
 	rts
 
-dec_ir1_ix			; numCalls = 12
+dec_ir1_ix			; numCalls = 9
 	.module	moddec_ir1_ix
 	jsr	extend
 	ldd	1,x
@@ -9194,7 +9066,7 @@ dec_ir2_ix			; numCalls = 4
 	stab	r2
 	rts
 
-dec_ir3_ix			; numCalls = 8
+dec_ir3_ix			; numCalls = 5
 	.module	moddec_ir3_ix
 	jsr	extend
 	ldd	1,x
@@ -9284,7 +9156,7 @@ inc_ir1_ir1			; numCalls = 13
 _rts
 	rts
 
-inc_ir1_ix			; numCalls = 8
+inc_ir1_ix			; numCalls = 5
 	.module	modinc_ir1_ix
 	jsr	extend
 	ldd	1,x
@@ -9399,7 +9271,7 @@ ld_id_ix			; numCalls = 27
 	stab	0,x
 	rts
 
-ld_ip_ir1			; numCalls = 36
+ld_ip_ir1			; numCalls = 27
 	.module	modld_ip_ir1
 	jsr	noargs
 	ldx	letptr
@@ -9427,7 +9299,7 @@ ld_ip_pb			; numCalls = 5
 	std	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 155
+ld_ir1_ix			; numCalls = 149
 	.module	modld_ir1_ix
 	jsr	extend
 	ldd	1,x
@@ -9444,7 +9316,7 @@ ld_ir1_pb			; numCalls = 155
 	std	r1
 	rts
 
-ld_ir2_ix			; numCalls = 101
+ld_ir2_ix			; numCalls = 92
 	.module	modld_ir2_ix
 	jsr	extend
 	ldd	1,x
@@ -9461,7 +9333,7 @@ ld_ir2_pb			; numCalls = 128
 	std	r2
 	rts
 
-ld_ir3_ix			; numCalls = 57
+ld_ir3_ix			; numCalls = 51
 	.module	modld_ir3_ix
 	jsr	extend
 	ldd	1,x
@@ -10261,7 +10133,7 @@ rsub_ir1_ir1_pb			; numCalls = 2
 	stab	r1
 	rts
 
-shift_ir1_ir1_pb			; numCalls = 20
+shift_ir1_ir1_pb			; numCalls = 2
 	.module	modshift_ir1_ir1_pb
 	jsr	getbyte
 	ldx	#r1
@@ -10345,7 +10217,7 @@ strinit_sr1_sr1			; numCalls = 3
 	std	r1+1
 	rts
 
-sub_ip_ip_pb			; numCalls = 1
+sub_ip_ip_pb			; numCalls = 4
 	.module	modsub_ip_ip_pb
 	jsr	getbyte
 	ldx	letptr
@@ -10357,19 +10229,6 @@ sub_ip_ip_pb			; numCalls = 1
 	ldab	0,x
 	sbcb	#0
 	stab	0,x
-	rts
-
-sub_ir1_ir1_pb			; numCalls = 3
-	.module	modsub_ir1_ir1_pb
-	jsr	getbyte
-	stab	tmp1
-	ldd	r1+1
-	subb	tmp1
-	sbca	#0
-	std	r1+1
-	ldab	r1
-	sbcb	#0
-	stab	r1
 	rts
 
 sub_ir1_ix_id			; numCalls = 1

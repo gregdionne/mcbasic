@@ -51,3 +51,45 @@ bool IsEqual::inspect(const StringArrayExpr &expr) const {
   }
   return result;
 }
+
+bool IsEqual::checkOps(const std::vector<up<NumericExpr>> &lhs,
+                       const std::vector<up<NumericExpr>> &rhs) const {
+  if (lhs.size() != rhs.size()) {
+    return false;
+  }
+
+  auto iOpLhs = lhs.begin();
+  auto iOpRhs = rhs.begin();
+  while (iOpLhs != lhs.end()) {
+    IsEqual isEqual(iOpRhs->get());
+    if (!(*iOpLhs)->check(&isEqual)) {
+      return false;
+    }
+    ++iOpLhs;
+    ++iOpRhs;
+  }
+
+  return true;
+}
+
+bool IsEqual::inspect(const NaryNumericExpr &expr) const {
+  auto *tgt = dynamic_cast<const NaryNumericExpr *>(target);
+  return tgt != nullptr && tgt->funcName == expr.funcName &&
+         checkOps(tgt->operands, expr.operands) &&
+         checkOps(tgt->invoperands, expr.invoperands);
+}
+
+bool IsEqual::inspect(const AdditiveExpr &expr) const {
+  return expr.NaryNumericExpr::check(this);
+}
+
+bool IsEqual::inspect(const MultiplicativeExpr &expr) const {
+  return expr.NaryNumericExpr::check(this);
+}
+bool IsEqual::inspect(const AndExpr &expr) const {
+  return expr.NaryNumericExpr::check(this);
+}
+
+bool IsEqual::inspect(const OrExpr &expr) const {
+  return expr.NaryNumericExpr::check(this);
+}

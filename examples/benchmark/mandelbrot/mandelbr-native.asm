@@ -153,22 +153,16 @@ LINE_100
 
 LINE_170
 
-	; IF ((X*X)+(Y*Y))>4 THEN
+	; IF (SQ(X)+SQ(Y))>4 THEN
 
 	ldab	#4
 	jsr	ld_ir1_pb
 
 	ldx	#FLTVAR_X
-	jsr	ld_fr2_fx
-
-	ldx	#FLTVAR_X
-	jsr	mul_fr2_fr2_fx
+	jsr	sq_fr2_fx
 
 	ldx	#FLTVAR_Y
-	jsr	ld_fr3_fx
-
-	ldx	#FLTVAR_Y
-	jsr	mul_fr3_fr3_fx
+	jsr	sq_fr3_fx
 
 	jsr	add_fr2_fr2_fr3
 
@@ -206,22 +200,16 @@ LINE_170
 
 LINE_180
 
-	; XT=(X*X)+XZ-(Y*Y)
+	; XT=SQ(X)+XZ-SQ(Y)
 
 	ldx	#FLTVAR_X
-	jsr	ld_fr1_fx
-
-	ldx	#FLTVAR_X
-	jsr	mul_fr1_fr1_fx
+	jsr	sq_fr1_fx
 
 	ldx	#FLTVAR_XZ
 	jsr	add_fr1_fr1_fx
 
 	ldx	#FLTVAR_Y
-	jsr	ld_fr2_fx
-
-	ldx	#FLTVAR_Y
-	jsr	mul_fr2_fr2_fx
+	jsr	sq_fr2_fx
 
 	jsr	sub_fr1_fr1_fr2
 
@@ -236,8 +224,7 @@ LINE_180
 	ldx	#FLTVAR_X
 	jsr	mul_fr1_fr1_fx
 
-	ldab	#1
-	jsr	shift_fr1_fr1_pb
+	jsr	dbl_fr1_fr1
 
 	ldx	#FLTVAR_YZ
 	jsr	add_fr1_fr1_fx
@@ -265,10 +252,7 @@ LINE_215
 	; CC=INT(SHIFT(I,-1))
 
 	ldx	#INTVAR_I
-	jsr	ld_ir1_ix
-
-	ldab	#-1
-	jsr	shift_fr1_ir1_nb
+	jsr	hlf_fr1_ix
 
 	ldx	#INTVAR_CC
 	jsr	ld_ix_ir1
@@ -278,10 +262,7 @@ LINE_220
 	; SET(SHIFT(PX,1),PY,CC)
 
 	ldx	#INTVAR_PX
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#INTVAR_PY
 	jsr	ld_ir2_ix
@@ -292,10 +273,7 @@ LINE_220
 	; SET(SHIFT(PX,1)+1,PY,CC)
 
 	ldx	#INTVAR_PX
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	jsr	inc_ir1_ir1
 
@@ -623,90 +601,17 @@ _loadc
 _ok
 	bra	doset
 
-	.module	mdshlflt
-; multiply X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shlflt
-	cmpb	#8
-	blo	_shlbit
-	stab	tmp1
-	ldd	1,x
-	std	0,x
-	ldd	3,x
-	std	2,x
-	clr	4,x
-	ldab	tmp1
-	subb	#8
-	bne	shlflt
-	rts
-_shlbit
-	lsl	4,x
-	rol	3,x
-	rol	2,x
-	rol	1,x
-	rol	0,x
-	decb
-	bne	_shlbit
-	rts
-
-	.module	mdshlint
-; multiply X by 2^ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x)
-;          uses tmp1
-shlint
-	cmpb	#8
-	blo	_shlbit
-	stab	tmp1
-	ldd	1,x
-	std	0,x
-	clr	2,x
-	ldab	tmp1
-	subb	#8
-	bne	shlint
-	rts
-_shlbit
-	lsl	2,x
-	rol	1,x
-	rol	0,x
-	decb
-	bne	_shlbit
-	rts
-
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
+	ldab	tmp1+1
 	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
 	rts
 
 	.module	mdtonat
@@ -766,6 +671,20 @@ _flt
 _done
 	ldx	tmp1
 	jmp	,x
+
+	.module	mdx2arg
+; copy [X] to argv
+;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
+;   EXIT   Y copied to 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+	; copy x to argv
+x2arg
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	std	3+argv
+	rts
 
 add_fr1_fr1_fx			; numCalls = 2
 	.module	modadd_fr1_fr1_fx
@@ -829,6 +748,26 @@ clsn_pb			; numCalls = 1
 	.module	modclsn_pb
 	jmp	R_CLSN
 
+dbl_fr1_fr1			; numCalls = 1
+	.module	moddbl_fr1_fr1
+	ldx	#r1
+	lsl	4,x
+	rol	3,x
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
+dbl_ir1_ix			; numCalls = 2
+	.module	moddbl_ir1_ix
+	ldd	1,x
+	lsld
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
 dec_fr1_fr1			; numCalls = 1
 	.module	moddec_fr1_fr1
 	ldd	r1+3
@@ -864,6 +803,20 @@ goto_ix			; numCalls = 1
 	ins
 	ins
 	jmp	,x
+
+hlf_fr1_ix			; numCalls = 1
+	.module	modhlf_fr1_ix
+	ldab	0,x
+	asrb
+	stab	r1
+	ldd	1,x
+	rora
+	rorb
+	std	r1+1
+	ldd	#0
+	rora
+	std	r1+3
+	rts
 
 inc_ir1_ir1			; numCalls = 1
 	.module	modinc_ir1_ir1
@@ -903,7 +856,7 @@ ld_fd_fx			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 2
+ld_fr1_fx			; numCalls = 1
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -911,26 +864,6 @@ ld_fr1_fx			; numCalls = 2
 	std	r1+1
 	ldab	0,x
 	stab	r1
-	rts
-
-ld_fr2_fx			; numCalls = 2
-	.module	modld_fr2_fx
-	ldd	3,x
-	std	r2+3
-	ldd	1,x
-	std	r2+1
-	ldab	0,x
-	stab	r2
-	rts
-
-ld_fr3_fx			; numCalls = 1
-	.module	modld_fr3_fx
-	ldd	3,x
-	std	r3+3
-	ldd	1,x
-	std	r3+1
-	ldab	0,x
-	stab	r3
 	rts
 
 ld_fx_fr1			; numCalls = 4
@@ -955,7 +888,7 @@ ld_id_ix			; numCalls = 2
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 5
+ld_ir1_ix			; numCalls = 2
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -1007,7 +940,7 @@ ldlt_ir1_ir1_fr2			; numCalls = 1
 	stab	r1
 	rts
 
-mul_fr1_fr1_fx			; numCalls = 2
+mul_fr1_fr1_fx			; numCalls = 1
 	.module	modmul_fr1_fr1_fx
 	ldab	0,x
 	stab	0+argv
@@ -1029,28 +962,6 @@ mul_fr1_ir1_fx			; numCalls = 2
 	ldd	#0
 	std	r1+3
 	ldx	#r1
-	jmp	mulfltx
-
-mul_fr2_fr2_fx			; numCalls = 2
-	.module	modmul_fr2_fr2_fx
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldd	3,x
-	std	3+argv
-	ldx	#r2
-	jmp	mulfltx
-
-mul_fr3_fr3_fx			; numCalls = 1
-	.module	modmul_fr3_fr3_fx
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldd	3,x
-	std	3+argv
-	ldx	#r3
 	jmp	mulfltx
 
 next			; numCalls = 4
@@ -1209,21 +1120,26 @@ setc_ir1_ir2_ix			; numCalls = 2
 	pulb
 	jmp	setc
 
-shift_fr1_fr1_pb			; numCalls = 1
-	.module	modshift_fr1_fr1_pb
+sq_fr1_fx			; numCalls = 1
+	.module	modsq_fr1_fx
+	jsr	x2arg
+	jsr	mulfltt
 	ldx	#r1
-	jmp	shlflt
+	jmp	tmp2xf
 
-shift_fr1_ir1_nb			; numCalls = 1
-	.module	modshift_fr1_ir1_nb
-	ldx	#r1
-	negb
-	jmp	shrint
+sq_fr2_fx			; numCalls = 2
+	.module	modsq_fr2_fx
+	jsr	x2arg
+	jsr	mulfltt
+	ldx	#r2
+	jmp	tmp2xf
 
-shift_ir1_ir1_pb			; numCalls = 2
-	.module	modshift_ir1_ir1_pb
-	ldx	#r1
-	jmp	shlint
+sq_fr3_fx			; numCalls = 1
+	.module	modsq_fr3_fx
+	jsr	x2arg
+	jsr	mulfltt
+	ldx	#r3
+	jmp	tmp2xf
 
 sub_fr1_fr1_fr2			; numCalls = 1
 	.module	modsub_fr1_fr1_fr2

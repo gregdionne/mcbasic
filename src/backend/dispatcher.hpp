@@ -59,6 +59,9 @@ public:
   std::string operate(InstInc &inst) override;
   std::string operate(InstDec &inst) override;
   std::string operate(InstAbs &inst) override;
+  std::string operate(InstDbl &inst) override;
+  std::string operate(InstHlf &inst) override;
+  std::string operate(InstSq &inst) override;
   std::string operate(InstNeg &inst) override;
   std::string operate(InstCom &inst) override;
   std::string operate(InstSgn &inst) override;

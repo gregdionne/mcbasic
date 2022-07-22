@@ -2007,8 +2007,7 @@ LINE_42
 	ldx	#INTVAR_B
 	jsr	abs_ir1_ix
 
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ir1
 
 	ldab	#2
 	jsr	add_ir1_ir1_pb
@@ -2819,8 +2818,7 @@ LINE_52
 	ldx	#INTVAR_Y
 	jsr	abs_ir1_ix
 
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ir1
 
 	ldab	#2
 	jsr	add_ir1_ir1_pb
@@ -3734,10 +3732,7 @@ LINE_220
 	; SOUND 30-SHIFT(Y,1),1
 
 	ldx	#INTVAR_Y
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldab	#30
 	jsr	rsub_ir1_ir1_pb
@@ -5139,10 +5134,7 @@ LINE_2070
 	; T=SHIFT(R,1)+SHIFT(R,6)+80
 
 	ldx	#INTVAR_R
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#INTVAR_R
 	jsr	ld_ir2_ix
@@ -5249,10 +5241,7 @@ LINE_3010
 	jsr	add_ir1_ir1_pb
 
 	ldx	#INTVAR_X
-	jsr	ld_ir2_ix
-
-	ldab	#1
-	jsr	shift_ir2_ir2_pb
+	jsr	dbl_ir2_ix
 
 	jsr	sub_ir1_ir1_ir2
 
@@ -5300,10 +5289,7 @@ LINE_3011
 	jsr	add_ir1_ir1_pb
 
 	ldx	#INTVAR_X
-	jsr	ld_ir2_ix
-
-	ldab	#1
-	jsr	shift_ir2_ir2_pb
+	jsr	dbl_ir2_ix
 
 	jsr	sub_ir1_ir1_ir2
 
@@ -7435,6 +7421,34 @@ clsn_pb			; numCalls = 1
 	.module	modclsn_pb
 	jmp	R_CLSN
 
+dbl_ir1_ir1			; numCalls = 2
+	.module	moddbl_ir1_ir1
+	ldx	#r1
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
+dbl_ir1_ix			; numCalls = 2
+	.module	moddbl_ir1_ix
+	ldd	1,x
+	lsld
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
+dbl_ir2_ix			; numCalls = 2
+	.module	moddbl_ir2_ix
+	ldd	1,x
+	lsld
+	std	r2+1
+	ldab	0,x
+	rolb
+	stab	r2
+	rts
+
 dec_ip_ip			; numCalls = 2
 	.module	moddec_ip_ip
 	ldx	letptr
@@ -7704,7 +7718,7 @@ ld_ip_pb			; numCalls = 15
 	std	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 171
+ld_ir1_ix			; numCalls = 169
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -7733,7 +7747,7 @@ ld_ir1_pw			; numCalls = 3
 	stab	r1
 	rts
 
-ld_ir2_ix			; numCalls = 39
+ld_ir2_ix			; numCalls = 37
 	.module	modld_ir2_ix
 	ldd	1,x
 	std	r2+1
@@ -8233,7 +8247,7 @@ pr_sx			; numCalls = 1
 	ldab	0,x
 	beq	_rts
 	ldx	1,x
-	jsr	print
+	jmp	print
 _rts
 	rts
 
@@ -8434,12 +8448,12 @@ _done
 	std	r1
 	rts
 
-shift_ir1_ir1_pb			; numCalls = 16
+shift_ir1_ir1_pb			; numCalls = 12
 	.module	modshift_ir1_ir1_pb
 	ldx	#r1
 	jmp	shlint
 
-shift_ir2_ir2_pb			; numCalls = 21
+shift_ir2_ir2_pb			; numCalls = 19
 	.module	modshift_ir2_ir2_pb
 	ldx	#r2
 	jmp	shlint

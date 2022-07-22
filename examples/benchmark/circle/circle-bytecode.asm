@@ -355,11 +355,8 @@ LINE_315
 
 	; A=3-SHIFT(R,1)
 
-	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_dbl_ir1_ix
 	.byte	bytecode_INTVAR_R
-
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
 
 	.byte	bytecode_rsub_ir1_ir1_pb
 	.byte	3
@@ -589,41 +586,42 @@ bytecode_clear	.equ	9
 bytecode_clr_ix	.equ	10
 bytecode_clsn_pb	.equ	11
 bytecode_cos_fr1_fr1	.equ	12
-bytecode_dec_ix_ix	.equ	13
-bytecode_forone_ix	.equ	14
-bytecode_gosub_ix	.equ	15
-bytecode_inc_ix_ix	.equ	16
-bytecode_jmpeq_ir1_ix	.equ	17
-bytecode_jmpne_ir1_ix	.equ	18
-bytecode_ld_fd_fx	.equ	19
-bytecode_ld_fr1_fx	.equ	20
-bytecode_ld_fr2_fx	.equ	21
-bytecode_ld_fx_fr1	.equ	22
-bytecode_ld_fx_ir1	.equ	23
-bytecode_ld_id_ix	.equ	24
-bytecode_ld_ir1_ix	.equ	25
-bytecode_ld_ir1_pb	.equ	26
-bytecode_ld_ix_pb	.equ	27
-bytecode_ldge_ir1_ix_id	.equ	28
-bytecode_ldlt_ir1_ir1_fx	.equ	29
-bytecode_mul_fr1_fr1_fx	.equ	30
-bytecode_mul_fr1_fr1_pb	.equ	31
-bytecode_mul_fr2_fr2_fx	.equ	32
-bytecode_mul_fr2_fr2_pb	.equ	33
-bytecode_next	.equ	34
-bytecode_nextvar_ix	.equ	35
-bytecode_progbegin	.equ	36
-bytecode_progend	.equ	37
-bytecode_return	.equ	38
-bytecode_rsub_ir1_ir1_pb	.equ	39
-bytecode_setc_ir1_ir2_pb	.equ	40
-bytecode_shift_ir1_ir1_pb	.equ	41
-bytecode_sin_fr1_fr1	.equ	42
-bytecode_sub_fr1_fr1_fr2	.equ	43
-bytecode_sub_ir1_ix_id	.equ	44
-bytecode_sub_ir1_pb_ix	.equ	45
-bytecode_sub_ir2_pb_ix	.equ	46
-bytecode_to_ip_pb	.equ	47
+bytecode_dbl_ir1_ix	.equ	13
+bytecode_dec_ix_ix	.equ	14
+bytecode_forone_ix	.equ	15
+bytecode_gosub_ix	.equ	16
+bytecode_inc_ix_ix	.equ	17
+bytecode_jmpeq_ir1_ix	.equ	18
+bytecode_jmpne_ir1_ix	.equ	19
+bytecode_ld_fd_fx	.equ	20
+bytecode_ld_fr1_fx	.equ	21
+bytecode_ld_fr2_fx	.equ	22
+bytecode_ld_fx_fr1	.equ	23
+bytecode_ld_fx_ir1	.equ	24
+bytecode_ld_id_ix	.equ	25
+bytecode_ld_ir1_ix	.equ	26
+bytecode_ld_ir1_pb	.equ	27
+bytecode_ld_ix_pb	.equ	28
+bytecode_ldge_ir1_ix_id	.equ	29
+bytecode_ldlt_ir1_ir1_fx	.equ	30
+bytecode_mul_fr1_fr1_fx	.equ	31
+bytecode_mul_fr1_fr1_pb	.equ	32
+bytecode_mul_fr2_fr2_fx	.equ	33
+bytecode_mul_fr2_fr2_pb	.equ	34
+bytecode_next	.equ	35
+bytecode_nextvar_ix	.equ	36
+bytecode_progbegin	.equ	37
+bytecode_progend	.equ	38
+bytecode_return	.equ	39
+bytecode_rsub_ir1_ir1_pb	.equ	40
+bytecode_setc_ir1_ir2_pb	.equ	41
+bytecode_shift_ir1_ir1_pb	.equ	42
+bytecode_sin_fr1_fr1	.equ	43
+bytecode_sub_fr1_fr1_fr2	.equ	44
+bytecode_sub_ir1_ix_id	.equ	45
+bytecode_sub_ir1_pb_ix	.equ	46
+bytecode_sub_ir2_pb_ix	.equ	47
+bytecode_to_ip_pb	.equ	48
 
 catalog
 	.word	add_fr1_fr1_fr2
@@ -639,6 +637,7 @@ catalog
 	.word	clr_ix
 	.word	clsn_pb
 	.word	cos_fr1_fr1
+	.word	dbl_ir1_ix
 	.word	dec_ix_ix
 	.word	forone_ix
 	.word	gosub_ix
@@ -1762,6 +1761,17 @@ cos_fr1_fr1			; numCalls = 1
 	ldx	#r1
 	jmp	cos
 
+dbl_ir1_ix			; numCalls = 1
+	.module	moddbl_ir1_ix
+	jsr	extend
+	ldd	1,x
+	lsld
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
 dec_ix_ix			; numCalls = 1
 	.module	moddec_ix_ix
 	jsr	extend
@@ -1902,7 +1912,7 @@ ld_id_ix			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 2
+ld_ir1_ix			; numCalls = 1
 	.module	modld_ir1_ix
 	jsr	extend
 	ldd	1,x
@@ -2203,7 +2213,7 @@ setc_ir1_ir2_pb			; numCalls = 10
 	pulb
 	jmp	setc
 
-shift_ir1_ir1_pb			; numCalls = 3
+shift_ir1_ir1_pb			; numCalls = 2
 	.module	modshift_ir1_ir1_pb
 	jsr	getbyte
 	ldx	#r1

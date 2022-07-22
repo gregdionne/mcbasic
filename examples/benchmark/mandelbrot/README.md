@@ -21,5 +21,5 @@ CLOADM and EXEC as you would a normal machine language program.
 # Timing
 
 interpreted: 220 seconds
-bytecode:     44 seconds
-native:       34 seconds
+bytecode:     41 seconds
+native:       33 seconds

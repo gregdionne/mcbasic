@@ -222,18 +222,14 @@ LINE_120
 	.byte	bytecode_add_fr1_fr1_fx
 	.byte	bytecode_FLTVAR_X
 
-	.byte	bytecode_shift_fr1_fr1_nb
-	.byte	-1
+	.byte	bytecode_hlf_fr1_fr1
 
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_X
 
-	; Y=SHIFT((3-(Y*Y*S/M/M))*Y,-1)
+	; Y=SHIFT((3-(SQ(Y)*S/M/M))*Y,-1)
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_Y
-
-	.byte	bytecode_mul_fr1_fr1_fx
+	.byte	bytecode_sq_fr1_fx
 	.byte	bytecode_FLTVAR_Y
 
 	.byte	bytecode_mul_fr1_fr1_fx
@@ -251,8 +247,7 @@ LINE_120
 	.byte	bytecode_mul_fr1_fr1_fx
 	.byte	bytecode_FLTVAR_Y
 
-	.byte	bytecode_shift_fr1_fr1_nb
-	.byte	-1
+	.byte	bytecode_hlf_fr1_fr1
 
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_Y
@@ -323,28 +318,29 @@ bytecode_div_fr1_ir1_fx	.equ	4
 bytecode_forone_ix	.equ	5
 bytecode_gosub_ix	.equ	6
 bytecode_goto_ix	.equ	7
-bytecode_ignxtra	.equ	8
-bytecode_input	.equ	9
-bytecode_ld_fr1_fx	.equ	10
-bytecode_ld_fx_fr1	.equ	11
-bytecode_ld_ir1_ix	.equ	12
-bytecode_ld_ix_pw	.equ	13
-bytecode_mul_fr1_fr1_fx	.equ	14
-bytecode_next	.equ	15
-bytecode_nextvar_ix	.equ	16
-bytecode_pr_sr1	.equ	17
-bytecode_pr_ss	.equ	18
-bytecode_progbegin	.equ	19
-bytecode_progend	.equ	20
-bytecode_readbuf_fx	.equ	21
-bytecode_return	.equ	22
-bytecode_rsub_fr1_fr1_pb	.equ	23
-bytecode_shift_fr1_fr1_nb	.equ	24
-bytecode_sqr_fr1_fr1	.equ	25
-bytecode_str_sr1_fr1	.equ	26
-bytecode_str_sr1_fx	.equ	27
-bytecode_str_sr1_ix	.equ	28
-bytecode_to_ip_pb	.equ	29
+bytecode_hlf_fr1_fr1	.equ	8
+bytecode_ignxtra	.equ	9
+bytecode_input	.equ	10
+bytecode_ld_fr1_fx	.equ	11
+bytecode_ld_fx_fr1	.equ	12
+bytecode_ld_ir1_ix	.equ	13
+bytecode_ld_ix_pw	.equ	14
+bytecode_mul_fr1_fr1_fx	.equ	15
+bytecode_next	.equ	16
+bytecode_nextvar_ix	.equ	17
+bytecode_pr_sr1	.equ	18
+bytecode_pr_ss	.equ	19
+bytecode_progbegin	.equ	20
+bytecode_progend	.equ	21
+bytecode_readbuf_fx	.equ	22
+bytecode_return	.equ	23
+bytecode_rsub_fr1_fr1_pb	.equ	24
+bytecode_sq_fr1_fx	.equ	25
+bytecode_sqr_fr1_fr1	.equ	26
+bytecode_str_sr1_fr1	.equ	27
+bytecode_str_sr1_fx	.equ	28
+bytecode_str_sr1_ix	.equ	29
+bytecode_to_ip_pb	.equ	30
 
 catalog
 	.word	add_fr1_fr1_fx
@@ -355,6 +351,7 @@ catalog
 	.word	forone_ix
 	.word	gosub_ix
 	.word	goto_ix
+	.word	hlf_fr1_fr1
 	.word	ignxtra
 	.word	input
 	.word	ld_fr1_fx
@@ -371,7 +368,7 @@ catalog
 	.word	readbuf_fx
 	.word	return
 	.word	rsub_fr1_fr1_pb
-	.word	shift_fr1_fr1_nb
+	.word	sq_fr1_fx
 	.word	sqr_fr1_fr1
 	.word	str_sr1_fr1
 	.word	str_sr1_fx
@@ -1086,40 +1083,6 @@ _loop
 	bne	_loop
 	rts
 
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
-	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
-	rts
-
 	.module	mdsqr
 ; X = SQR(X)
 ;   ENTRY  X in 0,X 1,X 2,X 3,X 4,X
@@ -1557,6 +1520,19 @@ _tblten
 	.byte	$0F,$42,$40
 	.byte	$98,$96,$80
 
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
+	rts
+
 	.module	mdtobc
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
@@ -1614,6 +1590,20 @@ _flt
 _done
 	ldx	tmp1
 	jmp	,x
+
+	.module	mdx2arg
+; copy [X] to argv
+;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
+;   EXIT   Y copied to 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+	; copy x to argv
+x2arg
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	std	3+argv
+	rts
 
 add_fr1_fr1_fx			; numCalls = 1
 	.module	modadd_fr1_fr1_fx
@@ -1718,6 +1708,17 @@ goto_ix			; numCalls = 1
 	stx	nxtinst
 	rts
 
+hlf_fr1_fr1			; numCalls = 2
+	.module	modhlf_fr1_fr1
+	jsr	noargs
+	ldx	#r1
+	asr	0,x
+	ror	1,x
+	ror	2,x
+	ror	3,x
+	ror	4,x
+	rts
+
 ignxtra			; numCalls = 1
 	.module	modignxtra
 	jsr	noargs
@@ -1737,7 +1738,7 @@ input			; numCalls = 1
 	stx	redoptr
 	jmp	inputqs
 
-ld_fr1_fx			; numCalls = 4
+ld_fr1_fx			; numCalls = 3
 	.module	modld_fr1_fx
 	jsr	extend
 	ldd	3,x
@@ -1776,7 +1777,7 @@ ld_ix_pw			; numCalls = 1
 	stab	0,x
 	rts
 
-mul_fr1_fr1_fx			; numCalls = 4
+mul_fr1_fr1_fx			; numCalls = 3
 	.module	modmul_fr1_fr1_fx
 	jsr	extend
 	ldab	0,x
@@ -2039,12 +2040,13 @@ rsub_fr1_fr1_pb			; numCalls = 1
 	std	r1
 	rts
 
-shift_fr1_fr1_nb			; numCalls = 2
-	.module	modshift_fr1_fr1_nb
-	jsr	getbyte
+sq_fr1_fx			; numCalls = 1
+	.module	modsq_fr1_fx
+	jsr	extend
+	jsr	x2arg
+	jsr	mulfltt
 	ldx	#r1
-	negb
-	jmp	shrflt
+	jmp	tmp2xf
 
 sqr_fr1_fr1			; numCalls = 1
 	.module	modsqr_fr1_fr1

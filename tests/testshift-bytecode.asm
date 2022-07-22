@@ -106,11 +106,8 @@ LINE_20
 
 	; B=SHIFT(A,1)
 
-	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_dbl_ir1_ix
 	.byte	bytecode_INTVAR_A
-
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
 
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_B
@@ -119,11 +116,8 @@ LINE_30
 
 	; C=SHIFT(A,1)
 
-	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_dbl_ir1_ix
 	.byte	bytecode_INTVAR_A
-
-	.byte	bytecode_shift_ir1_ir1_pb
-	.byte	1
 
 	.byte	bytecode_ld_fx_ir1
 	.byte	bytecode_FLTVAR_C
@@ -292,26 +286,27 @@ LLAST
 
 ; Library Catalog
 bytecode_clear	.equ	0
-bytecode_ld_fr1_fx	.equ	1
-bytecode_ld_fx_fr1	.equ	2
-bytecode_ld_fx_ir1	.equ	3
-bytecode_ld_id_ix	.equ	4
-bytecode_ld_ir1_ix	.equ	5
-bytecode_ld_ix_ir1	.equ	6
-bytecode_one_ix	.equ	7
-bytecode_pr_sr1	.equ	8
-bytecode_pr_ss	.equ	9
-bytecode_progbegin	.equ	10
-bytecode_progend	.equ	11
-bytecode_shift_fr1_fr1_nb	.equ	12
-bytecode_shift_fr1_fr1_pb	.equ	13
-bytecode_shift_fr1_ir1_nb	.equ	14
-bytecode_shift_ir1_ir1_pb	.equ	15
+bytecode_dbl_ir1_ix	.equ	1
+bytecode_ld_fr1_fx	.equ	2
+bytecode_ld_fx_fr1	.equ	3
+bytecode_ld_fx_ir1	.equ	4
+bytecode_ld_id_ix	.equ	5
+bytecode_ld_ir1_ix	.equ	6
+bytecode_ld_ix_ir1	.equ	7
+bytecode_one_ix	.equ	8
+bytecode_pr_sr1	.equ	9
+bytecode_pr_ss	.equ	10
+bytecode_progbegin	.equ	11
+bytecode_progend	.equ	12
+bytecode_shift_fr1_fr1_nb	.equ	13
+bytecode_shift_fr1_fr1_pb	.equ	14
+bytecode_shift_fr1_ir1_nb	.equ	15
 bytecode_str_sr1_fx	.equ	16
 bytecode_str_sr1_ix	.equ	17
 
 catalog
 	.word	clear
+	.word	dbl_ir1_ix
 	.word	ld_fr1_fx
 	.word	ld_fx_fr1
 	.word	ld_fx_ir1
@@ -326,7 +321,6 @@ catalog
 	.word	shift_fr1_fr1_nb
 	.word	shift_fr1_fr1_pb
 	.word	shift_fr1_ir1_nb
-	.word	shift_ir1_ir1_pb
 	.word	str_sr1_fx
 	.word	str_sr1_ix
 
@@ -778,30 +772,6 @@ _shlbit
 	bne	_shlbit
 	rts
 
-	.module	mdshlint
-; multiply X by 2^ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x)
-;          uses tmp1
-shlint
-	cmpb	#8
-	blo	_shlbit
-	stab	tmp1
-	ldd	1,x
-	std	0,x
-	clr	2,x
-	ldab	tmp1
-	subb	#8
-	bne	shlint
-	rts
-_shlbit
-	lsl	2,x
-	rol	1,x
-	rol	0,x
-	decb
-	bne	_shlbit
-	rts
-
 	.module	mdshrflt
 ; divide X by 2^ACCB for positive ACCB
 ;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
@@ -1038,6 +1008,17 @@ _start
 	stx	DP_DATA
 	rts
 
+dbl_ir1_ix			; numCalls = 2
+	.module	moddbl_ir1_ix
+	jsr	extend
+	ldd	1,x
+	lsld
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
 ld_fr1_fx			; numCalls = 2
 	.module	modld_fr1_fx
 	jsr	extend
@@ -1084,7 +1065,7 @@ ld_id_ix			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 4
+ld_ir1_ix			; numCalls = 2
 	.module	modld_ir1_ix
 	jsr	extend
 	ldd	1,x
@@ -1208,12 +1189,6 @@ shift_fr1_ir1_nb			; numCalls = 2
 	ldx	#r1
 	negb
 	jmp	shrint
-
-shift_ir1_ir1_pb			; numCalls = 2
-	.module	modshift_ir1_ir1_pb
-	jsr	getbyte
-	ldx	#r1
-	jmp	shlint
 
 str_sr1_fx			; numCalls = 5
 	.module	modstr_sr1_fx

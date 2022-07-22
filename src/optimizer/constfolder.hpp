@@ -52,6 +52,7 @@ public:
   void mutate(PointExpr &e) override;
   void mutate(InkeyExpr &e) override;
   void mutate(MemExpr &e) override;
+  void mutate(SquareExpr &e) override;
   void mutate(PosExpr &e) override;
   void mutate(TimerExpr &e) override;
   void mutate(PeekWordExpr &e) override;

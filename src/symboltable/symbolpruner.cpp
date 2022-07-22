@@ -214,6 +214,8 @@ void ExprSymbolPruner::mutate(PointExpr &e) {
   numPrune(e.y, this);
 }
 
+void ExprSymbolPruner::mutate(SquareExpr &e) { numPrune(e.expr, this); }
+
 void StatementSymbolPruner::mutate(For &s) {
   // iteration variable cannot be pruned
   numPrune(s.from, that);

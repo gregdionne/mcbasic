@@ -101,6 +101,9 @@ public:
   utils::optional<double> inspect(const MemExpr & /*expr*/) const {
     return utils::optional<double>();
   }
+  utils::optional<double> inspect(const SquareExpr & /*expr*/) const {
+    return utils::optional<double>();
+  }
   utils::optional<double> inspect(const PosExpr & /*expr*/) const {
     return utils::optional<double>();
   }

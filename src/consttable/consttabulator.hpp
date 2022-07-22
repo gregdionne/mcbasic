@@ -49,6 +49,7 @@ public:
   void inspect(const PeekWordExpr &e) const override;
   void inspect(const RelationalExpr &e) const override;
   void inspect(const PointExpr &e) const override;
+  void inspect(const SquareExpr &e) const override;
 
   void inspect(const NumericVariableExpr &) const override{};
   void inspect(const StringVariableExpr &) const override{};

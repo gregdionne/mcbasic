@@ -566,10 +566,7 @@ LINE_1015
 	; E=SHIFT(E,1)
 
 	ldx	#FLTVAR_E
-	jsr	ld_fr1_fx
-
-	ldab	#1
-	jsr	shift_fr1_fr1_pb
+	jsr	dbl_fr1_fx
 
 	ldx	#FLTVAR_E
 	jsr	ld_fx_fr1
@@ -604,10 +601,7 @@ LINE_1030
 	; E=SHIFT(E,-1)
 
 	ldx	#FLTVAR_E
-	jsr	ld_fr1_fx
-
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fx
 
 	ldx	#FLTVAR_E
 	jsr	ld_fx_fr1
@@ -1928,6 +1922,20 @@ _start
 	stx	DP_DATA
 	rts
 
+dbl_fr1_fx			; numCalls = 1
+	.module	moddbl_fr1_fx
+	ldd	3,x
+	lsld
+	std	r1+3
+	ldd	1,x
+	rolb
+	rola
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
 div_fr1_fr1_ix			; numCalls = 1
 	.module	moddiv_fr1_fr1_ix
 	ldab	0,x
@@ -1972,6 +1980,21 @@ goto_ix			; numCalls = 1
 	ins
 	ins
 	jmp	,x
+
+hlf_fr1_fx			; numCalls = 1
+	.module	modhlf_fr1_fx
+	ldab	0,x
+	asrb
+	stab	r1
+	ldd	1,x
+	rora
+	rorb
+	std	r1+1
+	ldd	3,x
+	rora
+	rorb
+	std	r1+3
+	rts
 
 idiv_ir1_fr1_fx			; numCalls = 1
 	.module	modidiv_ir1_fr1_fx
@@ -2031,7 +2054,7 @@ ld_fd_fx			; numCalls = 5
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 5
+ld_fr1_fx			; numCalls = 3
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -2349,17 +2372,6 @@ rsub_fr1_fr1_fx			; numCalls = 1
 	sbcb	r1
 	stab	r1
 	rts
-
-shift_fr1_fr1_nb			; numCalls = 1
-	.module	modshift_fr1_fr1_nb
-	ldx	#r1
-	negb
-	jmp	shrflt
-
-shift_fr1_fr1_pb			; numCalls = 1
-	.module	modshift_fr1_fr1_pb
-	ldx	#r1
-	jmp	shlflt
 
 str_sr1_fr1			; numCalls = 2
 	.module	modstr_sr1_fr1

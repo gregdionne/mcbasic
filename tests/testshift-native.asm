@@ -91,10 +91,7 @@ LINE_20
 	; B=SHIFT(A,1)
 
 	ldx	#INTVAR_A
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#INTVAR_B
 	jsr	ld_ix_ir1
@@ -104,10 +101,7 @@ LINE_30
 	; C=SHIFT(A,1)
 
 	ldx	#INTVAR_A
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#FLTVAR_C
 	jsr	ld_fx_ir1
@@ -578,30 +572,6 @@ _shlbit
 	bne	_shlbit
 	rts
 
-	.module	mdshlint
-; multiply X by 2^ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x)
-;          uses tmp1
-shlint
-	cmpb	#8
-	blo	_shlbit
-	stab	tmp1
-	ldd	1,x
-	std	0,x
-	clr	2,x
-	ldab	tmp1
-	subb	#8
-	bne	shlint
-	rts
-_shlbit
-	lsl	2,x
-	rol	1,x
-	rol	0,x
-	decb
-	bne	_shlbit
-	rts
-
 	.module	mdshrflt
 ; divide X by 2^ACCB for positive ACCB
 ;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
@@ -837,6 +807,16 @@ _start
 	stx	DP_DATA
 	rts
 
+dbl_ir1_ix			; numCalls = 2
+	.module	moddbl_ir1_ix
+	ldd	1,x
+	lsld
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
 ld_fr1_fx			; numCalls = 2
 	.module	modld_fr1_fx
 	ldd	3,x
@@ -879,7 +859,7 @@ ld_id_ix			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 4
+ld_ir1_ix			; numCalls = 2
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -990,11 +970,6 @@ shift_fr1_ir1_nb			; numCalls = 2
 	ldx	#r1
 	negb
 	jmp	shrint
-
-shift_ir1_ir1_pb			; numCalls = 2
-	.module	modshift_ir1_ir1_pb
-	ldx	#r1
-	jmp	shlint
 
 str_sr1_fx			; numCalls = 5
 	.module	modstr_sr1_fx

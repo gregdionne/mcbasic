@@ -236,16 +236,10 @@ LINE_106
 	; IF INT(SHIFT(WX,-1))<>SHIFT(WX,-1) THEN
 
 	ldx	#FLTVAR_WX
-	jsr	ld_fr1_fx
-
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fx
 
 	ldx	#FLTVAR_WX
-	jsr	ld_fr2_fx
-
-	ldab	#-1
-	jsr	shift_fr2_fr2_nb
+	jsr	hlf_fr2_fx
 
 	jsr	ldne_ir1_ir1_fr2
 
@@ -262,16 +256,10 @@ LINE_107
 	; IF INT(SHIFT(WY,-1))<>SHIFT(WY,-1) THEN
 
 	ldx	#FLTVAR_WY
-	jsr	ld_fr1_fx
-
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fx
 
 	ldx	#FLTVAR_WY
-	jsr	ld_fr2_fx
-
-	ldab	#-1
-	jsr	shift_fr2_fr2_nb
+	jsr	hlf_fr2_fx
 
 	jsr	ldne_ir1_ir1_fr2
 
@@ -360,10 +348,7 @@ LINE_220
 	; X=INT(SHIFT(WX,-1))
 
 	ldx	#FLTVAR_WX
-	jsr	ld_fr1_fx
-
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fx
 
 	ldx	#INTVAR_X
 	jsr	ld_ix_ir1
@@ -371,10 +356,7 @@ LINE_220
 	; Y=INT(SHIFT(WY,-1))
 
 	ldx	#FLTVAR_WY
-	jsr	ld_fr1_fx
-
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fx
 
 	ldx	#INTVAR_Y
 	jsr	ld_ix_ir1
@@ -614,10 +596,7 @@ LINE_2010
 	; X=INT(SHIFT(WX,-1))
 
 	ldx	#FLTVAR_WX
-	jsr	ld_fr1_fx
-
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fx
 
 	ldx	#INTVAR_X
 	jsr	ld_ix_ir1
@@ -625,10 +604,7 @@ LINE_2010
 	; Y=INT(SHIFT(WY,-1))
 
 	ldx	#FLTVAR_WY
-	jsr	ld_fr1_fx
-
-	ldab	#-1
-	jsr	shift_fr1_fr1_nb
+	jsr	hlf_fr1_fx
 
 	ldx	#INTVAR_Y
 	jsr	ld_ix_ir1
@@ -1619,10 +1595,7 @@ LINE_3050
 	jsr	mul_fr1_fr1_fx
 
 	ldx	#FLTVAR_Q
-	jsr	ld_fr2_fx
-
-	ldab	#-1
-	jsr	shift_fr2_fr2_nb
+	jsr	hlf_fr2_fx
 
 	jsr	reset_ir1_ir2
 
@@ -1856,10 +1829,7 @@ LINE_3150
 	jsr	mul_fr1_fr1_fx
 
 	ldx	#FLTVAR_Q
-	jsr	ld_fr2_fx
-
-	ldab	#-1
-	jsr	shift_fr2_fr2_nb
+	jsr	hlf_fr2_fx
 
 	jsr	reset_ir1_ir2
 
@@ -3728,40 +3698,6 @@ _loadc
 _ok
 	bra	doset
 
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
-	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
-	rts
-
 	.module	mdstrdel
 ; remove a permanent string
 ; then re-link trailing strings
@@ -4560,6 +4496,36 @@ goto_ix			; numCalls = 22
 	ins
 	jmp	,x
 
+hlf_fr1_fx			; numCalls = 6
+	.module	modhlf_fr1_fx
+	ldab	0,x
+	asrb
+	stab	r1
+	ldd	1,x
+	rora
+	rorb
+	std	r1+1
+	ldd	3,x
+	rora
+	rorb
+	std	r1+3
+	rts
+
+hlf_fr2_fx			; numCalls = 4
+	.module	modhlf_fr2_fx
+	ldab	0,x
+	asrb
+	stab	r2
+	ldd	1,x
+	rora
+	rorb
+	std	r2+1
+	ldd	3,x
+	rora
+	rorb
+	std	r2+3
+	rts
+
 ignxtra			; numCalls = 5
 	.module	modignxtra
 	ldx	inptptr
@@ -4687,7 +4653,7 @@ ld_fd_fx			; numCalls = 10
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 24
+ld_fr1_fx			; numCalls = 18
 	.module	modld_fr1_fx
 	ldd	3,x
 	std	r1+3
@@ -4697,7 +4663,7 @@ ld_fr1_fx			; numCalls = 24
 	stab	r1
 	rts
 
-ld_fr2_fx			; numCalls = 14
+ld_fr2_fx			; numCalls = 10
 	.module	modld_fr2_fx
 	ldd	3,x
 	std	r2+3
@@ -5490,18 +5456,6 @@ _neg
 _done
 	std	r1
 	rts
-
-shift_fr1_fr1_nb			; numCalls = 6
-	.module	modshift_fr1_fr1_nb
-	ldx	#r1
-	negb
-	jmp	shrflt
-
-shift_fr2_fr2_nb			; numCalls = 4
-	.module	modshift_fr2_fr2_nb
-	ldx	#r2
-	negb
-	jmp	shrflt
 
 sound_ir1_ir2			; numCalls = 14
 	.module	modsound_ir1_ir2

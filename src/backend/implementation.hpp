@@ -239,6 +239,16 @@ public:
   virtual std::string regFlt_extFlt(InstAbs &inst) = 0;
   virtual std::string regInt_extInt(InstAbs &inst) = 0;
 
+  virtual std::string regFlt_regFlt(InstDbl &inst) = 0;
+  virtual std::string regInt_regInt(InstDbl &inst) = 0;
+  virtual std::string regFlt_extFlt(InstDbl &inst) = 0;
+  virtual std::string regInt_extInt(InstDbl &inst) = 0;
+
+  virtual std::string regFlt_regFlt(InstSq &inst) = 0;
+  virtual std::string regInt_regInt(InstSq &inst) = 0;
+  virtual std::string regFlt_extFlt(InstSq &inst) = 0;
+  virtual std::string regInt_extInt(InstSq &inst) = 0;
+
   virtual std::string regInt_regInt_posByte(InstOr &inst) = 0;
   virtual std::string regInt_regInt_negByte(InstOr &inst) = 0;
   virtual std::string regInt_regInt_posWord(InstOr &inst) = 0;
@@ -265,6 +275,11 @@ public:
 
   virtual std::string regFlt_regInt(InstInv &inst) = 0;
   virtual std::string regFlt_regFlt(InstInv &inst) = 0;
+
+  virtual std::string regFlt_regFlt(InstHlf &inst) = 0;
+  virtual std::string regFlt_regInt(InstHlf &inst) = 0;
+  virtual std::string regFlt_extFlt(InstHlf &inst) = 0;
+  virtual std::string regFlt_extInt(InstHlf &inst) = 0;
 
   virtual std::string regFlt_regInt(InstSqr &inst) = 0;
   virtual std::string regFlt_regFlt(InstSqr &inst) = 0;

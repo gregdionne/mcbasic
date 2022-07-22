@@ -4486,7 +4486,7 @@ pr_sx			; numCalls = 16
 	ldab	0,x
 	beq	_rts
 	ldx	1,x
-	jsr	print
+	jmp	print
 _rts
 	rts
 

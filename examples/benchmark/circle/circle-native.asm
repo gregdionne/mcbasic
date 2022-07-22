@@ -340,10 +340,7 @@ LINE_315
 	; A=3-SHIFT(R,1)
 
 	ldx	#INTVAR_R
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldab	#3
 	jsr	rsub_ir1_ir1_pb
@@ -1489,6 +1486,16 @@ cos_fr1_fr1			; numCalls = 1
 	ldx	#r1
 	jmp	cos
 
+dbl_ir1_ix			; numCalls = 1
+	.module	moddbl_ir1_ix
+	ldd	1,x
+	lsld
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
 dec_ix_ix			; numCalls = 1
 	.module	moddec_ix_ix
 	ldd	1,x
@@ -1615,7 +1622,7 @@ ld_id_ix			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 2
+ld_ir1_ix			; numCalls = 1
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -1899,7 +1906,7 @@ setc_ir1_ir2_pb			; numCalls = 10
 	pulb
 	jmp	setc
 
-shift_ir1_ir1_pb			; numCalls = 3
+shift_ir1_ir1_pb			; numCalls = 2
 	.module	modshift_ir1_ir1_pb
 	ldx	#r1
 	jmp	shlint

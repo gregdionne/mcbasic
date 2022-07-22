@@ -72,6 +72,7 @@ public:
   virtual bool inspect(const PointExpr & /*expr*/) const { return false; }
   virtual bool inspect(const InkeyExpr & /*expr*/) const { return false; }
   virtual bool inspect(const MemExpr & /*expr*/) const { return false; }
+  virtual bool inspect(const SquareExpr & /*expr*/) const { return false; }
   virtual bool inspect(const TimerExpr & /*expr*/) const { return false; }
   virtual bool inspect(const PosExpr & /*expr*/) const { return false; }
   virtual bool inspect(const PeekWordExpr & /*expr*/) const { return false; }

@@ -15,7 +15,15 @@ public:
   bool inspect(const StringArrayExpr &expr) const override;
   bool inspect(const NumericVariableExpr &expr) const override;
   bool inspect(const StringVariableExpr &expr) const override;
-  const Expr *target;
-};
+  bool inspect(const NaryNumericExpr &expr) const override;
+  bool inspect(const AdditiveExpr &expr) const override;
+  bool inspect(const MultiplicativeExpr &expr) const override;
+  bool inspect(const AndExpr &expr) const override;
+  bool inspect(const OrExpr &expr) const override;
 
+private:
+  const Expr *target;
+  bool checkOps(const std::vector<up<NumericExpr>> &lhs,
+                const std::vector<up<NumericExpr>> &rhs) const;
+};
 #endif

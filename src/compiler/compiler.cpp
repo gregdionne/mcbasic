@@ -815,9 +815,26 @@ void ExprCompiler::absorb(const StringArrayExpr &e) {
 
 void ExprCompiler::absorb(const ShiftExpr &e) {
   e.expr->soak(this);
-  result = queue.load(mv(result));
 
   ConstInspector constInspector;
+  // dbl?
+  if (constInspector.isEqual(e.count.get(), 1)) {
+    auto dest = queue.alloc(result->clone());
+    result = queue.append(makeup<InstDbl>(mv(dest),mv(result)));
+    return;
+  }
+
+  // hlf?
+  if (constInspector.isEqual(e.count.get(), -1)) {
+    auto dest = queue.alloc(result->clone());
+    result = queue.append(makeup<InstHlf>(mv(dest),mv(result)));
+    return;
+  }
+
+  // always load expr
+  result = queue.load(mv(result));
+
+  // get shift count
   if (!constInspector.isEqual(e.count.get(), 0)) {
     auto dest = result->clone();
     e.count->soak(this);
@@ -1053,6 +1070,12 @@ void ExprCompiler::absorb(const InkeyExpr & /*expr*/) {
 void ExprCompiler::absorb(const MemExpr & /*expr*/) {
   result = makeup<AddressModeReg>(queue.allocRegister(), DataType::Int);
   result = queue.append(makeup<InstMem>(mv(result)));
+}
+
+void ExprCompiler::absorb(const SquareExpr &e) {
+  e.expr->soak(this);
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(makeup<InstSq>(mv(dest), mv(result)));
 }
 
 void ExprCompiler::absorb(const TimerExpr & /*expr*/) {

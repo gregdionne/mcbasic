@@ -54,6 +54,7 @@ public:
   void mutate(PointExpr &e) override;
   void mutate(PrintTabExpr &e) override;
   void mutate(PeekWordExpr &e) override;
+  void mutate(SquareExpr &e) override;
 
   void mutate(NumericConstantExpr &) override {}
   void mutate(StringConstantExpr &) override {}
@@ -118,6 +119,14 @@ private:
   bool reducePowerOfTwoMultiplication(up<NumericExpr> &expr,
                                       std::vector<up<NumericExpr>> &ops,
                                       int sign);
+
+  // replace
+  //    X*X with SQ(X)
+  void reduceSquaredMultiplication(std::vector<up<NumericExpr>> &expr);
+
+  // replace
+  //    X^2 with SQ(X)
+  void reduceSquarePower(up<NumericExpr> &expr);
 
   // replace
   //   INT(<expr1>/<expr2>) with IDIV(<expr1>,<expr2>)

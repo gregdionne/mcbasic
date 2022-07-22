@@ -279,10 +279,7 @@ LINE_6
 	; I+=SHIFT(J,1)
 
 	ldx	#INTVAR_J
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#INTVAR_I
 	jsr	add_ix_ix_ir1
@@ -354,10 +351,7 @@ LINE_8
 	; I+=SHIFT(J,1)
 
 	ldx	#INTVAR_J
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#INTVAR_I
 	jsr	add_ix_ix_ir1
@@ -983,10 +977,7 @@ LINE_30
 	; J=SHIFT(J,1)
 
 	ldx	#INTVAR_J
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#INTVAR_J
 	jsr	ld_ix_ir1
@@ -994,10 +985,7 @@ LINE_30
 	; I=SHIFT(J,1)+L
 
 	ldx	#INTVAR_J
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#INTVAR_L
 	jsr	add_ir1_ir1_ix
@@ -1143,10 +1131,7 @@ LINE_34
 	jsr	for_id_ix
 
 	ldx	#INTVAR_J
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	ldx	#INTVAR_I
 	jsr	add_ir1_ir1_ix
@@ -2352,10 +2337,7 @@ LINE_82
 	; SOUND SHIFT(P,-1),1
 
 	ldx	#INTVAR_P
-	jsr	ld_ir1_ix
-
-	ldab	#-1
-	jsr	shift_fr1_ir1_nb
+	jsr	hlf_fr1_ix
 
 	ldab	#1
 	jsr	ld_ir2_pb
@@ -2454,10 +2436,7 @@ LINE_84
 	; SOUND SHIFT(P,-1),1
 
 	ldx	#INTVAR_P
-	jsr	ld_ir1_ix
-
-	ldab	#-1
-	jsr	shift_fr1_ir1_nb
+	jsr	hlf_fr1_ix
 
 	ldab	#1
 	jsr	ld_ir2_pb
@@ -2664,10 +2643,7 @@ LINE_89
 	jsr	to_fp_ix
 
 	ldx	#INTVAR_Y
-	jsr	ld_ir1_ix
-
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ix
 
 	jsr	step_fp_ir1
 
@@ -5242,10 +5218,7 @@ LINE_2200
 	; SOUND SHIFT(P,-1),2
 
 	ldx	#INTVAR_P
-	jsr	ld_ir1_ix
-
-	ldab	#-1
-	jsr	shift_fr1_ir1_nb
+	jsr	hlf_fr1_ix
 
 	ldab	#2
 	jsr	ld_ir2_pb
@@ -5296,10 +5269,7 @@ LINE_2210
 	; SOUND SHIFT(P,-1),2
 
 	ldx	#INTVAR_P
-	jsr	ld_ir1_ix
-
-	ldab	#-1
-	jsr	shift_fr1_ir1_nb
+	jsr	hlf_fr1_ix
 
 	ldab	#2
 	jsr	ld_ir2_pb
@@ -5589,8 +5559,7 @@ LINE_3170
 	ldx	#INTARR_A
 	jsr	arrval1_ir1_ix
 
-	ldab	#1
-	jsr	shift_ir1_ir1_pb
+	jsr	dbl_ir1_ir1
 
 	jsr	ld_ip_ir1
 
@@ -6775,64 +6744,6 @@ _loadc
 _ok
 	bra	doset
 
-	.module	mdshlint
-; multiply X by 2^ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x)
-;          uses tmp1
-shlint
-	cmpb	#8
-	blo	_shlbit
-	stab	tmp1
-	ldd	1,x
-	std	0,x
-	clr	2,x
-	ldab	tmp1
-	subb	#8
-	bne	shlint
-	rts
-_shlbit
-	lsl	2,x
-	rol	1,x
-	rol	0,x
-	decb
-	bne	_shlbit
-	rts
-
-	.module	mdshrflt
-; divide X by 2^ACCB for positive ACCB
-;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
-;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1
-shrint
-	clr	3,x
-	clr	4,x
-shrflt
-	cmpb	#8
-	blo	_shrbit
-	stab	tmp1
-	ldd	2,x
-	std	3,x
-	ldd	0,x
-	std	1,x
-	clrb
-	lsla
-	sbcb	#0
-	stab	0,x
-	ldab	tmp1
-	subb	#8
-	bne	shrflt
-	rts
-_shrbit
-	asr	0,x
-	ror	1,x
-	ror	2,x
-	ror	3,x
-	ror	4,x
-	decb
-	bne	_shrbit
-	rts
-
 	.module	mdstrdel
 ; remove a permanent string
 ; then re-link trailing strings
@@ -7760,6 +7671,24 @@ clsn_pb			; numCalls = 3
 	.module	modclsn_pb
 	jmp	R_CLSN
 
+dbl_ir1_ir1			; numCalls = 1
+	.module	moddbl_ir1_ir1
+	ldx	#r1
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	rts
+
+dbl_ir1_ix			; numCalls = 6
+	.module	moddbl_ir1_ix
+	ldd	1,x
+	lsld
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
 dec_ir1_ix			; numCalls = 9
 	.module	moddec_ir1_ix
 	ldd	1,x
@@ -7865,6 +7794,20 @@ goto_ix			; numCalls = 35
 	ins
 	ins
 	jmp	,x
+
+hlf_fr1_ix			; numCalls = 4
+	.module	modhlf_fr1_ix
+	ldab	0,x
+	asrb
+	stab	r1
+	ldd	1,x
+	rora
+	rorb
+	std	r1+1
+	ldd	#0
+	rora
+	std	r1+3
+	rts
 
 idiv_ir2_ir2_ix			; numCalls = 1
 	.module	modidiv_ir2_ir2_ix
@@ -8047,7 +7990,7 @@ ld_ip_pb			; numCalls = 30
 	std	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 135
+ld_ir1_ix			; numCalls = 125
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -8625,7 +8568,7 @@ pr_sx			; numCalls = 24
 	ldab	0,x
 	beq	_rts
 	ldx	1,x
-	jsr	print
+	jmp	print
 _rts
 	rts
 
@@ -8826,17 +8769,6 @@ _neg
 _done
 	std	r1
 	rts
-
-shift_fr1_ir1_nb			; numCalls = 4
-	.module	modshift_fr1_ir1_nb
-	ldx	#r1
-	negb
-	jmp	shrint
-
-shift_ir1_ir1_pb			; numCalls = 7
-	.module	modshift_ir1_ir1_pb
-	ldx	#r1
-	jmp	shlint
 
 sound_ir1_ir2			; numCalls = 32
 	.module	modsound_ir1_ir2

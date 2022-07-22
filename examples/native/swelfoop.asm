@@ -69,8 +69,6 @@ tmp5	.block	2
 	.org	$af
 r1	.block	5
 r2	.block	5
-r3	.block	5
-r4	.block	5
 rend
 argv	.block	10
 
@@ -1730,14 +1728,13 @@ LINE_1980
 
 LINE_2200
 
-	; SC+=(YD-2)^2
+	; SC+=SQ(YD-2)
 
 	ldx	#INTVAR_YD
 	ldab	#2
 	jsr	sub_ir1_ix_pb
 
-	ldab	#2
-	jsr	pow_ir1_ir1_pb
+	jsr	sq_ir1_ir1
 
 	ldx	#INTVAR_SC
 	jsr	add_ix_ix_ir1
@@ -2734,43 +2731,6 @@ _com1
 _com0
 	com	0,x
 	rts
-
-	.module	mdpowintn
-; Y = X^ACCD for integer X, positive D
-;   ENTRY  X in 0,x 1,x 2,x
-;          ACCD contains exponent
-;   EXIT   X^ACCD in 0,x 1,x 2,x
-powintn
-	subd	#0
-	bne	_nonzero
-	std	0,x
-	ldab	#1
-	stab	2,x
-_rts
-	rts
-_nonzero
-	lsrd
-	bcc	_square
-	subd	#0
-	beq	_rts
-	std	tmp1
-	ldd	1,x
-	pshb
-	psha
-	ldab	0,x
-	pshb
-	ldd	tmp1
-	bsr	_square
-	pulb
-	stab	0+argv
-	pula
-	pulb
-	std	1+argv
-	jmp	mulintx
-_square
-	bsr	powintn
-	jsr	x2arg
-	jmp	mulintx
 
 	.module	mdprat
 prat
@@ -4377,12 +4337,6 @@ poke_ix_pb			; numCalls = 2
 	stab	,x
 	rts
 
-pow_ir1_ir1_pb			; numCalls = 1
-	.module	modpow_ir1_ir1_pb
-	clra
-	ldx	#r1
-	jmp	powintn
-
 pr_sr1			; numCalls = 6
 	.module	modpr_sr1
 	ldab	r1
@@ -4574,6 +4528,12 @@ sound_ir1_ir2			; numCalls = 5
 	ldaa	r1+2
 	ldab	r2+2
 	jmp	R_SOUND
+
+sq_ir1_ir1			; numCalls = 1
+	.module	modsq_ir1_ir1
+	ldx	#r1
+	jsr	x2arg
+	jmp	mulintx
 
 step_ip_ir1			; numCalls = 1
 	.module	modstep_ip_ir1

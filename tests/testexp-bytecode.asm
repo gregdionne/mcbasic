@@ -581,11 +581,8 @@ LINE_1015
 
 	; E=SHIFT(E,1)
 
-	.byte	bytecode_ld_fr1_fx
+	.byte	bytecode_dbl_fr1_fx
 	.byte	bytecode_FLTVAR_E
-
-	.byte	bytecode_shift_fr1_fr1_pb
-	.byte	1
 
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_E
@@ -619,11 +616,8 @@ LINE_1030
 
 	; E=SHIFT(E,-1)
 
-	.byte	bytecode_ld_fr1_fx
+	.byte	bytecode_hlf_fr1_fx
 	.byte	bytecode_FLTVAR_E
-
-	.byte	bytecode_shift_fr1_fr1_nb
-	.byte	-1
 
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_E
@@ -662,37 +656,37 @@ bytecode_add_fr1_fr1_pb	.equ	1
 bytecode_add_fr1_fr1_pw	.equ	2
 bytecode_add_fr1_fx_pb	.equ	3
 bytecode_clear	.equ	4
-bytecode_div_fr1_fr1_ix	.equ	5
-bytecode_div_fr1_fr1_pw	.equ	6
-bytecode_exp_fr1_fr1	.equ	7
-bytecode_forone_ix	.equ	8
-bytecode_gosub_ix	.equ	9
-bytecode_goto_ix	.equ	10
-bytecode_idiv_ir1_fr1_fx	.equ	11
-bytecode_ignxtra	.equ	12
-bytecode_input	.equ	13
-bytecode_jmpeq_ir1_ix	.equ	14
-bytecode_ld_fd_fx	.equ	15
-bytecode_ld_fr1_fx	.equ	16
-bytecode_ld_fx_fr1	.equ	17
-bytecode_ld_ir1_ix	.equ	18
-bytecode_ld_ir1_pb	.equ	19
-bytecode_ld_ix_ir1	.equ	20
-bytecode_ldlt_ir1_ir1_ix	.equ	21
-bytecode_ldlt_ir1_ir1_pb	.equ	22
-bytecode_mul_fr1_fr1_fx	.equ	23
-bytecode_mul_fr1_ir1_fx	.equ	24
-bytecode_neg_ir1_ix	.equ	25
-bytecode_next	.equ	26
-bytecode_pr_sr1	.equ	27
-bytecode_pr_ss	.equ	28
-bytecode_progbegin	.equ	29
-bytecode_progend	.equ	30
-bytecode_readbuf_fx	.equ	31
-bytecode_return	.equ	32
-bytecode_rsub_fr1_fr1_fx	.equ	33
-bytecode_shift_fr1_fr1_nb	.equ	34
-bytecode_shift_fr1_fr1_pb	.equ	35
+bytecode_dbl_fr1_fx	.equ	5
+bytecode_div_fr1_fr1_ix	.equ	6
+bytecode_div_fr1_fr1_pw	.equ	7
+bytecode_exp_fr1_fr1	.equ	8
+bytecode_forone_ix	.equ	9
+bytecode_gosub_ix	.equ	10
+bytecode_goto_ix	.equ	11
+bytecode_hlf_fr1_fx	.equ	12
+bytecode_idiv_ir1_fr1_fx	.equ	13
+bytecode_ignxtra	.equ	14
+bytecode_input	.equ	15
+bytecode_jmpeq_ir1_ix	.equ	16
+bytecode_ld_fd_fx	.equ	17
+bytecode_ld_fr1_fx	.equ	18
+bytecode_ld_fx_fr1	.equ	19
+bytecode_ld_ir1_ix	.equ	20
+bytecode_ld_ir1_pb	.equ	21
+bytecode_ld_ix_ir1	.equ	22
+bytecode_ldlt_ir1_ir1_ix	.equ	23
+bytecode_ldlt_ir1_ir1_pb	.equ	24
+bytecode_mul_fr1_fr1_fx	.equ	25
+bytecode_mul_fr1_ir1_fx	.equ	26
+bytecode_neg_ir1_ix	.equ	27
+bytecode_next	.equ	28
+bytecode_pr_sr1	.equ	29
+bytecode_pr_ss	.equ	30
+bytecode_progbegin	.equ	31
+bytecode_progend	.equ	32
+bytecode_readbuf_fx	.equ	33
+bytecode_return	.equ	34
+bytecode_rsub_fr1_fr1_fx	.equ	35
 bytecode_str_sr1_fr1	.equ	36
 bytecode_str_sr1_fx	.equ	37
 bytecode_str_sr1_ix	.equ	38
@@ -705,12 +699,14 @@ catalog
 	.word	add_fr1_fr1_pw
 	.word	add_fr1_fx_pb
 	.word	clear
+	.word	dbl_fr1_fx
 	.word	div_fr1_fr1_ix
 	.word	div_fr1_fr1_pw
 	.word	exp_fr1_fr1
 	.word	forone_ix
 	.word	gosub_ix
 	.word	goto_ix
+	.word	hlf_fr1_fx
 	.word	idiv_ir1_fr1_fx
 	.word	ignxtra
 	.word	input
@@ -734,8 +730,6 @@ catalog
 	.word	readbuf_fx
 	.word	return
 	.word	rsub_fr1_fr1_fx
-	.word	shift_fr1_fr1_nb
-	.word	shift_fr1_fr1_pb
 	.word	str_sr1_fr1
 	.word	str_sr1_fx
 	.word	str_sr1_ix
@@ -2179,6 +2173,21 @@ _start
 	stx	DP_DATA
 	rts
 
+dbl_fr1_fx			; numCalls = 1
+	.module	moddbl_fr1_fx
+	jsr	extend
+	ldd	3,x
+	lsld
+	std	r1+3
+	ldd	1,x
+	rolb
+	rola
+	std	r1+1
+	ldab	0,x
+	rolb
+	stab	r1
+	rts
+
 div_fr1_fr1_ix			; numCalls = 1
 	.module	moddiv_fr1_fr1_ix
 	jsr	extend
@@ -2232,6 +2241,22 @@ goto_ix			; numCalls = 1
 	.module	modgoto_ix
 	jsr	getaddr
 	stx	nxtinst
+	rts
+
+hlf_fr1_fx			; numCalls = 1
+	.module	modhlf_fr1_fx
+	jsr	extend
+	ldab	0,x
+	asrb
+	stab	r1
+	ldd	1,x
+	rora
+	rorb
+	std	r1+1
+	ldd	3,x
+	rora
+	rorb
+	std	r1+3
 	rts
 
 idiv_ir1_fr1_fx			; numCalls = 1
@@ -2293,7 +2318,7 @@ ld_fd_fx			; numCalls = 5
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 5
+ld_fr1_fx			; numCalls = 3
 	.module	modld_fr1_fx
 	jsr	extend
 	ldd	3,x
@@ -2634,19 +2659,6 @@ rsub_fr1_fr1_fx			; numCalls = 1
 	sbcb	r1
 	stab	r1
 	rts
-
-shift_fr1_fr1_nb			; numCalls = 1
-	.module	modshift_fr1_fr1_nb
-	jsr	getbyte
-	ldx	#r1
-	negb
-	jmp	shrflt
-
-shift_fr1_fr1_pb			; numCalls = 1
-	.module	modshift_fr1_fr1_pb
-	jsr	getbyte
-	ldx	#r1
-	jmp	shlflt
 
 str_sr1_fr1			; numCalls = 2
 	.module	modstr_sr1_fr1

@@ -52,6 +52,7 @@ public:
   virtual void mutate(PointExpr & /*expr*/) override {}
   virtual void mutate(InkeyExpr & /*expr*/) override {}
   virtual void mutate(MemExpr & /*expr*/) override {}
+  virtual void mutate(SquareExpr & /*expr*/) override {}
   virtual void mutate(TimerExpr & /*expr*/) override {}
   virtual void mutate(PosExpr & /*expr*/) override {}
   virtual void mutate(PeekWordExpr & /*expr*/) override {}

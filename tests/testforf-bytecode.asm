@@ -105,12 +105,9 @@ LINE_10
 
 LINE_20
 
-	; X=(T*T)+T
+	; X=SQ(T)+T
 
-	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_T
-
-	.byte	bytecode_mul_fr1_fr1_fx
+	.byte	bytecode_sq_fr1_fx
 	.byte	bytecode_FLTVAR_T
 
 	.byte	bytecode_add_fr1_fr1_fx
@@ -166,36 +163,34 @@ bytecode_add_fr1_fr1_fx	.equ	0
 bytecode_clear	.equ	1
 bytecode_forone_fx	.equ	2
 bytecode_ld_fd_fx	.equ	3
-bytecode_ld_fr1_fx	.equ	4
-bytecode_ld_fx_fr1	.equ	5
-bytecode_ld_sr1_ss	.equ	6
-bytecode_ld_sx_sr1	.equ	7
-bytecode_len_ir1_sx	.equ	8
-bytecode_mul_fr1_fr1_fx	.equ	9
-bytecode_next	.equ	10
-bytecode_pr_sr1	.equ	11
-bytecode_pr_ss	.equ	12
-bytecode_progbegin	.equ	13
-bytecode_progend	.equ	14
-bytecode_str_sr1_fx	.equ	15
-bytecode_to_fp_ir1	.equ	16
+bytecode_ld_fx_fr1	.equ	4
+bytecode_ld_sr1_ss	.equ	5
+bytecode_ld_sx_sr1	.equ	6
+bytecode_len_ir1_sx	.equ	7
+bytecode_next	.equ	8
+bytecode_pr_sr1	.equ	9
+bytecode_pr_ss	.equ	10
+bytecode_progbegin	.equ	11
+bytecode_progend	.equ	12
+bytecode_sq_fr1_fx	.equ	13
+bytecode_str_sr1_fx	.equ	14
+bytecode_to_fp_ir1	.equ	15
 
 catalog
 	.word	add_fr1_fr1_fx
 	.word	clear
 	.word	forone_fx
 	.word	ld_fd_fx
-	.word	ld_fr1_fx
 	.word	ld_fx_fr1
 	.word	ld_sr1_ss
 	.word	ld_sx_sr1
 	.word	len_ir1_sx
-	.word	mul_fr1_fr1_fx
 	.word	next
 	.word	pr_sr1
 	.word	pr_ss
 	.word	progbegin
 	.word	progend
+	.word	sq_fr1_fx
 	.word	str_sr1_fx
 	.word	to_fp_ir1
 
@@ -1227,6 +1222,19 @@ _panic
 	ldab	#1
 	jmp	error
 
+	.module	mdtmp2xf
+; copy fixedpt tmp to [X]
+;   ENTRY  Y in tmp1+1,tmp2,tmp3
+;   EXIT   Y copied to 0,x 1,x 2,x 3,x 4,x
+tmp2xf
+	ldab	tmp1+1
+	stab	0,x
+	ldd	tmp2
+	std	1,x
+	ldd	tmp3
+	std	3,x
+	rts
+
 	.module	mdtobc
 ; push for-loop record on stack
 ; ENTRY:  ACCB  contains size of record
@@ -1284,6 +1292,20 @@ _flt
 _done
 	ldx	tmp1
 	jmp	,x
+
+	.module	mdx2arg
+; copy [X] to argv
+;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
+;   EXIT   Y copied to 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+	; copy x to argv
+x2arg
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	std	3+argv
+	rts
 
 add_fr1_fr1_fx			; numCalls = 1
 	.module	modadd_fr1_fr1_fx
@@ -1351,17 +1373,6 @@ ld_fd_fx			; numCalls = 1
 	stab	0,x
 	rts
 
-ld_fr1_fx			; numCalls = 1
-	.module	modld_fr1_fx
-	jsr	extend
-	ldd	3,x
-	std	r1+3
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_fx_fr1			; numCalls = 1
 	.module	modld_fx_fr1
 	jsr	extend
@@ -1402,18 +1413,6 @@ len_ir1_sx			; numCalls = 1
 	ldd	#0
 	std	r1
 	rts
-
-mul_fr1_fr1_fx			; numCalls = 1
-	.module	modmul_fr1_fr1_fx
-	jsr	extend
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldd	3,x
-	std	3+argv
-	ldx	#r1
-	jmp	mulfltx
 
 next			; numCalls = 1
 	.module	modnext
@@ -1588,6 +1587,14 @@ DD_ERROR	.equ	18
 LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
+
+sq_fr1_fx			; numCalls = 1
+	.module	modsq_fr1_fx
+	jsr	extend
+	jsr	x2arg
+	jsr	mulfltt
+	ldx	#r1
+	jmp	tmp2xf
 
 str_sr1_fx			; numCalls = 1
 	.module	modstr_sr1_fx
