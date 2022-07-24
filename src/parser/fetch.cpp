@@ -2,11 +2,12 @@
 // Distributed under MIT License
 #include "fetch.hpp"
 
-#include <ctype.h>  //isxdigit
-#include <stdarg.h> //va_list, va_start
-#include <stdio.h>  //f...
-#include <stdlib.h> //perror
-#include <string.h> //strlen
+#include <cmath>   //pow
+#include <cctype>  //isxdigit
+#include <cstdarg> //va_list, va_start
+#include <cstdio>  //f...
+#include <cstdlib> //perror
+#include <cstring> //strlen
 
 #include "mcbasic/options.hpp"
 
@@ -418,7 +419,21 @@ double fetch::getBasicFloat() {
   }
 
   if (c == 'E') {
-    die("E-notation not yet supported");
+    advance(1);
+    c = peekChar();
+    int sgn = 1;
+    while (c == '-' || c == '+') {
+      if (c == '-') {
+        sgn = -sgn;
+      }
+      advance(1);
+      c = peekChar();
+    }
+    if (!isdigit(c)) {
+      die("Exponent expected");
+    }
+    double e = getDecimalWord();
+    v *= std::pow(10,sgn*e);
   }
 
   return v;

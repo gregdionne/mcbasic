@@ -97,7 +97,7 @@ program
 
 LINE_10
 
-	; PI=3.14159
+	; PI=3.141593
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_PI
@@ -105,7 +105,7 @@ LINE_10
 
 LINE_20
 
-	; X=8.38861e+06
+	; X=8388607
 
 	.byte	bytecode_ld_id_ix
 	.byte	bytecode_INTVAR_X
@@ -113,7 +113,7 @@ LINE_20
 
 LINE_50
 
-	; Z=-8.38861e+06
+	; Z=-8388608
 
 	.byte	bytecode_ld_id_ix
 	.byte	bytecode_INTVAR_Z

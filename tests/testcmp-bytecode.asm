@@ -252,13 +252,13 @@ LINE_90
 
 LINE_100
 
-	; A=100000
+	; A=100000.1
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
 	.byte	bytecode_FLT_100000p10000
 
-	; B=100000
+	; B=100000.1
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
@@ -309,13 +309,13 @@ LINE_120
 
 LINE_130
 
-	; A=-100000
+	; A=-100000.1
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
 	.byte	bytecode_FLT_m100000p10000
 
-	; B=-100000
+	; B=-100000.1
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
@@ -452,13 +452,13 @@ LINE_210
 
 LINE_220
 
-	; A=100000
+	; A=100000.1
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
 	.byte	bytecode_FLT_100000p10000
 
-	; B=100000
+	; B=100000.2
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
@@ -514,7 +514,7 @@ LINE_250
 	.byte	bytecode_FLTVAR_A
 	.byte	bytecode_INT_100000
 
-	; B=100000
+	; B=100000.1
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
@@ -654,13 +654,13 @@ LINE_320
 
 LINE_330
 
-	; B=100000
+	; B=100000.1
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_B
 	.byte	bytecode_FLT_100000p10000
 
-	; A=100000
+	; A=100000.2
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
@@ -716,7 +716,7 @@ LINE_360
 	.byte	bytecode_FLTVAR_B
 	.byte	bytecode_INT_100000
 
-	; A=100000
+	; A=100000.1
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A

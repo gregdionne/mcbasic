@@ -173,7 +173,7 @@ LINE_50
 
 LINE_60
 
-	; PRINT STR$(X^0.0833333);" \r";
+	; PRINT STR$(X^0.083333);" \r";
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -207,7 +207,7 @@ LINE_70
 
 LINE_80
 
-	; PRINT STR$(X^-0.0833333);" \r";
+	; PRINT STR$(X^-0.083333);" \r";
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix

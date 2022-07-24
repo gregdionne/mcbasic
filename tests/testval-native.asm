@@ -91,7 +91,7 @@ LINE_10
 
 LINE_15
 
-	; P=-3.41463
+	; P=-3.414629
 
 	ldd	#FLTVAR_P
 	ldx	#FLT_m3p41462

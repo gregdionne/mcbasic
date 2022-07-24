@@ -1,4 +1,4 @@
-; Assembly for testconsts-native.bas
+; Assembly for testenotation-native.bas
 ; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
@@ -81,27 +81,38 @@ argv	.block	10
 
 LINE_10
 
-	; PI=3.141593
+	; PRINT " 1200 \r";
 
-	ldd	#FLTVAR_PI
-	ldx	#FLT_3p14158
-	jsr	ld_fd_fx
+	jsr	pr_ss
+	.text	7, " 1200 \r"
 
 LINE_20
 
-	; X=8388607
+	; PRINT " 0.0012 \r";
 
-	ldd	#INTVAR_X
-	ldx	#INT_8388607
-	jsr	ld_id_ix
+	jsr	pr_ss
+	.text	9, " 0.0012 \r"
+
+LINE_30
+
+	; PRINT " 200 \r";
+
+	jsr	pr_ss
+	.text	6, " 200 \r"
+
+LINE_40
+
+	; PRINT " 200 \r";
+
+	jsr	pr_ss
+	.text	6, " 200 \r"
 
 LINE_50
 
-	; Z=-8388608
+	; PRINT " 200 \r";
 
-	ldd	#INTVAR_Z
-	ldx	#INT_m8388608
-	jsr	ld_id_ix
+	jsr	pr_ss
+	.text	6, " 200 \r"
 
 LLAST
 
@@ -118,6 +129,39 @@ _loop
 	decb
 	bne	_loop
 	rts
+
+	.module	mdstrrel
+; release a temporary string
+; ENTRY: X holds string start
+; EXIT:  <all reg's preserved>
+; sttrel should be called from:
+;  - ASC, VAL, LEN, PRINT
+;  - right hand side of strcat
+;  - relational operators
+;  - when LEFT$, MID$, RIGHT$ return null
+strrel
+	cpx	strend
+	bls	_rts
+	cpx	strstop
+	bhs	_rts
+	tst	strtcnt
+	beq	_panic
+	dec	strtcnt
+	beq	_restore
+	stx	strfree
+_rts
+	rts
+_restore
+	pshx
+	ldx	strend
+	inx
+	inx
+	stx	strfree
+	pulx
+	rts
+_panic
+	ldab	#1
+	jmp	error
 
 clear			; numCalls = 1
 	.module	modclear
@@ -141,33 +185,16 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_fd_fx			; numCalls = 1
-	.module	modld_fd_fx
-	std	tmp1
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldd	3,x
-	ldx	tmp1
-	std	3,x
-	ldd	1+argv
-	std	1,x
-	ldab	0+argv
-	stab	0,x
-	rts
-
-ld_id_ix			; numCalls = 2
-	.module	modld_id_ix
-	std	tmp1
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	ldx	tmp1
-	std	1,x
-	ldab	0+argv
-	stab	0,x
-	rts
+pr_ss			; numCalls = 5
+	.module	modpr_ss
+	pulx
+	ldab	,x
+	beq	_null
+	inx
+	jsr	print
+	jmp	,x
+_null
+	jmp	1,x
 
 progbegin			; numCalls = 1
 	.module	modprogbegin
@@ -224,20 +251,10 @@ startdata
 enddata
 
 
-; large integer constants
-INT_m8388608	.byte	$80, $00, $00
-INT_8388607	.byte	$7f, $ff, $ff
-
-; fixed-point constants
-FLT_3p14158	.byte	$00, $00, $03, $24, $3f
-
 ; block started by symbol
 bss
 
 ; Numeric Variables
-INTVAR_X	.block	3
-INTVAR_Z	.block	3
-FLTVAR_PI	.block	5
 ; String Variables
 ; Numeric Arrays
 ; String Arrays

@@ -206,7 +206,7 @@ LINE_120
 
 LINE_130
 
-	; DS=0.0399893
+	; DS=0.039989
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_DS

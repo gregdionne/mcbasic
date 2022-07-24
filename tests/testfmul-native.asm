@@ -81,7 +81,7 @@ argv	.block	10
 
 LINE_10
 
-	; A=4335.45
+	; A=4335.452
 
 	ldd	#FLTVAR_A
 	ldx	#FLT_4335p45199
@@ -123,7 +123,7 @@ LINE_10
 
 LINE_20
 
-	; A=-4335.45
+	; A=-4335.452
 
 	ldd	#FLTVAR_A
 	ldx	#FLT_m4335p45199
@@ -165,7 +165,7 @@ LINE_20
 
 LINE_30
 
-	; A=4335.45
+	; A=4335.452
 
 	ldd	#FLTVAR_A
 	ldx	#FLT_4335p45199
@@ -207,7 +207,7 @@ LINE_30
 
 LINE_40
 
-	; A=-4335.45
+	; A=-4335.452
 
 	ldd	#FLTVAR_A
 	ldx	#FLT_m4335p45199

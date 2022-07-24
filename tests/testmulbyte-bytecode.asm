@@ -184,7 +184,7 @@ LINE_14
 
 LINE_20
 
-	; Y=111111
+	; Y=111111.11111
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_Y

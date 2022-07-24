@@ -97,7 +97,7 @@ program
 
 LINE_10
 
-	; A=4335.45
+	; A=4335.452
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
@@ -139,7 +139,7 @@ LINE_10
 
 LINE_20
 
-	; A=-4335.45
+	; A=-4335.452
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
@@ -181,7 +181,7 @@ LINE_20
 
 LINE_30
 
-	; A=4335.45
+	; A=4335.452
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A
@@ -223,7 +223,7 @@ LINE_30
 
 LINE_40
 
-	; A=-4335.45
+	; A=-4335.452
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_A

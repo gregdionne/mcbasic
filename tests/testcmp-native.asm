@@ -236,13 +236,13 @@ LINE_90
 
 LINE_100
 
-	; A=100000
+	; A=100000.1
 
 	ldd	#FLTVAR_A
 	ldx	#FLT_100000p10000
 	jsr	ld_fd_fx
 
-	; B=100000
+	; B=100000.1
 
 	ldd	#FLTVAR_B
 	ldx	#FLT_100000p10000
@@ -293,13 +293,13 @@ LINE_120
 
 LINE_130
 
-	; A=-100000
+	; A=-100000.1
 
 	ldd	#FLTVAR_A
 	ldx	#FLT_m100000p10000
 	jsr	ld_fd_fx
 
-	; B=-100000
+	; B=-100000.1
 
 	ldd	#FLTVAR_B
 	ldx	#FLT_m100000p10000
@@ -436,13 +436,13 @@ LINE_210
 
 LINE_220
 
-	; A=100000
+	; A=100000.1
 
 	ldd	#FLTVAR_A
 	ldx	#FLT_100000p10000
 	jsr	ld_fd_fx
 
-	; B=100000
+	; B=100000.2
 
 	ldd	#FLTVAR_B
 	ldx	#FLT_100000p19999
@@ -498,7 +498,7 @@ LINE_250
 	ldx	#INT_100000
 	jsr	ld_fd_ix
 
-	; B=100000
+	; B=100000.1
 
 	ldd	#FLTVAR_B
 	ldx	#FLT_100000p10000
@@ -638,13 +638,13 @@ LINE_320
 
 LINE_330
 
-	; B=100000
+	; B=100000.1
 
 	ldd	#FLTVAR_B
 	ldx	#FLT_100000p10000
 	jsr	ld_fd_fx
 
-	; A=100000
+	; A=100000.2
 
 	ldd	#FLTVAR_A
 	ldx	#FLT_100000p19999
@@ -700,7 +700,7 @@ LINE_360
 	ldx	#INT_100000
 	jsr	ld_fd_ix
 
-	; A=100000
+	; A=100000.1
 
 	ldd	#FLTVAR_A
 	ldx	#FLT_100000p10000

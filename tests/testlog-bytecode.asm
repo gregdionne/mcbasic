@@ -206,7 +206,7 @@ LINE_120
 
 LINE_125
 
-	; IF X>15.9423 THEN
+	; IF X>15.94235 THEN
 
 	.byte	bytecode_ldlt_ir1_fx_fd
 	.byte	bytecode_FLT_15p94235
@@ -215,7 +215,7 @@ LINE_125
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_130
 
-	; X=15.9423
+	; X=15.94235
 
 	.byte	bytecode_ld_fd_fx
 	.byte	bytecode_FLTVAR_X

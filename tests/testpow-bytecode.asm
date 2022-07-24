@@ -189,7 +189,7 @@ LINE_50
 
 LINE_60
 
-	; PRINT STR$(X^0.0833333);" \r";
+	; PRINT STR$(X^0.083333);" \r";
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X
@@ -223,7 +223,7 @@ LINE_70
 
 LINE_80
 
-	; PRINT STR$(X^-0.0833333);" \r";
+	; PRINT STR$(X^-0.083333);" \r";
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_X

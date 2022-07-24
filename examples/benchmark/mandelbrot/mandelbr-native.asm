@@ -120,7 +120,7 @@ LINE_100
 	ldx	#FLTVAR_XZ
 	jsr	ld_fx_fr1
 
-	; YZ=(PY*0.0909091)-1
+	; YZ=(PY*0.090909)-1
 
 	ldx	#INTVAR_PY
 	jsr	ld_ir1_ix

@@ -190,7 +190,7 @@ LINE_120
 
 LINE_125
 
-	; IF X>15.9423 THEN
+	; IF X>15.94235 THEN
 
 	ldx	#FLT_15p94235
 	ldd	#FLTVAR_X
@@ -199,7 +199,7 @@ LINE_125
 	ldx	#LINE_130
 	jsr	jmpeq_ir1_ix
 
-	; X=15.9423
+	; X=15.94235
 
 	ldd	#FLTVAR_X
 	ldx	#FLT_15p94235

@@ -22,7 +22,6 @@ Want to write your own program?
 
 ## Limitations
 * Darren Atkinson's MCX-128 is not yet supported.
-* Scientific E notation is not yet supported
 * BREAK interruption is not supported
 
 ## Unimplemented keywords

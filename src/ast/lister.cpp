@@ -67,9 +67,18 @@ void Lister::operate(Line &l) {
 }
 
 void ExprLister::absorb(const NumericConstantExpr &e) {
-  char buf[1024];
-  sprintf(buf, "%g", e.value);
-  result = buf;
+  std::string retVal = std::to_string(e.value);
+  if (retVal.find('.') != std::string::npos) {
+    std::size_t n = retVal.find_last_not_of("0");
+    if (n != std::string::npos) {
+      retVal.erase(n+1);
+    }
+    n = retVal.find_last_not_of(".");
+    if (n != std::string::npos) {
+      retVal.erase(n+1);
+    }
+  }
+  result = retVal;
 }
 
 void ExprLister::absorb(const StringConstantExpr &e) {

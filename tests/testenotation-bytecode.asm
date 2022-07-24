@@ -1,5 +1,5 @@
-; Assembly for testconsts-native.bas
-; compiled with mcbasic -native
+; Assembly for testenotation-bytecode.bas
+; compiled with mcbasic
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
@@ -69,45 +69,228 @@ tmp5	.block	2
 	.org	$af
 r1	.block	5
 rend
+curinst	.block	2
+nxtinst	.block	2
 argv	.block	10
 
-
-; main program
 	.org	M_CODE
 
-	jsr	progbegin
+	.module	mdmain
+	ldx	#program
+	stx	nxtinst
+mainloop
+	ldx	nxtinst
+	stx	curinst
+	ldab	,x
+	ldx	#catalog
+	abx
+	abx
+	ldx	,x
+	jsr	0,x
+	bra	mainloop
 
-	jsr	clear
+program
+
+	.byte	bytecode_progbegin
+
+	.byte	bytecode_clear
 
 LINE_10
 
-	; PI=3.141593
+	; PRINT " 1200 \r";
 
-	ldd	#FLTVAR_PI
-	ldx	#FLT_3p14158
-	jsr	ld_fd_fx
+	.byte	bytecode_pr_ss
+	.text	7, " 1200 \r"
 
 LINE_20
 
-	; X=8388607
+	; PRINT " 0.0012 \r";
 
-	ldd	#INTVAR_X
-	ldx	#INT_8388607
-	jsr	ld_id_ix
+	.byte	bytecode_pr_ss
+	.text	9, " 0.0012 \r"
+
+LINE_30
+
+	; PRINT " 200 \r";
+
+	.byte	bytecode_pr_ss
+	.text	6, " 200 \r"
+
+LINE_40
+
+	; PRINT " 200 \r";
+
+	.byte	bytecode_pr_ss
+	.text	6, " 200 \r"
 
 LINE_50
 
-	; Z=-8388608
+	; PRINT " 200 \r";
 
-	ldd	#INTVAR_Z
-	ldx	#INT_m8388608
-	jsr	ld_id_ix
+	.byte	bytecode_pr_ss
+	.text	6, " 200 \r"
 
 LLAST
 
 	; END
 
-	jsr	progend
+	.byte	bytecode_progend
+
+; Library Catalog
+bytecode_clear	.equ	0
+bytecode_pr_ss	.equ	1
+bytecode_progbegin	.equ	2
+bytecode_progend	.equ	3
+
+catalog
+	.word	clear
+	.word	pr_ss
+	.word	progbegin
+	.word	progend
+
+	.module	mdbcode
+noargs
+	ldx	curinst
+	inx
+	stx	nxtinst
+	rts
+extend
+	ldx	curinst
+	inx
+	ldab	,x
+	inx
+	stx	nxtinst
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	rts
+getaddr
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldx	1,x
+	rts
+getbyte
+	ldx	curinst
+	inx
+	ldab	,x
+	inx
+	stx	nxtinst
+	rts
+getword
+	ldx	curinst
+	inx
+	ldd	,x
+	inx
+	inx
+	stx	nxtinst
+	rts
+extbyte
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	pshb
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extword
+	ldd	curinst
+	addd	#4
+	std	nxtinst
+	ldx	curinst
+	ldd	2,x
+	pshb
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+byteext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	pshb
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+wordext
+	ldd	curinst
+	addd	#4
+	std	nxtinst
+	ldx	curinst
+	ldd	1,x
+	pshb
+	ldab	3,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+extdex
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+dexext
+	ldd	curinst
+	addd	#3
+	std	nxtinst
+	ldx	curinst
+	ldab	1,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	pshb
+	ldx	curinst
+	ldab	2,x
+	ldx	#symtbl
+	abx
+	abx
+	ldx	,x
+	pulb
+	rts
+immstr
+	ldx	curinst
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
+	rts
 
 	.module	mdprint
 print
@@ -119,8 +302,42 @@ _loop
 	bne	_loop
 	rts
 
+	.module	mdstrrel
+; release a temporary string
+; ENTRY: X holds string start
+; EXIT:  <all reg's preserved>
+; sttrel should be called from:
+;  - ASC, VAL, LEN, PRINT
+;  - right hand side of strcat
+;  - relational operators
+;  - when LEFT$, MID$, RIGHT$ return null
+strrel
+	cpx	strend
+	bls	_rts
+	cpx	strstop
+	bhs	_rts
+	tst	strtcnt
+	beq	_panic
+	dec	strtcnt
+	beq	_restore
+	stx	strfree
+_rts
+	rts
+_restore
+	pshx
+	ldx	strend
+	inx
+	inx
+	stx	strfree
+	pulx
+	rts
+_panic
+	ldab	#1
+	jmp	error
+
 clear			; numCalls = 1
 	.module	modclear
+	jsr	noargs
 	clra
 	ldx	#bss
 	bra	_start
@@ -141,36 +358,24 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_fd_fx			; numCalls = 1
-	.module	modld_fd_fx
-	std	tmp1
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldd	3,x
-	ldx	tmp1
-	std	3,x
-	ldd	1+argv
-	std	1,x
-	ldab	0+argv
-	stab	0,x
+pr_ss			; numCalls = 5
+	.module	modpr_ss
+	ldx	curinst
+	inx
+	ldab	,x
+	beq	_null
+	inx
+	jsr	print
+	stx	nxtinst
 	rts
-
-ld_id_ix			; numCalls = 2
-	.module	modld_id_ix
-	std	tmp1
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	ldx	tmp1
-	std	1,x
-	ldab	0+argv
-	stab	0,x
+_null
+	inx
+	stx	nxtinst
 	rts
 
 progbegin			; numCalls = 1
 	.module	modprogbegin
+	jsr	noargs
 	ldx	R_MCXID
 	cpx	#'h'*256+'C'
 	beq	_ok
@@ -201,6 +406,7 @@ _mcbasic
 
 progend			; numCalls = 1
 	.module	modprogend
+	jsr	noargs
 	pulx
 	pula
 	pula
@@ -223,21 +429,18 @@ error
 startdata
 enddata
 
+; Bytecode symbol lookup table
 
-; large integer constants
-INT_m8388608	.byte	$80, $00, $00
-INT_8388607	.byte	$7f, $ff, $ff
 
-; fixed-point constants
-FLT_3p14158	.byte	$00, $00, $03, $24, $3f
+
+symtbl
+
+
 
 ; block started by symbol
 bss
 
 ; Numeric Variables
-INTVAR_X	.block	3
-INTVAR_Z	.block	3
-FLTVAR_PI	.block	5
 ; String Variables
 ; Numeric Arrays
 ; String Arrays

@@ -136,7 +136,7 @@ LINE_100
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_XZ
 
-	; YZ=(PY*0.0909091)-1
+	; YZ=(PY*0.090909)-1
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_PY
