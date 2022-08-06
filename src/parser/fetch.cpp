@@ -9,6 +9,8 @@
 #include <cstdlib> //perror
 #include <cstring> //strlen
 
+#include <string>
+
 #include "mcbasic/options.hpp"
 
 #ifdef _MSC_VER
@@ -52,11 +54,28 @@ void fetch::spitLine() {
   }
 }
 
+static std::string strEscape(std::string const &in) {
+  std::string out;
+  const char *in_c = in.c_str();
+  const char *hex_digits = "0123456789ABCDEF";
+  char c;
+  while ((c = *in_c++) != 0) {
+    out += c == '\t' ? std::string("\t")
+           : c == '\r' ? std::string("\r")
+           : c == '\n' ? std::string("\n")
+           : isprint(c) != 0 || (c & 0x80) != 0
+               ? std::string(1, c)
+               : std::string("\\x") + hex_digits[(c & 0xf0) >> 4] +
+                     hex_digits[c & 0x0f];
+  }
+  return out;
+}
+
 void fetch::sputter(const char *formatstr, va_list &vl) {
 
   if ((linenum != 0) && (argcnt != 0) && argfile < argc) {
     int len = fprintf(stderr, "%s(%i): ", argv[argfile], linenum);
-    fprintf(stderr, "%s", buf);
+    fprintf(stderr, "%s", strEscape(buf).c_str());
     for (int i = 0; i < len + colnum; i++) {
       fprintf(stderr, " ");
     }

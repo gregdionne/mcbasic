@@ -256,7 +256,7 @@ up<StringExpr> Parser::string(up<Expr> (Parser::*expr)()) {
   auto *sexpr = dynamic_cast<StringExpr *>(e.get());
   if (!sexpr) {
     in.setColumn(savecol);
-    in.die("numeric expression expected");
+    in.die("string expression expected");
   }
   static_cast<void>(e.release());
   return up<StringExpr>(sexpr);
