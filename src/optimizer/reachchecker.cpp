@@ -11,8 +11,8 @@ void ReachChecker::operate(Program &p) {
 }
 
 void ReachChecker::operate(Line &l) {
-  auto gls = StatementReachChecker(l.lineNumber);
-  gls.validate(l.statements);
+  StatementReachChecker src(l.lineNumber);
+  src.validate(l.statements);
 }
 
 void StatementReachChecker::inspect(const If &s) const {
@@ -27,7 +27,7 @@ void StatementReachChecker::validate(
 
   std::string terminator;
 
-  for (auto &statement : statements) {
+  for (const auto &statement : statements) {
     if (statement->check(&isExecutable) && !terminator.empty()) {
       fprintf(stderr, "warning: %s statement not reached after %s at line %i\n",
               statement->statementName().c_str(), terminator.c_str(),

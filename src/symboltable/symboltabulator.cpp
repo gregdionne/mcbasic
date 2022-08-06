@@ -6,7 +6,7 @@ void SymbolTabulator::operate(Program &p) {
   for (auto &line : p.lines) {
     line->operate(this);
   }
-  symbolTable.sort();
+  sortSymbolTable(symbolTable);
 }
 
 void SymbolTabulator::operate(Line &l) {
@@ -19,13 +19,13 @@ void StatementSymbolTabulator::inspect(const If &s) const {
 }
 
 void StatementSymbolTabulator::inspect(const Dim &s) const {
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     variable->inspect(&exprSymbolTabulator);
   }
 }
 
 void StatementSymbolTabulator::inspect(const Read &s) const {
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     variable->inspect(&exprSymbolTabulator);
   }
 }
@@ -39,14 +39,14 @@ void StatementSymbolTabulator::inspect(const For &s) const {
 }
 
 void StatementSymbolTabulator::inspect(const Input &s) const {
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     variable->inspect(&exprSymbolTabulator);
   }
 }
 
 void StatementSymbolTabulator::delve(
     const std::vector<up<Statement>> &statements) const {
-  for (auto &statement : statements) {
+  for (const auto &statement : statements) {
     statement->inspect(this);
   }
 }

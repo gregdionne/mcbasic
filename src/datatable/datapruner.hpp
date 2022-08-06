@@ -11,7 +11,7 @@
 
 class IsDataStatementChecker : public PessimisticStatementChecker {
 public:
-  bool inspect(const Data & /*s*/) const { return true; };
+  bool inspect(const Data & /*s*/) const override { return true; };
 
 private:
   using PessimisticStatementChecker::inspect;

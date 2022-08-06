@@ -42,9 +42,9 @@ static bool is5Smooth(int n) {
 
   static std::array<int, 3> p{2, 3, 5};
 
-  for (std::size_t i = 0; i < p.size(); ++i) {
-    while (n % p[i] == 0) {
-      n /= p[i];
+  for (int i : p) {
+    while (n % i == 0) {
+      n /= i;
     }
   }
 
@@ -223,7 +223,7 @@ void StatementCompiler::absorb(const If &s) {
                    ? makeupInstMv<InstJmpIfEqual>(cond.result, lineNumber)
                    : makeupInstMv<InstJmpIfNotEqual>(cond.result, lineNumber));
 
-  for (auto &statement : s.consequent) {
+  for (const auto &statement : s.consequent) {
     statement->soak(this);
   }
 }
@@ -241,7 +241,7 @@ void StatementCompiler::absorb(const Print &s) {
     value.result->castToInt(); // override
     queue.append(makeup<InstPrAt>(mv(value.result)));
   }
-  for (auto &expr : s.printExpr) {
+  for (const auto &expr : s.printExpr) {
     queue.clearRegisters();
     expr->soak(&value);
     // print if not handled by PrTab or PrComma or PrCR
@@ -263,7 +263,7 @@ void StatementCompiler::absorb(const Input &s) {
 
   queue.append(makeup<InstInputBuf>());
 
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     queue.clearRegisters();
     value.arrayRef = !variable->isVar();
     variable->soak(&value);
@@ -298,7 +298,7 @@ void StatementCompiler::absorb(const Next &s) {
   if (s.variables.empty()) {
     queue.append(makeup<InstNext>(generateLines));
   } else {
-    for (auto &variable : s.variables) {
+    for (const auto &variable : s.variables) {
       queue.clearRegisters();
       ExprCompiler var(constTable, symbolTable, queue);
       variable->soak(&var);
@@ -310,7 +310,7 @@ void StatementCompiler::absorb(const Next &s) {
 
 void StatementCompiler::absorb(const Dim &s) {
   queue.append(makeup<InstComment>(list(s)));
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     queue.clearRegisters();
     ExprCompiler var(constTable, symbolTable, queue);
     var.arrayDim = true;
@@ -320,7 +320,7 @@ void StatementCompiler::absorb(const Dim &s) {
 
 void StatementCompiler::absorb(const Read &s) {
   queue.append(makeup<InstComment>(list(s)));
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     queue.clearRegisters();
 
     ExprCompiler dest(constTable, symbolTable, queue);
@@ -329,10 +329,10 @@ void StatementCompiler::absorb(const Read &s) {
     variable->soak(&dest); // dest.result will be either indirect or extended.
 
     auto inst = makeup<InstRead>(mv(dest.result));
-    inst->pureUnsigned = dataTable.pureUnsigned;
-    inst->pureByte = dataTable.pureByte;
-    inst->pureWord = dataTable.pureWord;
-    inst->pureNumeric = dataTable.pureNumeric;
+    inst->pureUnsigned = dataTable.isPureUnsigned();
+    inst->pureByte = dataTable.isPureByte();
+    inst->pureWord = dataTable.isPureWord();
+    inst->pureNumeric = dataTable.isPureNumeric();
     queue.append(mv(inst));
   }
 }
@@ -362,7 +362,7 @@ void StatementCompiler::absorb(const Let &s) {
     return;
   }
 
-  if (auto rhs = dynamic_cast<InkeyExpr *>(s.rhs.get())) {
+  if (auto *rhs = dynamic_cast<InkeyExpr *>(s.rhs.get())) {
     queue.append(makeup<InstInkey>(mv(dest.result)));
     return;
   }
@@ -390,7 +390,7 @@ void StatementCompiler::absorb(const Accum &s) {
   s.lhs->soak(&dest); // dest.result will be either indirect or extended.
 
   ConstInspector constInspector;
-  auto arg = dynamic_cast<const NumericExpr *>(s.rhs.get());
+  const auto *arg = dynamic_cast<const NumericExpr *>(s.rhs.get());
 
   if (arg && constInspector.isEqual(arg, 1)) {
     queue.append(makeup<InstInc>(dest.result->clone(), dest.result->clone()));
@@ -423,7 +423,7 @@ void StatementCompiler::absorb(const Decum &s) {
   s.lhs->soak(&dest); // dest.result will be either indirect or extended.
 
   ConstInspector constInspector;
-  auto arg = dynamic_cast<const NumericExpr *>(s.rhs.get());
+  const auto *arg = dynamic_cast<const NumericExpr *>(s.rhs.get());
 
   if (arg && constInspector.isEqual(arg, 1)) {
     queue.append(makeup<InstDec>(dest.result->clone(), dest.result->clone()));
@@ -456,7 +456,7 @@ void StatementCompiler::absorb(const Necum &s) {
   s.lhs->soak(&dest); // dest.result will be either indirect or extended.
 
   ConstInspector constInspector;
-  auto arg = dynamic_cast<const NumericExpr *>(s.rhs.get());
+  const auto *arg = dynamic_cast<const NumericExpr *>(s.rhs.get());
 
   if (arg && constInspector.isEqual(arg, 0)) {
     queue.append(makeup<InstNeg>(dest.result->clone(), dest.result->clone()));
@@ -662,7 +662,7 @@ void ExprCompiler::absorb(const StringVariableExpr &e) {
 void ExprCompiler::absorb(const StringConcatenationExpr &e) {
   up<AddressMode> reg;
   bool needLoad = true;
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     if (needLoad) {
       operand->soak(this);
       reg = result->isRegister() ? result->clone()
@@ -679,7 +679,7 @@ void ExprCompiler::absorb(const StringConcatenationExpr &e) {
 }
 
 void ExprCompiler::absorb(const ArrayIndicesExpr &e) {
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     operand->soak(this);
     result = queue.load(mv(result));
     result->castToInt();
@@ -820,14 +820,14 @@ void ExprCompiler::absorb(const ShiftExpr &e) {
   // dbl?
   if (constInspector.isEqual(e.count.get(), 1)) {
     auto dest = queue.alloc(result->clone());
-    result = queue.append(makeup<InstDbl>(mv(dest),mv(result)));
+    result = queue.append(makeup<InstDbl>(mv(dest), mv(result)));
     return;
   }
 
   // hlf?
   if (constInspector.isEqual(e.count.get(), -1)) {
     auto dest = queue.alloc(result->clone());
-    result = queue.append(makeup<InstHlf>(mv(dest),mv(result)));
+    result = queue.append(makeup<InstHlf>(mv(dest), mv(result)));
     return;
   }
 
@@ -1105,7 +1105,7 @@ static bool needsAlloc(const std::vector<up<NumericExpr>> &operands) {
   ConstInspector constInspector;
 
   bool allocated = false;
-  for (auto &operand : operands) {
+  for (const auto &operand : operands) {
     allocated |= !operand->isVar() && !operand->constify(&constInspector);
   }
 
@@ -1160,7 +1160,7 @@ static void addDelayed(ExprCompiler *that,
   up<AddressMode> reg;
 
   bool needLoad = true;
-  for (auto &operand : operands) {
+  for (const auto &operand : operands) {
     if (needLoad) {
       operand->soak(that);
       needLoad = false;
@@ -1188,7 +1188,7 @@ static void subNow(ExprCompiler *that,
                    const std::vector<up<NumericExpr>> &invoperands) {
   up<AddressMode> reg;
 
-  for (auto &invoperand : invoperands) {
+  for (const auto &invoperand : invoperands) {
     addSub<InstDec, InstInc, InstSub>(that, invoperand.get(), reg);
   }
 }
@@ -1271,7 +1271,7 @@ void ExprCompiler::absorb(const MultiplicativeExpr &e) {
   up<AddressMode> reg;
   bool needLoad = true;
   if (e.operands.empty()) { // all divisions. multiply all then reciprocate.
-    for (auto &invoperand : e.invoperands) {
+    for (const auto &invoperand : e.invoperands) {
       if (needLoad) {
         invoperand->soak(this);
         needLoad = false;
@@ -1288,7 +1288,7 @@ void ExprCompiler::absorb(const MultiplicativeExpr &e) {
     reg = queue.alloc(result->clone());
     result = queue.append(makeup<InstInv>(reg->clone(), mv(result)));
   } else {
-    for (auto &operand : e.operands) {
+    for (const auto &operand : e.operands) {
       if (needLoad) {
         operand->soak(this);
         needLoad = false;
@@ -1302,7 +1302,7 @@ void ExprCompiler::absorb(const MultiplicativeExpr &e) {
             makeup<InstMul>(reg->clone(), reg->clone(), mv(result)));
       }
     }
-    for (auto &invoperand : e.invoperands) {
+    for (const auto &invoperand : e.invoperands) {
       reg = queue.load(mv(result));
       invoperand->soak(this);
       result =
@@ -1315,7 +1315,7 @@ void ExprCompiler::absorb(const MultiplicativeExpr &e) {
 void ExprCompiler::absorb(const OrExpr &e) {
   up<AddressMode> reg;
   bool needLoad = true;
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     if (needLoad) {
       operand->soak(this);
       result->castToInt();
@@ -1333,7 +1333,7 @@ void ExprCompiler::absorb(const OrExpr &e) {
 void ExprCompiler::absorb(const AndExpr &e) {
   up<AddressMode> reg;
   bool needLoad = true;
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     if (needLoad) {
       operand->soak(this);
       result->castToInt();

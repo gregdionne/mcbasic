@@ -133,6 +133,13 @@ class InstEnd;
 
 class InstructionOp {
 public:
+  InstructionOp() = default;
+  InstructionOp(const InstructionOp &) = delete;
+  InstructionOp(InstructionOp &&) = delete;
+  InstructionOp &operator=(const InstructionOp &) = delete;
+  InstructionOp &operator=(InstructionOp &&) = delete;
+  virtual ~InstructionOp() = default;
+
   virtual std::string operate(Instruction &inst) = 0;
   virtual std::string operate(InstComment &inst) = 0;
   virtual std::string operate(InstLabel &inst) = 0;
@@ -690,21 +697,24 @@ public:
 
 class InstOne : public OperableInstruction<InstOne> {
 public:
-  InstOne(up<AddressMode> dest) : OperableInstruction("one", mv(dest)) {
+  explicit InstOne(up<AddressMode> dest)
+      : OperableInstruction("one", mv(dest)) {
     resultLet();
   }
 };
 
 class InstTrue : public OperableInstruction<InstTrue> {
 public:
-  InstTrue(up<AddressMode> dest) : OperableInstruction("true", mv(dest)) {
+  explicit InstTrue(up<AddressMode> dest)
+      : OperableInstruction("true", mv(dest)) {
     resultLet();
   }
 };
 
 class InstClr : public OperableInstruction<InstClr> {
 public:
-  InstClr(up<AddressMode> dest) : OperableInstruction("clr", mv(dest)) {
+  explicit InstClr(up<AddressMode> dest)
+      : OperableInstruction("clr", mv(dest)) {
     resultLet();
   }
 };
@@ -1205,21 +1215,24 @@ public:
 
 class InstForOne : public OperableInstruction<InstForOne> {
 public:
-  InstForOne(up<AddressMode> iter) : OperableInstruction("forone", mv(iter)) {
+  explicit InstForOne(up<AddressMode> iter)
+      : OperableInstruction("forone", mv(iter)) {
     resultPtr();
   }
 };
 
 class InstForTrue : public OperableInstruction<InstForTrue> {
 public:
-  InstForTrue(up<AddressMode> iter) : OperableInstruction("fortrue", mv(iter)) {
+  explicit InstForTrue(up<AddressMode> iter)
+      : OperableInstruction("fortrue", mv(iter)) {
     resultPtr();
   }
 };
 
 class InstForClr : public OperableInstruction<InstForClr> {
 public:
-  InstForClr(up<AddressMode> iter) : OperableInstruction("forclr", mv(iter)) {
+  explicit InstForClr(up<AddressMode> iter)
+      : OperableInstruction("forclr", mv(iter)) {
     resultPtr();
   }
 };

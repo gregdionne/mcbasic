@@ -9,8 +9,8 @@ void Whenifier::operate(Program &p) {
 }
 
 void Whenifier::operate(Line &l) {
-  auto gls = StatementWhenifier(announcer, l.lineNumber);
-  gls.whenify(l.statements);
+  StatementWhenifier sw(announcer, l.lineNumber);
+  sw.whenify(l.statements);
 }
 
 up<Statement> StatementWhenifier::mutate(If &s) {
@@ -31,7 +31,7 @@ up<Statement> StatementWhenifier::mutate(If &s) {
 
   whenify(s.consequent);
 
-  return up<Statement>();
+  return {};
 }
 
 void StatementWhenifier::whenify(std::vector<up<Statement>> &statements) {

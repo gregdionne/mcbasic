@@ -57,18 +57,20 @@ public:
   void mutate(TimerExpr &e) override;
   void mutate(PeekWordExpr &e) override;
 
-  void mutate(NaryNumericExpr &) override { gotConst = false; };
-  void mutate(PrintCommaExpr &) override { gotConst = false; };
-
-  bool gotConst;
-  double dvalue;
-  std::string svalue;
-  double fetchConst(NumericExpr &e);
-  std::string fetchConst(StringExpr &e);
+  void mutate(NaryNumericExpr & /*e*/) override { gotConst = false; };
+  void mutate(PrintCommaExpr & /*e*/) override { gotConst = false; };
 
   bool fold(up<Expr> &expr);
   bool fold(up<NumericExpr> &expr);
   bool fold(up<StringExpr> &expr);
+
+private:
+  bool gotConst{false};
+  double dvalue{0};
+  std::string svalue;
+  double fetchConst(NumericExpr &e);
+  std::string fetchConst(StringExpr &e);
+
   bool fold(up<NumericExpr> &expr, double &value);
   bool fold(up<StringExpr> &expr, std::string &value);
 
@@ -101,17 +103,18 @@ public:
   void mutate(Sound &s) override;
   void mutate(Exec &s) override;
 
-  void mutate(Rem &) override {}
-  void mutate(Go &) override {}
-  void mutate(Data &) override {}
-  void mutate(End &) override {}
-  void mutate(Next &) override {}
-  void mutate(Run &) override {}
-  void mutate(Restore &) override {}
-  void mutate(Return &) override {}
-  void mutate(Stop &) override {}
-  void mutate(Error &) override {}
+  void mutate(Rem & /*s*/) override {}
+  void mutate(Go & /*s*/) override {}
+  void mutate(Data & /*s*/) override {}
+  void mutate(End & /*s*/) override {}
+  void mutate(Next & /*s*/) override {}
+  void mutate(Run & /*s*/) override {}
+  void mutate(Restore & /*s*/) override {}
+  void mutate(Return & /*s*/) override {}
+  void mutate(Stop & /*s*/) override {}
+  void mutate(Error & /*s*/) override {}
 
+private:
   ExprConstFolder cfe;
 };
 

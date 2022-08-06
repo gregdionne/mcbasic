@@ -115,13 +115,13 @@ std::string CoreTarget::generateLibrary(InstQueue &queue, Options &options) {
 
   std::string ops = generateLibraryCatalog(library);
 
-  for (auto &entry : library.modules) {
+  for (const auto &entry : library.getModules()) {
     Assembler tasm;
     tasm.module(entry.first);
     ops += tasm.source() + entry.second + '\n';
   }
 
-  for (auto &entry : library.calls) {
+  for (const auto &entry : library.getCalls()) {
     Assembler tasm;
     tasm.label(entry.first,
                "numCalls = " + std::to_string(entry.second.callCount));
@@ -146,37 +146,38 @@ std::string CoreTarget::generateDataTable(DataTable &dataTable) {
   Assembler tasm;
   tasm.comment("data table");
   tasm.label("startdata");
-  if (!dataTable.pureNumeric) {
-    for (auto &i : dataTable.data) {
+  auto data = dataTable.getData();
+  if (!dataTable.isPureNumeric()) {
+    for (auto &i : data) {
       tasm.text(std::to_string(i.size()) + ", " + '"' + strEscapeTASM(i) + '"');
     }
-  } else if (dataTable.pureByte) {
+  } else if (dataTable.isPureByte()) {
     std::string args;
-    for (std::size_t i = 0; i < dataTable.data.size(); ++i) {
+    for (std::size_t i = 0; i < data.size(); ++i) {
 
-      args += dataTable.data[i];
+      args += data[i];
 
-      if (i % 6 == 5 || i + 1 == dataTable.data.size()) {
+      if (i % 6 == 5 || i + 1 == data.size()) {
         tasm.byte(args);
         args = "";
       } else {
         args += ", ";
       }
     }
-  } else if (dataTable.pureWord) {
+  } else if (dataTable.isPureWord()) {
     std::string args;
-    for (std::size_t i = 0; i < dataTable.data.size(); ++i) {
-      args += dataTable.data[i];
+    for (std::size_t i = 0; i < data.size(); ++i) {
+      args += data[i];
 
-      if (i % 4 == 3 || i + 1 == dataTable.data.size()) {
+      if (i % 4 == 3 || i + 1 == data.size()) {
         tasm.word(args);
         args = "";
       } else {
         args += ", ";
       }
     }
-  } else if (!dataTable.data.empty()) {
-    for (auto &i : dataTable.data) {
+  } else if (!data.empty()) {
+    for (auto &i : data) {
       try {
         char buf[1024];
         FixedPoint entry(std::stod(i));

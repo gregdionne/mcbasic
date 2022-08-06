@@ -17,19 +17,21 @@ public:
   up<Statement> mutate(When &s) override;
 
   void fold(std::vector<up<Statement>> &statements);
-  const int lineNumber;
-  const Announcer &announcer;
 
 private:
   using NullStatementTransmutator::mutate;
+
+  const int lineNumber;
+  const Announcer &announcer;
 };
 
 class WhenFolder : public ProgramOp {
 public:
-  WhenFolder(Announcer &&w) : announcer(w) {}
+  explicit WhenFolder(Announcer &&w) : announcer(w) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 
+private:
   const Announcer announcer;
   std::vector<up<Line>>::iterator itCurrentLine;
 };

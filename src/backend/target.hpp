@@ -14,7 +14,13 @@
 
 class Target {
 public:
+  Target() = default;
+  Target(const Target &) = delete;
+  Target(Target &&) = delete;
+  Target &operator=(const Target &) = delete;
+  Target &operator=(Target &&) = delete;
   virtual ~Target() = default;
+
   virtual std::string generateAssembly(DataTable &dataTable,
                                        ConstTable &constTable,
                                        SymbolTable &symbolTable,

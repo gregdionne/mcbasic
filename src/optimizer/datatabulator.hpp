@@ -24,10 +24,12 @@ private:
 
 class DataTabulator : public ProgramOp {
 public:
-  DataTable &dataTable;
   explicit DataTabulator(DataTable &dt) : dataTable(dt), dts(dt) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
+
+private:
+  DataTable &dataTable;
   StatementDataTabulator dts;
 };
 

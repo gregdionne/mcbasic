@@ -16,6 +16,7 @@ public:
   void operate(Program &p) override;
   void operate(Line &l) override;
 
+private:
   SymbolTable &symbolTable;
 };
 
@@ -56,32 +57,30 @@ public:
   void mutate(PeekWordExpr &e) override;
   void mutate(SquareExpr &e) override;
 
-  void mutate(NumericConstantExpr &) override {}
-  void mutate(StringConstantExpr &) override {}
-  void mutate(NumericVariableExpr &) override {}
-  void mutate(StringVariableExpr &) override {}
-  void mutate(NaryNumericExpr &) override {}
-  void mutate(PrintSpaceExpr &) override {}
-  void mutate(PrintCRExpr &) override {}
-  void mutate(PrintCommaExpr &) override {}
-  void mutate(ShiftExpr &) override {}
-  void mutate(SqrExpr &) override {}
-  void mutate(ExpExpr &) override {}
-  void mutate(LogExpr &) override {}
-  void mutate(SinExpr &) override {}
-  void mutate(CosExpr &) override {}
-  void mutate(TanExpr &) override {}
-  void mutate(InkeyExpr &) override {}
-  void mutate(MemExpr &) override {}
-  void mutate(PosExpr &) override {}
-  void mutate(TimerExpr &) override {}
+  void mutate(NumericConstantExpr & /*e*/) override {}
+  void mutate(StringConstantExpr & /*e*/) override {}
+  void mutate(NumericVariableExpr & /*e*/) override {}
+  void mutate(StringVariableExpr & /*e*/) override {}
+  void mutate(NaryNumericExpr & /*e*/) override {}
+  void mutate(PrintSpaceExpr & /*e*/) override {}
+  void mutate(PrintCRExpr & /*e*/) override {}
+  void mutate(PrintCommaExpr & /*e*/) override {}
+  void mutate(ShiftExpr & /*e*/) override {}
+  void mutate(SqrExpr & /*e*/) override {}
+  void mutate(ExpExpr & /*e*/) override {}
+  void mutate(LogExpr & /*e*/) override {}
+  void mutate(SinExpr & /*e*/) override {}
+  void mutate(CosExpr & /*e*/) override {}
+  void mutate(TanExpr & /*e*/) override {}
+  void mutate(InkeyExpr & /*e*/) override {}
+  void mutate(MemExpr & /*e*/) override {}
+  void mutate(PosExpr & /*e*/) override {}
+  void mutate(TimerExpr & /*e*/) override {}
 
   void merge(up<NumericExpr> &expr);
   void merge(up<StringExpr> &expr);
   void merge(up<Expr> &expr);
   void merge(NaryNumericExpr &e);
-
-  IsFloat isFloat;
 
 private:
   // remove identity elements from N-ary argument list
@@ -122,7 +121,7 @@ private:
 
   // replace
   //    X*X with SQ(X)
-  void reduceSquaredMultiplication(std::vector<up<NumericExpr>> &expr);
+  void reduceSquaredMultiplication(std::vector<up<NumericExpr>> &ops);
 
   // replace
   //    X^2 with SQ(X)
@@ -165,6 +164,8 @@ private:
   //   (reduce register pressure)
   //
   static void knead(std::vector<up<NumericExpr>> &operands);
+
+  IsFloat isFloat;
 };
 
 class StatementMerger : public NullStatementMutator {
@@ -188,6 +189,7 @@ public:
   void mutate(Sound &s) override;
   void mutate(Exec &s) override;
 
+private:
   ExprMerger merger;
 };
 

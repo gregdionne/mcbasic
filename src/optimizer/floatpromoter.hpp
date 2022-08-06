@@ -33,54 +33,53 @@
 
 class ExprFloatPromoter : public NullExprMutator {
 public:
-  bool &gotFloat;
-  DataTable &dataTable;
-  SymbolTable &symbolTable;
-  IsFloat &isFloat;
-  Announcer &announcer;
-  int lineNumber;
-  ExprFloatPromoter(bool &gf, DataTable &dt, SymbolTable &st, IsFloat &isf,
-                    Announcer &wf)
-      : gotFloat(gf), dataTable(dt), symbolTable(st), isFloat(isf),
-        announcer(wf) {}
+  ExprFloatPromoter(bool &gf, SymbolTable &st, Announcer &wf)
+      : gotFloat(gf), symbolTable(st), announcer(wf) {}
   bool makeFloat(std::vector<Symbol> &table, std::string &symbolName);
   void mutate(NumericVariableExpr &e) override;
   void mutate(NumericArrayExpr &e) override;
+
+  void setLineNumber(int line) { lineNumber = line; }
+
+private:
+  bool &gotFloat;
+  SymbolTable &symbolTable;
+  Announcer &announcer;
+  int lineNumber{0};
 };
 
 class StatementFloatPromoter : public NullStatementMutator {
 public:
-  bool &gotFloat;
-  DataTable &dataTable;
-  SymbolTable &symbolTable;
-  IsFloat &isFloat;
-  ExprFloatPromoter fe;
-  ExprMutator<void, void> *that;
-  int lineNumber;
   StatementFloatPromoter(bool &gf, DataTable &dt, SymbolTable &st, IsFloat &isf,
                          Announcer &wf)
-      : gotFloat(gf), dataTable(dt), symbolTable(st), isFloat(isf),
-        fe(gf, dt, st, isf, wf), that(&fe) {}
+      : dataTable(dt), isFloat(isf), fe(gf, st, wf) {}
   void mutate(If &s) override;
   void mutate(Let &s) override;
   void mutate(For &s) override;
   void mutate(Read &s) override;
   void mutate(Input &s) override;
+
+  void setLineNumber(int line) { lineNumber = line; }
+
+private:
+  DataTable &dataTable;
+  IsFloat &isFloat;
+  ExprFloatPromoter fe;
+  int lineNumber{0};
 };
 
 class FloatPromoter : public ProgramOp {
 public:
-  bool gotFloat;
-  DataTable &dataTable;
+  FloatPromoter(DataTable &dt, SymbolTable &st, Announcer wf)
+      : symbolTable(st), isFloat(st), fs(gotFloat, dt, st, isFloat, wf) {}
+  void operate(Program &p) override;
+  void operate(Line &l) override;
+
+private:
+  bool gotFloat{false};
   SymbolTable &symbolTable;
   IsFloat isFloat;
   StatementFloatPromoter fs;
-  NullStatementMutator *that;
-  FloatPromoter(DataTable &dt, SymbolTable &st, Announcer wf)
-      : gotFloat(false), dataTable(dt), symbolTable(st), isFloat(st),
-        fs(gotFloat, dt, st, isFloat, wf), that(&fs) {}
-  void operate(Program &p) override;
-  void operate(Line &l) override;
 };
 
 #endif

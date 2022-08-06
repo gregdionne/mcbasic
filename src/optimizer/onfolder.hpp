@@ -11,24 +11,40 @@
 
 class OnStatementFolder : public NullStatementTransmutator {
 public:
-  OnStatementFolder(int linenum, Announcer w)
+  OnStatementFolder(int linenum, const Announcer &w)
       : lineNumber(linenum), announcer(w) {}
+  OnStatementFolder(const OnStatementFolder &) = delete;
+  OnStatementFolder(OnStatementFolder &&) = delete;
+  OnStatementFolder &operator=(const OnStatementFolder &) = delete;
+  OnStatementFolder &operator=(OnStatementFolder &&) = delete;
+
+  ~OnStatementFolder() override = default;
+
   up<Statement> mutate(If &s) override;
   up<Statement> mutate(On &s) override;
 
   using NullStatementTransmutator::mutate;
 
   void fold(std::vector<up<Statement>> &statements);
+
+private:
   const int lineNumber;
-  const Announcer announcer;
+  const Announcer &announcer;
 };
 
 class OnFolder : public ProgramOp {
 public:
-  OnFolder(Announcer &&w) : announcer(w) {}
+  explicit OnFolder(Announcer &&w) : announcer(w) {}
+  OnFolder(const OnFolder &) = delete;
+  OnFolder(OnFolder &&) = delete;
+  OnFolder &operator=(const OnFolder &) = delete;
+  OnFolder &operator=(OnFolder &&) = delete;
+  ~OnFolder() override = default;
+
   void operate(Program &p) override;
   void operate(Line &l) override;
 
+private:
   const Announcer announcer;
 };
 

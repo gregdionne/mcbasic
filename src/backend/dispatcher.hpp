@@ -28,7 +28,7 @@ public:
   Dispatcher &operator=(Dispatcher &&) = delete;
 
   // because compilers ask us to
-  virtual ~Dispatcher() = default;
+  ~Dispatcher() override = default;
 
   std::string operate(Instruction &inst) override;
   std::string operate(InstComment &inst) override;

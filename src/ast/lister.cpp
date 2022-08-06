@@ -4,7 +4,7 @@
 #include "optimizer/constinspector.hpp"
 #include "utils/strescape.hpp"
 
-#include <stdarg.h>
+#include <cstdarg>
 
 template <typename T> static inline std::string list(T &t) {
   ExprLister that;
@@ -14,13 +14,13 @@ template <typename T> static inline std::string list(T &t) {
 
 template <typename T> static inline std::string plist(T &t) {
 
-  if (nullptr == dynamic_cast<NaryNumericExpr *>(t.get()) &&
-      nullptr == dynamic_cast<RelationalExpr *>(t.get()) &&
-      nullptr == dynamic_cast<PowerExpr *>(t.get())) {
+  if (!dynamic_cast<NaryNumericExpr *>(t.get()) &&
+      !dynamic_cast<RelationalExpr *>(t.get()) &&
+      !dynamic_cast<PowerExpr *>(t.get())) {
     return list(t);
   }
 
-  auto addexpr = dynamic_cast<AdditiveExpr *>(t.get());
+  auto *addexpr = dynamic_cast<AdditiveExpr *>(t.get());
   if (addexpr && addexpr->operands.size() + addexpr->invoperands.size() == 1) {
     return list(t);
   }
@@ -69,13 +69,13 @@ void Lister::operate(Line &l) {
 void ExprLister::absorb(const NumericConstantExpr &e) {
   std::string retVal = std::to_string(e.value);
   if (retVal.find('.') != std::string::npos) {
-    std::size_t n = retVal.find_last_not_of("0");
+    std::size_t n = retVal.find_last_not_of('0');
     if (n != std::string::npos) {
-      retVal.erase(n+1);
+      retVal.erase(n + 1);
     }
-    n = retVal.find_last_not_of(".");
+    n = retVal.find_last_not_of('.');
     if (n != std::string::npos) {
-      retVal.erase(n+1);
+      retVal.erase(n + 1);
     }
   }
   result = retVal;
@@ -95,7 +95,7 @@ void ExprLister::absorb(const NaryNumericExpr &e) {
   bool continuing = false;
 
   if (!e.operands.empty()) {
-    for (auto &operand : e.operands) {
+    for (const auto &operand : e.operands) {
       if (continuing) {
         result += e.funcName.length() > 1 ? " " : "";
         result += e.funcName;
@@ -109,7 +109,7 @@ void ExprLister::absorb(const NaryNumericExpr &e) {
   }
 
   if (!e.invoperands.empty()) {
-    for (auto &invoperand : e.invoperands) {
+    for (const auto &invoperand : e.invoperands) {
       result += e.invName + plist(invoperand);
     }
   }
@@ -117,7 +117,7 @@ void ExprLister::absorb(const NaryNumericExpr &e) {
 
 void ExprLister::absorb(const StringConcatenationExpr &e) {
   bool continuing = false;
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     if (continuing) {
       result += '+';
     }
@@ -130,7 +130,7 @@ void ExprLister::absorb(const StringConcatenationExpr &e) {
 void ExprLister::absorb(const ArrayIndicesExpr &e) {
   bool continuing = false;
   result = "(";
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     if (continuing) {
       result += ',';
     }
@@ -304,7 +304,7 @@ void StatementLister::absorb(const If &s) {
 
   if (generatePredicates) {
     bool continuing = false;
-    for (auto &statement : s.consequent) {
+    for (const auto &statement : s.consequent) {
       StatementLister that;
       statement->soak(&that);
       result += (continuing ? ":" : " ") + that.result;
@@ -316,7 +316,7 @@ void StatementLister::absorb(const If &s) {
 void StatementLister::absorb(const Data &s) {
   result = "DATA";
   bool continuing = false;
-  for (auto &record : s.records) {
+  for (const auto &record : s.records) {
     result += (continuing ? "," : " ") + list(record);
     continuing = true;
   }
@@ -329,7 +329,7 @@ void StatementLister::absorb(const Print &s) {
   }
 
   bool continuing = false;
-  for (auto &expr : s.printExpr) {
+  for (const auto &expr : s.printExpr) {
     result += (continuing ? "" : " ") +
               replace(list(expr), "\r", "\"CHR$(13)\"") + ";";
     continuing = true;
@@ -347,7 +347,7 @@ void StatementLister::absorb(const Input &s) {
   }
 
   bool continuing = false;
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     result += (continuing ? "," : " ") + list(variable);
     continuing = true;
   }
@@ -359,7 +359,7 @@ void StatementLister::absorb(const On &s) {
   result = "ON " + list(s.branchIndex) + " GO" + (s.isSub ? "SUB" : "TO");
 
   bool continuing = false;
-  for (auto &lineNumber : s.branchTable) {
+  for (const auto &lineNumber : s.branchTable) {
     result += (continuing ? "," : " ") + std::to_string(lineNumber);
     continuing = true;
   }
@@ -368,7 +368,7 @@ void StatementLister::absorb(const On &s) {
 void StatementLister::absorb(const Next &s) {
   result = "NEXT";
   bool continuing = false;
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     result += (continuing ? "," : " ") + list(variable);
     continuing = true;
   }
@@ -377,7 +377,7 @@ void StatementLister::absorb(const Next &s) {
 void StatementLister::absorb(const Dim &s) {
   result = "DIM";
   bool continuing = false;
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     result += (continuing ? "," : " ") + list(variable);
     continuing = true;
   }
@@ -386,7 +386,7 @@ void StatementLister::absorb(const Dim &s) {
 void StatementLister::absorb(const Read &s) {
   result = "READ";
   bool continuing = false;
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     result += (continuing ? "," : " ") + list(variable);
     continuing = true;
   }
@@ -407,7 +407,7 @@ void StatementLister::absorb(const Decum &s) {
 void StatementLister::absorb(const Necum &s) {
   ConstInspector constInspector;
   result = list(s.lhs) + "=-" + list(s.lhs);
-  auto rhs = dynamic_cast<NumericExpr *>(s.rhs.get());
+  auto *rhs = dynamic_cast<NumericExpr *>(s.rhs.get());
   if (rhs && !constInspector.isEqual(rhs, 0)) {
     result += "+(" + list(s.rhs) + ")";
   }

@@ -11,6 +11,13 @@ class Program;
 
 class ProgramOp {
 public:
+  ProgramOp() = default;
+  ProgramOp(const ProgramOp &) = delete;
+  ProgramOp(ProgramOp &&) = delete;
+  ProgramOp &operator=(const ProgramOp &) = delete;
+  ProgramOp &operator=(ProgramOp &&) = delete;
+  virtual ~ProgramOp() = default;
+
   virtual void operate(Line & /*l*/){};
   virtual void operate(Program & /*p*/){};
 };

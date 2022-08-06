@@ -4,17 +4,12 @@
 #define BACKEND_WRITER_HPP
 
 #include "mcbasic/options.hpp"
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 
 class Writer {
 public:
-  int argc;
-  char **argv;
-  int filecnt;
-  int argcnt;
-  Writer(int argc_in, char *argv_in[])
-      : argc(argc_in), argv(argv_in), filecnt(0) {
+  Writer(int argc_in, char *argv_in[]) : argc(argc_in), argv(argv_in) {
     init();
   }
 
@@ -34,7 +29,11 @@ private:
   void init();
   void processOpts();
 
+  int argc;
+  char **argv;
+  int filecnt{0};
+  int argcnt{0};
   Options opts;
-  FILE *fp;
+  FILE *fp{nullptr};
 };
 #endif

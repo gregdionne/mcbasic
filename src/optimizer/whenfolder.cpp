@@ -10,13 +10,13 @@ void WhenFolder::operate(Program &p) {
 }
 
 void WhenFolder::operate(Line &l) {
-  auto wsf = WhenStatementFolder(l.lineNumber, announcer);
+  WhenStatementFolder wsf(l.lineNumber, announcer);
   wsf.fold(l.statements);
 }
 
 up<Statement> WhenStatementFolder::mutate(If &s) {
   fold(s.consequent);
-  return up<Statement>();
+  return {};
 }
 
 up<Statement> WhenStatementFolder::mutate(When &s) {
@@ -27,7 +27,7 @@ up<Statement> WhenStatementFolder::mutate(When &s) {
     go->lineNumber = *predicate == 0 ? -1 : s.lineNumber;
     return go;
   }
-  return up<Statement>();
+  return {};
 }
 
 void WhenStatementFolder::fold(std::vector<up<Statement>> &statements) {
@@ -37,7 +37,7 @@ void WhenStatementFolder::fold(std::vector<up<Statement>> &statements) {
       announcer.start(lineNumber);
       announcer.say("%s ", (*it)->statementName().c_str());
       auto *go = dynamic_cast<Go *>(statement.get());
-      if (go == nullptr || go->lineNumber == -1) {
+      if (!go || go->lineNumber == -1) {
         it = statements.erase(it);
         announcer.finish("removed.");
       } else {

@@ -95,6 +95,13 @@ class PeekWordExpr;
 //   Return values templetized according to string/numeric type
 template <typename Number, typename String> class ExprMutator {
 public:
+  ExprMutator() = default;
+  ExprMutator(const ExprMutator &) = delete;
+  ExprMutator(ExprMutator &&) = delete;
+  ExprMutator &operator=(const ExprMutator &) = delete;
+  ExprMutator &operator=(ExprMutator &&) = delete;
+  virtual ~ExprMutator() = default;
+
   virtual Number mutate(ArrayIndicesExpr & /*expr*/) = 0;
   virtual Number mutate(NumericConstantExpr & /*expr*/) = 0;
   virtual String mutate(StringConstantExpr & /*expr*/) = 0;
@@ -150,6 +157,13 @@ public:
 //   Return values templetized according to string/numeric type
 template <typename Number, typename String> class ExprInspector {
 public:
+  ExprInspector() = default;
+  ExprInspector(const ExprInspector &) = delete;
+  ExprInspector(ExprInspector &&) = delete;
+  ExprInspector &operator=(const ExprInspector &) = delete;
+  ExprInspector &operator=(ExprInspector &&) = delete;
+  virtual ~ExprInspector() = default;
+
   virtual Number inspect(const ArrayIndicesExpr & /*expr*/) const = 0;
   virtual Number inspect(const NumericConstantExpr & /*expr*/) const = 0;
   virtual String inspect(const StringConstantExpr & /*expr*/) const = 0;
@@ -205,6 +219,13 @@ public:
 //   Return values templetized according to string/numeric type
 template <typename Number, typename String> class ExprAbsorber {
 public:
+  ExprAbsorber() = default;
+  ExprAbsorber(const ExprAbsorber &) = delete;
+  ExprAbsorber(ExprAbsorber &&) = delete;
+  ExprAbsorber &operator=(const ExprAbsorber &) = delete;
+  ExprAbsorber &operator=(ExprAbsorber &&) = delete;
+  virtual ~ExprAbsorber() = default;
+
   virtual Number absorb(const ArrayIndicesExpr & /*expr*/) = 0;
   virtual Number absorb(const NumericConstantExpr & /*expr*/) = 0;
   virtual String absorb(const StringConstantExpr & /*expr*/) = 0;

@@ -9,144 +9,63 @@
 class NullExprTransmutator
     : public ExprMutator<up<NumericExpr>, up<StringExpr>> {
 public:
-  virtual up<NumericExpr> mutate(ArrayIndicesExpr & /*expr*/) {
-    return up<NumericExpr>();
+  NullExprTransmutator() = default;
+  NullExprTransmutator(const NullExprTransmutator &) = delete;
+  NullExprTransmutator(NullExprTransmutator &&) = delete;
+  NullExprTransmutator &operator=(const NullExprTransmutator &) = delete;
+  NullExprTransmutator &operator=(NullExprTransmutator &&) = delete;
+  ~NullExprTransmutator() override = default;
+
+  up<NumericExpr> mutate(ArrayIndicesExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(NumericConstantExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(StringConstantExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(NumericArrayExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(StringArrayExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(NumericVariableExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(StringVariableExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(NaryNumericExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(StringConcatenationExpr & /*expr*/) override {
+    return {};
   }
-  virtual up<NumericExpr> mutate(NumericConstantExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<StringExpr> mutate(StringConstantExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<NumericExpr> mutate(NumericArrayExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<StringExpr> mutate(StringArrayExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<NumericExpr> mutate(NumericVariableExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<StringExpr> mutate(StringVariableExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<NumericExpr> mutate(NaryNumericExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<StringExpr> mutate(StringConcatenationExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<StringExpr> mutate(PrintTabExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<StringExpr> mutate(PrintSpaceExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<StringExpr> mutate(PrintCRExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<StringExpr> mutate(PrintCommaExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<NumericExpr> mutate(PowerExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(IntegerDivisionExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(MultiplicativeExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(AdditiveExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(ComplementedExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(RelationalExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(AndExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(OrExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(ShiftExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(SgnExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(IntExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(AbsExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(SqrExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(ExpExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(LogExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(SinExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(CosExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(TanExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(RndExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(PeekExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(LenExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<StringExpr> mutate(StrExpr & /*expr*/) { return up<StringExpr>(); }
-  virtual up<NumericExpr> mutate(ValExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(AscExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<StringExpr> mutate(ChrExpr & /*expr*/) { return up<StringExpr>(); }
-  virtual up<StringExpr> mutate(LeftExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<StringExpr> mutate(RightExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<StringExpr> mutate(MidExpr & /*expr*/) { return up<StringExpr>(); }
-  virtual up<NumericExpr> mutate(PointExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<StringExpr> mutate(InkeyExpr & /*expr*/) {
-    return up<StringExpr>();
-  }
-  virtual up<NumericExpr> mutate(MemExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(SquareExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(TimerExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(PosExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
-  virtual up<NumericExpr> mutate(PeekWordExpr & /*expr*/) {
-    return up<NumericExpr>();
-  }
+  up<StringExpr> mutate(PrintTabExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(PrintSpaceExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(PrintCRExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(PrintCommaExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(PowerExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(IntegerDivisionExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(MultiplicativeExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(AdditiveExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(ComplementedExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(RelationalExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(AndExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(OrExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(ShiftExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(SgnExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(IntExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(AbsExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(SqrExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(ExpExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(LogExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(SinExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(CosExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(TanExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(RndExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(PeekExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(LenExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(StrExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(ValExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(AscExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(ChrExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(LeftExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(RightExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(MidExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(PointExpr & /*expr*/) override { return {}; }
+  up<StringExpr> mutate(InkeyExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(MemExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(SquareExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(TimerExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(PosExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(PeekWordExpr & /*expr*/) override { return {}; }
 };
 
 #endif

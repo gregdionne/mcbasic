@@ -19,7 +19,7 @@ void Gerriemanderer::operate(Line &l) {
 
 up<Statement> StatementGerriemanderer::mutate(If &s) {
   gerriemander(s.consequent);
-  return up<Statement>();
+  return {};
 }
 
 up<Statement> StatementGerriemanderer::mutate(On &s) {
@@ -34,7 +34,7 @@ up<Statement> StatementGerriemanderer::mutate(On &s) {
     when->lineNumber = s.branchTable[0];
     return when;
   }
-  return up<Statement>();
+  return {};
 }
 
 up<NumericExpr> ExprGerriemanderer::mutate(AdditiveExpr &e) {
@@ -45,7 +45,8 @@ up<NumericExpr> ExprGerriemanderer::mutate(AdditiveExpr &e) {
     auto sz = e.operands.size();
     if (sz == 0 || constInspector.isEqual(e.operands[0].get(), 0)) {
       return mv(e.invoperands[0]);
-    } else if (sz == 1 && constInspector.isEqual(e.operands[0].get(), 1)) {
+    }
+    if (sz == 1 && constInspector.isEqual(e.operands[0].get(), 1)) {
       Complementer comp;
       return e.invoperands[0]->transmutate(&comp);
     } else {
@@ -53,7 +54,7 @@ up<NumericExpr> ExprGerriemanderer::mutate(AdditiveExpr &e) {
       exit(1);
     }
   }
-  return up<NumericExpr>();
+  return {};
 }
 
 void StatementGerriemanderer::gerriemander(

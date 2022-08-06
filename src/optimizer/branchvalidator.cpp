@@ -15,40 +15,40 @@ void BranchValidator::operate(Program &p) {
 }
 
 void BranchValidator::operate(Line &l) {
-  auto sbc = StatementBranchValidator(lineNumbers, l.lineNumber, allowUnlisted);
+  StatementBranchValidator sbv(lineNumbers, l.lineNumber, allowUnlisted);
   for (auto &statement : l.statements) {
-    statement->inspect(&sbc);
+    statement->mutate(&sbv);
   }
 }
 
-void StatementBranchValidator::inspect(const If &s) const {
-  for (auto &statement : s.consequent) {
-    statement->inspect(this);
+void StatementBranchValidator::mutate(If &s) {
+  for (const auto &statement : s.consequent) {
+    statement->mutate(this);
   }
 }
 
-void StatementBranchValidator::inspect(const Go &s) const {
+void StatementBranchValidator::mutate(Go &s) {
   validate(s.statementName(), s.lineNumber);
 }
 
-void StatementBranchValidator::inspect(const When &s) const {
+void StatementBranchValidator::mutate(When &s) {
   validate(s.statementName(), s.lineNumber);
 }
 
-void StatementBranchValidator::inspect(const On &s) const {
-  for (const int &branch : s.branchTable) {
+void StatementBranchValidator::mutate(On &s) {
+  for (int &branch : s.branchTable) {
     validate(s.statementName(), branch);
   }
 }
 
-void StatementBranchValidator::inspect(const Run &s) const {
+void StatementBranchValidator::mutate(Run &s) {
   if (s.hasLineNumber) {
     validate(s.statementName(), s.lineNumber);
   }
 }
 
 void StatementBranchValidator::validate(const std::string &statementName,
-                                        int lineNumber) const {
+                                        int &lineNumber) const {
   if (lineNumbers.find(lineNumber) == lineNumbers.end()) {
     if (allowUnlisted) {
       lineNumber = constants::unlistedLineNumber;
@@ -58,7 +58,7 @@ void StatementBranchValidator::validate(const std::string &statementName,
   }
 }
 
-void StatementBranchValidator::ulError(std::string statementName,
+void StatementBranchValidator::ulError(const std::string &statementName,
                                        int ulNumber) const {
   fprintf(stderr, "error at %s statement in line %i\n", statementName.c_str(),
           currentLineNumber);

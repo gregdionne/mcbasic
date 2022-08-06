@@ -23,7 +23,7 @@ public:
 
 private:
   const Expr *target;
-  bool checkOps(const std::vector<up<NumericExpr>> &lhs,
-                const std::vector<up<NumericExpr>> &rhs) const;
+  static bool checkOps(const std::vector<up<NumericExpr>> &lhs,
+                       const std::vector<up<NumericExpr>> &rhs);
 };
 #endif

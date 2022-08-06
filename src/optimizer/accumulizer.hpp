@@ -18,6 +18,8 @@ public:
   explicit Accumulizer(const Announcer &&a) : announcer(a) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
+
+private:
   up<Statement> accumulant;
   const Announcer announcer;
 };

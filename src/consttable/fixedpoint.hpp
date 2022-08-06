@@ -9,6 +9,7 @@ struct FixedPoint {
   explicit FixedPoint(double entry);
   bool operator==(const FixedPoint &x) const;
   bool operator<(const FixedPoint &x) const;
+  double to_double() const;
 
   // true if fraction is non-zero
   bool isFloat() const;

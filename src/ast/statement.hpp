@@ -71,6 +71,13 @@ class Error;
 
 template <typename T> class StatementMutator {
 public:
+  StatementMutator() = default;
+  StatementMutator(const StatementMutator &) = delete;
+  StatementMutator(StatementMutator &&) = delete;
+  StatementMutator &operator=(const StatementMutator &) = delete;
+  StatementMutator &operator=(StatementMutator &&) = delete;
+  virtual ~StatementMutator() = default;
+
   virtual T mutate(Rem & /*s*/) = 0;
   virtual T mutate(For & /*s*/) = 0;
   virtual T mutate(Go & /*s*/) = 0;
@@ -107,6 +114,13 @@ public:
 
 template <typename T> class StatementInspector {
 public:
+  StatementInspector() = default;
+  StatementInspector(const StatementInspector &) = delete;
+  StatementInspector(StatementInspector &&) = delete;
+  StatementInspector &operator=(const StatementInspector &) = delete;
+  StatementInspector &operator=(StatementInspector &&) = delete;
+  virtual ~StatementInspector() = default;
+
   virtual T inspect(const Rem & /*s*/) const = 0;
   virtual T inspect(const For & /*s*/) const = 0;
   virtual T inspect(const Go & /*s*/) const = 0;
@@ -143,6 +157,13 @@ public:
 
 template <typename T> class StatementAbsorber {
 public:
+  StatementAbsorber() = default;
+  StatementAbsorber(const StatementAbsorber &) = delete;
+  StatementAbsorber(StatementAbsorber &&) = delete;
+  StatementAbsorber &operator=(const StatementAbsorber &) = delete;
+  StatementAbsorber &operator=(StatementAbsorber &&) = delete;
+  virtual ~StatementAbsorber() = default;
+
   virtual T absorb(const Rem & /*s*/) = 0;
   virtual T absorb(const For & /*s*/) = 0;
   virtual T absorb(const Go & /*s*/) = 0;

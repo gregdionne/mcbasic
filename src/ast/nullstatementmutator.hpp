@@ -7,35 +7,42 @@
 
 class NullStatementMutator : public StatementMutator<void> {
 public:
-  virtual void mutate(Rem & /*s*/) override {}
-  virtual void mutate(For & /*s*/) override {}
-  virtual void mutate(Go & /*s*/) override {}
-  virtual void mutate(When & /*s*/) override {}
-  virtual void mutate(If & /*s*/) override {}
-  virtual void mutate(Data & /*s*/) override {}
-  virtual void mutate(Print & /*s*/) override {}
-  virtual void mutate(Input & /*s*/) override {}
-  virtual void mutate(End & /*s*/) override {}
-  virtual void mutate(On & /*s*/) override {}
-  virtual void mutate(Next & /*s*/) override {}
-  virtual void mutate(Dim & /*s*/) override {}
-  virtual void mutate(Read & /*s*/) override {}
-  virtual void mutate(Let & /*s*/) override {}
-  virtual void mutate(Accum & /*s*/) override {}
-  virtual void mutate(Decum & /*s*/) override {}
-  virtual void mutate(Necum & /*s*/) override {}
-  virtual void mutate(Run & /*s*/) override {}
-  virtual void mutate(Restore & /*s*/) override {}
-  virtual void mutate(Return & /*s*/) override {}
-  virtual void mutate(Stop & /*s*/) override {}
-  virtual void mutate(Poke & /*s*/) override {}
-  virtual void mutate(Clear & /*s*/) override {}
-  virtual void mutate(Set & /*s*/) override {}
-  virtual void mutate(Reset & /*s*/) override {}
-  virtual void mutate(Cls & /*s*/) override {}
-  virtual void mutate(Sound & /*s*/) override {}
-  virtual void mutate(Exec & /*s*/) override {}
-  virtual void mutate(Error & /*s*/) override {}
+  NullStatementMutator() = default;
+  NullStatementMutator(const NullStatementMutator &) = delete;
+  NullStatementMutator(NullStatementMutator &&) = delete;
+  NullStatementMutator &operator=(const NullStatementMutator &) = delete;
+  NullStatementMutator &operator=(NullStatementMutator &&) = delete;
+  ~NullStatementMutator() override = default;
+
+  void mutate(Rem & /*s*/) override {}
+  void mutate(For & /*s*/) override {}
+  void mutate(Go & /*s*/) override {}
+  void mutate(When & /*s*/) override {}
+  void mutate(If & /*s*/) override {}
+  void mutate(Data & /*s*/) override {}
+  void mutate(Print & /*s*/) override {}
+  void mutate(Input & /*s*/) override {}
+  void mutate(End & /*s*/) override {}
+  void mutate(On & /*s*/) override {}
+  void mutate(Next & /*s*/) override {}
+  void mutate(Dim & /*s*/) override {}
+  void mutate(Read & /*s*/) override {}
+  void mutate(Let & /*s*/) override {}
+  void mutate(Accum & /*s*/) override {}
+  void mutate(Decum & /*s*/) override {}
+  void mutate(Necum & /*s*/) override {}
+  void mutate(Run & /*s*/) override {}
+  void mutate(Restore & /*s*/) override {}
+  void mutate(Return & /*s*/) override {}
+  void mutate(Stop & /*s*/) override {}
+  void mutate(Poke & /*s*/) override {}
+  void mutate(Clear & /*s*/) override {}
+  void mutate(Set & /*s*/) override {}
+  void mutate(Reset & /*s*/) override {}
+  void mutate(Cls & /*s*/) override {}
+  void mutate(Sound & /*s*/) override {}
+  void mutate(Exec & /*s*/) override {}
+  void mutate(Error & /*s*/) override {}
 };
 
 #endif

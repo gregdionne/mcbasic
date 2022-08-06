@@ -11,6 +11,13 @@
 
 class ExprLister : public ExprAbsorber<void, void> {
 public:
+  ExprLister() = default;
+  ExprLister(const ExprLister &) = delete;
+  ExprLister(ExprLister &&) = delete;
+  ExprLister &operator=(const ExprLister &) = delete;
+  ExprLister &operator=(ExprLister &&) = delete;
+  ~ExprLister() override = default;
+
   void absorb(const NumericConstantExpr &e) override;
   void absorb(const StringConstantExpr &e) override;
   void absorb(const NumericVariableExpr &e) override;
@@ -66,6 +73,13 @@ public:
 
 class StatementLister : public StatementAbsorber<void> {
 public:
+  StatementLister() = default;
+  StatementLister(const StatementLister &) = delete;
+  StatementLister(StatementLister &&) = delete;
+  StatementLister &operator=(const StatementLister &) = delete;
+  StatementLister &operator=(StatementLister &&) = delete;
+  ~StatementLister() override = default;
+
   void absorb(const Rem &s) override;
   void absorb(const For &s) override;
   void absorb(const Go &s) override;

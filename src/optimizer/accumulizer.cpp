@@ -20,15 +20,13 @@ void Accumulizer::operate(Line &l) {
 
 up<Statement> StatementAccumulizer::mutate(If &s) {
   accumulize(s.consequent);
-  return up<Statement>();
+  return {};
 }
 
 up<Statement> StatementAccumulizer::mutate(Let &s) {
   IsEqual isEqual(s.lhs.get());
 
-  auto *addExpr = dynamic_cast<AdditiveExpr *>(s.rhs.get());
-
-  if (addExpr != nullptr) {
+  if (auto *addExpr = dynamic_cast<AdditiveExpr *>(s.rhs.get())) {
     for (auto itOp = addExpr->operands.begin(); itOp != addExpr->operands.end();
          ++itOp) {
       if ((*itOp)->check(&isEqual)) {
@@ -41,10 +39,9 @@ up<Statement> StatementAccumulizer::mutate(Let &s) {
           std::swap(addExpr->operands, addExpr->invoperands);
           announcer.finish("-=");
           return makeup<Decum>(mv(s.lhs), mv(s.rhs));
-        } else {
-          announcer.finish("+=");
-          return makeup<Accum>(mv(s.lhs), mv(s.rhs));
         }
+        announcer.finish("+=");
+        return makeup<Accum>(mv(s.lhs), mv(s.rhs));
       }
     }
 
@@ -62,7 +59,7 @@ up<Statement> StatementAccumulizer::mutate(Let &s) {
     }
   }
 
-  return up<Statement>();
+  return {};
 }
 
 void StatementAccumulizer::accumulize(std::vector<up<Statement>> &statements) {

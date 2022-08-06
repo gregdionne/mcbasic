@@ -2,8 +2,8 @@
 // Distributed under MIT License
 #include "fetch.hpp"
 
-#include <cmath>   //pow
 #include <cctype>  //isxdigit
+#include <cmath>   //pow
 #include <cstdarg> //va_list, va_start
 #include <cstdio>  //f...
 #include <cstdlib> //perror
@@ -84,7 +84,7 @@ void fetch::die(const char *formatstr, ...) {
 bool fetch::openNext() {
   if (argcnt < argc) {
     fp = fopen(argv[argcnt], "r");
-    if (fp == nullptr) {
+    if (!fp) {
       fprintf(stderr, "%s: ", argv[0]);
       perror(argv[argcnt]);
       exit(1);
@@ -136,13 +136,13 @@ char *fetch::efgets(char *str, int bufsiz, FILE *stream) {
 }
 
 char *fetch::getFileLine() {
-  if (efgets(buf, BUFSIZ, fp) == nullptr) {
+  if (!efgets(buf, BUFSIZ, fp)) {
     fclose(fp);
     linenum = 0;
     return nullptr;
   }
 
-  if (fp != nullptr) {
+  if (fp) {
     ++linenum;
     linelen = static_cast<int>(strlen(buf));
     colnum = 0;
@@ -151,7 +151,7 @@ char *fetch::getFileLine() {
 }
 
 char *fetch::getLine() {
-  while (efgets(buf, BUFSIZ, fp) == nullptr) {
+  while (!efgets(buf, BUFSIZ, fp)) {
     fclose(fp);
     linenum = 0;
     if (!openNext()) {
@@ -159,7 +159,7 @@ char *fetch::getLine() {
     }
   }
 
-  if (fp != nullptr) {
+  if (fp) {
     ++linenum;
     linelen = static_cast<int>(strlen(buf));
     colnum = 0;
@@ -278,7 +278,7 @@ char *fetch::peekLine() { return &buf[colnum]; }
 void fetch::advance(int n) { colnum += n; }
 
 bool fetch::peekKeyword(const char *const keywords[]) {
-  for (int i = 0; keywords[i] != nullptr; i++) {
+  for (int i = 0; keywords[i]; i++) {
     if (strncasecmp(keywords[i], peekLine(), strlen(keywords[i])) == 0) {
       keyID = i;
       return true;
@@ -288,9 +288,9 @@ bool fetch::peekKeyword(const char *const keywords[]) {
 }
 
 bool fetch::skipKeyword(const char *const keywords[]) {
-  bool flag;
+  bool flag = peekKeyword(keywords);
 
-  if ((flag = peekKeyword(keywords))) {
+  if (flag) {
     advance(static_cast<int>(strlen(keywords[keyID])));
   }
 
@@ -433,7 +433,7 @@ double fetch::getBasicFloat() {
       die("Exponent expected");
     }
     double e = getDecimalWord();
-    v *= std::pow(10,sgn*e);
+    v *= std::pow(10, sgn * e);
   }
 
   return v;

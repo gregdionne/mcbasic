@@ -51,16 +51,16 @@ public:
   void inspect(const PointExpr &e) const override;
   void inspect(const SquareExpr &e) const override;
 
-  void inspect(const NumericVariableExpr &) const override{};
-  void inspect(const StringVariableExpr &) const override{};
-  void inspect(const NaryNumericExpr &) const override{};
-  void inspect(const PrintSpaceExpr &) const override{};
-  void inspect(const PrintCRExpr &) const override{};
-  void inspect(const PrintCommaExpr &) const override{};
-  void inspect(const InkeyExpr &) const override{};
-  void inspect(const MemExpr &) const override{};
-  void inspect(const PosExpr &) const override{};
-  void inspect(const TimerExpr &) const override{};
+  void inspect(const NumericVariableExpr & /*e*/) const override{};
+  void inspect(const StringVariableExpr & /*e*/) const override{};
+  void inspect(const NaryNumericExpr & /*e*/) const override{};
+  void inspect(const PrintSpaceExpr & /*e*/) const override{};
+  void inspect(const PrintCRExpr & /*e*/) const override{};
+  void inspect(const PrintCommaExpr & /*e*/) const override{};
+  void inspect(const InkeyExpr & /*e*/) const override{};
+  void inspect(const MemExpr & /*e*/) const override{};
+  void inspect(const PosExpr & /*e*/) const override{};
+  void inspect(const TimerExpr & /*e*/) const override{};
 
 private:
   ConstTable &constTable;

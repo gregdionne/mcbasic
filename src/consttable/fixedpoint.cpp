@@ -2,7 +2,7 @@
 // Distributed under MIT License
 #include "fixedpoint.hpp"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <cmath>
 #include <cstdint>
@@ -19,13 +19,16 @@ FixedPoint::FixedPoint(double entry) {
   }
 }
 
+double FixedPoint::to_double() const {
+  return static_cast<double>(wholenum) * 65536 + static_cast<double>(fraction);
+}
+
 bool FixedPoint::operator==(const FixedPoint &x) const {
   return wholenum == x.wholenum && fraction == x.fraction;
 }
 
 bool FixedPoint::operator<(const FixedPoint &x) const {
-  return double(wholenum) * 65536 + double(fraction) <
-         double(x.wholenum) * 65536 + double(x.fraction);
+  return to_double() < x.to_double();
 }
 
 bool FixedPoint::isFloat() const { return fraction != 0; }
@@ -92,7 +95,7 @@ std::string FixedPoint::label() const {
     int abs_wholenum = wholenum < 0 ? -(wholenum + 1) : wholenum;
     int abs_fraction = wholenum < 0 ? 65536 - fraction : fraction;
     sprintf(buf, "FLT_%s%ip%05i", sgn, abs_wholenum,
-            int(100000.0 * abs_fraction / 65536.0));
+            static_cast<int>(100000.0 * abs_fraction / 65536.0));
   }
-  return std::string(buf);
+  return {buf};
 }

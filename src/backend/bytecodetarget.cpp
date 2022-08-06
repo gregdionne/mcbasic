@@ -50,14 +50,14 @@ std::string ByteCodeTarget::generateLibraryCatalog(Library &library) {
   tasm.comment("Library Catalog");
 
   int i = 0;
-  for (auto &entry : library.calls) {
+  for (const auto &entry : library.getCalls()) {
     tasm.equ("bytecode_" + entry.first, std::to_string(i++));
   }
 
   tasm.blank();
 
   tasm.label("catalog");
-  for (auto &entry : library.calls) {
+  for (const auto &entry : library.getCalls()) {
     tasm.word(entry.first);
   }
 

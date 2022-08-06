@@ -2,7 +2,7 @@
 // Distributed under MIT License
 #include "viewer.hpp"
 
-#include <stdarg.h>
+#include <cstdarg>
 
 template <typename T> static inline void indentOp(T &t, ExprViewer *g) {
   ++g->n;
@@ -71,14 +71,14 @@ void ExprViewer::absorb(const NaryNumericExpr &e) {
   ++n;
   if (!e.operands.empty()) {
     printtab(n, e.funcName.c_str());
-    for (auto &operand : e.operands) {
+    for (const auto &operand : e.operands) {
       indentOp(operand, this);
     }
   }
 
   if (!e.invoperands.empty()) {
     printtab(n, e.invName.c_str());
-    for (auto &invoperand : e.invoperands) {
+    for (const auto &invoperand : e.invoperands) {
       indentOp(invoperand, this);
     }
   }
@@ -87,14 +87,14 @@ void ExprViewer::absorb(const NaryNumericExpr &e) {
 
 void ExprViewer::absorb(const StringConcatenationExpr &e) {
   printtab(n, "+ (string)");
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     indentOp(operand, this);
   }
 }
 
 void ExprViewer::absorb(const ArrayIndicesExpr &e) {
   printtab(n, "(");
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     indentOp(operand, this);
   }
   printtab(n, ")");
@@ -296,14 +296,14 @@ void StatementViewer::absorb(const When &s) {
 void StatementViewer::absorb(const If &s) {
   printtab(n, "IF");
   indentOp(s.predicate, that);
-  for (auto &statement : s.consequent) {
+  for (const auto &statement : s.consequent) {
     indentOp(statement, this);
   }
 }
 
 void StatementViewer::absorb(const Data &s) {
   printtab(n, "DATA");
-  for (auto &record : s.records) {
+  for (const auto &record : s.records) {
     indentOp(record, that);
   }
 }
@@ -316,7 +316,7 @@ void StatementViewer::absorb(const Print &s) {
     indentOp(s.at, that);
     --n;
   }
-  for (auto &expr : s.printExpr) {
+  for (const auto &expr : s.printExpr) {
     indentOp(expr, that);
   }
 }
@@ -326,7 +326,7 @@ void StatementViewer::absorb(const Input &s) {
   if (s.prompt) {
     indentOp(s.prompt, that);
   }
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     indentOp(variable, that);
   }
 }
@@ -336,28 +336,28 @@ void StatementViewer::absorb(const End & /*statement*/) { printtab(n, "END"); }
 void StatementViewer::absorb(const On &s) {
   printtab(n, "ON..GO%s", s.isSub ? "SUB" : "TO");
   indentOp(s.branchIndex, that);
-  for (auto &lineNumber : s.branchTable) {
+  for (const auto &lineNumber : s.branchTable) {
     printtab(n + 1, "%i", lineNumber);
   }
 }
 
 void StatementViewer::absorb(const Next &s) {
   printtab(n, "NEXT");
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     indentOp(variable, that);
   }
 }
 
 void StatementViewer::absorb(const Dim &s) {
   printtab(n, "DIM");
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     indentOp(variable, that);
   }
 }
 
 void StatementViewer::absorb(const Read &s) {
   printtab(n, "READ");
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     indentOp(variable, that);
   }
 }
@@ -388,8 +388,9 @@ void StatementViewer::absorb(const Necum &s) {
 
 void StatementViewer::absorb(const Run &s) {
   printtab(n, "RUN");
-  if (s.hasLineNumber)
+  if (s.hasLineNumber) {
     printtab(n + 1, "%i", s.lineNumber);
+  }
 }
 
 void StatementViewer::absorb(const Restore & /*statement*/) {

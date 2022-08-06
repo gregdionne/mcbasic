@@ -5,27 +5,27 @@
 
 #include <unordered_set>
 
-#include "ast/nullstatementinspector.hpp"
+#include "ast/nullstatementmutator.hpp"
 #include "ast/program.hpp"
 
 // error if label not found for WHEN,THEN,GOTO,GOSUB,RUN
 
-class StatementBranchValidator : public NullStatementInspector {
+class StatementBranchValidator : public NullStatementMutator {
 public:
   StatementBranchValidator(std::unordered_set<int> &lineNums, int curline,
                            bool ul)
       : lineNumbers(lineNums), currentLineNumber(curline), allowUnlisted(ul) {}
-  void inspect(const If &s) const override;
-  void inspect(const Go &s) const override;
-  void inspect(const On &s) const override;
-  void inspect(const When &s) const override;
-  void inspect(const Run &s) const override;
+  void mutate(If &s) override;
+  void mutate(Go &s) override;
+  void mutate(On &s) override;
+  void mutate(When &s) override;
+  void mutate(Run &s) override;
 
-  using NullStatementInspector::inspect;
+  using NullStatementMutator::mutate;
 
 private:
-  void validate(const std::string &statementName, int lineNumber) const;
-  void ulError(std::string statementName, int ulNumber) const;
+  void validate(const std::string &statementName, int &lineNumber) const;
+  void ulError(const std::string &statementName, int ulNumber) const;
 
   const std::unordered_set<int> &lineNumbers;
   const int currentLineNumber;
@@ -34,7 +34,7 @@ private:
 
 class BranchValidator : public ProgramOp {
 public:
-  BranchValidator(bool ul) : allowUnlisted(ul) {}
+  explicit BranchValidator(bool ul) : allowUnlisted(ul) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

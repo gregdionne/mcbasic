@@ -10,7 +10,9 @@ std::string AddressModeStk::postoperands() {
   out += std::to_string(labels.size()) + "\n\t.word\t";
   if (dataType == DataType::Int) {
     for (std::size_t i = 0; i < labels.size(); ++i) {
-      out += "LINE_" + std::to_string(labels[i]);
+      out += labels[i] == constants::unlistedLineNumber
+                 ? "LUNLIST"
+                 : "LINE_" + std::to_string(labels[i]);
       out += i + 1 == labels.size() ? "" : ", ";
     }
   } else {

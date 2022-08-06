@@ -9,9 +9,9 @@ static bool symCmp(const Symbol &s1, const Symbol &s2) {
          (((s1.isFloat ^ s2.isFloat) == 0) && s1.name < s2.name);
 }
 
-void SymbolTable::sort() {
-  std::sort(numVarTable.begin(), numVarTable.end(), symCmp);
-  std::sort(numArrTable.begin(), numArrTable.end(), symCmp);
-  std::sort(strVarTable.begin(), strVarTable.end(), symCmp);
-  std::sort(strArrTable.begin(), strArrTable.end(), symCmp);
+void sortSymbolTable(SymbolTable &table) {
+  std::sort(table.numVarTable.begin(), table.numVarTable.end(), symCmp);
+  std::sort(table.numArrTable.begin(), table.numArrTable.end(), symCmp);
+  std::sort(table.strVarTable.begin(), table.strVarTable.end(), symCmp);
+  std::sort(table.strArrTable.begin(), table.strArrTable.end(), symCmp);
 }

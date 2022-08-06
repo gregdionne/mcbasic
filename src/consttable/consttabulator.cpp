@@ -29,7 +29,7 @@ void StatementConstTabulator::inspect(const When &s) const {
 
 void StatementConstTabulator::inspect(const If &s) const {
   s.predicate->inspect(that);
-  for (auto &statement : s.consequent) {
+  for (const auto &statement : s.consequent) {
     statement->inspect(this);
   }
 }
@@ -39,7 +39,7 @@ void StatementConstTabulator::inspect(const Print &s) const {
     s.at->inspect(that);
   }
 
-  for (auto &expr : s.printExpr) {
+  for (const auto &expr : s.printExpr) {
     expr->inspect(that);
   }
 }
@@ -55,7 +55,7 @@ void StatementConstTabulator::inspect(const On &s) const {
 }
 
 void StatementConstTabulator::inspect(const Dim &s) const {
-  for (auto &variable : s.variables) {
+  for (const auto &variable : s.variables) {
     variable->inspect(that);
   }
 }
@@ -124,7 +124,7 @@ void ExprConstTabulator::inspect(const StringArrayExpr &e) const {
 }
 
 void ExprConstTabulator::inspect(const StringConcatenationExpr &e) const {
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     operand->inspect(this);
   }
 }
@@ -176,7 +176,7 @@ void ExprConstTabulator::inspect(const NumericArrayExpr &e) const {
 }
 
 void ExprConstTabulator::inspect(const ArrayIndicesExpr &e) const {
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     operand->inspect(this);
   }
 }
@@ -247,11 +247,11 @@ void ExprConstTabulator::inspect(const PointExpr &e) const {
 }
 
 void ExprConstTabulator::inspect(const AdditiveExpr &e) const {
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     operand->inspect(this);
   }
 
-  for (auto &invoperand : e.invoperands) {
+  for (const auto &invoperand : e.invoperands) {
     invoperand->inspect(this);
   }
 }
@@ -267,23 +267,23 @@ void ExprConstTabulator::inspect(const IntegerDivisionExpr &e) const {
 }
 
 void ExprConstTabulator::inspect(const MultiplicativeExpr &e) const {
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     operand->inspect(this);
   }
 
-  for (auto &invoperand : e.invoperands) {
+  for (const auto &invoperand : e.invoperands) {
     invoperand->inspect(this);
   }
 }
 
 void ExprConstTabulator::inspect(const AndExpr &e) const {
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     operand->inspect(this);
   }
 }
 
 void ExprConstTabulator::inspect(const OrExpr &e) const {
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     operand->inspect(this);
   }
 }

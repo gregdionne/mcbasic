@@ -2,9 +2,8 @@
 // Distributed under MIT License
 #include "datatable.hpp"
 
-#include <stdio.h>
-
 #include <algorithm>
+#include <cstdio>
 #include <limits>
 
 void DataTable::add(std::string &entry) { data.push_back(entry); }

@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   Writer out(argc, argv);
 
   do {
-    fprintf(stderr, "Compiling %s...\n", argv[parser.in.argfile]);
+    fprintf(stderr, "Compiling %s...\n", argv[parser.currentArgNum()]);
 
     Program p = parser.parse();
     p.sortLines();
@@ -43,5 +43,5 @@ int main(int argc, char *argv[]) {
         target->generateAssembly(dataTable, constTable, symbolTable, q, opts));
 
     out.close();
-  } while (parser.in.openNext());
+  } while (parser.openNext());
 }

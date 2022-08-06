@@ -7,35 +7,43 @@
 
 class NullStatementTransmutator : public StatementMutator<up<Statement>> {
 public:
-  virtual up<Statement> mutate(Rem & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(For & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Go & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(When & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(If & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Data & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Print & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Input & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(End & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(On & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Next & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Dim & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Read & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Let & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Accum & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Decum & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Necum & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Run & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Restore & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Return & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Stop & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Poke & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Clear & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Set & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Reset & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Cls & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Sound & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Exec & /*s*/) { return up<Statement>(); }
-  virtual up<Statement> mutate(Error & /*s*/) { return up<Statement>(); }
+  NullStatementTransmutator() = default;
+  NullStatementTransmutator(const NullStatementTransmutator &) = delete;
+  NullStatementTransmutator(NullStatementTransmutator &&) = delete;
+  NullStatementTransmutator &
+  operator=(const NullStatementTransmutator &) = delete;
+  NullStatementTransmutator &operator=(NullStatementTransmutator &&) = delete;
+  ~NullStatementTransmutator() override = default;
+
+  up<Statement> mutate(Rem & /*s*/) override { return {}; }
+  up<Statement> mutate(For & /*s*/) override { return {}; }
+  up<Statement> mutate(Go & /*s*/) override { return {}; }
+  up<Statement> mutate(When & /*s*/) override { return {}; }
+  up<Statement> mutate(If & /*s*/) override { return {}; }
+  up<Statement> mutate(Data & /*s*/) override { return {}; }
+  up<Statement> mutate(Print & /*s*/) override { return {}; }
+  up<Statement> mutate(Input & /*s*/) override { return {}; }
+  up<Statement> mutate(End & /*s*/) override { return {}; }
+  up<Statement> mutate(On & /*s*/) override { return {}; }
+  up<Statement> mutate(Next & /*s*/) override { return {}; }
+  up<Statement> mutate(Dim & /*s*/) override { return {}; }
+  up<Statement> mutate(Read & /*s*/) override { return {}; }
+  up<Statement> mutate(Let & /*s*/) override { return {}; }
+  up<Statement> mutate(Accum & /*s*/) override { return {}; }
+  up<Statement> mutate(Decum & /*s*/) override { return {}; }
+  up<Statement> mutate(Necum & /*s*/) override { return {}; }
+  up<Statement> mutate(Run & /*s*/) override { return {}; }
+  up<Statement> mutate(Restore & /*s*/) override { return {}; }
+  up<Statement> mutate(Return & /*s*/) override { return {}; }
+  up<Statement> mutate(Stop & /*s*/) override { return {}; }
+  up<Statement> mutate(Poke & /*s*/) override { return {}; }
+  up<Statement> mutate(Clear & /*s*/) override { return {}; }
+  up<Statement> mutate(Set & /*s*/) override { return {}; }
+  up<Statement> mutate(Reset & /*s*/) override { return {}; }
+  up<Statement> mutate(Cls & /*s*/) override { return {}; }
+  up<Statement> mutate(Sound & /*s*/) override { return {}; }
+  up<Statement> mutate(Exec & /*s*/) override { return {}; }
+  up<Statement> mutate(Error & /*s*/) override { return {}; }
 };
 
 #endif

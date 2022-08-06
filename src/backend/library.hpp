@@ -28,16 +28,21 @@ public:
     makeFoundation();
   }
 
+  // make calls (by bytecode or native coder)
+  void assemble(InstructionOp *implementation);
+
+  const std::map<std::string, Lib> &getCalls() const { return calls; }
+  const std::map<std::string, std::string> &getModules() const {
+    return modules;
+  }
+
+private:
   // implementation calls
   std::map<std::string, Lib> calls;
 
   // required library modules
   std::map<std::string, std::string> modules;
 
-  // make calls (by bytecode or native coder)
-  void assemble(InstructionOp *implementation);
-
-private:
   // queue reference
   const InstQueue &queue;
 
@@ -71,11 +76,11 @@ private:
   static std::string mdStrLobs();
   static std::string mdStrLox();
   static std::string mdRnd();
-  std::string mdNegX();
-  std::string mdNegTmp2XI();
-  std::string mdNegTmp2XF();
-  std::string mdNegArgV();
-  std::string mdNegTmp();
+  std::string mdNegX() const;
+  static std::string mdNegTmp2XI();
+  static std::string mdNegTmp2XF();
+  std::string mdNegArgV() const;
+  std::string mdNegTmp() const;
   static std::string mdMul12();
   static std::string mdMul3F();
   static std::string mdMul3I();
@@ -110,7 +115,7 @@ private:
   static std::string mdSqr();
   static std::string mdExp();
   static std::string mdLog();
-  std::string mdSin();
+  std::string mdSin() const;
   static std::string mdCos();
   static std::string mdTan();
   static std::string mdPrAt();

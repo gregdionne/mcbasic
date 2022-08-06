@@ -12,13 +12,13 @@ void OnFolder::operate(Program &p) {
 }
 
 void OnFolder::operate(Line &l) {
-  auto osf = OnStatementFolder(l.lineNumber, announcer);
+  OnStatementFolder osf(l.lineNumber, announcer);
   osf.fold(l.statements);
 }
 
 up<Statement> OnStatementFolder::mutate(If &s) {
   fold(s.consequent);
-  return up<Statement>();
+  return {};
 }
 
 up<Statement> OnStatementFolder::mutate(On &s) {
@@ -33,7 +33,7 @@ up<Statement> OnStatementFolder::mutate(On &s) {
     return go;
   }
 
-  return up<Statement>();
+  return {};
 }
 
 void OnStatementFolder::fold(std::vector<up<Statement>> &statements) {
@@ -43,7 +43,7 @@ void OnStatementFolder::fold(std::vector<up<Statement>> &statements) {
       announcer.start(lineNumber);
       announcer.say("%s ", (*it)->statementName().c_str());
       auto *go = dynamic_cast<Go *>(statement.get());
-      if (go == nullptr || go->lineNumber == -1) {
+      if (!go || go->lineNumber == -1) {
         it = statements.erase(it);
         announcer.finish("removed.");
       } else {

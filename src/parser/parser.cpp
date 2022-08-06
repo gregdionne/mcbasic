@@ -34,7 +34,8 @@ static const char *const keywords[] = {
 
 bool Parser::isKeyword(const char *const keyword) {
   in.skipWhitespace();
-  return in.peekKeyword(keywords) && (strcmp(keywords[in.keyID], keyword) == 0);
+  return in.peekKeyword(keywords) &&
+         (strcmp(keywords[in.lastKeyID()], keyword) == 0);
 }
 
 bool Parser::skipKeyword(const char *const keyword) {
@@ -112,7 +113,7 @@ up<NumericConstantExpr> Parser::seekNumericConst() {
     return makeup<NumericConstantExpr>(in.getBasicFloat());
   }
 
-  return up<NumericConstantExpr>();
+  return {};
 }
 
 up<StringConstantExpr> Parser::seekStringConst() {
@@ -124,7 +125,7 @@ up<StringConstantExpr> Parser::seekStringConst() {
     }
     return makeup<StringConstantExpr>(s);
   }
-  return up<StringConstantExpr>();
+  return {};
 }
 
 up<Expr> Parser::seekConst() {
@@ -136,7 +137,7 @@ up<Expr> Parser::seekConst() {
     return strConst;
   }
 
-  return up<Expr>();
+  return {};
 }
 
 up<Expr> Parser::seekDataVar() {
@@ -162,7 +163,7 @@ up<Expr> Parser::seekDataVar() {
 
     return expr;
   }
-  return up<Expr>();
+  return {};
 }
 
 up<Expr> Parser::seekVarOrArray() {
@@ -186,9 +187,9 @@ up<Expr> Parser::seekVarOrArray() {
         in.skipWhitespace();
         arrexpr->indices = getArrayIndices();
         return arrexpr;
-      } else {
-        return makeup<StringVariableExpr>(name);
       }
+      return makeup<StringVariableExpr>(name);
+
     } else {
       if (in.isChar('(')) {
         auto arrexpr = makeup<NumericArrayExpr>();
@@ -196,18 +197,17 @@ up<Expr> Parser::seekVarOrArray() {
         in.skipWhitespace();
         arrexpr->indices = getArrayIndices();
         return arrexpr;
-      } else {
-        return makeup<NumericVariableExpr>(name);
       }
+      return makeup<NumericVariableExpr>(name);
     }
   }
-  return up<Expr>();
+  return {};
 }
 
 up<Expr> Parser::seekParenthetical() {
   in.skipWhitespace();
   if (!in.skipChar('(')) {
-    return up<Expr>();
+    return {};
   }
   auto expr = getOrExpression();
   in.skipWhitespace();
@@ -218,7 +218,7 @@ up<Expr> Parser::seekParenthetical() {
 up<NumericExpr> Parser::numeric(up<Expr> expr) {
   auto *nexpr = dynamic_cast<NumericExpr *>(expr.get());
 
-  if (nexpr == nullptr) {
+  if (!nexpr) {
     in.die("numeric expression expected");
   }
 
@@ -227,12 +227,12 @@ up<NumericExpr> Parser::numeric(up<Expr> expr) {
 }
 
 up<NumericExpr> Parser::numeric(up<Expr> (Parser::*expr)()) {
-  int savecol = in.colnum;
+  int savecol = in.getColumn();
   up<Expr> e = (this->*expr)();
   auto *nexpr = dynamic_cast<NumericExpr *>(e.get());
 
-  if (nexpr == nullptr) {
-    in.colnum = savecol;
+  if (!nexpr) {
+    in.setColumn(savecol);
     in.die("numeric expression expected");
   }
 
@@ -242,7 +242,7 @@ up<NumericExpr> Parser::numeric(up<Expr> (Parser::*expr)()) {
 
 up<StringExpr> Parser::string(up<Expr> expr) {
   auto *sexpr = dynamic_cast<StringExpr *>(expr.get());
-  if (sexpr == nullptr) {
+  if (!sexpr) {
     in.die("string expression expected");
   }
 
@@ -251,11 +251,11 @@ up<StringExpr> Parser::string(up<Expr> expr) {
 }
 
 up<StringExpr> Parser::string(up<Expr> (Parser::*expr)()) {
-  int savecol = in.colnum;
+  int savecol = in.getColumn();
   up<Expr> e = (this->*expr)();
   auto *sexpr = dynamic_cast<StringExpr *>(e.get());
-  if (sexpr == nullptr) {
-    in.colnum = savecol;
+  if (!sexpr) {
+    in.setColumn(savecol);
     in.die("numeric expression expected");
   }
   static_cast<void>(e.release());
@@ -263,12 +263,12 @@ up<StringExpr> Parser::string(up<Expr> (Parser::*expr)()) {
 }
 
 up<Expr> Parser::matchTypes(Expr *lhs, up<Expr> (Parser::*expr)()) {
-  int savecol = in.colnum;
+  int savecol = in.getColumn();
   up<Expr> rhs = (this->*expr)();
 
   if ((lhs->isString() && !rhs->isString()) ||
       (!lhs->isString() && rhs->isString())) {
-    in.colnum = savecol;
+    in.setColumn(savecol);
     in.die("type mismatch");
   }
   return rhs;
@@ -302,7 +302,7 @@ up<NumericVariableExpr> Parser::getIterationVar() {
 
     return expr;
   }
-  return up<NumericVariableExpr>();
+  return {};
 }
 
 up<Expr> Parser::getVarOrArray() {
@@ -311,7 +311,7 @@ up<Expr> Parser::getVarOrArray() {
   }
 
   in.die("variable or array expected");
-  return up<Expr>();
+  return {};
 }
 
 up<Expr> Parser::getParenthetical() {
@@ -338,7 +338,7 @@ up<Expr> Parser::getPrimitive() {
   }
 
   in.die("constant, variable, or array expected");
-  return up<Expr>();
+  return {};
 }
 
 up<Expr> Parser::getSgnFunction() {
@@ -485,7 +485,7 @@ up<Expr> Parser::getMidFunction() {
 }
 
 up<Expr> Parser::unimplementedKeywordExpression() {
-  in.die("unimplemented keyword: \"%s\"", keywords[in.keyID]);
+  in.die("unimplemented keyword: \"%s\"", keywords[in.lastKeyID()]);
   return nullptr;
 }
 
@@ -596,7 +596,7 @@ up<Expr> Parser::getRelationalExpression() {
   while (skipKeyword("<>") || skipKeyword("<=") || skipKeyword(">=") ||
          skipKeyword("><") || skipKeyword("=>") || skipKeyword("=<") ||
          skipKeyword("<") || skipKeyword("=") || skipKeyword(">")) {
-    const char *keyword = keywords[in.keyID];
+    const char *keyword = keywords[in.lastKeyID()];
     auto rhs = matchTypes(expr.get(), &Parser::getAdditiveExpression);
     expr = makeup<RelationalExpr>(keyword, mv(expr), mv(rhs));
   }
@@ -990,8 +990,8 @@ up<Statement> Parser::getExec() {
 }
 
 up<Statement> Parser::unimplementedKeyword() {
-  in.die("unimplemented keyword: \"%s\"", keywords[in.keyID]);
-  return up<Statement>();
+  in.die("unimplemented keyword: \"%s\"", keywords[in.lastKeyID()]);
+  return {};
 }
 
 up<Statement> Parser::getStatement() {
@@ -1035,6 +1035,10 @@ void Parser::getLine(Program &p) {
     return;
   }
 
+  if (in.peekKeyword(keywords) && skipKeyword("REM")) {
+    return;
+  }
+
   auto line = makeup<Line>();
   line->lineNumber = getLineNumber();
 
@@ -1064,7 +1068,7 @@ void Parser::getEndLines(Program &p) {
 
 Program Parser::parse() {
   Program p;
-  while (in.getFileLine() != nullptr) {
+  while (in.getFileLine()) {
     getLine(p);
   }
   getEndLines(p);

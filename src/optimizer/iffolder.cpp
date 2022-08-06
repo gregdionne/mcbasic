@@ -12,7 +12,7 @@ void IfFolder::operate(Program &p) {
 }
 
 void IfFolder::operate(Line &l) {
-  auto iff = IfStatementFolder(l.lineNumber, announcer);
+  IfStatementFolder iff(l.lineNumber, announcer);
   iff.fold(l.statements);
 }
 

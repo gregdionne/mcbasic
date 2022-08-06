@@ -19,6 +19,7 @@ public:
 
   void fold(std::vector<up<Statement>> &statements);
 
+private:
   const int lineNumber;
   const Announcer &announcer;
   bool needsReplacement = false;
@@ -31,6 +32,7 @@ public:
   void operate(Program &p) override;
   void operate(Line &l) override;
 
+private:
   const Announcer announcer;
   std::vector<up<Line>>::iterator itCurrentLine;
 };

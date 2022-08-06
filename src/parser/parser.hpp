@@ -23,7 +23,8 @@ public:
       : in(c, v), emptyLineNumbers(opts.el), unlistedLineNumbers(opts.ul),
         enableMachineCode(opts.mcode) {}
   Program parse();
-  fetch in;
+  bool openNext() { return in.openNext(); }
+  int currentArgNum() { return in.currentArgNum(); }
 
 private:
   bool isKeyword(const char *keyword);
@@ -112,10 +113,11 @@ private:
   up<Statement> unimplementedKeyword();
   up<Statement> getStatement();
 
-  up<Statement> getError(uint8_t errorCode);
+  static up<Statement> getError(uint8_t errorCode);
   void getLine(Program &p);
   void getEndLines(Program &p);
 
+  fetch in;
   bool emptyLineNumbers = false;
   bool unlistedLineNumbers = false;
   bool enableMachineCode = false;

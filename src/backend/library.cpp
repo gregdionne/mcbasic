@@ -641,7 +641,7 @@ std::string Library::mdStrDel() {
   return tasm.source();
 }
 
-std::string Library::mdNegX() {
+std::string Library::mdNegX() const {
   Assembler tasm;
   if (undoc) {
     tasm.label("negxi");
@@ -713,7 +713,7 @@ std::string Library::mdNegTmp2XF() {
   return tasm.source();
 }
 
-std::string Library::mdNegArgV() {
+std::string Library::mdNegArgV() const {
   Assembler tasm;
   tasm.label("negargv");
   if (undoc) {
@@ -747,7 +747,7 @@ std::string Library::mdNegArgV() {
   return tasm.source();
 }
 
-std::string Library::mdNegTmp() {
+std::string Library::mdNegTmp() const {
   Assembler tasm;
   tasm.label("negtmp");
   if (undoc) {
@@ -2928,7 +2928,7 @@ std::string Library::mdPowFlt() {
   return tasm.source();
 }
 
-std::string Library::mdSin() {
+std::string Library::mdSin() const {
   Assembler tasm;
 
   tasm.comment("X = SIN(X)");
@@ -3957,7 +3957,7 @@ void Library::addDependencies(std::set<std::string> &dependencies) {
 }
 
 void Library::assemble(InstructionOp *implementation) {
-  for (auto &entry : queue.queue) {
+  for (const auto &entry : queue.queue) {
     std::string callLabel(entry->callLabel());
     if (!callLabel.empty()) {
       auto &val = calls[callLabel];

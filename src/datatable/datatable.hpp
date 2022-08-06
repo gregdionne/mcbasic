@@ -14,12 +14,19 @@
 
 class DataTable {
 public:
-  DataTable() = default;
-  std::vector<std::string> data;
   void add(std::string &entry);
   void testPurity();
   void floatDiagnostic(bool generate) const;
+  bool isPureUnsigned() const { return pureUnsigned; }
+  bool isPureByte() const { return pureByte; }
+  bool isPureWord() const { return pureWord; }
+  bool isPureInteger() const { return pureInteger; }
+  bool isPureNumeric() const { return pureNumeric; }
+  bool isPureStrings() const { return pureStrings; }
+  std::vector<std::string> getData() const { return data; }
 
+private:
+  std::vector<std::string> data;
   bool pureUnsigned{false};
   bool pureByte{false};
   bool pureWord{false};

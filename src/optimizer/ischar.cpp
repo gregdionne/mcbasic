@@ -31,8 +31,9 @@ bool IsChar::inspect(const LeftExpr &e) const {
   // if length is known...
   ConstInspector constInspector;
   if (auto value = e.len->constify(&constInspector)) {
-    if (*value < 2)
+    if (*value < 2) {
       return true;
+    }
   }
 
   // otherwise see if string itself passes

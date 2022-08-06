@@ -11,6 +11,11 @@
 class ExprViewer : public ExprAbsorber<void, void> {
 public:
   explicit ExprViewer(int &n_in) : n(n_in) {}
+  ExprViewer(const ExprViewer &) = delete;
+  ExprViewer(ExprViewer &&) = delete;
+  ExprViewer &operator=(const ExprViewer &) = delete;
+  ExprViewer &operator=(ExprViewer &&) = delete;
+  ~ExprViewer() override = default;
   void absorb(const NumericConstantExpr &e) override;
   void absorb(const StringConstantExpr &e) override;
   void absorb(const NumericVariableExpr &e) override;

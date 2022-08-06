@@ -3,8 +3,8 @@
 
 #include "announcer.hpp"
 
-#include <stdarg.h>
-#include <stdio.h>
+#include <cstdarg>
+#include <cstdio>
 
 void Announcer::start(int lineNumber) const {
   if (warn) {

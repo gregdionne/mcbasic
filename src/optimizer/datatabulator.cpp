@@ -17,13 +17,13 @@ void DataTabulator::operate(Line &l) {
 }
 
 void StatementDataTabulator::inspect(const Data &s) const {
-  for (auto &record : s.records) {
+  for (const auto &record : s.records) {
     dataTable.add(record->value);
   }
 }
 
 void StatementDataTabulator::inspect(const If &s) const {
-  for (auto &statement : s.consequent) {
+  for (const auto &statement : s.consequent) {
     statement->inspect(this);
   }
 }

@@ -20,7 +20,7 @@ template <typename T, typename... Args> inline up<T> makeup(Args &&...args) {
 
 template <typename T>
 constexpr std::remove_reference_t<T> &&mv(T &&thing) noexcept {
-  return std::move(thing);
+  return static_cast<std::remove_reference_t<T> &&>(thing);
 }
 
 #endif

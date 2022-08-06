@@ -3,10 +3,10 @@
 #include "symbolpruner.hpp"
 
 template <typename T> void prune(T &expr, ExprSymbolPruner *that) {
-  that->isMissing = false;
+  that->reset();
   expr->mutate(that);
-  if (that->isMissing) {
-    that->isMissing = false;
+  if (that->isMissing()) {
+    that->reset();
     if (expr->isString()) {
       expr = makeup<StringConstantExpr>("");
     } else {
@@ -16,19 +16,19 @@ template <typename T> void prune(T &expr, ExprSymbolPruner *that) {
 }
 
 template <typename T> void numPrune(T &expr, ExprSymbolPruner *that) {
-  that->isMissing = false;
+  that->reset();
   expr->mutate(that);
-  if (that->isMissing) {
-    that->isMissing = false;
+  if (that->isMissing()) {
+    that->reset();
     expr = makeup<NumericConstantExpr>(0);
   }
 }
 
 template <typename T> void strPrune(T &expr, ExprSymbolPruner *that) {
-  that->isMissing = false;
+  that->reset();
   expr->mutate(that);
-  if (that->isMissing) {
-    that->isMissing = false;
+  if (that->isMissing()) {
+    that->reset();
     expr = makeup<StringConstantExpr>("");
   }
 }
@@ -53,7 +53,7 @@ void ExprSymbolPruner::mutate(NumericVariableExpr &e) {
     }
   }
 
-  isMissing = true;
+  missing = true;
 
   if (warn) {
     fprintf(stderr,
@@ -70,7 +70,7 @@ void ExprSymbolPruner::mutate(StringVariableExpr &e) {
     }
   }
 
-  isMissing = true;
+  missing = true;
 
   if (warn) {
     fprintf(
@@ -129,7 +129,7 @@ void ExprSymbolPruner::mutate(NumericArrayExpr &e) {
     }
   }
 
-  isMissing = true;
+  missing = true;
 
   if (warn) {
     fprintf(stderr,
@@ -149,7 +149,7 @@ void ExprSymbolPruner::mutate(StringArrayExpr &e) {
     }
   }
 
-  isMissing = true;
+  missing = true;
 
   if (warn) {
     fprintf(stderr,

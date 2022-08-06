@@ -29,7 +29,7 @@ bool IsFloat::inspect(const MultiplicativeExpr &e) const {
     return true;
   }
 
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     if (operand->check(this)) {
       return true;
     }
@@ -39,13 +39,13 @@ bool IsFloat::inspect(const MultiplicativeExpr &e) const {
 }
 
 bool IsFloat::inspect(const AdditiveExpr &e) const {
-  for (auto &operand : e.operands) {
+  for (const auto &operand : e.operands) {
     if (operand->check(this)) {
       return true;
     }
   }
 
-  for (auto &operand : e.invoperands) {
+  for (const auto &operand : e.invoperands) {
     if (operand->check(this)) {
       return true;
     }

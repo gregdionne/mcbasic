@@ -31,10 +31,9 @@ void ExprMerger::reduceNaryExpr(up<NumericExpr> &expr) {
 }
 
 void ExprMerger::reduceIntegerDivision(up<NumericExpr> &expr) {
-  auto *iexpr = dynamic_cast<IntExpr *>(expr.get());
-  if (iexpr != nullptr) {
+  if (auto *iexpr = dynamic_cast<IntExpr *>(expr.get())) {
     auto *mexpr = dynamic_cast<MultiplicativeExpr *>(iexpr->expr.get());
-    if (mexpr != nullptr && !mexpr->invoperands.empty()) {
+    if (mexpr && !mexpr->invoperands.empty()) {
       auto divisor = makeup<MultiplicativeExpr>();
       divisor->operands = mv(mexpr->invoperands);
       mexpr->invoperands.clear();
@@ -46,12 +45,11 @@ void ExprMerger::reduceIntegerDivision(up<NumericExpr> &expr) {
 
 void ExprMerger::reduceRelationalMultiplication(up<NumericExpr> &expr,
                                                 IsFloat &isFloat) {
-  auto *mexpr = dynamic_cast<MultiplicativeExpr *>(expr.get());
-  if (mexpr != nullptr) {
+  if (auto *mexpr = dynamic_cast<MultiplicativeExpr *>(expr.get())) {
     for (auto iOperand = mexpr->operands.begin();
          iOperand != mexpr->operands.end(); ++iOperand) {
       auto *rexpr = dynamic_cast<RelationalExpr *>(iOperand->get());
-      if ((rexpr != nullptr) && !mexpr->check(&isFloat)) {
+      if (rexpr && !mexpr->check(&isFloat)) {
         auto *aexp = new AndExpr(mv(*iOperand));
         mexpr->operands.erase(iOperand);
         auto addExpr = makeup<AdditiveExpr>();
@@ -65,11 +63,10 @@ void ExprMerger::reduceRelationalMultiplication(up<NumericExpr> &expr,
     for (auto iOperand = mexpr->operands.begin();
          iOperand != mexpr->operands.end(); ++iOperand) {
       auto *nexpr = dynamic_cast<AdditiveExpr *>(iOperand->get());
-      if (nexpr != nullptr && nexpr->operands.empty() &&
-          nexpr->invoperands.size() == 1) {
+      if (nexpr && nexpr->operands.empty() && nexpr->invoperands.size() == 1) {
         auto *rexpr =
             dynamic_cast<RelationalExpr *>(nexpr->invoperands[0].get());
-        if ((rexpr != nullptr) && !mexpr->check(&isFloat)) {
+        if (rexpr && !mexpr->check(&isFloat)) {
           auto *aexp = new AndExpr(mv(nexpr->invoperands[0]));
           mexpr->operands.erase(iOperand);
           aexp->operands.emplace_back(mv(expr));
@@ -83,8 +80,7 @@ void ExprMerger::reduceRelationalMultiplication(up<NumericExpr> &expr,
 }
 
 void ExprMerger::reducePowerOfTwo(up<NumericExpr> &expr, IsFloat &isFloat) {
-  auto *mexpr = dynamic_cast<PowerExpr *>(expr.get());
-  if (mexpr != nullptr) {
+  if (auto *mexpr = dynamic_cast<PowerExpr *>(expr.get())) {
     double value;
     if (mexpr->base->isConst(value) && value == 2 &&
         !mexpr->exponent->check(&isFloat)) {
@@ -116,29 +112,24 @@ bool ExprMerger::reducePowerOfTwoMultiplication(
 }
 
 void ExprMerger::reducePowerOfTwoMultiplication(up<NumericExpr> &expr) {
-  auto *mexpr = dynamic_cast<MultiplicativeExpr *>(expr.get());
-  if (mexpr != nullptr) {
+  if (auto *mexpr = dynamic_cast<MultiplicativeExpr *>(expr.get())) {
 
     if (reducePowerOfTwoMultiplication(expr, mexpr->operands, +1)) {
       return;
     }
 
-    if (reducePowerOfTwoMultiplication(expr, mexpr->invoperands, -1)) {
-      return;
-    }
+    reducePowerOfTwoMultiplication(expr, mexpr->invoperands, -1);
   }
 }
 
 void ExprMerger::mergeNegatedMultiplication(up<NumericExpr> &expr) {
   auto *nexpr = dynamic_cast<AdditiveExpr *>(expr.get());
-  if (nexpr != nullptr && nexpr->operands.empty() &&
-      nexpr->invoperands.size() == 1) {
-    auto *mexpr =
-        dynamic_cast<MultiplicativeExpr *>(nexpr->invoperands[0].get());
-    if (mexpr != nullptr) {
+  if (nexpr && nexpr->operands.empty() && nexpr->invoperands.size() == 1) {
+    if (auto *mexpr =
+            dynamic_cast<MultiplicativeExpr *>(nexpr->invoperands[0].get())) {
       for (auto &operand : mexpr->operands) {
         auto *nmexpr = dynamic_cast<AdditiveExpr *>(operand.get());
-        if (nmexpr != nullptr && nmexpr->operands.empty() &&
+        if (nmexpr && nmexpr->operands.empty() &&
             nmexpr->invoperands.size() == 1) {
           operand = mv(nmexpr->invoperands[0]);
           expr = mv(nexpr->invoperands[0]);
@@ -147,7 +138,7 @@ void ExprMerger::mergeNegatedMultiplication(up<NumericExpr> &expr) {
       }
       for (auto &invoperand : mexpr->invoperands) {
         auto *nmexpr = dynamic_cast<AdditiveExpr *>(invoperand.get());
-        if (nmexpr != nullptr && nmexpr->operands.empty() &&
+        if (nmexpr && nmexpr->operands.empty() &&
             nmexpr->invoperands.size() == 1) {
           invoperand = mv(nmexpr->invoperands[0]);
           expr = mv(nexpr->invoperands[0]);
@@ -155,8 +146,7 @@ void ExprMerger::mergeNegatedMultiplication(up<NumericExpr> &expr) {
         }
       }
       for (auto &operand : mexpr->operands) {
-        auto *nmexpr = dynamic_cast<NumericConstantExpr *>(operand.get());
-        if (nmexpr != nullptr) {
+        if (auto *nmexpr = dynamic_cast<NumericConstantExpr *>(operand.get())) {
           nmexpr->value = -nmexpr->value;
           expr = mv(nexpr->invoperands[0]);
           return;
@@ -167,8 +157,7 @@ void ExprMerger::mergeNegatedMultiplication(up<NumericExpr> &expr) {
 }
 
 void ExprMerger::reduceMultiplyByNegativeOne(up<NumericExpr> &expr) {
-  auto mexpr = dynamic_cast<MultiplicativeExpr *>(expr.get());
-  if (mexpr != nullptr) {
+  if (auto *mexpr = dynamic_cast<MultiplicativeExpr *>(expr.get())) {
     double value;
     if (!mexpr->operands.empty() && mexpr->operands.back()->isConst(value) &&
         value == -1) {
@@ -187,20 +176,18 @@ void ExprMerger::reduceMultiplyByNegativeOne(up<NumericExpr> &expr) {
 }
 
 void ExprMerger::mergeDoubleShift(up<NumericExpr> &expr) {
-  ShiftExpr *outerExpr = nullptr;
-  ShiftExpr *innerExpr = nullptr;
 
-  if (((outerExpr = dynamic_cast<ShiftExpr *>(expr.get())) != nullptr) &&
-      ((innerExpr = dynamic_cast<ShiftExpr *>(outerExpr->expr.get())) !=
-       nullptr)) {
-    auto addExpr = makeup<AdditiveExpr>(mv(outerExpr->count));
-    addExpr->operands.emplace_back(mv(innerExpr->count));
-    ExprConstFolder cfe;
-    addExpr->mutate(&cfe);
-    up<NumericExpr> aExpr = mv(addExpr);
-    merge(aExpr);
-    outerExpr->count = mv(aExpr);
-    outerExpr->expr = mv(innerExpr->expr);
+  if (auto *outerExpr = dynamic_cast<ShiftExpr *>(expr.get())) {
+    if (auto *innerExpr = dynamic_cast<ShiftExpr *>(outerExpr->expr.get())) {
+      auto addExpr = makeup<AdditiveExpr>(mv(outerExpr->count));
+      addExpr->operands.emplace_back(mv(innerExpr->count));
+      ExprConstFolder cfe;
+      addExpr->mutate(&cfe);
+      up<NumericExpr> aExpr = mv(addExpr);
+      merge(aExpr);
+      outerExpr->count = mv(aExpr);
+      outerExpr->expr = mv(innerExpr->expr);
+    }
   }
 }
 
@@ -209,10 +196,10 @@ bool ExprMerger::mergeWithTimer(PeekExpr *peek1,
   ConstInspector constInspector;
 
   if (constInspector.isEqual(peek1->expr.get(), 9)) {
-    for (auto iOp2 = ops.begin(); iOp2 != ops.end(); ++iOp2) {
-      if (auto *peek2 = dynamic_cast<PeekExpr *>(iOp2->get())) {
+    for (auto &op : ops) {
+      if (auto *peek2 = dynamic_cast<PeekExpr *>(op.get())) {
         if (constInspector.isEqual(peek2->expr.get(), 10)) {
-          *iOp2 = makeup<TimerExpr>();
+          op = makeup<TimerExpr>();
           return true;
         }
       }
@@ -225,14 +212,14 @@ bool ExprMerger::mergeWithPeekWord(PeekExpr *peek1,
                                    std::vector<up<NumericExpr>> &ops) {
   ConstInspector constInspector;
 
-  for (auto iOp2 = ops.begin(); iOp2 != ops.end(); ++iOp2) {
-    if (auto *peek2 = dynamic_cast<PeekExpr *>(iOp2->get())) {
+  for (auto &op : ops) {
+    if (auto *peek2 = dynamic_cast<PeekExpr *>(op.get())) {
       auto value1 = peek1->expr->constify(&constInspector);
       auto value2 = peek2->expr->constify(&constInspector);
       if (value1 && value2 && *value1 + 1 == *value2) {
         auto peekw = makeup<PeekWordExpr>();
         peekw->expr = mv(peek1->expr);
-        *iOp2 = mv(peekw);
+        op = mv(peekw);
         return true;
       }
 
@@ -243,7 +230,7 @@ bool ExprMerger::mergeWithPeekWord(PeekExpr *peek1,
           if (arg2add->operands[0]->check(&isEqual)) {
             auto peekw = makeup<PeekWordExpr>();
             peekw->expr = mv(peek1->expr);
-            *iOp2 = mv(peekw);
+            op = mv(peekw);
             return true;
           }
         }
@@ -258,10 +245,10 @@ bool ExprMerger::mergeWithPos(PeekExpr *peek1,
   ConstInspector constInspector;
 
   if (constInspector.isEqual(peek1->expr.get(), 17024)) {
-    for (auto iOp2 = ops.begin(); iOp2 != ops.end(); ++iOp2) {
-      if (auto *peek2 = dynamic_cast<PeekExpr *>(iOp2->get())) {
+    for (auto &op : ops) {
+      if (auto *peek2 = dynamic_cast<PeekExpr *>(op.get())) {
         if (constInspector.isEqual(peek2->expr.get(), 17025)) {
-          *iOp2 = makeup<PosExpr>();
+          op = makeup<PosExpr>();
           return true;
         }
       }
@@ -282,9 +269,8 @@ void ExprMerger::reduceSquaredMultiplication(
         sq->expr = mv(*iOp1);
         *iOp1 = std::move(sq);
         break;
-      } else {
-        ++iOp2;
       }
+      ++iOp2;
     }
   }
 }
@@ -335,9 +321,7 @@ bool ExprMerger::mergeDoublePeek(std::vector<up<NumericExpr>> &ops) {
 }
 
 void ExprMerger::mergeDoublePeek(up<NumericExpr> &expr) {
-  auto *aexpr = dynamic_cast<AdditiveExpr *>(expr.get());
-
-  if (aexpr != nullptr) {
+  if (auto *aexpr = dynamic_cast<AdditiveExpr *>(expr.get())) {
     // try additions
     if (mergeDoublePeek(aexpr->operands)) {
       merge(expr);
@@ -415,8 +399,7 @@ void ExprMerger::merge(up<NumericExpr> &expr) {
 void ExprMerger::merge(up<StringExpr> &expr) { expr->mutate(this); }
 
 void ExprMerger::merge(up<Expr> &expr) {
-  auto *tmpExpr = dynamic_cast<NumericExpr *>(expr.get());
-  if (tmpExpr != nullptr) {
+  if (auto *tmpExpr = dynamic_cast<NumericExpr *>(expr.get())) {
     up<NumericExpr> tmp(tmpExpr);
     static_cast<void>(expr.release());
     merge(tmp);
@@ -541,8 +524,8 @@ void ExprMerger::mutate(StringConcatenationExpr &e) {
 
   auto iOperand = e.operands.begin();
   while (iOperand != e.operands.end()) {
-    auto *subExp = dynamic_cast<StringConcatenationExpr *>(iOperand->get());
-    if (subExp != nullptr) {
+    if (auto *subExp =
+            dynamic_cast<StringConcatenationExpr *>(iOperand->get())) {
       iOperand =
           e.operands.insert(std::next(iOperand),
                             std::make_move_iterator(subExp->operands.begin()),
@@ -625,10 +608,11 @@ void ExprMerger::pruneIdentity(std::vector<up<NumericExpr>> &operands,
   auto iop = operands.begin();
   while (iop != operands.end()) {
     double value;
-    if ((*iop)->isConst(value) && value == identity)
+    if ((*iop)->isConst(value) && value == identity) {
       iop = operands.erase(iop);
-    else
+    } else {
       ++iop;
+    }
   }
 }
 
@@ -643,7 +627,7 @@ void ExprMerger::merge(NaryNumericExpr &e) {
 
   for (std::size_t i = 0; i < e.operands.size(); ++i) {
     auto *subExp = dynamic_cast<NaryNumericExpr *>(e.operands[i].get());
-    if ((subExp != nullptr) && e.funcName == subExp->funcName) {
+    if (subExp && e.funcName == subExp->funcName) {
       e.operands.insert(e.operands.end(),
                         std::make_move_iterator(subExp->operands.begin()),
                         std::make_move_iterator(subExp->operands.end()));
@@ -657,7 +641,7 @@ void ExprMerger::merge(NaryNumericExpr &e) {
 
   for (std::size_t i = 0; i < e.invoperands.size(); ++i) {
     auto *subExp = dynamic_cast<NaryNumericExpr *>(e.invoperands[i].get());
-    if ((subExp != nullptr) && e.funcName == subExp->funcName) {
+    if (subExp && e.funcName == subExp->funcName) {
       e.invoperands.insert(e.invoperands.end(),
                            std::make_move_iterator(subExp->operands.begin()),
                            std::make_move_iterator(subExp->operands.end()));
@@ -717,8 +701,8 @@ void ExprMerger::mutate(RelationalExpr &e) {
 
   // convert A-B op 0 to A op B
   if (e.rhs->isConst(dummy) && dummy == 0) {
-    auto addExp = dynamic_cast<AdditiveExpr *>(e.lhs.get());
-    if (addExp != nullptr && !addExp->invoperands.empty()) {
+    auto *addExp = dynamic_cast<AdditiveExpr *>(e.lhs.get());
+    if (addExp && !addExp->invoperands.empty()) {
       auto rhs = makeup<AdditiveExpr>();
       rhs->operands.insert(rhs->operands.end(),
                            std::make_move_iterator(addExp->invoperands.begin()),

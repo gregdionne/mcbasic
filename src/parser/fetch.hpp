@@ -19,22 +19,9 @@
 
 class fetch {
 public:
-  char buf[BUFSIZ];
-  char token[BUFSIZ];
-  int argc;
-  char **argv;
-  int argcnt;
-  int argfile;
-  int linenum;
-  int linelen;
-  int colnum;
-  int keyID;
-  fetch(int argc_in, char *argv_in[])
-      : argc(argc_in), argv(argv_in), argcnt(0), linenum(0), linelen(0),
-        colnum(0) {
-    init();
-  }
+  fetch(int argc_in, char *argv_in[]) : argc(argc_in), argv(argv_in) { init(); }
 
+  int currentArgNum() const { return argfile; }
   void processOpts();
   bool openNext();
   char *getFileLine();
@@ -80,11 +67,25 @@ public:
   int getDecimalWord();
   bool isBasicFloat();
   double getBasicFloat();
+  // accessors
+  int lastKeyID() const { return keyID; }
+  int getColumn() const { return colnum; }
+  void setColumn(int n) { colnum = n; }
 
 private:
-  FILE *fp;
   void init();
-  char *efgets(char *buf, int n, FILE *fp);
+  char *efgets(char *str, int bufsiz, FILE *stream);
   void expandTabs(char *b, int m, int n);
+
+  char buf[BUFSIZ];
+  int argc;
+  char **argv;
+  int argcnt{0};
+  int argfile{0};
+  int linenum{0};
+  int linelen{0};
+  int colnum{0};
+  int keyID{0};
+  FILE *fp{nullptr};
 };
 #endif

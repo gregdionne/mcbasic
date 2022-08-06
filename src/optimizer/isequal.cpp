@@ -3,28 +3,28 @@
 #include "isequal.hpp"
 
 bool IsEqual::inspect(const NumericConstantExpr &expr) const {
-  auto *tgt = dynamic_cast<const NumericConstantExpr *>(target);
-  return tgt != nullptr && tgt->value == expr.value;
+  const auto *tgt = dynamic_cast<const NumericConstantExpr *>(target);
+  return tgt && tgt->value == expr.value;
 }
 
 bool IsEqual::inspect(const StringConstantExpr &expr) const {
-  auto *tgt = dynamic_cast<const StringConstantExpr *>(target);
-  return tgt != nullptr && tgt->value == expr.value;
+  const auto *tgt = dynamic_cast<const StringConstantExpr *>(target);
+  return tgt && tgt->value == expr.value;
 }
 
 bool IsEqual::inspect(const NumericVariableExpr &expr) const {
-  auto *tgt = dynamic_cast<const NumericVariableExpr *>(target);
-  return tgt != nullptr && tgt->varname == expr.varname;
+  const auto *tgt = dynamic_cast<const NumericVariableExpr *>(target);
+  return tgt && tgt->varname == expr.varname;
 }
 
 bool IsEqual::inspect(const StringVariableExpr &expr) const {
-  auto *tgt = dynamic_cast<const StringVariableExpr *>(target);
-  return tgt != nullptr && tgt->varname == expr.varname;
+  const auto *tgt = dynamic_cast<const StringVariableExpr *>(target);
+  return tgt && tgt->varname == expr.varname;
 }
 
 bool IsEqual::inspect(const ArrayIndicesExpr &expr) const {
-  auto *tgt = dynamic_cast<const ArrayIndicesExpr *>(target);
-  bool result = tgt != nullptr;
+  const auto *tgt = dynamic_cast<const ArrayIndicesExpr *>(target);
+  bool result = tgt;
   for (std::size_t i = 0; result && i < expr.operands.size(); i++) {
     IsEqual isIndexEqual(tgt->operands[i].get());
     result &= expr.operands[i]->check(&isIndexEqual);
@@ -33,8 +33,8 @@ bool IsEqual::inspect(const ArrayIndicesExpr &expr) const {
 }
 
 bool IsEqual::inspect(const NumericArrayExpr &expr) const {
-  auto *tgt = dynamic_cast<const NumericArrayExpr *>(target);
-  bool result = tgt != nullptr && tgt->varexp->varname == expr.varexp->varname;
+  const auto *tgt = dynamic_cast<const NumericArrayExpr *>(target);
+  bool result = tgt && tgt->varexp->varname == expr.varexp->varname;
   if (result) {
     IsEqual areIndicesEqual(tgt->indices.get());
     result &= expr.indices->check(&areIndicesEqual);
@@ -43,8 +43,8 @@ bool IsEqual::inspect(const NumericArrayExpr &expr) const {
 }
 
 bool IsEqual::inspect(const StringArrayExpr &expr) const {
-  auto *tgt = dynamic_cast<const StringArrayExpr *>(target);
-  bool result = tgt != nullptr && tgt->varexp->varname == expr.varexp->varname;
+  const auto *tgt = dynamic_cast<const StringArrayExpr *>(target);
+  bool result = tgt && tgt->varexp->varname == expr.varexp->varname;
   if (result) {
     IsEqual areIndicesEqual(tgt->indices.get());
     result &= expr.indices->check(&areIndicesEqual);
@@ -53,7 +53,7 @@ bool IsEqual::inspect(const StringArrayExpr &expr) const {
 }
 
 bool IsEqual::checkOps(const std::vector<up<NumericExpr>> &lhs,
-                       const std::vector<up<NumericExpr>> &rhs) const {
+                       const std::vector<up<NumericExpr>> &rhs) {
   if (lhs.size() != rhs.size()) {
     return false;
   }
@@ -73,8 +73,8 @@ bool IsEqual::checkOps(const std::vector<up<NumericExpr>> &lhs,
 }
 
 bool IsEqual::inspect(const NaryNumericExpr &expr) const {
-  auto *tgt = dynamic_cast<const NaryNumericExpr *>(target);
-  return tgt != nullptr && tgt->funcName == expr.funcName &&
+  const auto *tgt = dynamic_cast<const NaryNumericExpr *>(target);
+  return tgt && tgt->funcName == expr.funcName &&
          checkOps(tgt->operands, expr.operands) &&
          checkOps(tgt->invoperands, expr.invoperands);
 }

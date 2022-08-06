@@ -2,7 +2,7 @@
 // Distributed under MIT License
 #include "consttable.hpp"
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <algorithm>
 #include <cmath>

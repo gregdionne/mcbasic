@@ -13,7 +13,7 @@ bool IsBoolean::inspect(const ComplementedExpr &expr) const {
 bool IsBoolean::inspect(const RelationalExpr & /*expr*/) const { return true; }
 
 bool IsBoolean::inspect(const AndExpr &expr) const {
-  for (auto &operand : expr.operands) {
+  for (const auto &operand : expr.operands) {
     if (!operand->check(this)) {
       return false;
     }
@@ -22,7 +22,7 @@ bool IsBoolean::inspect(const AndExpr &expr) const {
 }
 
 bool IsBoolean::inspect(const OrExpr &expr) const {
-  for (auto &operand : expr.operands) {
+  for (const auto &operand : expr.operands) {
     if (!operand->check(this)) {
       return false;
     }

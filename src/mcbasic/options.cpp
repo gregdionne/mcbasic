@@ -2,11 +2,10 @@
 // Distributed under MIT License
 #include "options.hpp"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include <cstddef>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 static const char *const validOps[] = {"-native",     "-g",
                                        "-list",       "-el",

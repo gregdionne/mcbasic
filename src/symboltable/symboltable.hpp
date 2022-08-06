@@ -9,21 +9,19 @@
 // holds string, float, and integer variables
 // isFloat() is updated by FloatPromoter
 
-class Symbol {
-public:
-  Symbol() = default;
+struct Symbol {
   std::string name;
   int numDims{0};
   bool isFloat{false};
 };
 
-class SymbolTable {
-public:
+struct SymbolTable {
   std::vector<Symbol> numVarTable;
   std::vector<Symbol> strVarTable;
   std::vector<Symbol> numArrTable;
   std::vector<Symbol> strArrTable;
-  void sort();
 };
+
+void sortSymbolTable(SymbolTable &table);
 
 #endif

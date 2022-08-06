@@ -10,13 +10,13 @@ void FloatPromoter::operate(Program &p) {
     }
   } while (gotFloat);
 
-  symbolTable.sort();
+  sortSymbolTable(symbolTable);
 }
 
 void FloatPromoter::operate(Line &l) {
   for (auto &statement : l.statements) {
-    fs.lineNumber = l.lineNumber;
-    statement->mutate(that);
+    fs.setLineNumber(l.lineNumber);
+    statement->mutate(&fs);
   }
 }
 
@@ -28,32 +28,32 @@ void StatementFloatPromoter::mutate(If &s) {
 
 void StatementFloatPromoter::mutate(Let &s) {
   if (s.rhs->check(&isFloat)) {
-    fe.lineNumber = this->lineNumber;
-    s.lhs->mutate(that);
+    fe.setLineNumber(lineNumber);
+    s.lhs->mutate(&fe);
   }
 }
 
 void StatementFloatPromoter::mutate(For &s) {
   // we really don't need s.to
   if (s.from->check(&isFloat) || (s.step && s.step->check(&isFloat))) {
-    fe.lineNumber = this->lineNumber;
-    s.iter->mutate(that);
+    fe.setLineNumber(lineNumber);
+    s.iter->mutate(&fe);
   }
 }
 
 void StatementFloatPromoter::mutate(Read &s) {
-  if (!dataTable.pureInteger) {
+  if (!dataTable.isPureInteger()) {
     for (auto &variable : s.variables) {
-      fe.lineNumber = this->lineNumber;
-      variable->mutate(that);
+      fe.setLineNumber(lineNumber);
+      variable->mutate(&fe);
     }
   }
 }
 
 void StatementFloatPromoter::mutate(Input &s) {
   for (auto &variable : s.variables) {
-    fe.lineNumber = this->lineNumber;
-    variable->mutate(that);
+    fe.setLineNumber(lineNumber);
+    variable->mutate(&fe);
   }
 }
 

@@ -33,6 +33,8 @@ public:
   explicit Whenifier(const Announcer &&a) : announcer(a) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
+
+private:
   const Announcer announcer;
 };
 

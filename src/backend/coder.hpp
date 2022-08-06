@@ -16,7 +16,7 @@ public:
   Coder(Coder &&) = delete;
   Coder &operator=(const Coder &) = delete;
   Coder &operator=(Coder &&) = delete;
-  virtual ~Coder() = default;
+  ~Coder() override = default;
 
   std::string operate(Instruction &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
