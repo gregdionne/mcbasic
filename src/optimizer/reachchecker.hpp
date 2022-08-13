@@ -7,26 +7,32 @@
 #include "ast/optimisticstatementchecker.hpp"
 #include "ast/pessimisticstatementchecker.hpp"
 #include "ast/program.hpp"
+#include "utils/announcer.hpp"
 
 // warn when an executable statement follows GOTO,END, or STOP
 // REM and DATA statements are not considered executable
 
 class StatementReachChecker : public NullStatementInspector {
 public:
-  explicit StatementReachChecker(int linenum) : lineNumber(linenum) {}
+  explicit StatementReachChecker(const Announcer &a, int linenum)
+      : announcer(a), lineNumber(linenum) {}
   void inspect(const If &s) const override;
-
-  using NullStatementInspector::inspect;
   void validate(const std::vector<up<Statement>> &statements) const;
 
 private:
-  int lineNumber;
+  using NullStatementInspector::inspect;
+  const Announcer &announcer;
+  const int lineNumber;
 };
 
 class ReachChecker : public ProgramOp {
 public:
+  explicit ReachChecker(const Announcer &&a) : announcer(a) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
+
+private:
+  const Announcer announcer;
 };
 
 #endif

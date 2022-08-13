@@ -14,13 +14,14 @@ static const char *const validOps[] = {"-native",     "-g",
                                        "-Wfloat",     "-Wno-float",
                                        "-Wduplicate", "-Wno-duplicate",
                                        "-Wunreached", "-Wno-unreached",
-                                       "-Wuninit",    "Wno-uninit",
+                                       "-Wuninit",    "-Wno-uninit",
+                                       "-Wunused",    "-Wno-unused",
                                        "-Wbranch",    "-Wno-branch",
                                        "--"};
 
-static const bool exclusive[] = {false, false, false, false, false, false,
-                                 false, false, true,  false, true,  false,
-                                 true,  false, true,  false, true,  false};
+static const bool exclusive[] = {
+    false, false, false, false, false, false, false, false, true, false,
+    true,  false, true,  false, true,  false, true,  false, true, false};
 
 void usage(char *argv[]) {
   fprintf(stderr, "usage: %s ", argv[0]);
@@ -77,6 +78,8 @@ void Options::process(int argc, char *argv[]) {
     Wunreached &= !(strcmp(argv[argcnt], "-Wno-unreached") == 0);
     Wuninit |= strcmp(argv[argcnt], "-Wuninit") == 0;
     Wuninit &= !(strcmp(argv[argcnt], "-Wno-uninit") == 0);
+    Wunused |= strcmp(argv[argcnt], "-Wunused") == 0;
+    Wunused &= !(strcmp(argv[argcnt], "-Wno-unused") == 0);
     Wbranch |= strcmp(argv[argcnt], "-Wbranch") == 0;
     Wbranch &= !(strcmp(argv[argcnt], "-Wno-branch") == 0);
     argcnt++;

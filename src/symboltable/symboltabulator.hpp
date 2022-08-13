@@ -37,7 +37,7 @@ private:
 class StatementSymbolTabulator : public NullStatementInspector {
 public:
   StatementSymbolTabulator(SymbolTable &st, int linenum)
-      : exprSymbolTabulator(st, linenum) {}
+      : symbolTable(st), exprSymbolTabulator(st, linenum) {}
   void inspect(const If &s) const override;
   void inspect(const Dim &s) const override;
   void inspect(const Read &s) const override;
@@ -48,6 +48,7 @@ public:
   void delve(const std::vector<up<Statement>> &statements) const;
 
 private:
+  SymbolTable &symbolTable;
   ExprSymbolTabulator exprSymbolTabulator;
 };
 

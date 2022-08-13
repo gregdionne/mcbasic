@@ -1,4 +1,4 @@
-0 CLS:DIMW(383),S(7),T(7),E(6),F(6),X(6),Y(6),C(7),T,C,P,X,Y,L,P,Z,M,I$
+0 CLS:DIMS(7),T(7),E(6),F(6),X(6),Y(6),T,P,X,Y,P
 10 P=1
 20 S(P)=1:T(P)=8:E(P)=23:F(P)=9:X(P)=ABS(S(P)-E(P)):Y(P)=-10+RND(40)
 70 FORT=0TO1STEP.01

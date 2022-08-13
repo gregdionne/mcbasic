@@ -3,6 +3,7 @@
 #include "optimizer.hpp"
 
 #include "accumulizer.hpp"
+#include "assignmentpruner.hpp"
 #include "ast/lister.hpp"
 #include "branchvalidator.hpp"
 #include "constfolder.hpp"
@@ -43,7 +44,7 @@ void Optimizer::optimize(Program &p) {
   DataTabulator dt(dataTable);
   dt.operate(p);
 
-  dataTable.floatDiagnostic(options.Wfloat);
+  dataTable.floatDiagnostic(options.v);
 
   if (!options.list) {
     DataPruner dp;
@@ -53,8 +54,11 @@ void Optimizer::optimize(Program &p) {
   SymbolTabulator st(symbolTable);
   st.operate(p);
 
-  SymbolPruner sp(symbolTable, options.Wuninit);
+  SymbolPruner sp(symbolTable, Announcer(options.Wuninit, "Wuninit"));
   sp.operate(p);
+
+  AssignmentPruner ap(symbolTable, Announcer(options.Wunused, "Wunused"));
+  ap.operate(p);
 
   FloatPromoter fp(dataTable, symbolTable, Announcer(options.Wfloat, "Wfloat"));
   fp.operate(p);
@@ -74,7 +78,7 @@ void Optimizer::optimize(Program &p) {
   wf.operate(p);
 
   if (options.Wunreached) {
-    ReachChecker rc;
+    ReachChecker rc(Announcer(options.Wunreached, "Wunreached"));
     rc.operate(p);
   }
 

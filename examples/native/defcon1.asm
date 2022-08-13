@@ -2602,7 +2602,7 @@ LINE_800
 	ldx	#INTVAR_Z
 	jsr	clr_ix
 
-	; DIM W(383),S(7),T(7),E(6),F(6),X(6),Y(6),C(7),T,C,P,L,M,T1,T2,T3,I$
+	; DIM W(383),S(7),T(7),E(6),F(6),X(6),Y(6),C(7),T,C,P,M,T1,T2,T3,I$
 
 	ldd	#383
 	jsr	ld_ir1_pw
@@ -6688,7 +6688,6 @@ bss
 
 ; Numeric Variables
 INTVAR_A	.block	3
-INTVAR_L	.block	3
 INTVAR_M	.block	3
 INTVAR_OD	.block	3
 INTVAR_P	.block	3

@@ -87,13 +87,7 @@ LINE_0
 
 	jsr	cls
 
-	; DIM W(383),S(7),T(7),E(6),F(6),X(6),Y(6),C(7),T,C,P,X,Y,L,P,Z,M,I$
-
-	ldd	#383
-	jsr	ld_ir1_pw
-
-	ldx	#INTARR_W
-	jsr	arrdim1_ir1_ix
+	; DIM S(7),T(7),E(6),F(6),X(6),Y(6),T,P,X,Y,P
 
 	ldab	#7
 	jsr	ld_ir1_pb
@@ -129,12 +123,6 @@ LINE_0
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_Y
-	jsr	arrdim1_ir1_ix
-
-	ldab	#7
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_C
 	jsr	arrdim1_ir1_ix
 
 LINE_10
@@ -1554,7 +1542,7 @@ add_ir1_ir1_nb			; numCalls = 1
 	stab	r1
 	rts
 
-arrdim1_ir1_ix			; numCalls = 8
+arrdim1_ir1_ix			; numCalls = 6
 	.module	modarrdim1_ir1_ix
 	ldd	,x
 	beq	_ok
@@ -1760,18 +1748,11 @@ ld_ir1_ix			; numCalls = 9
 	stab	r1
 	rts
 
-ld_ir1_pb			; numCalls = 7
+ld_ir1_pb			; numCalls = 6
 	.module	modld_ir1_pb
 	stab	r1+2
 	ldd	#0
 	std	r1
-	rts
-
-ld_ir1_pw			; numCalls = 1
-	.module	modld_ir1_pw
-	std	r1+1
-	ldab	#0
-	stab	r1
 	rts
 
 ld_ir2_ix			; numCalls = 9
@@ -2172,11 +2153,7 @@ FLT_0p00999	.byte	$00, $00, $00, $02, $8f
 bss
 
 ; Numeric Variables
-INTVAR_C	.block	3
-INTVAR_L	.block	3
-INTVAR_M	.block	3
 INTVAR_P	.block	3
-INTVAR_Z	.block	3
 FLTVAR_T	.block	5
 FLTVAR_T1	.block	5
 FLTVAR_T2	.block	5
@@ -2186,14 +2163,11 @@ FLTVAR_V	.block	5
 FLTVAR_X	.block	5
 FLTVAR_Y	.block	5
 ; String Variables
-STRVAR_I	.block	3
 ; Numeric Arrays
-INTARR_C	.block	4	; dims=1
 INTARR_E	.block	4	; dims=1
 INTARR_F	.block	4	; dims=1
 INTARR_S	.block	4	; dims=1
 INTARR_T	.block	4	; dims=1
-INTARR_W	.block	4	; dims=1
 INTARR_X	.block	4	; dims=1
 INTARR_Y	.block	4	; dims=1
 ; String Arrays

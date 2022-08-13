@@ -17,10 +17,10 @@ void DataTable::testPurity() {
   maxValue = -std::numeric_limits<double>::infinity();
   for (const auto &entry : data) {
     try {
-      pureStrings = false;
       std::size_t pos;
       double d = std::stod(entry, &pos);
       pureNumeric &= pos == entry.length();
+      pureStrings &= pos != entry.length();
       if (d != static_cast<double>(static_cast<int>(d))) {
         pureInteger = false;
       }

@@ -5,7 +5,8 @@
 40 FOR I = 0 TO 4
 50 L=L+1
 66 X(I,J,K)=L
+67 S=S+X(I,J,K)
 70 NEXT
 80 NEXT
 90 NEXT
-
+100 ?S

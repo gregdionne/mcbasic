@@ -152,6 +152,18 @@ LINE_40
 
 	.byte	bytecode_next
 
+LINE_50
+
+	; PRINT STR$(X);" \r";
+
+	.byte	bytecode_str_sr1_fx
+	.byte	bytecode_FLTVAR_X
+
+	.byte	bytecode_pr_sr1
+
+	.byte	bytecode_pr_ss
+	.text	2, " \r"
+
 LLAST
 
 	; END
@@ -1509,7 +1521,7 @@ _fopp
 	stx	nxtinst
 	jmp	mainloop
 
-pr_sr1			; numCalls = 1
+pr_sr1			; numCalls = 2
 	.module	modpr_sr1
 	jsr	noargs
 	ldab	r1
@@ -1521,7 +1533,7 @@ pr_sr1			; numCalls = 1
 _rts
 	rts
 
-pr_ss			; numCalls = 1
+pr_ss			; numCalls = 2
 	.module	modpr_ss
 	ldx	curinst
 	inx
@@ -1596,7 +1608,7 @@ sq_fr1_fx			; numCalls = 1
 	ldx	#r1
 	jmp	tmp2xf
 
-str_sr1_fx			; numCalls = 1
+str_sr1_fx			; numCalls = 2
 	.module	modstr_sr1_fx
 	jsr	extend
 	ldd	1,x

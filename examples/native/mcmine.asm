@@ -102,7 +102,7 @@ LINE_0
 
 LINE_1
 
-	; DIM M(31,20),N(31,20),TT(4),SX(101),SY(101),MX,MY,ST,MC,V,H,X,Y,Z,OH,OV,B,C,R
+	; DIM M(31,20),N(31,20),SX(101),SY(101),MX,MY,ST,MC,V,H,X,Y,Z,OH,OV,B,C,R
 
 	ldab	#31
 	jsr	ld_ir1_pb
@@ -121,12 +121,6 @@ LINE_1
 
 	ldx	#INTARR_N
 	jsr	arrdim2_ir1_ix
-
-	ldab	#4
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_TT
-	jsr	arrdim1_ir1_ix
 
 	ldab	#101
 	jsr	ld_ir1_pb
@@ -715,11 +709,6 @@ LINE_210
 
 	ldx	#FLTVAR_V
 	jsr	clr_fx
-
-	; T=0
-
-	ldx	#INTVAR_T
-	jsr	clr_ix
 
 LINE_220
 
@@ -3500,22 +3489,6 @@ _ok
 	addd	2,x
 	jmp	alloc
 
-arrdim1_ir1_ix			; numCalls = 1
-	.module	modarrdim1_ir1_ix
-	ldd	,x
-	beq	_ok
-	ldab	#DD_ERROR
-	jmp	error
-_ok
-	ldd	strbuf
-	std	,x
-	ldd	r1+1
-	addd	#1
-	std	2,x
-	lsld
-	addd	2,x
-	jmp	alloc
-
 arrdim2_ir1_ix			; numCalls = 2
 	.module	modarrdim2_ir1_ix
 	ldd	,x
@@ -3653,13 +3626,6 @@ clr_fx			; numCalls = 4
 clr_ip			; numCalls = 1
 	.module	modclr_ip
 	ldx	letptr
-	ldd	#0
-	stab	0,x
-	std	1,x
-	rts
-
-clr_ix			; numCalls = 1
-	.module	modclr_ix
 	ldd	#0
 	stab	0,x
 	std	1,x
@@ -4012,7 +3978,7 @@ ld_ir1_ix			; numCalls = 11
 	stab	r1
 	rts
 
-ld_ir1_pb			; numCalls = 11
+ld_ir1_pb			; numCalls = 10
 	.module	modld_ir1_pb
 	stab	r1+2
 	ldd	#0
@@ -4808,7 +4774,6 @@ INTVAR_MY	.block	3
 INTVAR_Q	.block	3
 INTVAR_R	.block	3
 INTVAR_ST	.block	3
-INTVAR_T	.block	3
 INTVAR_Z	.block	3
 FLTVAR_H	.block	5
 FLTVAR_OH	.block	5
@@ -4822,7 +4787,6 @@ STRVAR_QQ	.block	3
 ; Numeric Arrays
 INTARR_M	.block	6	; dims=2
 INTARR_N	.block	6	; dims=2
-INTARR_TT	.block	4	; dims=1
 FLTARR_SX	.block	4	; dims=1
 FLTARR_SY	.block	4	; dims=1
 ; String Arrays

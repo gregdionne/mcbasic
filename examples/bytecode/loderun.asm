@@ -3203,7 +3203,7 @@ LINE_89
 
 LINE_90
 
-	; DIM P(31,15),A(5),B(5),M,P,S,V,C,F,T,A,B,K(255),V(63),F(5),G(8),M(88),X(5),Y(5),D(5,5),N(5),C(5),U(31),T(5),W(2),W2(4)
+	; DIM P(31,15),A(5),B(5),M,P,S,V,C,F,T,A,B,K(255),V(63),F(5),G(8),X(5),Y(5),D(5,5),N(5),C(5),U(31),T(5),W(2),W2(4)
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	31
@@ -3249,12 +3249,6 @@ LINE_90
 
 	.byte	bytecode_arrdim1_ir1_ix
 	.byte	bytecode_INTARR_G
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	88
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_M
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	5
@@ -3315,7 +3309,7 @@ LINE_90
 
 LINE_91
 
-	; DIM H(15),I(15),K,G,Q,I,O,D,E,H,J,L,N,U,W,X,Y,Z,LV,LC,NX,NY,NT,G1,G2,MC,I$,A$,MN
+	; DIM H(15),I(15),G,Q,I,O,D,E,J,L,N,U,W,X,Y,Z,LV,LC,NX,NY,G1,G2,MC,I$,A$,MN
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	15
@@ -3636,23 +3630,11 @@ LINE_805
 	.byte	bytecode_INTVAR_MC
 	.word	16384
 
-	; K=17023
-
-	.byte	bytecode_ld_ix_pw
-	.byte	bytecode_INTVAR_K
-	.word	17023
-
 	; G=128
 
 	.byte	bytecode_ld_ix_pb
 	.byte	bytecode_INTVAR_G
 	.byte	128
-
-	; H=220
-
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_H
-	.byte	220
 
 	; I=175
 
@@ -3764,72 +3746,6 @@ LINE_806
 	.byte	190
 
 LINE_810
-
-	; M(32)=128
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	32
-
-	.byte	bytecode_arrref1_ir1_ix
-	.byte	bytecode_INTARR_M
-
-	.byte	bytecode_ld_ip_pb
-	.byte	128
-
-	; M(88)=175
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	88
-
-	.byte	bytecode_arrref1_ir1_ix
-	.byte	bytecode_INTARR_M
-
-	.byte	bytecode_ld_ip_pb
-	.byte	175
-
-	; M(72)=220
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	72
-
-	.byte	bytecode_arrref1_ir1_ix
-	.byte	bytecode_INTARR_M
-
-	.byte	bytecode_ld_ip_pb
-	.byte	220
-
-	; M(45)=204
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	45
-
-	.byte	bytecode_arrref1_ir1_ix
-	.byte	bytecode_INTARR_M
-
-	.byte	bytecode_ld_ip_pb
-	.byte	204
-
-	; M(42)=146
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	42
-
-	.byte	bytecode_arrref1_ir1_ix
-	.byte	bytecode_INTARR_M
-
-	.byte	bytecode_ld_ip_pb
-	.byte	146
-
-	; M(79)=239
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	79
-
-	.byte	bytecode_arrref1_ir1_ix
-	.byte	bytecode_INTARR_M
-
-	.byte	bytecode_ld_ip_pb
-	.byte	239
 
 	; FOR T=1 TO 5
 
@@ -9925,7 +9841,7 @@ and_ir1_ir1_pb			; numCalls = 6
 	staa	r1
 	rts
 
-arrdim1_ir1_ix			; numCalls = 17
+arrdim1_ir1_ix			; numCalls = 16
 	.module	modarrdim1_ir1_ix
 	jsr	extend
 	ldd	,x
@@ -9991,7 +9907,7 @@ _ok
 	addd	tmp3
 	jmp	alloc
 
-arrref1_ir1_ix			; numCalls = 194
+arrref1_ir1_ix			; numCalls = 188
 	.module	modarrref1_ir1_ix
 	jsr	extend
 	ldd	r1+1
@@ -10462,7 +10378,7 @@ ld_ip_ir1			; numCalls = 18
 	stab	0,x
 	rts
 
-ld_ip_pb			; numCalls = 141
+ld_ip_pb			; numCalls = 135
 	.module	modld_ip_pb
 	jsr	getbyte
 	ldx	letptr
@@ -10480,7 +10396,7 @@ ld_ir1_ix			; numCalls = 130
 	stab	r1
 	rts
 
-ld_ir1_pb			; numCalls = 211
+ld_ir1_pb			; numCalls = 204
 	.module	modld_ir1_pb
 	jsr	getbyte
 	stab	r1+2
@@ -10523,7 +10439,7 @@ ld_ix_ir1			; numCalls = 20
 	stab	0,x
 	rts
 
-ld_ix_pb			; numCalls = 54
+ld_ix_pb			; numCalls = 53
 	.module	modld_ix_pb
 	jsr	extbyte
 	stab	2,x
@@ -10531,7 +10447,7 @@ ld_ix_pb			; numCalls = 54
 	std	0,x
 	rts
 
-ld_ix_pw			; numCalls = 7
+ld_ix_pw			; numCalls = 6
 	.module	modld_ix_pw
 	jsr	extword
 	std	1,x
@@ -11403,57 +11319,53 @@ bytecode_INTVAR_F	.equ	4
 bytecode_INTVAR_G	.equ	5
 bytecode_INTVAR_G1	.equ	6
 bytecode_INTVAR_G2	.equ	7
-bytecode_INTVAR_H	.equ	8
-bytecode_INTVAR_I	.equ	9
-bytecode_INTVAR_J	.equ	10
-bytecode_INTVAR_K	.equ	11
-bytecode_INTVAR_L	.equ	12
-bytecode_INTVAR_LC	.equ	13
-bytecode_INTVAR_LV	.equ	14
-bytecode_INTVAR_M	.equ	15
-bytecode_INTVAR_MC	.equ	16
-bytecode_INTVAR_MN	.equ	17
-bytecode_INTVAR_N	.equ	18
-bytecode_INTVAR_NT	.equ	19
-bytecode_INTVAR_NX	.equ	20
-bytecode_INTVAR_NY	.equ	21
-bytecode_INTVAR_O	.equ	22
-bytecode_INTVAR_P	.equ	23
-bytecode_INTVAR_Q	.equ	24
-bytecode_INTVAR_S	.equ	25
-bytecode_INTVAR_T	.equ	26
-bytecode_INTVAR_U	.equ	27
-bytecode_INTVAR_V	.equ	28
-bytecode_INTVAR_W	.equ	29
-bytecode_INTVAR_Y	.equ	30
-bytecode_INTVAR_Z	.equ	31
-bytecode_INTVAR_ZZ	.equ	32
-bytecode_FLTVAR_A	.equ	33
-bytecode_FLTVAR_X	.equ	34
-bytecode_FLTVAR_Z1	.equ	35
-bytecode_FLTVAR_Z2	.equ	36
-bytecode_STRVAR_A	.equ	37
-bytecode_STRVAR_I	.equ	38
-bytecode_INTARR_A	.equ	39
-bytecode_INTARR_B	.equ	40
-bytecode_INTARR_C	.equ	41
-bytecode_INTARR_D	.equ	42
-bytecode_INTARR_E	.equ	43
-bytecode_INTARR_F	.equ	44
-bytecode_INTARR_G	.equ	45
-bytecode_INTARR_H	.equ	46
-bytecode_INTARR_I	.equ	47
-bytecode_INTARR_K	.equ	48
-bytecode_INTARR_M	.equ	49
-bytecode_INTARR_N	.equ	50
-bytecode_INTARR_T	.equ	51
-bytecode_INTARR_U	.equ	52
-bytecode_INTARR_V	.equ	53
-bytecode_INTARR_W	.equ	54
-bytecode_INTARR_W2	.equ	55
-bytecode_INTARR_X	.equ	56
-bytecode_INTARR_Y	.equ	57
-bytecode_FLTARR_P	.equ	58
+bytecode_INTVAR_I	.equ	8
+bytecode_INTVAR_J	.equ	9
+bytecode_INTVAR_L	.equ	10
+bytecode_INTVAR_LC	.equ	11
+bytecode_INTVAR_LV	.equ	12
+bytecode_INTVAR_M	.equ	13
+bytecode_INTVAR_MC	.equ	14
+bytecode_INTVAR_MN	.equ	15
+bytecode_INTVAR_N	.equ	16
+bytecode_INTVAR_NX	.equ	17
+bytecode_INTVAR_NY	.equ	18
+bytecode_INTVAR_O	.equ	19
+bytecode_INTVAR_P	.equ	20
+bytecode_INTVAR_Q	.equ	21
+bytecode_INTVAR_S	.equ	22
+bytecode_INTVAR_T	.equ	23
+bytecode_INTVAR_U	.equ	24
+bytecode_INTVAR_V	.equ	25
+bytecode_INTVAR_W	.equ	26
+bytecode_INTVAR_Y	.equ	27
+bytecode_INTVAR_Z	.equ	28
+bytecode_INTVAR_ZZ	.equ	29
+bytecode_FLTVAR_A	.equ	30
+bytecode_FLTVAR_X	.equ	31
+bytecode_FLTVAR_Z1	.equ	32
+bytecode_FLTVAR_Z2	.equ	33
+bytecode_STRVAR_A	.equ	34
+bytecode_STRVAR_I	.equ	35
+bytecode_INTARR_A	.equ	36
+bytecode_INTARR_B	.equ	37
+bytecode_INTARR_C	.equ	38
+bytecode_INTARR_D	.equ	39
+bytecode_INTARR_E	.equ	40
+bytecode_INTARR_F	.equ	41
+bytecode_INTARR_G	.equ	42
+bytecode_INTARR_H	.equ	43
+bytecode_INTARR_I	.equ	44
+bytecode_INTARR_K	.equ	45
+bytecode_INTARR_N	.equ	46
+bytecode_INTARR_T	.equ	47
+bytecode_INTARR_U	.equ	48
+bytecode_INTARR_V	.equ	49
+bytecode_INTARR_W	.equ	50
+bytecode_INTARR_W2	.equ	51
+bytecode_INTARR_X	.equ	52
+bytecode_INTARR_Y	.equ	53
+bytecode_FLTARR_P	.equ	54
 
 symtbl
 
@@ -11465,10 +11377,8 @@ symtbl
 	.word	INTVAR_G
 	.word	INTVAR_G1
 	.word	INTVAR_G2
-	.word	INTVAR_H
 	.word	INTVAR_I
 	.word	INTVAR_J
-	.word	INTVAR_K
 	.word	INTVAR_L
 	.word	INTVAR_LC
 	.word	INTVAR_LV
@@ -11476,7 +11386,6 @@ symtbl
 	.word	INTVAR_MC
 	.word	INTVAR_MN
 	.word	INTVAR_N
-	.word	INTVAR_NT
 	.word	INTVAR_NX
 	.word	INTVAR_NY
 	.word	INTVAR_O
@@ -11506,7 +11415,6 @@ symtbl
 	.word	INTARR_H
 	.word	INTARR_I
 	.word	INTARR_K
-	.word	INTARR_M
 	.word	INTARR_N
 	.word	INTARR_T
 	.word	INTARR_U
@@ -11530,10 +11438,8 @@ INTVAR_F	.block	3
 INTVAR_G	.block	3
 INTVAR_G1	.block	3
 INTVAR_G2	.block	3
-INTVAR_H	.block	3
 INTVAR_I	.block	3
 INTVAR_J	.block	3
-INTVAR_K	.block	3
 INTVAR_L	.block	3
 INTVAR_LC	.block	3
 INTVAR_LV	.block	3
@@ -11541,7 +11447,6 @@ INTVAR_M	.block	3
 INTVAR_MC	.block	3
 INTVAR_MN	.block	3
 INTVAR_N	.block	3
-INTVAR_NT	.block	3
 INTVAR_NX	.block	3
 INTVAR_NY	.block	3
 INTVAR_O	.block	3
@@ -11573,7 +11478,6 @@ INTARR_G	.block	4	; dims=1
 INTARR_H	.block	4	; dims=1
 INTARR_I	.block	4	; dims=1
 INTARR_K	.block	4	; dims=1
-INTARR_M	.block	4	; dims=1
 INTARR_N	.block	4	; dims=1
 INTARR_T	.block	4	; dims=1
 INTARR_U	.block	4	; dims=1

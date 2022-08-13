@@ -60,7 +60,7 @@ static std::string strEscape(std::string const &in) {
   const char *hex_digits = "0123456789ABCDEF";
   char c;
   while ((c = *in_c++) != 0) {
-    out += c == '\t' ? std::string("\t")
+    out += c == '\t'   ? std::string("\t")
            : c == '\r' ? std::string("\r")
            : c == '\n' ? std::string("\n")
            : isprint(c) != 0 || (c & 0x80) != 0

@@ -18,6 +18,7 @@ struct Options {
   bool Wduplicate = true;
   bool Wunreached = true;
   bool Wuninit = true;
+  bool Wunused = true;
   bool Wbranch = true;
   int argcnt = 0;
 

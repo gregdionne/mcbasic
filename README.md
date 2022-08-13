@@ -70,6 +70,7 @@ Option            | Description
 &#8209;Wduplicate | warn when a duplicate line number is seen.  (default)  [-Wno-duplicate to disable].
 &#8209;Wunreached | warn when statements cannot be reached.  (default)  [-Wno-unreached to disable].
 &#8209;Wuninit    | warn when a variable is used but never initialized anywhere.  (default)  [-Wno-uninit to disable].
+&#8209;Wunused    | warn when a variable is assigned to an expression with no side-effects but never used.  (default)  [-Wno-unused to disable].
 &#8209;Wbranch    | warn when conditional branches are pruned.  (default)  [-Wno-branch to disable].
 &#8209;g          | generate debug instructions to provide the most recent line number when an error is encountered.
 &#8209;list       | output a BASIC&#179; program listing after optimizations.

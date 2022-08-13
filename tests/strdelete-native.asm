@@ -161,6 +161,19 @@ LINE_70
 	ldx	#STRVAR_C
 	jsr	ld_sx_sr1
 
+LINE_80
+
+	; PRINT C$;D$;"\r";
+
+	ldx	#STRVAR_C
+	jsr	pr_sx
+
+	ldx	#STRVAR_D
+	jsr	pr_sx
+
+	jsr	pr_ss
+	.text	1, "\r"
+
 LLAST
 
 	; END
@@ -486,7 +499,7 @@ ld_sx_sr1			; numCalls = 5
 	std	1+argv
 	jmp	strprm
 
-pr_ss			; numCalls = 2
+pr_ss			; numCalls = 3
 	.module	modpr_ss
 	pulx
 	ldab	,x
@@ -497,7 +510,7 @@ pr_ss			; numCalls = 2
 _null
 	jmp	1,x
 
-pr_sx			; numCalls = 2
+pr_sx			; numCalls = 4
 	.module	modpr_sx
 	ldab	0,x
 	beq	_rts

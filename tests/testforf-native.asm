@@ -136,6 +136,18 @@ LINE_40
 
 	jsr	next
 
+LINE_50
+
+	; PRINT STR$(X);" \r";
+
+	ldx	#FLTVAR_X
+	jsr	str_sr1_fx
+
+	jsr	pr_sr1
+
+	jsr	pr_ss
+	.text	2, " \r"
+
 LLAST
 
 	; END
@@ -1301,7 +1313,7 @@ _fopp
 	ldx	3,x
 	jmp	,x
 
-pr_sr1			; numCalls = 1
+pr_sr1			; numCalls = 2
 	.module	modpr_sr1
 	ldab	r1
 	beq	_rts
@@ -1312,7 +1324,7 @@ pr_sr1			; numCalls = 1
 _rts
 	rts
 
-pr_ss			; numCalls = 1
+pr_ss			; numCalls = 2
 	.module	modpr_ss
 	pulx
 	ldab	,x
@@ -1380,7 +1392,7 @@ sq_fr1_fx			; numCalls = 1
 	ldx	#r1
 	jmp	tmp2xf
 
-str_sr1_fx			; numCalls = 1
+str_sr1_fx			; numCalls = 2
 	.module	modstr_sr1_fx
 	ldd	1,x
 	std	tmp2

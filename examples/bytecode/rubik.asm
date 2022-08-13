@@ -7991,11 +7991,6 @@ LINE_5130
 	.byte	bytecode_one_ix
 	.byte	bytecode_INTVAR_B1
 
-	; J4=0
-
-	.byte	bytecode_clr_ix
-	.byte	bytecode_INTVAR_J4
-
 	; GOSUB 530
 
 	.byte	bytecode_gosub_ix
@@ -14818,7 +14813,7 @@ clr_ip			; numCalls = 2
 	std	1,x
 	rts
 
-clr_ix			; numCalls = 32
+clr_ix			; numCalls = 31
 	.module	modclr_ix
 	jsr	extend
 	ldd	#0
@@ -16654,33 +16649,32 @@ bytecode_INTVAR_J	.equ	14
 bytecode_INTVAR_J1	.equ	15
 bytecode_INTVAR_J2	.equ	16
 bytecode_INTVAR_J3	.equ	17
-bytecode_INTVAR_J4	.equ	18
-bytecode_INTVAR_L	.equ	19
-bytecode_INTVAR_M	.equ	20
-bytecode_INTVAR_M4	.equ	21
-bytecode_INTVAR_M5	.equ	22
-bytecode_INTVAR_NA	.equ	23
-bytecode_INTVAR_Q	.equ	24
-bytecode_INTVAR_QA	.equ	25
-bytecode_INTVAR_Y	.equ	26
-bytecode_INTVAR_Z	.equ	27
-bytecode_FLTVAR_K	.equ	28
-bytecode_FLTVAR_M1	.equ	29
-bytecode_FLTVAR_M2	.equ	30
-bytecode_FLTVAR_M3	.equ	31
-bytecode_FLTVAR_X	.equ	32
-bytecode_STRVAR_A	.equ	33
-bytecode_STRVAR_B	.equ	34
-bytecode_STRVAR_CC	.equ	35
-bytecode_INTARR_BL	.equ	36
-bytecode_INTARR_C1	.equ	37
-bytecode_INTARR_M	.equ	38
-bytecode_INTARR_Q1	.equ	39
-bytecode_INTARR_Q3	.equ	40
-bytecode_INTARR_QQ	.equ	41
-bytecode_STRARR_A	.equ	42
-bytecode_STRARR_A1	.equ	43
-bytecode_STRARR_A2	.equ	44
+bytecode_INTVAR_L	.equ	18
+bytecode_INTVAR_M	.equ	19
+bytecode_INTVAR_M4	.equ	20
+bytecode_INTVAR_M5	.equ	21
+bytecode_INTVAR_NA	.equ	22
+bytecode_INTVAR_Q	.equ	23
+bytecode_INTVAR_QA	.equ	24
+bytecode_INTVAR_Y	.equ	25
+bytecode_INTVAR_Z	.equ	26
+bytecode_FLTVAR_K	.equ	27
+bytecode_FLTVAR_M1	.equ	28
+bytecode_FLTVAR_M2	.equ	29
+bytecode_FLTVAR_M3	.equ	30
+bytecode_FLTVAR_X	.equ	31
+bytecode_STRVAR_A	.equ	32
+bytecode_STRVAR_B	.equ	33
+bytecode_STRVAR_CC	.equ	34
+bytecode_INTARR_BL	.equ	35
+bytecode_INTARR_C1	.equ	36
+bytecode_INTARR_M	.equ	37
+bytecode_INTARR_Q1	.equ	38
+bytecode_INTARR_Q3	.equ	39
+bytecode_INTARR_QQ	.equ	40
+bytecode_STRARR_A	.equ	41
+bytecode_STRARR_A1	.equ	42
+bytecode_STRARR_A2	.equ	43
 
 symtbl
 
@@ -16702,7 +16696,6 @@ symtbl
 	.word	INTVAR_J1
 	.word	INTVAR_J2
 	.word	INTVAR_J3
-	.word	INTVAR_J4
 	.word	INTVAR_L
 	.word	INTVAR_M
 	.word	INTVAR_M4
@@ -16753,7 +16746,6 @@ INTVAR_J	.block	3
 INTVAR_J1	.block	3
 INTVAR_J2	.block	3
 INTVAR_J3	.block	3
-INTVAR_J4	.block	3
 INTVAR_L	.block	3
 INTVAR_M	.block	3
 INTVAR_M4	.block	3

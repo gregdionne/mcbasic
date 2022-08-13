@@ -102,62 +102,7 @@ LINE_0
 
 	.byte	bytecode_cls
 
-	; DIM W(383),S(7),T(7),E(6),F(6),X(6),Y(6),C(7),T,C,P,X,Y,L,P,Z,M,I$
-
-	.byte	bytecode_ld_ir1_pw
-	.word	383
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_W
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	7
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_S
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	7
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_T
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	6
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_E
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	6
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_F
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	6
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_X
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	6
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_Y
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	7
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_C
-
-LINE_10
-
-	; P=1
-
-	.byte	bytecode_one_ix
-	.byte	bytecode_INTVAR_P
+	; DIM T,X,Y
 
 LINE_20
 
@@ -458,48 +403,44 @@ LLAST
 bytecode_abs_ir1_ir1	.equ	0
 bytecode_add_fr1_fr1_fr2	.equ	1
 bytecode_add_ir1_ir1_nb	.equ	2
-bytecode_arrdim1_ir1_ix	.equ	3
-bytecode_clear	.equ	4
-bytecode_cls	.equ	5
-bytecode_dbl_fr1_fr1	.equ	6
-bytecode_dbl_fr2_fr2	.equ	7
-bytecode_forclr_fx	.equ	8
-bytecode_inkey_sr1	.equ	9
-bytecode_irnd_ir1_pb	.equ	10
-bytecode_jmpne_ir1_ix	.equ	11
-bytecode_ld_fr1_fx	.equ	12
-bytecode_ld_fr2_fx	.equ	13
-bytecode_ld_fx_fr1	.equ	14
-bytecode_ld_ir1_pb	.equ	15
-bytecode_ld_ir1_pw	.equ	16
-bytecode_ld_ix_ir1	.equ	17
-bytecode_ld_ix_pb	.equ	18
-bytecode_ldeq_ir1_sr1_ss	.equ	19
-bytecode_mul_fr1_fr1_fx	.equ	20
-bytecode_mul_fr1_fr1_ix	.equ	21
-bytecode_mul_fr2_fr2_fx	.equ	22
-bytecode_mul_fr2_fr2_ix	.equ	23
-bytecode_next	.equ	24
-bytecode_one_ix	.equ	25
-bytecode_pr_sr1	.equ	26
-bytecode_pr_ss	.equ	27
-bytecode_progbegin	.equ	28
-bytecode_progend	.equ	29
-bytecode_sq_fr1_fr1	.equ	30
-bytecode_sq_fr1_fx	.equ	31
-bytecode_sq_fr2_fx	.equ	32
-bytecode_step_fp_fr1	.equ	33
-bytecode_str_sr1_fx	.equ	34
-bytecode_sub_fr1_pb_fx	.equ	35
-bytecode_sub_fr2_pb_fx	.equ	36
-bytecode_sub_ir1_ix_id	.equ	37
-bytecode_to_fp_pb	.equ	38
+bytecode_clear	.equ	3
+bytecode_cls	.equ	4
+bytecode_dbl_fr1_fr1	.equ	5
+bytecode_dbl_fr2_fr2	.equ	6
+bytecode_forclr_fx	.equ	7
+bytecode_inkey_sr1	.equ	8
+bytecode_irnd_ir1_pb	.equ	9
+bytecode_jmpne_ir1_ix	.equ	10
+bytecode_ld_fr1_fx	.equ	11
+bytecode_ld_fr2_fx	.equ	12
+bytecode_ld_fx_fr1	.equ	13
+bytecode_ld_ix_ir1	.equ	14
+bytecode_ld_ix_pb	.equ	15
+bytecode_ldeq_ir1_sr1_ss	.equ	16
+bytecode_mul_fr1_fr1_fx	.equ	17
+bytecode_mul_fr1_fr1_ix	.equ	18
+bytecode_mul_fr2_fr2_fx	.equ	19
+bytecode_mul_fr2_fr2_ix	.equ	20
+bytecode_next	.equ	21
+bytecode_one_ix	.equ	22
+bytecode_pr_sr1	.equ	23
+bytecode_pr_ss	.equ	24
+bytecode_progbegin	.equ	25
+bytecode_progend	.equ	26
+bytecode_sq_fr1_fr1	.equ	27
+bytecode_sq_fr1_fx	.equ	28
+bytecode_sq_fr2_fx	.equ	29
+bytecode_step_fp_fr1	.equ	30
+bytecode_str_sr1_fx	.equ	31
+bytecode_sub_fr1_pb_fx	.equ	32
+bytecode_sub_fr2_pb_fx	.equ	33
+bytecode_sub_ir1_ix_id	.equ	34
+bytecode_to_fp_pb	.equ	35
 
 catalog
 	.word	abs_ir1_ir1
 	.word	add_fr1_fr1_fr2
 	.word	add_ir1_ir1_nb
-	.word	arrdim1_ir1_ix
 	.word	clear
 	.word	cls
 	.word	dbl_fr1_fr1
@@ -511,8 +452,6 @@ catalog
 	.word	ld_fr1_fx
 	.word	ld_fr2_fx
 	.word	ld_fx_fr1
-	.word	ld_ir1_pb
-	.word	ld_ir1_pw
 	.word	ld_ix_ir1
 	.word	ld_ix_pb
 	.word	ldeq_ir1_sr1_ss
@@ -535,63 +474,6 @@ catalog
 	.word	sub_fr2_pb_fx
 	.word	sub_ir1_ix_id
 	.word	to_fp_pb
-
-	.module	mdalloc
-; alloc D bytes in array memory.
-; then relink strings.
-alloc
-	std	tmp1
-	ldx	strfree
-	addd	strfree
-	std	strfree
-	ldd	strend
-	addd	tmp1
-	std	strend
-	sts	tmp2
-	subd	tmp2
-	blo	_ok
-	ldab	#OM_ERROR
-	jmp	error
-_ok
-	lds	strfree
-	des
-_again
-	dex
-	dex
-	ldd	,x
-	pshb
-	psha
-	cpx	strbuf
-	bhi	_again
-	lds	tmp2
-	ldx	strbuf
-	ldd	strbuf
-	addd	tmp1
-	std	strbuf
-	clra
-_nxtz
-	staa	,x
-	inx
-	cpx	strbuf
-	blo	_nxtz
-	ldx	strbuf
-; relink permanent strings
-; ENTRY:  X points to offending link word in strbuf
-; EXIT:   X points to strend
-strlink
-	cpx	strend
-	bhs	_rts
-	stx	tmp1
-	ldd	tmp1
-	addd	#2
-	ldx	,x
-	std	1,x
-	ldab	0,x
-	ldx	1,x
-	abx
-	bra	strlink
-_rts
-	rts
 
 	.module	mdbcode
 noargs
@@ -1655,23 +1537,6 @@ add_ir1_ir1_nb			; numCalls = 1
 	stab	r1
 	rts
 
-arrdim1_ir1_ix			; numCalls = 8
-	.module	modarrdim1_ir1_ix
-	jsr	extend
-	ldd	,x
-	beq	_ok
-	ldab	#DD_ERROR
-	jmp	error
-_ok
-	ldd	strbuf
-	std	,x
-	ldd	r1+1
-	addd	#1
-	std	2,x
-	lsld
-	addd	2,x
-	jmp	alloc
-
 clear			; numCalls = 1
 	.module	modclear
 	jsr	noargs
@@ -1803,22 +1668,6 @@ ld_fx_fr1			; numCalls = 7
 	std	1,x
 	ldab	r1
 	stab	0,x
-	rts
-
-ld_ir1_pb			; numCalls = 7
-	.module	modld_ir1_pb
-	jsr	getbyte
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
-ld_ir1_pw			; numCalls = 1
-	.module	modld_ir1_pw
-	jsr	getword
-	std	r1+1
-	ldab	#0
-	stab	r1
 	rts
 
 ld_ix_ir1			; numCalls = 2
@@ -1993,7 +1842,7 @@ _fopp
 	stx	nxtinst
 	jmp	mainloop
 
-one_ix			; numCalls = 2
+one_ix			; numCalls = 1
 	.module	modone_ix
 	jsr	extend
 	ldd	#1
@@ -2197,49 +2046,30 @@ enddata
 
 bytecode_FLT_0p00999	.equ	0
 
-bytecode_INTVAR_C	.equ	1
-bytecode_INTVAR_EP	.equ	2
-bytecode_INTVAR_FP	.equ	3
-bytecode_INTVAR_L	.equ	4
-bytecode_INTVAR_M	.equ	5
-bytecode_INTVAR_P	.equ	6
-bytecode_INTVAR_SP	.equ	7
-bytecode_INTVAR_TP	.equ	8
-bytecode_INTVAR_XP	.equ	9
-bytecode_INTVAR_YP	.equ	10
-bytecode_INTVAR_Z	.equ	11
-bytecode_FLTVAR_T	.equ	12
-bytecode_FLTVAR_T1	.equ	13
-bytecode_FLTVAR_T2	.equ	14
-bytecode_FLTVAR_T3	.equ	15
-bytecode_FLTVAR_U	.equ	16
-bytecode_FLTVAR_V	.equ	17
-bytecode_FLTVAR_X	.equ	18
-bytecode_FLTVAR_Y	.equ	19
-bytecode_STRVAR_I	.equ	20
-bytecode_INTARR_C	.equ	21
-bytecode_INTARR_E	.equ	22
-bytecode_INTARR_F	.equ	23
-bytecode_INTARR_S	.equ	24
-bytecode_INTARR_T	.equ	25
-bytecode_INTARR_W	.equ	26
-bytecode_INTARR_X	.equ	27
-bytecode_INTARR_Y	.equ	28
+bytecode_INTVAR_EP	.equ	1
+bytecode_INTVAR_FP	.equ	2
+bytecode_INTVAR_SP	.equ	3
+bytecode_INTVAR_TP	.equ	4
+bytecode_INTVAR_XP	.equ	5
+bytecode_INTVAR_YP	.equ	6
+bytecode_FLTVAR_T	.equ	7
+bytecode_FLTVAR_T1	.equ	8
+bytecode_FLTVAR_T2	.equ	9
+bytecode_FLTVAR_T3	.equ	10
+bytecode_FLTVAR_U	.equ	11
+bytecode_FLTVAR_V	.equ	12
+bytecode_FLTVAR_X	.equ	13
+bytecode_FLTVAR_Y	.equ	14
 
 symtbl
 	.word	FLT_0p00999
 
-	.word	INTVAR_C
 	.word	INTVAR_EP
 	.word	INTVAR_FP
-	.word	INTVAR_L
-	.word	INTVAR_M
-	.word	INTVAR_P
 	.word	INTVAR_SP
 	.word	INTVAR_TP
 	.word	INTVAR_XP
 	.word	INTVAR_YP
-	.word	INTVAR_Z
 	.word	FLTVAR_T
 	.word	FLTVAR_T1
 	.word	FLTVAR_T2
@@ -2248,15 +2078,6 @@ symtbl
 	.word	FLTVAR_V
 	.word	FLTVAR_X
 	.word	FLTVAR_Y
-	.word	STRVAR_I
-	.word	INTARR_C
-	.word	INTARR_E
-	.word	INTARR_F
-	.word	INTARR_S
-	.word	INTARR_T
-	.word	INTARR_W
-	.word	INTARR_X
-	.word	INTARR_Y
 
 
 ; fixed-point constants
@@ -2266,17 +2087,12 @@ FLT_0p00999	.byte	$00, $00, $00, $02, $8f
 bss
 
 ; Numeric Variables
-INTVAR_C	.block	3
 INTVAR_EP	.block	3
 INTVAR_FP	.block	3
-INTVAR_L	.block	3
-INTVAR_M	.block	3
-INTVAR_P	.block	3
 INTVAR_SP	.block	3
 INTVAR_TP	.block	3
 INTVAR_XP	.block	3
 INTVAR_YP	.block	3
-INTVAR_Z	.block	3
 FLTVAR_T	.block	5
 FLTVAR_T1	.block	5
 FLTVAR_T2	.block	5
@@ -2286,16 +2102,7 @@ FLTVAR_V	.block	5
 FLTVAR_X	.block	5
 FLTVAR_Y	.block	5
 ; String Variables
-STRVAR_I	.block	3
 ; Numeric Arrays
-INTARR_C	.block	4	; dims=1
-INTARR_E	.block	4	; dims=1
-INTARR_F	.block	4	; dims=1
-INTARR_S	.block	4	; dims=1
-INTARR_T	.block	4	; dims=1
-INTARR_W	.block	4	; dims=1
-INTARR_X	.block	4	; dims=1
-INTARR_Y	.block	4	; dims=1
 ; String Arrays
 
 ; block ended by symbol

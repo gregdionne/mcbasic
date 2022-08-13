@@ -86,62 +86,7 @@ LINE_0
 
 	jsr	cls
 
-	; DIM W(383),S(7),T(7),E(6),F(6),X(6),Y(6),C(7),T,C,P,X,Y,L,P,Z,M,I$
-
-	ldd	#383
-	jsr	ld_ir1_pw
-
-	ldx	#INTARR_W
-	jsr	arrdim1_ir1_ix
-
-	ldab	#7
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_S
-	jsr	arrdim1_ir1_ix
-
-	ldab	#7
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_T
-	jsr	arrdim1_ir1_ix
-
-	ldab	#6
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_E
-	jsr	arrdim1_ir1_ix
-
-	ldab	#6
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_F
-	jsr	arrdim1_ir1_ix
-
-	ldab	#6
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_X
-	jsr	arrdim1_ir1_ix
-
-	ldab	#6
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_Y
-	jsr	arrdim1_ir1_ix
-
-	ldab	#7
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_C
-	jsr	arrdim1_ir1_ix
-
-LINE_10
-
-	; P=1
-
-	ldx	#INTVAR_P
-	jsr	one_ix
+	; DIM T,X,Y
 
 LINE_20
 
@@ -437,63 +382,6 @@ LLAST
 	; END
 
 	jsr	progend
-
-	.module	mdalloc
-; alloc D bytes in array memory.
-; then relink strings.
-alloc
-	std	tmp1
-	ldx	strfree
-	addd	strfree
-	std	strfree
-	ldd	strend
-	addd	tmp1
-	std	strend
-	sts	tmp2
-	subd	tmp2
-	blo	_ok
-	ldab	#OM_ERROR
-	jmp	error
-_ok
-	lds	strfree
-	des
-_again
-	dex
-	dex
-	ldd	,x
-	pshb
-	psha
-	cpx	strbuf
-	bhi	_again
-	lds	tmp2
-	ldx	strbuf
-	ldd	strbuf
-	addd	tmp1
-	std	strbuf
-	clra
-_nxtz
-	staa	,x
-	inx
-	cpx	strbuf
-	blo	_nxtz
-	ldx	strbuf
-; relink permanent strings
-; ENTRY:  X points to offending link word in strbuf
-; EXIT:   X points to strend
-strlink
-	cpx	strend
-	bhs	_rts
-	stx	tmp1
-	ldd	tmp1
-	addd	#2
-	ldx	,x
-	std	1,x
-	ldab	0,x
-	ldx	1,x
-	abx
-	bra	strlink
-_rts
-	rts
 
 	.module	mddivflt
 ; divide X by Y
@@ -1429,22 +1317,6 @@ add_ir1_ir1_nb			; numCalls = 1
 	stab	r1
 	rts
 
-arrdim1_ir1_ix			; numCalls = 8
-	.module	modarrdim1_ir1_ix
-	ldd	,x
-	beq	_ok
-	ldab	#DD_ERROR
-	jmp	error
-_ok
-	ldd	strbuf
-	std	,x
-	ldd	r1+1
-	addd	#1
-	std	2,x
-	lsld
-	addd	2,x
-	jmp	alloc
-
 clear			; numCalls = 1
 	.module	modclear
 	clra
@@ -1566,20 +1438,6 @@ ld_fx_fr1			; numCalls = 7
 	std	1,x
 	ldab	r1
 	stab	0,x
-	rts
-
-ld_ir1_pb			; numCalls = 7
-	.module	modld_ir1_pb
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
-ld_ir1_pw			; numCalls = 1
-	.module	modld_ir1_pw
-	std	r1+1
-	ldab	#0
-	stab	r1
 	rts
 
 ld_ix_ir1			; numCalls = 2
@@ -1745,7 +1603,7 @@ _fopp
 	ldx	3,x
 	jmp	,x
 
-one_ix			; numCalls = 2
+one_ix			; numCalls = 1
 	.module	modone_ix
 	ldd	#1
 	staa	0,x
@@ -1936,17 +1794,12 @@ FLT_0p00999	.byte	$00, $00, $00, $02, $8f
 bss
 
 ; Numeric Variables
-INTVAR_C	.block	3
 INTVAR_EP	.block	3
 INTVAR_FP	.block	3
-INTVAR_L	.block	3
-INTVAR_M	.block	3
-INTVAR_P	.block	3
 INTVAR_SP	.block	3
 INTVAR_TP	.block	3
 INTVAR_XP	.block	3
 INTVAR_YP	.block	3
-INTVAR_Z	.block	3
 FLTVAR_T	.block	5
 FLTVAR_T1	.block	5
 FLTVAR_T2	.block	5
@@ -1956,16 +1809,7 @@ FLTVAR_V	.block	5
 FLTVAR_X	.block	5
 FLTVAR_Y	.block	5
 ; String Variables
-STRVAR_I	.block	3
 ; Numeric Arrays
-INTARR_C	.block	4	; dims=1
-INTARR_E	.block	4	; dims=1
-INTARR_F	.block	4	; dims=1
-INTARR_S	.block	4	; dims=1
-INTARR_T	.block	4	; dims=1
-INTARR_W	.block	4	; dims=1
-INTARR_X	.block	4	; dims=1
-INTARR_Y	.block	4	; dims=1
 ; String Arrays
 
 ; block ended by symbol

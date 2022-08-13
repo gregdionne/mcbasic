@@ -1318,34 +1318,6 @@ LINE_3010
 	ldx	#FLTVAR_C1
 	jsr	ld_fx_fr1
 
-	; D1=(24/(I-0.5))+25
-
-	ldab	#24
-	jsr	ld_ir1_pb
-
-	ldx	#FLTVAR_I
-	jsr	ld_fr2_fx
-
-	ldx	#FLT_0p50000
-	jsr	sub_fr2_fr2_fx
-
-	jsr	div_fr1_ir1_fr2
-
-	ldab	#25
-	jsr	add_fr1_fr1_pb
-
-	ldx	#FLTVAR_D1
-	jsr	ld_fx_fr1
-
-	; D2=60-D1
-
-	ldab	#60
-	ldx	#FLTVAR_D1
-	jsr	sub_fr1_pb_fx
-
-	ldx	#FLTVAR_D2
-	jsr	ld_fx_fr1
-
 	; C3=127-C1
 
 	ldab	#127
@@ -1354,20 +1326,6 @@ LINE_3010
 
 	ldx	#FLTVAR_C3
 	jsr	ld_fx_fr1
-
-LINE_3011
-
-	; D3=D1
-
-	ldd	#FLTVAR_D3
-	ldx	#FLTVAR_D1
-	jsr	ld_fd_fx
-
-	; D4=D2
-
-	ldd	#FLTVAR_D4
-	ldx	#FLTVAR_D2
-	jsr	ld_fd_fx
 
 LINE_3015
 
@@ -4168,7 +4126,7 @@ add_fr1_fr1_fx			; numCalls = 1
 	stab	r1
 	rts
 
-add_fr1_fr1_pb			; numCalls = 4
+add_fr1_fr1_pb			; numCalls = 3
 	.module	modadd_fr1_fr1_pb
 	clra
 	addd	r1+1
@@ -4399,7 +4357,7 @@ dec_ix_ix			; numCalls = 1
 	stab	0,x
 	rts
 
-div_fr1_ir1_fr2			; numCalls = 2
+div_fr1_ir1_fr2			; numCalls = 1
 	.module	moddiv_fr1_ir1_fr2
 	ldab	r2
 	stab	0+argv
@@ -4637,7 +4595,7 @@ _go
 	ins
 	jmp	,x
 
-ld_fd_fx			; numCalls = 10
+ld_fd_fx			; numCalls = 8
 	.module	modld_fd_fx
 	std	tmp1
 	ldab	0,x
@@ -4663,7 +4621,7 @@ ld_fr1_fx			; numCalls = 18
 	stab	r1
 	rts
 
-ld_fr2_fx			; numCalls = 10
+ld_fr2_fx			; numCalls = 9
 	.module	modld_fr2_fx
 	ldd	3,x
 	std	r2+3
@@ -4673,7 +4631,7 @@ ld_fr2_fx			; numCalls = 10
 	stab	r2
 	rts
 
-ld_fx_fr1			; numCalls = 8
+ld_fx_fr1			; numCalls = 6
 	.module	modld_fx_fr1
 	ldd	r1+3
 	std	3,x
@@ -4720,7 +4678,7 @@ ld_ir1_nb			; numCalls = 3
 	std	r1
 	rts
 
-ld_ir1_pb			; numCalls = 38
+ld_ir1_pb			; numCalls = 37
 	.module	modld_ir1_pb
 	stab	r1+2
 	ldd	#0
@@ -5490,7 +5448,7 @@ sub_fr1_ir1_fx			; numCalls = 2
 	stab	r1
 	rts
 
-sub_fr1_pb_fx			; numCalls = 4
+sub_fr1_pb_fx			; numCalls = 3
 	.module	modsub_fr1_pb_fx
 	stab	tmp1
 	ldd	#0
@@ -5505,7 +5463,7 @@ sub_fr1_pb_fx			; numCalls = 4
 	std	r1
 	rts
 
-sub_fr2_fr2_fx			; numCalls = 2
+sub_fr2_fr2_fx			; numCalls = 1
 	.module	modsub_fr2_fr2_fx
 	ldd	r2+3
 	subd	3,x
@@ -5651,10 +5609,6 @@ FLTVAR_BA	.block	5
 FLTVAR_BB	.block	5
 FLTVAR_C1	.block	5
 FLTVAR_C3	.block	5
-FLTVAR_D1	.block	5
-FLTVAR_D2	.block	5
-FLTVAR_D3	.block	5
-FLTVAR_D4	.block	5
 FLTVAR_I	.block	5
 FLTVAR_K	.block	5
 FLTVAR_O	.block	5

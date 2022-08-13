@@ -91,7 +91,7 @@ LINE_0
 
 	jsr	clear
 
-	; DIM X(256),Y(256),L(256),E,J,I,W,X,Y,S,M,U,K,L,B,C,T,Q,H,R,H$,WI,LV,OF,KH,PA(16),R
+	; DIM X(256),Y(256),L(256),E,J,I,W,X,Y,S,M,U,K,L,B,C,T,H,R,H$,WI,LV,OF,KH,PA(16),R
 
 	ldd	#256
 	jsr	ld_ir1_pw
@@ -696,12 +696,6 @@ LINE_1000
 	ldx	#INTVAR_E
 	jsr	true_ix
 
-	; SS=7
-
-	ldx	#INTVAR_SS
-	ldab	#7
-	jsr	ld_ix_pb
-
 	; S=1
 
 	ldx	#INTVAR_S
@@ -763,11 +757,6 @@ LINE_1000
 	; T=0
 
 	ldx	#INTVAR_T
-	jsr	clr_ix
-
-	; Q=0
-
-	ldx	#INTVAR_Q
 	jsr	clr_ix
 
 	; KH=0
@@ -3458,7 +3447,7 @@ clr_ip			; numCalls = 5
 	std	1,x
 	rts
 
-clr_ix			; numCalls = 18
+clr_ix			; numCalls = 17
 	.module	modclr_ix
 	ldd	#0
 	stab	0,x
@@ -3784,7 +3773,7 @@ ld_ix_ir1			; numCalls = 15
 	stab	0,x
 	rts
 
-ld_ix_pb			; numCalls = 2
+ld_ix_pb			; numCalls = 1
 	.module	modld_ix_pb
 	stab	2,x
 	ldd	#0
@@ -4661,9 +4650,7 @@ INTVAR_M	.block	3
 INTVAR_MB	.block	3
 INTVAR_ML	.block	3
 INTVAR_OF	.block	3
-INTVAR_Q	.block	3
 INTVAR_S	.block	3
-INTVAR_SS	.block	3
 INTVAR_T	.block	3
 INTVAR_U	.block	3
 INTVAR_W	.block	3

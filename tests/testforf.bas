@@ -2,4 +2,4 @@
 20 X=T*T+T
 30 A$="FRED"
 40 FORT=1TOLEN(A$):?T:NEXT
-
+50 ?X

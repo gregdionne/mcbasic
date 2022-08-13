@@ -1,6 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "reachchecker.hpp"
+#include "ast/lister.hpp"
 #include "isexecutable.hpp"
 #include "isterminal.hpp"
 
@@ -11,7 +12,7 @@ void ReachChecker::operate(Program &p) {
 }
 
 void ReachChecker::operate(Line &l) {
-  StatementReachChecker src(l.lineNumber);
+  StatementReachChecker src(announcer, l.lineNumber);
   src.validate(l.statements);
 }
 
@@ -29,14 +30,16 @@ void StatementReachChecker::validate(
 
   for (const auto &statement : statements) {
     if (statement->check(&isExecutable) && !terminator.empty()) {
-      fprintf(stderr, "warning: %s statement not reached after %s at line %i\n",
-              statement->statementName().c_str(), terminator.c_str(),
-              lineNumber);
+      announcer.start(lineNumber);
+      announcer.say("%s statement not reached after %s\n",
+                    statement->statementName().c_str(), terminator.c_str());
       break;
     }
 
     if (statement->check(&isTerminal)) {
-      terminator = statement->statementName();
+      StatementLister sl;
+      statement->soak(&sl);
+      terminator = sl.result;
     }
   }
 }

@@ -40,11 +40,21 @@ void SymbolPruner::operate(Program &p) {
 }
 
 void SymbolPruner::operate(Line &l) {
-  StatementSymbolPruner ss(symbolTable, l.lineNumber, warn);
+  StatementSymbolPruner ss(symbolTable, l.lineNumber, announcer);
   for (auto &statement : l.statements) {
     statement->mutate(&ss);
   }
 }
+
+void ExprSymbolPruner::mutate(PrintCRExpr & /*expr*/) {}
+
+void ExprSymbolPruner::mutate(PrintSpaceExpr & /*expr*/) {}
+
+void ExprSymbolPruner::mutate(PrintCommaExpr & /*expr*/) {}
+
+void ExprSymbolPruner::mutate(NumericConstantExpr & /*expr*/) {}
+
+void ExprSymbolPruner::mutate(StringConstantExpr & /*expr*/) {}
 
 void ExprSymbolPruner::mutate(NumericVariableExpr &e) {
   for (auto &symbol : symbolTable.numVarTable) {
@@ -55,12 +65,10 @@ void ExprSymbolPruner::mutate(NumericVariableExpr &e) {
 
   missing = true;
 
-  if (warn) {
-    fprintf(stderr,
-            "Wuninit: line %i: \"%s\" not found in variable table.  Is it ever "
-            "initialized?\n",
-            lineNumber, e.varname.c_str());
-  }
+  announcer.start(lineNumber);
+  announcer.finish("\"%s\" not found in variable table.  Is it ever "
+                   "initialized?",
+                   e.varname.c_str());
 }
 
 void ExprSymbolPruner::mutate(StringVariableExpr &e) {
@@ -72,13 +80,10 @@ void ExprSymbolPruner::mutate(StringVariableExpr &e) {
 
   missing = true;
 
-  if (warn) {
-    fprintf(
-        stderr,
-        "Wuninit: line %i: \"%s$\" not found in variable table.  Is it ever "
-        "initialized?\n",
-        lineNumber, e.varname.c_str());
-  }
+  announcer.start(lineNumber);
+  announcer.finish("\"%s$\" not found in variable table.  Is it ever "
+                   "initialized?",
+                   e.varname.c_str());
 }
 
 void ExprSymbolPruner::mutate(PowerExpr &e) {
@@ -104,6 +109,18 @@ void ExprSymbolPruner::mutate(NaryNumericExpr &e) {
     }
   }
 }
+
+void ExprSymbolPruner::mutate(AdditiveExpr &e) {
+  e.NaryNumericExpr::mutate(this);
+}
+
+void ExprSymbolPruner::mutate(MultiplicativeExpr &e) {
+  e.NaryNumericExpr::mutate(this);
+}
+
+void ExprSymbolPruner::mutate(AndExpr &e) { e.NaryNumericExpr::mutate(this); }
+
+void ExprSymbolPruner::mutate(OrExpr &e) { e.NaryNumericExpr::mutate(this); }
 
 void ExprSymbolPruner::mutate(StringConcatenationExpr &e) {
   for (auto &operand : e.operands) {
@@ -131,12 +148,10 @@ void ExprSymbolPruner::mutate(NumericArrayExpr &e) {
 
   missing = true;
 
-  if (warn) {
-    fprintf(stderr,
-            "Wuninit: line %i: \"%s()\" not found in array table.  Is it ever "
-            "initialized?\n",
-            lineNumber, e.varexp->varname.c_str());
-  }
+  announcer.start(lineNumber);
+  announcer.finish("\"%s()\" not found in variable table.  Is it ever "
+                   "initialized?",
+                   e.varexp->varname.c_str());
 }
 
 void ExprSymbolPruner::mutate(StringArrayExpr &e) {
@@ -151,12 +166,10 @@ void ExprSymbolPruner::mutate(StringArrayExpr &e) {
 
   missing = true;
 
-  if (warn) {
-    fprintf(stderr,
-            "Wuninit: line %i: \"%s$()\" not found in array table.  Is it ever "
-            "initialized?\n",
-            lineNumber, e.varexp->varname.c_str());
-  }
+  announcer.start(lineNumber);
+  announcer.finish("\"%s$()\" not found in variable table.  Is it ever "
+                   "initialized?",
+                   e.varexp->varname.c_str());
 }
 
 void ExprSymbolPruner::mutate(ShiftExpr &e) {
@@ -185,6 +198,22 @@ void ExprSymbolPruner::mutate(ValExpr &e) { strPrune(e.expr, this); }
 void ExprSymbolPruner::mutate(AscExpr &e) { strPrune(e.expr, this); }
 
 void ExprSymbolPruner::mutate(ChrExpr &e) { numPrune(e.expr, this); }
+
+void ExprSymbolPruner::mutate(CosExpr &e) { numPrune(e.expr, this); }
+void ExprSymbolPruner::mutate(SinExpr &e) { numPrune(e.expr, this); }
+void ExprSymbolPruner::mutate(TanExpr &e) { numPrune(e.expr, this); }
+void ExprSymbolPruner::mutate(ExpExpr &e) { numPrune(e.expr, this); }
+void ExprSymbolPruner::mutate(LogExpr &e) { numPrune(e.expr, this); }
+void ExprSymbolPruner::mutate(SqrExpr &e) { numPrune(e.expr, this); }
+
+void ExprSymbolPruner::mutate(MemExpr & /*e*/) {}
+void ExprSymbolPruner::mutate(PeekWordExpr &e) { numPrune(e.expr, this); }
+
+void ExprSymbolPruner::mutate(PosExpr & /*e*/) {}
+
+void ExprSymbolPruner::mutate(InkeyExpr & /*e*/) {}
+
+void ExprSymbolPruner::mutate(TimerExpr & /*e*/) {}
 
 void ExprSymbolPruner::mutate(RelationalExpr &e) {
   prune(e.lhs, this);
@@ -216,6 +245,8 @@ void ExprSymbolPruner::mutate(PointExpr &e) {
 
 void ExprSymbolPruner::mutate(SquareExpr &e) { numPrune(e.expr, this); }
 
+void StatementSymbolPruner::mutate(Rem & /*s*/) {}
+
 void StatementSymbolPruner::mutate(For &s) {
   // iteration variable cannot be pruned
   numPrune(s.from, that);
@@ -225,7 +256,11 @@ void StatementSymbolPruner::mutate(For &s) {
   }
 }
 
+void StatementSymbolPruner::mutate(Go & /*s*/) {}
+
 void StatementSymbolPruner::mutate(When &s) { numPrune(s.predicate, that); }
+
+void StatementSymbolPruner::mutate(Data & /*s*/) {}
 
 void StatementSymbolPruner::mutate(If &s) {
   numPrune(s.predicate, that);
@@ -251,6 +286,8 @@ void StatementSymbolPruner::mutate(Input &s) {
     prune(variable, that);
   }
 }
+
+void StatementSymbolPruner::mutate(End & /*s*/) {}
 
 void StatementSymbolPruner::mutate(On &s) { numPrune(s.branchIndex, that); }
 
@@ -298,6 +335,14 @@ void StatementSymbolPruner::mutate(Poke &s) {
   numPrune(s.val, that);
 }
 
+void StatementSymbolPruner::mutate(Run & /*s*/) {}
+
+void StatementSymbolPruner::mutate(Restore & /*s*/) {}
+
+void StatementSymbolPruner::mutate(Return & /*s*/) {}
+
+void StatementSymbolPruner::mutate(Stop & /*s*/) {}
+
 void StatementSymbolPruner::mutate(Clear &s) {
   if (s.size) {
     numPrune(s.size, that);
@@ -329,3 +374,5 @@ void StatementSymbolPruner::mutate(Sound &s) {
 }
 
 void StatementSymbolPruner::mutate(Exec &s) { numPrune(s.address, that); }
+
+void StatementSymbolPruner::mutate(Error & /*s*/) {}

@@ -3810,7 +3810,7 @@ LINE_68
 
 LINE_69
 
-	; DIM T,X,Y,M,C,X(4),Y(4),G(31,14),Q,K(255),V,W,U,S,J,I,F,Z,E,K
+	; DIM T,X,Y,M,C,X(4),Y(4),G(31,14),Q,V,U,S,J,I,F,Z,E,K
 
 	ldab	#4
 	jsr	ld_ir1_pb
@@ -3833,12 +3833,6 @@ LINE_69
 	ldx	#INTARR_G
 	jsr	arrdim2_ir1_ix
 
-	ldab	#255
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_K
-	jsr	arrdim1_ir1_ix
-
 	; M=16384
 
 	ldx	#INTVAR_M
@@ -3850,12 +3844,6 @@ LINE_69
 	ldx	#INTVAR_Q
 	ldab	#32
 	jsr	ld_ix_pb
-
-	; W=17023
-
-	ldx	#INTVAR_W
-	ldd	#17023
-	jsr	ld_ix_pw
 
 	; POKE 16925,0
 
@@ -3874,60 +3862,6 @@ LINE_69
 	jsr	poke_pw_ir1
 
 LINE_70
-
-	; K(65)=1
-
-	ldab	#65
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_K
-	jsr	arrref1_ir1_ix
-
-	jsr	one_ip
-
-	; K(83)=4
-
-	ldab	#83
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_K
-	jsr	arrref1_ir1_ix
-
-	ldab	#4
-	jsr	ld_ip_pb
-
-	; K(87)=3
-
-	ldab	#87
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_K
-	jsr	arrref1_ir1_ix
-
-	ldab	#3
-	jsr	ld_ip_pb
-
-	; K(68)=2
-
-	ldab	#68
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_K
-	jsr	arrref1_ir1_ix
-
-	ldab	#2
-	jsr	ld_ip_pb
-
-	; K(32)=5
-
-	ldab	#32
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_K
-	jsr	arrref1_ir1_ix
-
-	ldab	#5
-	jsr	ld_ip_pb
 
 	; T=RND(-TIMER)
 
@@ -6439,7 +6373,7 @@ _ok
 	addd	2,x
 	jmp	alloc
 
-arrdim1_ir1_ix			; numCalls = 2
+arrdim1_ir1_ix			; numCalls = 1
 	.module	modarrdim1_ir1_ix
 	ldd	,x
 	beq	_ok
@@ -6488,7 +6422,7 @@ arrref1_ir1_fx			; numCalls = 19
 	std	letptr
 	rts
 
-arrref1_ir1_ix			; numCalls = 24
+arrref1_ir1_ix			; numCalls = 19
 	.module	modarrref1_ir1_ix
 	ldd	r1+1
 	std	0+argv
@@ -6973,14 +6907,6 @@ ld_id_ix			; numCalls = 11
 	stab	0,x
 	rts
 
-ld_ip_pb			; numCalls = 4
-	.module	modld_ip_pb
-	ldx	letptr
-	stab	2,x
-	ldd	#0
-	std	0,x
-	rts
-
 ld_ir1_ix			; numCalls = 46
 	.module	modld_ir1_ix
 	ldd	1,x
@@ -6989,7 +6915,7 @@ ld_ir1_ix			; numCalls = 46
 	stab	r1
 	rts
 
-ld_ir1_pb			; numCalls = 29
+ld_ir1_pb			; numCalls = 23
 	.module	modld_ir1_pb
 	stab	r1+2
 	ldd	#0
@@ -7034,7 +6960,7 @@ ld_ix_pb			; numCalls = 17
 	std	0,x
 	rts
 
-ld_ix_pw			; numCalls = 2
+ld_ix_pw			; numCalls = 1
 	.module	modld_ix_pw
 	std	1,x
 	ldab	#0
@@ -7412,7 +7338,7 @@ one_fp			; numCalls = 1
 	stab	2,x
 	rts
 
-one_ip			; numCalls = 4
+one_ip			; numCalls = 3
 	.module	modone_ip
 	ldx	letptr
 	ldd	#1
@@ -8349,7 +8275,6 @@ INTVAR_SH	.block	3
 INTVAR_TT	.block	3
 INTVAR_U	.block	3
 INTVAR_V	.block	3
-INTVAR_W	.block	3
 INTVAR_X	.block	3
 INTVAR_Y	.block	3
 INTVAR_Z	.block	3
@@ -8361,7 +8286,6 @@ FLTVAR_Z3	.block	5
 STRVAR_M	.block	3
 ; Numeric Arrays
 INTARR_G	.block	6	; dims=2
-INTARR_K	.block	4	; dims=1
 INTARR_Y	.block	4	; dims=1
 FLTARR_X	.block	4	; dims=1
 ; String Arrays

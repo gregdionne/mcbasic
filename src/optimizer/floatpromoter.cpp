@@ -29,6 +29,31 @@ void StatementFloatPromoter::mutate(If &s) {
 void StatementFloatPromoter::mutate(Let &s) {
   if (s.rhs->check(&isFloat)) {
     fe.setLineNumber(lineNumber);
+    fe.listStatement(&s);
+    s.lhs->mutate(&fe);
+  }
+}
+
+void StatementFloatPromoter::mutate(Accum &s) {
+  if (s.rhs->check(&isFloat)) {
+    fe.setLineNumber(lineNumber);
+    fe.listStatement(&s);
+    s.lhs->mutate(&fe);
+  }
+}
+
+void StatementFloatPromoter::mutate(Decum &s) {
+  if (s.rhs->check(&isFloat)) {
+    fe.setLineNumber(lineNumber);
+    fe.listStatement(&s);
+    s.lhs->mutate(&fe);
+  }
+}
+
+void StatementFloatPromoter::mutate(Necum &s) {
+  if (s.rhs->check(&isFloat)) {
+    fe.setLineNumber(lineNumber);
+    fe.listStatement(&s);
     s.lhs->mutate(&fe);
   }
 }
@@ -37,6 +62,7 @@ void StatementFloatPromoter::mutate(For &s) {
   // we really don't need s.to
   if (s.from->check(&isFloat) || (s.step && s.step->check(&isFloat))) {
     fe.setLineNumber(lineNumber);
+    fe.listStatement(&s);
     s.iter->mutate(&fe);
   }
 }
@@ -45,6 +71,7 @@ void StatementFloatPromoter::mutate(Read &s) {
   if (!dataTable.isPureInteger()) {
     for (auto &variable : s.variables) {
       fe.setLineNumber(lineNumber);
+      fe.listStatement(&s);
       variable->mutate(&fe);
     }
   }
@@ -53,9 +80,12 @@ void StatementFloatPromoter::mutate(Read &s) {
 void StatementFloatPromoter::mutate(Input &s) {
   for (auto &variable : s.variables) {
     fe.setLineNumber(lineNumber);
+    fe.listStatement(&s);
     variable->mutate(&fe);
   }
 }
+
+void ExprFloatPromoter::listStatement(const Statement *s) { s->soak(&ls); }
 
 bool ExprFloatPromoter::makeFloat(std::vector<Symbol> &table,
                                   std::string &symbolName) {
@@ -73,14 +103,15 @@ bool ExprFloatPromoter::makeFloat(std::vector<Symbol> &table,
 void ExprFloatPromoter::mutate(NumericVariableExpr &e) {
   if (makeFloat(symbolTable.numVarTable, e.varname)) {
     announcer.start(lineNumber);
-    announcer.finish("variable \"%s\" promoted to float", e.varname.c_str());
+    announcer.finish("\"%s\" promoted to float in statement \"%s\"",
+                     e.varname.c_str(), ls.result.c_str());
   }
 }
 
 void ExprFloatPromoter::mutate(NumericArrayExpr &e) {
   if (makeFloat(symbolTable.numArrTable, e.varexp->varname)) {
     announcer.start(lineNumber);
-    announcer.finish("%lu-D array \"%s()\" promoted to float",
-                     e.indices->operands.size(), e.varexp->varname.c_str());
+    announcer.finish("\"%s()\" promoted to float in statement \"%s\"",
+                     e.varexp->varname.c_str(), ls.result.c_str());
   }
 }

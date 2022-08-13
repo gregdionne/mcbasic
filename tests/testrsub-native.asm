@@ -109,11 +109,297 @@ LINE_30
 	ldx	#INTVAR_Y
 	jsr	ld_ix_ir1
 
+LINE_50
+
+	; PRINT STR$(X);" ";STR$(Y);" \r";
+
+	ldx	#INTVAR_X
+	jsr	str_sr1_ix
+
+	jsr	pr_sr1
+
+	jsr	pr_ss
+	.text	1, " "
+
+	ldx	#INTVAR_Y
+	jsr	str_sr1_ix
+
+	jsr	pr_sr1
+
+	jsr	pr_ss
+	.text	2, " \r"
+
 LLAST
 
 	; END
 
 	jsr	progend
+
+	.module	mddivflt
+; divide X by Y
+;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
+;                     scratch in  (5,x 6,x 7,x 8,x 9,x)
+;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+;   EXIT   X/Y in (0,x 1,x 2,x 3,x 4,x)
+;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
+divflt
+	ldaa	#8*5
+	bsr	divmod
+	tst	tmp4
+	bmi	_add1
+_com
+	ldd	8,x
+	coma
+	comb
+	std	3,x
+	ldd	6,x
+	coma
+	comb
+	std	1,x
+	ldab	5,x
+	comb
+	stab	0,x
+	rts
+_add1
+	ldd	8,x
+	addd	#1
+	std	3,x
+	ldd	6,x
+	adcb	#0
+	adca	#0
+	std	1,x
+	ldab	5,x
+	adcb	#0
+	stab	0,x
+	rts
+divuflt
+	clr	tmp4
+	ldab	#8*5
+	stab	tmp1
+	bsr	divumod
+	bra	_com
+
+	.module	mddivmod
+; divide/modulo X by Y with remainder
+;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
+;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+;          #shifts in ACCA (24 for modulus, 40 for division
+;   EXIT   for division:
+;            NOT ABS(X)/ABS(Y) in (5,x 6,x 7,x 8,x 9,x)
+;   EXIT   for modulus:
+;            NOT INT(ABS(X)/ABS(Y)) in (7,x 8,x 9,x)
+;            FMOD(X,Y) in (0,x 1,x 2,x 3,x 4,x)
+;          result sign in tmp4.(0 = pos, -1 = neg).
+;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
+divmod
+	staa	tmp1
+	clr	tmp4
+	tst	0,x
+	bpl	_posX
+	com	tmp4
+	jsr	negx
+_posX
+	tst	0+argv
+	bpl	divumod
+	com	tmp4
+	jsr	negargv
+divumod
+	ldd	3,x
+	std	6,x
+	ldd	1,x
+	std	4,x
+	ldab	0,x
+	stab	3,x
+	clra
+	clrb
+	std	8,x
+	std	1,x
+	stab	0,x
+_nxtdiv
+	rol	7,x
+	rol	6,x
+	rol	5,x
+	rol	4,x
+	rol	3,x
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	bcc	_trialsub
+	; force subtraction
+	ldd	3,x
+	subd	3+argv
+	std	3,x
+	ldd	1,x
+	sbcb	2+argv
+	sbca	1+argv
+	std	1,x
+	ldab	0,x
+	sbcb	0+argv
+	stab	0,x
+	clc
+	bra	_shift
+_trialsub
+	ldd	3,x
+	subd	3+argv
+	std	tmp3
+	ldd	1,x
+	sbcb	2+argv
+	sbca	1+argv
+	std	tmp2
+	ldab	0,x
+	sbcb	0+argv
+	stab	tmp1+1
+	blo	_shift
+	ldd	tmp3
+	std	3,x
+	ldd	tmp2
+	std	1,x
+	ldab	tmp1+1
+	stab	0,x
+_shift
+	rol	9,x
+	rol	8,x
+	dec	tmp1
+	bne	_nxtdiv
+	rol	7,x
+	rol	6,x
+	rol	5,x
+	rts
+
+	.module	mdidivb
+; fast integer division by three or five
+; ENTRY+EXIT:  int in tmp1+1,tmp2,tmp2+1
+;         ACCB contains:
+;            $CC for div-5
+;            $AA for div-3
+;         tmp3,tmp3+1,tmp4 used for storage
+idivb
+	stab	tmp4
+	ldab	tmp1+1
+	pshb
+	ldd	tmp2
+	psha
+	ldaa	tmp4
+	mul
+	std	tmp3
+	addd	tmp2
+	std	tmp2
+	ldab	tmp1+1
+	adcb	tmp3+1
+	stab	tmp1+1
+	ldd	tmp1+1
+	addd	tmp3
+	std	tmp1+1
+	pulb
+	ldaa	tmp4
+	mul
+	stab	tmp3+1
+	addd	tmp1+1
+	std	tmp1+1
+	pulb
+	ldaa	tmp4
+	mul
+	addb	tmp1+1
+	addb	tmp3+1
+	stab	tmp1+1
+	rts
+
+	.module	mdimodb
+; fast integer modulo operation by three or five
+; ENTRY:  int in tmp1+1,tmp2,tmp2+1
+;         ACCB contains modulus (3 or 5)
+; EXIT:  result in ACCA
+imodb
+	pshb
+	ldaa	tmp1+1
+	bpl	_ok
+	deca
+_ok
+	adda	tmp2
+	adca	tmp2+1
+	adca	#0
+	adca	#0
+	tab
+	lsra
+	lsra
+	lsra
+	lsra
+	andb	#$0F
+	aba
+	pulb
+_dec
+	sba
+	bhs	_dec
+	aba
+	tst	tmp1+1
+	rts
+
+	.module	mdnegargv
+negargv
+	neg	4+argv
+	bcs	_com3
+	neg	3+argv
+	bcs	_com2
+	neg	2+argv
+	bcs	_com1
+	neg	1+argv
+	bcs	_com0
+	neg	0+argv
+	rts
+_com3
+	com	3+argv
+_com2
+	com	2+argv
+_com1
+	com	1+argv
+_com0
+	com	0+argv
+	rts
+
+	.module	mdnegtmp
+negtmp
+	neg	tmp3+1
+	bcs	_com3
+	neg	tmp3
+	bcs	_com2
+	neg	tmp2+1
+	bcs	_com1
+	neg	tmp2
+	bcs	_com0
+	neg	tmp1+1
+	rts
+_com3
+	com	tmp3
+_com2
+	com	tmp2+1
+_com1
+	com	tmp2
+_com0
+	com	tmp1+1
+	rts
+
+	.module	mdnegx
+negx
+	neg	4,x
+	bcs	_com3
+	neg	3,x
+	bcs	_com2
+negxi
+	neg	2,x
+	bcs	_com1
+	neg	1,x
+	bcs	_com0
+	neg	0,x
+	rts
+_com3
+	com	3,x
+_com2
+	com	2,x
+_com1
+	com	1,x
+_com0
+	com	0,x
+	rts
 
 	.module	mdprint
 print
@@ -124,6 +410,185 @@ _loop
 	decb
 	bne	_loop
 	rts
+
+	.module	mdstrflt
+strflt
+	inc	strtcnt
+	pshx
+	tst	tmp1+1
+	bmi	_neg
+	ldab	#' '
+	bra	_wdigs
+_neg
+	jsr	negtmp
+	ldab	#'-'
+_wdigs
+	ldx	tmp3
+	pshx
+	ldx	strfree
+	stab	,x
+	clr	tmp1
+_nxtwdig
+	inc	tmp1
+	lsr	tmp1+1
+	ror	tmp2
+	ror	tmp2+1
+	ror	tmp3
+	ldab	#5
+	jsr	imodb
+	staa	tmp3+1
+	lsl	tmp3
+	rola
+	adda	#'0'
+	psha
+	ldd	tmp2
+	subb	tmp3+1
+	sbca	#0
+	std	tmp2
+	ldab	tmp1+1
+	sbcb	#0
+	stab	tmp1+1
+	ldab	#$CC
+	jsr	idivb
+	bne	_nxtwdig
+	ldd	tmp2
+	bne	_nxtwdig
+	ldab	tmp1
+_nxtc
+	pula
+	inx
+	staa	,x
+	decb
+	bne	_nxtc
+	inx
+	inc	tmp1
+	pula
+	pulb
+	subd	#0
+	bne	_fdo
+	jmp	_fdone
+_fdo
+	std	tmp2
+	ldab	#'.'
+	stab	,x
+	inc	tmp1
+	inx
+	ldd	#6
+	staa	tmp1+1
+	stab	tmp3
+_nxtf
+	ldd	tmp2
+	lsl	tmp2+1
+	rol	tmp2
+	rol	tmp1+1
+	lsl	tmp2+1
+	rol	tmp2
+	rol	tmp1+1
+	addd	tmp2
+	std	tmp2
+	ldab	tmp1+1
+	adcb	#0
+	stab	tmp1+1
+	lsl	tmp2+1
+	rol	tmp2
+	rol	tmp1+1
+	ldd	tmp1
+	addb	#'0'
+	stab	,x
+	inx
+	inc	tmp1
+	clrb
+	stab	tmp1+1
+	dec	tmp3
+	bne	_nxtf
+	tst	tmp2
+	bmi	_nxtrnd
+_nxtzero
+	dex
+	dec	tmp1
+	ldaa	,x
+	cmpa	#'0'
+	beq	_nxtzero
+	bra	_zdone
+_nxtrnd
+	dex
+	dec	tmp1
+	ldaa	,x
+	cmpa	#'.'
+	beq	_dot
+	inca
+	cmpa	#'9'
+	bhi	_nxtrnd
+	bra	_rdone
+_dot
+	ldaa	#'0'
+	staa	,x
+	ldab	tmp1
+_ndot
+	decb
+	beq	_dzero
+	dex
+	ldaa	,x
+	inca
+	cmpa	#'9'
+	bls	_ddone
+	bra	_ndot
+_ddone
+	staa	,x
+	ldx	strfree
+	ldab	tmp1
+	abx
+	bra	_fdone
+_dzero
+	ldaa	#'1'
+	staa	,x
+	ldx	strfree
+	ldab	tmp1
+	abx
+	ldaa	#'0'
+_rdone
+	staa	,x
+_zdone
+	inx
+	inc	tmp1
+_fdone
+	ldd	strfree
+	stx	strfree
+	pulx
+	rts
+
+	.module	mdstrrel
+; release a temporary string
+; ENTRY: X holds string start
+; EXIT:  <all reg's preserved>
+; sttrel should be called from:
+;  - ASC, VAL, LEN, PRINT
+;  - right hand side of strcat
+;  - relational operators
+;  - when LEFT$, MID$, RIGHT$ return null
+strrel
+	cpx	strend
+	bls	_rts
+	cpx	strstop
+	bhs	_rts
+	tst	strtcnt
+	beq	_panic
+	dec	strtcnt
+	beq	_restore
+	stx	strfree
+_rts
+	rts
+_restore
+	pshx
+	ldx	strend
+	inx
+	inx
+	stx	strfree
+	pulx
+	rts
+_panic
+	ldab	#1
+	jmp	error
 
 clear			; numCalls = 1
 	.module	modclear
@@ -154,6 +619,28 @@ ld_ix_ir1			; numCalls = 2
 	ldab	r1
 	stab	0,x
 	rts
+
+pr_sr1			; numCalls = 2
+	.module	modpr_sr1
+	ldab	r1
+	beq	_rts
+	ldx	r1+1
+	jsr	print
+	ldx	r1+1
+	jmp	strrel
+_rts
+	rts
+
+pr_ss			; numCalls = 2
+	.module	modpr_ss
+	pulx
+	ldab	,x
+	beq	_null
+	inx
+	jsr	print
+	jmp	,x
+_null
+	jmp	1,x
 
 progbegin			; numCalls = 1
 	.module	modprogbegin
@@ -213,6 +700,20 @@ rsub_ix_ix_pb			; numCalls = 1
 	ldab	#0
 	sbcb	0,x
 	stab	0,x
+	rts
+
+str_sr1_ix			; numCalls = 2
+	.module	modstr_sr1_ix
+	ldd	1,x
+	std	tmp2
+	ldab	0,x
+	stab	tmp1+1
+	ldd	#0
+	std	tmp3
+	jsr	strflt
+	std	r1+1
+	ldab	tmp1
+	stab	r1
 	rts
 
 sub_ir1_ix_pb			; numCalls = 1

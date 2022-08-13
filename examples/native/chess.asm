@@ -92,7 +92,7 @@ LINE_10
 
 	jsr	clear
 
-	; DIM A(9,9),C(64),A,B,X,Y,A0,A1,A2,A3,A4,A5,A6,A7,A8,B1,B2,B3,B4,B5,B6,B7,B8,H,M,N,P,I,J,K,T,W,Q,S
+	; DIM A(9,9),A,B,X,Y,A0,A1,A2,A3,A4,A5,A6,A7,A8,B1,B3,B4,B5,B6,B7,B8,H,M,N,P,I,J,K,T,W,Q,S
 
 	ldab	#9
 	jsr	ld_ir1_pb
@@ -102,12 +102,6 @@ LINE_10
 
 	ldx	#INTARR_A
 	jsr	arrdim2_ir1_ix
-
-	ldab	#64
-	jsr	ld_ir1_pb
-
-	ldx	#INTARR_C
-	jsr	arrdim1_ir1_ix
 
 LINE_20
 
@@ -8896,22 +8890,6 @@ and_ir2_ir2_pb			; numCalls = 2
 	staa	r2
 	rts
 
-arrdim1_ir1_ix			; numCalls = 1
-	.module	modarrdim1_ir1_ix
-	ldd	,x
-	beq	_ok
-	ldab	#DD_ERROR
-	jmp	error
-_ok
-	ldd	strbuf
-	std	,x
-	ldd	r1+1
-	addd	#1
-	std	2,x
-	lsld
-	addd	2,x
-	jmp	alloc
-
 arrdim2_ir1_ix			; numCalls = 1
 	.module	modarrdim2_ir1_ix
 	ldd	,x
@@ -9451,7 +9429,7 @@ ld_ir1_nb			; numCalls = 5
 	std	r1
 	rts
 
-ld_ir1_pb			; numCalls = 40
+ld_ir1_pb			; numCalls = 39
 	.module	modld_ir1_pb
 	stab	r1+2
 	ldd	#0
@@ -10858,7 +10836,6 @@ INTVAR_A7	.block	3
 INTVAR_A8	.block	3
 INTVAR_B	.block	3
 INTVAR_B1	.block	3
-INTVAR_B2	.block	3
 INTVAR_B3	.block	3
 INTVAR_B4	.block	3
 INTVAR_B5	.block	3
@@ -10899,7 +10876,6 @@ STRVAR_V	.block	3
 STRVAR_X	.block	3
 ; Numeric Arrays
 INTARR_A	.block	6	; dims=2
-INTARR_C	.block	4	; dims=1
 ; String Arrays
 
 ; block ended by symbol

@@ -1,3 +1,5 @@
+// Copyright (C) 2021 Greg Dionne
+// Distributed under MIT License
 #ifndef UTILS_OPTIONAL
 #define UTILS_OPTIONAL
 

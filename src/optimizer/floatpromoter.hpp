@@ -3,6 +3,7 @@
 #ifndef OPTIMIZER_FLOATPROMOTER_HPP
 #define OPTIMIZER_FLOATPROMOTER_HPP
 
+#include "ast/lister.hpp"
 #include "ast/nullexprmutator.hpp"
 #include "ast/nullstatementmutator.hpp"
 #include "ast/program.hpp"
@@ -40,12 +41,14 @@ public:
   void mutate(NumericArrayExpr &e) override;
 
   void setLineNumber(int line) { lineNumber = line; }
+  void listStatement(const Statement *s);
 
 private:
   bool &gotFloat;
   SymbolTable &symbolTable;
   Announcer &announcer;
   int lineNumber{0};
+  StatementLister ls;
 };
 
 class StatementFloatPromoter : public NullStatementMutator {
@@ -55,6 +58,9 @@ public:
       : dataTable(dt), isFloat(isf), fe(gf, st, wf) {}
   void mutate(If &s) override;
   void mutate(Let &s) override;
+  void mutate(Accum &s) override;
+  void mutate(Decum &s) override;
+  void mutate(Necum &s) override;
   void mutate(For &s) override;
   void mutate(Read &s) override;
   void mutate(Input &s) override;

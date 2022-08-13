@@ -3557,7 +3557,7 @@ LINE_63
 
 LINE_64
 
-	; DIM A$(13),B$(13),X(6),Y(6),R(6),O(2),P(2),K(255),A(31,14),B(31,14),E(64),F(64),G(64),H(64),I(12,1),J(6,1)
+	; DIM A$(13),B$(13),X(6),Y(6),R(6),O(2),P(2),K(255),A(31,14),B(31,14),E(64),F(64),G(64),I(12,1),J(6,1)
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	13
@@ -3644,12 +3644,6 @@ LINE_64
 	.byte	bytecode_INTARR_G
 
 	.byte	bytecode_ld_ir1_pb
-	.byte	64
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_H
-
-	.byte	bytecode_ld_ir1_pb
 	.byte	12
 
 	.byte	bytecode_ld_ir2_pb
@@ -3669,7 +3663,7 @@ LINE_64
 
 LINE_65
 
-	; DIM T,D,X,Y,A,B,P,C,E,F,H,I,G,R,L,S,M,W,J,K,N,O,Q,U,V,Z,B$,M(12),N(8),Q(8),L(8),DR(4,6,1),EX(3)
+	; DIM T,D,X,Y,A,B,C,E,F,H,I,G,R,L,S,M,W,J,K,N,O,Q,U,V,Z,B$,M(12),N(8),Q(8),L(8),DR(4,6,1),EX(3)
 
 	.byte	bytecode_ld_ir1_pb
 	.byte	12
@@ -3731,7 +3725,7 @@ LINE_65
 
 LINE_66
 
-	; DIM LV,EV,SC,EN,EX,BN,SR,HS,XX,YY,CX,CY,XC,YC,PC,RR,HT,I$,A$
+	; DIM LV,EV,SC,EN,EX,BN,HS,XX,YY,CX,CY,XC,YC,PC,RR,HT,I$,A$
 
 	; B$="€€"
 
@@ -5483,21 +5477,6 @@ LINE_97
 	.byte	bytecode_INTVAR_X
 
 	.byte	bytecode_dec_ir1_ir1
-
-	.byte	bytecode_ld_ip_ir1
-
-	; H(X)=SHIFT(X,1)+1
-
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_X
-
-	.byte	bytecode_arrref1_ir1_ix
-	.byte	bytecode_INTARR_H
-
-	.byte	bytecode_dbl_ir1_ix
-	.byte	bytecode_INTVAR_X
-
-	.byte	bytecode_inc_ir1_ir1
 
 	.byte	bytecode_ld_ip_ir1
 
@@ -9592,7 +9571,7 @@ and_ir1_ir1_pb			; numCalls = 9
 	staa	r1
 	rts
 
-arrdim1_ir1_ix			; numCalls = 15
+arrdim1_ir1_ix			; numCalls = 14
 	.module	modarrdim1_ir1_ix
 	jsr	extend
 	ldd	,x
@@ -9680,7 +9659,7 @@ _ok
 	addd	tmp3
 	jmp	alloc
 
-arrref1_ir1_ix			; numCalls = 69
+arrref1_ir1_ix			; numCalls = 68
 	.module	modarrref1_ir1_ix
 	jsr	extend
 	ldd	r1+1
@@ -9915,7 +9894,7 @@ dbl_ir1_ir1			; numCalls = 4
 	rol	0,x
 	rts
 
-dbl_ir1_ix			; numCalls = 12
+dbl_ir1_ix			; numCalls = 11
 	.module	moddbl_ir1_ix
 	jsr	extend
 	ldd	1,x
@@ -10060,7 +10039,7 @@ inc_ip_ip			; numCalls = 2
 _rts
 	rts
 
-inc_ir1_ir1			; numCalls = 2
+inc_ir1_ir1			; numCalls = 1
 	.module	modinc_ir1_ir1
 	jsr	noargs
 	inc	r1+2
@@ -10198,7 +10177,7 @@ ld_id_ix			; numCalls = 10
 	stab	0,x
 	rts
 
-ld_ip_ir1			; numCalls = 14
+ld_ip_ir1			; numCalls = 13
 	.module	modld_ip_ir1
 	jsr	noargs
 	ldx	letptr
@@ -10217,7 +10196,7 @@ ld_ip_pb			; numCalls = 30
 	std	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 204
+ld_ir1_ix			; numCalls = 203
 	.module	modld_ir1_ix
 	jsr	extend
 	ldd	1,x
@@ -10226,7 +10205,7 @@ ld_ir1_ix			; numCalls = 204
 	stab	r1
 	rts
 
-ld_ir1_pb			; numCalls = 147
+ld_ir1_pb			; numCalls = 146
 	.module	modld_ir1_pb
 	jsr	getbyte
 	stab	r1+2
@@ -11597,54 +11576,51 @@ bytecode_INTVAR_M	.equ	22
 bytecode_INTVAR_N	.equ	23
 bytecode_INTVAR_NE	.equ	24
 bytecode_INTVAR_O	.equ	25
-bytecode_INTVAR_P	.equ	26
-bytecode_INTVAR_PC	.equ	27
-bytecode_INTVAR_Q	.equ	28
-bytecode_INTVAR_R	.equ	29
-bytecode_INTVAR_RR	.equ	30
-bytecode_INTVAR_S	.equ	31
-bytecode_INTVAR_SC	.equ	32
-bytecode_INTVAR_SM	.equ	33
-bytecode_INTVAR_SR	.equ	34
-bytecode_INTVAR_T	.equ	35
-bytecode_INTVAR_U	.equ	36
-bytecode_INTVAR_V	.equ	37
-bytecode_INTVAR_W	.equ	38
-bytecode_INTVAR_X	.equ	39
-bytecode_INTVAR_XC	.equ	40
-bytecode_INTVAR_XX	.equ	41
-bytecode_INTVAR_Y	.equ	42
-bytecode_INTVAR_YC	.equ	43
-bytecode_INTVAR_YY	.equ	44
-bytecode_INTVAR_Z	.equ	45
-bytecode_INTVAR_Z2	.equ	46
-bytecode_INTVAR_Z3	.equ	47
-bytecode_FLTVAR_C1	.equ	48
-bytecode_STRVAR_A	.equ	49
-bytecode_STRVAR_B	.equ	50
-bytecode_STRVAR_I	.equ	51
-bytecode_INTARR_A	.equ	52
-bytecode_INTARR_B	.equ	53
-bytecode_INTARR_DR	.equ	54
-bytecode_INTARR_E	.equ	55
-bytecode_INTARR_EX	.equ	56
-bytecode_INTARR_F	.equ	57
-bytecode_INTARR_G	.equ	58
-bytecode_INTARR_H	.equ	59
-bytecode_INTARR_I	.equ	60
-bytecode_INTARR_J	.equ	61
-bytecode_INTARR_K	.equ	62
-bytecode_INTARR_L	.equ	63
-bytecode_INTARR_M	.equ	64
-bytecode_INTARR_N	.equ	65
-bytecode_INTARR_O	.equ	66
-bytecode_INTARR_P	.equ	67
-bytecode_INTARR_Q	.equ	68
-bytecode_INTARR_R	.equ	69
-bytecode_INTARR_X	.equ	70
-bytecode_INTARR_Y	.equ	71
-bytecode_STRARR_A	.equ	72
-bytecode_STRARR_B	.equ	73
+bytecode_INTVAR_PC	.equ	26
+bytecode_INTVAR_Q	.equ	27
+bytecode_INTVAR_R	.equ	28
+bytecode_INTVAR_RR	.equ	29
+bytecode_INTVAR_S	.equ	30
+bytecode_INTVAR_SC	.equ	31
+bytecode_INTVAR_SM	.equ	32
+bytecode_INTVAR_T	.equ	33
+bytecode_INTVAR_U	.equ	34
+bytecode_INTVAR_V	.equ	35
+bytecode_INTVAR_W	.equ	36
+bytecode_INTVAR_X	.equ	37
+bytecode_INTVAR_XC	.equ	38
+bytecode_INTVAR_XX	.equ	39
+bytecode_INTVAR_Y	.equ	40
+bytecode_INTVAR_YC	.equ	41
+bytecode_INTVAR_YY	.equ	42
+bytecode_INTVAR_Z	.equ	43
+bytecode_INTVAR_Z2	.equ	44
+bytecode_INTVAR_Z3	.equ	45
+bytecode_FLTVAR_C1	.equ	46
+bytecode_STRVAR_A	.equ	47
+bytecode_STRVAR_B	.equ	48
+bytecode_STRVAR_I	.equ	49
+bytecode_INTARR_A	.equ	50
+bytecode_INTARR_B	.equ	51
+bytecode_INTARR_DR	.equ	52
+bytecode_INTARR_E	.equ	53
+bytecode_INTARR_EX	.equ	54
+bytecode_INTARR_F	.equ	55
+bytecode_INTARR_G	.equ	56
+bytecode_INTARR_I	.equ	57
+bytecode_INTARR_J	.equ	58
+bytecode_INTARR_K	.equ	59
+bytecode_INTARR_L	.equ	60
+bytecode_INTARR_M	.equ	61
+bytecode_INTARR_N	.equ	62
+bytecode_INTARR_O	.equ	63
+bytecode_INTARR_P	.equ	64
+bytecode_INTARR_Q	.equ	65
+bytecode_INTARR_R	.equ	66
+bytecode_INTARR_X	.equ	67
+bytecode_INTARR_Y	.equ	68
+bytecode_STRARR_A	.equ	69
+bytecode_STRARR_B	.equ	70
 
 symtbl
 
@@ -11674,7 +11650,6 @@ symtbl
 	.word	INTVAR_N
 	.word	INTVAR_NE
 	.word	INTVAR_O
-	.word	INTVAR_P
 	.word	INTVAR_PC
 	.word	INTVAR_Q
 	.word	INTVAR_R
@@ -11682,7 +11657,6 @@ symtbl
 	.word	INTVAR_S
 	.word	INTVAR_SC
 	.word	INTVAR_SM
-	.word	INTVAR_SR
 	.word	INTVAR_T
 	.word	INTVAR_U
 	.word	INTVAR_V
@@ -11707,7 +11681,6 @@ symtbl
 	.word	INTARR_EX
 	.word	INTARR_F
 	.word	INTARR_G
-	.word	INTARR_H
 	.word	INTARR_I
 	.word	INTARR_J
 	.word	INTARR_K
@@ -11754,7 +11727,6 @@ INTVAR_M	.block	3
 INTVAR_N	.block	3
 INTVAR_NE	.block	3
 INTVAR_O	.block	3
-INTVAR_P	.block	3
 INTVAR_PC	.block	3
 INTVAR_Q	.block	3
 INTVAR_R	.block	3
@@ -11762,7 +11734,6 @@ INTVAR_RR	.block	3
 INTVAR_S	.block	3
 INTVAR_SC	.block	3
 INTVAR_SM	.block	3
-INTVAR_SR	.block	3
 INTVAR_T	.block	3
 INTVAR_U	.block	3
 INTVAR_V	.block	3
@@ -11789,7 +11760,6 @@ INTARR_E	.block	4	; dims=1
 INTARR_EX	.block	4	; dims=1
 INTARR_F	.block	4	; dims=1
 INTARR_G	.block	4	; dims=1
-INTARR_H	.block	4	; dims=1
 INTARR_I	.block	6	; dims=2
 INTARR_J	.block	6	; dims=2
 INTARR_K	.block	4	; dims=1

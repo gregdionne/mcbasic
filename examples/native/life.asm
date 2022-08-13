@@ -92,7 +92,7 @@ LINE_0
 	jsr	pr_ss
 	.text	8, "WAIT...\r"
 
-	; DIM A(29,63),L(1,8),X,Y,A,C,B,D,H,J,I,K,NO,W,Z,L,M,P,O,Q,T2,T3,GN,P2,MC
+	; DIM A(29,63),L(1,8),X,Y,A,C,B,D,H,J,I,K,NO,W,Z,L,M,P,O,Q,GN,P2,MC
 
 	ldab	#29
 	jsr	ld_ir1_pb
@@ -976,18 +976,6 @@ LINE_505
 	jsr	ld_ix_pb
 
 LINE_510
-
-	; T2=2
-
-	ldx	#INTVAR_T2
-	ldab	#2
-	jsr	ld_ix_pb
-
-	; T3=3
-
-	ldx	#INTVAR_T3
-	ldab	#3
-	jsr	ld_ix_pb
 
 	; GN=1
 
@@ -3054,7 +3042,7 @@ ld_ix_ir1			; numCalls = 22
 	stab	0,x
 	rts
 
-ld_ix_pb			; numCalls = 12
+ld_ix_pb			; numCalls = 10
 	.module	modld_ix_pb
 	stab	2,x
 	ldd	#0
@@ -3623,8 +3611,6 @@ INTVAR_P	.block	3
 INTVAR_P2	.block	3
 INTVAR_Q	.block	3
 INTVAR_T	.block	3
-INTVAR_T2	.block	3
-INTVAR_T3	.block	3
 INTVAR_W	.block	3
 INTVAR_X	.block	3
 INTVAR_Y	.block	3

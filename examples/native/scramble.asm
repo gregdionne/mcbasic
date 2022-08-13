@@ -3894,7 +3894,7 @@ LINE_88
 
 LINE_89
 
-	; DIM M,T,K,P,D,S,A,U,B,Y,C,X,R,E,G,H,I,J,L,N,Q,V,W,L(4),O,F,S$,ZZ,LV,FU,MN
+	; DIM M,T,P,D,S,A,U,B,Y,C,X,R,E,G,H,I,J,L,N,Q,V,L(4),O,F,S$,ZZ,LV,FU,MN
 
 	ldab	#4
 	jsr	ld_ir1_pb
@@ -7866,7 +7866,6 @@ INTVAR_H	.block	3
 INTVAR_HS	.block	3
 INTVAR_I	.block	3
 INTVAR_J	.block	3
-INTVAR_K	.block	3
 INTVAR_L	.block	3
 INTVAR_LV	.block	3
 INTVAR_M	.block	3
@@ -7881,7 +7880,6 @@ INTVAR_SC	.block	3
 INTVAR_T	.block	3
 INTVAR_U	.block	3
 INTVAR_V	.block	3
-INTVAR_W	.block	3
 INTVAR_X	.block	3
 INTVAR_Y	.block	3
 INTVAR_Z	.block	3

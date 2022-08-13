@@ -177,6 +177,19 @@ LINE_70
 	.byte	bytecode_ld_sx_sr1
 	.byte	bytecode_STRVAR_C
 
+LINE_80
+
+	; PRINT C$;D$;"\r";
+
+	.byte	bytecode_pr_sx
+	.byte	bytecode_STRVAR_C
+
+	.byte	bytecode_pr_sx
+	.byte	bytecode_STRVAR_D
+
+	.byte	bytecode_pr_ss
+	.text	1, "\r"
+
 LLAST
 
 	; END
@@ -675,7 +688,7 @@ ld_sx_sr1			; numCalls = 5
 	std	1+argv
 	jmp	strprm
 
-pr_ss			; numCalls = 2
+pr_ss			; numCalls = 3
 	.module	modpr_ss
 	ldx	curinst
 	inx
@@ -690,7 +703,7 @@ _null
 	stx	nxtinst
 	rts
 
-pr_sx			; numCalls = 2
+pr_sx			; numCalls = 4
 	.module	modpr_sx
 	jsr	extend
 	ldab	0,x

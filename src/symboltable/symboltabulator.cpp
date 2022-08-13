@@ -36,6 +36,11 @@ void StatementSymbolTabulator::inspect(const Let &s) const {
 
 void StatementSymbolTabulator::inspect(const For &s) const {
   s.iter->inspect(&exprSymbolTabulator);
+  for (auto &symbol : symbolTable.numVarTable) {
+    if (s.iter->varname == symbol.name) {
+      symbol.isUsed = true;
+    }
+  }
 }
 
 void StatementSymbolTabulator::inspect(const Input &s) const {

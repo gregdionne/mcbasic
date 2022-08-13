@@ -4043,7 +4043,7 @@ LINE_261
 
 LINE_900
 
-	; DIM X$(9,2),Y$(9,2),A$(9,2),B$(9,2),K(255),V(2),A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z
+	; DIM X$(9,2),Y$(9,2),A$(9,2),B$(9,2),K(255),V(2),A,B,C,D,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z
 
 	ldab	#9
 	jsr	ld_ir1_pb
@@ -5033,12 +5033,6 @@ LINE_1110
 
 	ldab	#2
 	jsr	ld_ip_pb
-
-	; B1=200
-
-	ldx	#INTVAR_B1
-	ldab	#200
-	jsr	ld_ix_pb
 
 LINE_1120
 
@@ -7777,7 +7771,7 @@ ld_ix_nb			; numCalls = 2
 	std	0,x
 	rts
 
-ld_ix_pb			; numCalls = 20
+ld_ix_pb			; numCalls = 19
 	.module	modld_ix_pb
 	stab	2,x
 	ldd	#0
@@ -8709,10 +8703,8 @@ bss
 ; Numeric Variables
 INTVAR_A	.block	3
 INTVAR_B	.block	3
-INTVAR_B1	.block	3
 INTVAR_C	.block	3
 INTVAR_D	.block	3
-INTVAR_E	.block	3
 INTVAR_F	.block	3
 INTVAR_FL	.block	3
 INTVAR_G	.block	3
