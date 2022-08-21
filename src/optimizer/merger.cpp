@@ -6,6 +6,7 @@
 #include "consttable/fixedpoint.hpp"
 #include "isequal.hpp"
 #include "isrelational.hpp"
+#include "factorizer.hpp"
 #include <string>
 
 // TODO:
@@ -698,9 +699,12 @@ void ExprMerger::merge(NaryNumericExpr &e) {
 }
 
 void ExprMerger::mutate(AdditiveExpr &e) {
-  merge(e);
-  knead(e.operands);
-  knead(e.invoperands);
+  Factorizer factorizer;
+  do {
+    merge(e);
+    knead(e.operands);
+    knead(e.invoperands);
+  } while (factorizer.factorize(&e));
 }
 
 void ExprMerger::mutate(MultiplicativeExpr &e) {
@@ -712,13 +716,19 @@ void ExprMerger::mutate(MultiplicativeExpr &e) {
 }
 
 void ExprMerger::mutate(AndExpr &e) {
-  merge(e);
-  knead(e.operands);
+  Factorizer factorizer;
+  do {
+    merge(e);
+    knead(e.operands);
+  } while (factorizer.factorize(&e));
 }
 
 void ExprMerger::mutate(OrExpr &e) {
-  merge(e);
-  knead(e.operands);
+  Factorizer factorizer;
+  do {
+    merge(e);
+    knead(e.operands);
+  } while (factorizer.factorize(&e));
 }
 
 void ExprMerger::mutate(ShiftExpr &e) {

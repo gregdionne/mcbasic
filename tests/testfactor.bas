@@ -1,0 +1,4 @@
+10 A = 1 : B = 2 : C = 3 : D = 4
+20 PRINT A*C + A*D + B*C + B*D
+30 PRINT A AND C OR A AND D OR B AND C OR B AND D
+40 PRINT (A OR C) AND (A OR D) AND (B OR C) AND (B OR D)
