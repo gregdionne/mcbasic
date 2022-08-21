@@ -245,7 +245,7 @@ LINE_77
 
 LINE_80
 
-	; X=(SQ(1-T)*SP)+SHIFT((1-T)*XP*T,1)+(SQ(T)*EP)
+	; X=(SQ(1-T)*SP)+SHIFT((1-T)*T*XP,1)+(SQ(T)*EP)
 
 	ldab	#1
 	ldx	#FLTVAR_T
@@ -260,11 +260,11 @@ LINE_80
 	ldx	#FLTVAR_T
 	jsr	sub_fr2_pb_fx
 
-	ldx	#INTVAR_XP
-	jsr	mul_fr2_fr2_ix
-
 	ldx	#FLTVAR_T
 	jsr	mul_fr2_fr2_fx
+
+	ldx	#INTVAR_XP
+	jsr	mul_fr2_fr2_ix
 
 	jsr	dbl_fr2_fr2
 
@@ -283,7 +283,7 @@ LINE_80
 
 LINE_90
 
-	; Y=(SQ(1-T)*TP)+SHIFT((1-T)*YP*T,1)+(SQ(T)*FP)
+	; Y=(SQ(1-T)*TP)+SHIFT((1-T)*T*YP,1)+(SQ(T)*FP)
 
 	ldab	#1
 	ldx	#FLTVAR_T
@@ -298,11 +298,11 @@ LINE_90
 	ldx	#FLTVAR_T
 	jsr	sub_fr2_pb_fx
 
-	ldx	#INTVAR_YP
-	jsr	mul_fr2_fr2_ix
-
 	ldx	#FLTVAR_T
 	jsr	mul_fr2_fr2_fx
+
+	ldx	#INTVAR_YP
+	jsr	mul_fr2_fr2_ix
 
 	jsr	dbl_fr2_fr2
 

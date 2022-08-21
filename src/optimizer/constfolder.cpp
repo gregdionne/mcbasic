@@ -8,60 +8,50 @@
 #include <cmath>
 #include <string>
 
-// fold expressions...
-bool ExprConstFolder::fold(up<NumericExpr> &expr) {
-  if (expr->isConst(dvalue)) {
-    gotConst = true;
-  } else {
-    gotConst = false;
-    expr->mutate(this);
-    if (gotConst) {
-      expr = makeup<NumericConstantExpr>(dvalue);
-    }
+#include "ast/lister.hpp"
+
+utils::optional<double> ExprConstFolder::fold(up<NumericExpr> &expr) {
+  if (auto num = expr->constify(&constInspector)) {
+    return num;
   }
 
-  return gotConst;
-}
-
-bool ExprConstFolder::fold(up<StringExpr> &expr) {
-  if (expr->isConst(svalue)) {
-    gotConst = true;
-  } else {
-    gotConst = false;
-    expr->mutate(this);
-    if (gotConst) {
-      expr = makeup<StringConstantExpr>(svalue);
-    }
+  if (auto num = expr->constify(this)) {
+    expr = makeup<NumericConstantExpr>(*num);
+    return num;
   }
 
-  return gotConst;
+  return {};
 }
 
-bool ExprConstFolder::fold(up<StringExpr> &expr, std::string &value) {
-  bool result = fold(expr);
-  value = svalue;
-  return result;
-}
-
-bool ExprConstFolder::fold(up<NumericExpr> &expr, double &value) {
-  bool result = fold(expr);
-  value = dvalue;
-  return result;
-}
-
-bool ExprConstFolder::fold(up<Expr> &expr) {
-  if (expr->isConst(dvalue) || expr->isConst(svalue)) {
-    gotConst = true;
-  } else {
-    gotConst = false;
-    expr->mutate(this);
-    if (gotConst) {
-      expr = expr->isString() ? up<Expr>(new StringConstantExpr(svalue))
-                              : up<Expr>(new NumericConstantExpr(dvalue));
-    }
+utils::optional<std::string> ExprConstFolder::fold(up<StringExpr> &expr) {
+  if (auto str = expr->constify(&constInspector)) {
+    return str;
   }
 
-  return gotConst;
+  if (auto str = expr->constify(this)) {
+    expr = makeup<StringConstantExpr>(*str);
+    return str;
+  }
+
+  return {};
+}
+
+void ExprConstFolder::fold(up<Expr> &expr) {
+  if (auto *nexpr = expr->numExpr()) {
+    static_cast<void>(expr.release());
+    auto tmpExpr = up<NumericExpr>(nexpr);
+    fold(tmpExpr);
+    expr = mv(tmpExpr);
+  } else if (auto *sexpr = expr->strExpr()) {
+    static_cast<void>(expr.release());
+    auto tmpExpr = up<StringExpr>(sexpr);
+    fold(tmpExpr);
+    expr = mv(tmpExpr);
+  } else {
+    fprintf(stderr, "internal error: const folder\n");
+    fprintf(stderr, "expression neither numeric nor string\n");
+    exit(1);
+  }
 }
 
 void ConstFolder::operate(Program &p) {
@@ -102,13 +92,19 @@ void StatementConstFolder::mutate(Print &s) {
     cfe.fold(expr);
   }
 
-  for (std::size_t i = 0; i + 1 < s.printExpr.size(); ++i) {
-    std::string lhs;
-    std::string rhs;
-    while (i + 1 < s.printExpr.size() && s.printExpr[i]->isConst(lhs) &&
-           s.printExpr[i + 1]->isConst(rhs)) {
-      s.printExpr[i] = makeup<StringConstantExpr>(lhs + rhs);
-      s.printExpr.erase(s.printExpr.begin() + i + 1);
+  auto it1 = s.printExpr.begin();
+  if (it1 != s.printExpr.end()) {
+    auto it2 = std::next(it1);
+    while (it2 != s.printExpr.end()) {
+      auto str1 = cfe.fold(*it1);
+      auto str2 = cfe.fold(*it2);
+      if (str1 && str2) {
+        *it1 = makeup<StringConstantExpr>(*str1 + *str2);
+        it2 = s.printExpr.erase(it2);
+      } else {
+        ++it1;
+        ++it2;
+      }
     }
   }
 }
@@ -156,6 +152,12 @@ void StatementConstFolder::mutate(Necum &s) {
   cfe.fold(s.rhs);
 }
 
+void StatementConstFolder::mutate(Eval &s) {
+  for (auto &operand : s.operands) {
+    cfe.fold(operand);
+  }
+}
+
 void StatementConstFolder::mutate(Poke &s) {
   cfe.fold(s.dest);
   cfe.fold(s.val);
@@ -192,497 +194,415 @@ void StatementConstFolder::mutate(Sound &s) {
 
 void StatementConstFolder::mutate(Exec &s) { cfe.fold(s.address); }
 
-// fetchers...
-std::string ExprConstFolder::fetchConst(StringExpr &e) {
-  gotConst = false;
-  e.mutate(this);
-  return svalue;
-}
-
-double ExprConstFolder::fetchConst(NumericExpr &e) {
-  gotConst = false;
-  e.mutate(this);
-  return dvalue;
-}
-
 // string expressions...
-void ExprConstFolder::mutate(StringConstantExpr &e) {
-  gotConst = true;
-  svalue = e.value;
+utils::optional<std::string> ExprConstFolder::mutate(StringConstantExpr &e) {
+  return utils::optional<std::string>(e.value);
 }
 
-void ExprConstFolder::mutate(StringVariableExpr & /*expr*/) {
-  //    lookup e.varname
-  //    if const...
-  //
-  gotConst = false;
+utils::optional<std::string>
+ExprConstFolder::mutate(StringVariableExpr & /*expr*/) {
+  return {};
 }
 
-void ExprConstFolder::mutate(StringArrayExpr &e) {
-  gotConst = false;
-  e.indices->mutate(this);
-  gotConst = false;
+utils::optional<std::string> ExprConstFolder::mutate(StringArrayExpr &e) {
+  e.indices->constify(this);
+  return {};
 }
 
-void ExprConstFolder::mutate(PrintTabExpr &e) {
-  gotConst = false;
-  e.tabstop->mutate(this);
-  gotConst = false;
+utils::optional<std::string> ExprConstFolder::mutate(PrintTabExpr &e) {
+  fold(e.tabstop);
+  return {};
 }
 
-void ExprConstFolder::mutate(PrintSpaceExpr & /*expr*/) {
-  svalue = " ";
-  gotConst = true;
+utils::optional<std::string>
+ExprConstFolder::mutate(PrintSpaceExpr & /*expr*/) {
+  return utils::optional<std::string>(" ");
 }
 
-void ExprConstFolder::mutate(PrintCRExpr & /*expr*/) {
-  svalue = "\r";
-  gotConst = true;
+utils::optional<std::string>
+ExprConstFolder::mutate(PrintCommaExpr & /*expr*/) {
+  return {};
 }
 
-void ExprConstFolder::mutate(StringConcatenationExpr &e) {
+utils::optional<std::string> ExprConstFolder::mutate(PrintCRExpr & /*expr*/) {
+  return utils::optional<std::string>("\r");
+}
+
+utils::optional<std::string>
+ExprConstFolder::mutate(StringConcatenationExpr &e) {
 
   for (auto &operand : e.operands) {
     fold(operand);
   }
 
-  for (std::size_t i = 0; i + 1 < e.operands.size(); ++i) {
-    std::string lhs;
-    std::string rhs;
-    while (i + 1 < e.operands.size() && e.operands[i]->isConst(lhs) &&
-           e.operands[i + 1]->isConst(rhs)) {
-      e.operands[i] = makeup<StringConstantExpr>(lhs + rhs);
-      e.operands.erase(e.operands.begin() + i + 1);
+  auto it1 = e.operands.begin();
+  if (it1 != e.operands.end()) {
+    auto it2 = std::next(it1);
+    while (it2 != e.operands.end()) {
+      auto str1 = (*it1)->constify(&constInspector);
+      auto str2 = (*it2)->constify(&constInspector);
+      if (str1 && str2) {
+        *it1 = makeup<StringConstantExpr>(*str1 + *str2);
+        it2 = e.operands.erase(it2);
+      } else {
+        ++it1;
+        ++it2;
+      }
     }
   }
 
-  gotConst = e.operands.size() == 1 && e.operands[0]->isConst(svalue);
+  if (e.operands.size() == 1) {
+    return e.operands[0]->constify(&constInspector);
+  }
+
+  return {};
 }
 
-void ExprConstFolder::mutate(LeftExpr &e) {
-  std::string cvalue;
-  bool gotStr = fold(e.str, cvalue);
+utils::optional<std::string> ExprConstFolder::mutate(LeftExpr &e) {
+  auto str = fold(e.str);
+  auto len = fold(e.len);
 
-  double clen;
-  bool gotLen = fold(e.len, clen);
-
-  gotConst = gotStr && gotLen;
-  if (gotConst) {
+  if (str && len) {
     try {
-      svalue = cvalue.substr(0, static_cast<std::size_t>(clen));
+      auto svalue = str->substr(0, static_cast<std::size_t>(*len));
+      return utils::optional<std::string>(svalue);
     } catch (...) {
-      fprintf(stderr, "couldn't get LEFT$(\"%s\",%f.0)\n", cvalue.c_str(),
-              clen);
+      fprintf(stderr, "couldn't get LEFT$(\"%s\",%f.0)\n", str->c_str(), *len);
       exit(1);
     }
   }
+
+  return {};
 }
 
-void ExprConstFolder::mutate(RightExpr &e) {
-  std::string cvalue;
-  bool gotStr = fold(e.str, cvalue);
+utils::optional<std::string> ExprConstFolder::mutate(RightExpr &e) {
+  auto str = fold(e.str);
+  auto len = fold(e.len);
 
-  double clen;
-  bool gotLen = fold(e.len, clen);
-
-  gotConst = gotStr && gotLen;
-  if (gotConst) {
+  if (str && len) {
     try {
-      svalue = cvalue.substr(static_cast<std::size_t>(cvalue.length() - clen));
+      auto svalue = str->substr(static_cast<std::size_t>(str->length() - *len));
+      return utils::optional<std::string>(svalue);
     } catch (...) {
-      fprintf(stderr, "couldn't get RIGHT$(\"%s\",%f.0)\n", cvalue.c_str(),
-              clen);
+      fprintf(stderr, "couldn't get RIGHT$(\"%s\",%f.0)\n", str->c_str(), *len);
       exit(1);
     }
   }
+
+  return {};
 }
 
-void ExprConstFolder::mutate(MidExpr &e) {
-  std::string cvalue;
-  bool gotStr = fold(e.str, cvalue);
+utils::optional<std::string> ExprConstFolder::mutate(MidExpr &e) {
+  auto str = fold(e.str);
+  auto start = fold(e.start);
 
-  double cstart;
-  fold(e.start, cstart);
-
-  gotConst &= gotStr;
-  if (gotConst && !e.len) {
-    try {
-      svalue = cvalue.substr(static_cast<std::size_t>(cstart));
-    } catch (...) {
-      fprintf(stderr, "couldn't get MID$(\"%s\",%f.0)\n", cvalue.c_str(),
-              cstart);
-      exit(1);
-    }
-  } else if (gotConst) {
-    double clen;
-    fold(e.len, clen);
-
-    if (gotConst) {
+  if (str && start) {
+    if (!e.len) {
       try {
-        svalue = cvalue.substr(static_cast<std::size_t>(cstart),
-                               static_cast<std::size_t>(clen));
+        auto svalue = str->substr(static_cast<std::size_t>(*start));
+        return utils::optional<std::string>(svalue);
       } catch (...) {
-        fprintf(stderr, "couldn't get MID$(\"%s\",%f.0,%f.0)\n", cvalue.c_str(),
-                cstart, clen);
+        fprintf(stderr, "couldn't get MID$(\"%s\",%f.0)\n", str->c_str(),
+                *start);
+        exit(1);
+      }
+    } else if (auto len = fold(e.len)) {
+      try {
+        auto svalue = str->substr(static_cast<std::size_t>(*start),
+                                  static_cast<std::size_t>(*len));
+        return utils::optional<std::string>(svalue);
+      } catch (...) {
+        fprintf(stderr, "couldn't get MID$(\"%s\",%f.0,%f.0)\n", str->c_str(),
+                *start, *len);
         exit(1);
       }
     }
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(LenExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = static_cast<double>(svalue.length());
+utils::optional<double> ExprConstFolder::mutate(LenExpr &e) {
+  if (auto svalue = fold(e.expr)) {
+    return utils::optional<double>(static_cast<double>(svalue->length()));
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(StrExpr &e) {
-  if (fold(e.expr)) {
-    svalue = std::to_string(dvalue);
+utils::optional<std::string> ExprConstFolder::mutate(StrExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    auto svalue = std::to_string(*dvalue);
     std::size_t dot = svalue.find_first_of('.');
     std::size_t last = svalue.find_last_not_of(".0");
     if (dot != std::string::npos) {
       svalue = svalue.substr(0, std::max(dot, last + 1));
-      svalue = dvalue < 0 && ((FixedPoint(dvalue).wholenum != 0) ||
-                              (FixedPoint(dvalue).fraction != 0))
+      svalue = *dvalue < 0 && ((FixedPoint(*dvalue).wholenum != 0) ||
+                               (FixedPoint(*dvalue).fraction != 0))
                    ? svalue
                    : " " + svalue;
     }
+    return utils::optional<std::string>(svalue);
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(ShiftExpr &e) {
-  if (fold(e.expr)) {
-    double tmpval = dvalue;
-    if (fold(e.count)) {
+utils::optional<double> ExprConstFolder::mutate(ShiftExpr &e) {
+  if (auto tmpval = fold(e.expr)) {
+    if (auto value = fold(e.count)) {
+      auto dvalue = *value;
       if (dvalue != std::round(dvalue)) {
         fprintf(stderr, "SHIFT count evaluated to non-integral value\n");
         exit(1);
       }
-      dvalue = dvalue > 0   ? tmpval * (1 << static_cast<int>(dvalue))
-               : dvalue < 0 ? tmpval / (1 << static_cast<int>(-dvalue))
-                            : tmpval;
+      dvalue = dvalue > 0   ? *tmpval * (1 << static_cast<int>(dvalue))
+               : dvalue < 0 ? *tmpval / (1 << static_cast<int>(-dvalue))
+                            : *tmpval;
+      return utils::optional<double>(dvalue);
     }
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(ValExpr &e) {
+// TODO: replicate how BASIC encodes values
+utils::optional<double> ExprConstFolder::mutate(ValExpr &e) {
   fold(e.expr);
-  gotConst = false;
+  return {};
 }
 
-void ExprConstFolder::mutate(AscExpr &e) {
-  if (fold(e.expr)) {
-    dvalue =
-        svalue.length() > 0 ? static_cast<unsigned char>(*svalue.c_str()) : 0;
+utils::optional<double> ExprConstFolder::mutate(AscExpr &e) {
+  if (auto svalue = fold(e.expr)) {
+    return utils::optional<double>(
+        svalue->length() > 0 ? static_cast<unsigned char>(*svalue->c_str())
+                             : 0);
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(ChrExpr &e) {
-  if (fold(e.expr)) {
-    svalue = static_cast<char>(dvalue);
+utils::optional<std::string> ExprConstFolder::mutate(ChrExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    std::string svalue(1, static_cast<char>(*dvalue));
+    return utils::optional<std::string>(svalue);
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(NumericConstantExpr &e) {
-  dvalue = e.value;
-  gotConst = true;
+utils::optional<double> ExprConstFolder::mutate(NumericConstantExpr &e) {
+  return utils::optional<double>(e.value);
 }
 
-void ExprConstFolder::mutate(NumericVariableExpr & /*expr*/) {
+utils::optional<double>
+ExprConstFolder::mutate(NumericVariableExpr & /*expr*/) {
   // lookup e.varname
   // if const
-  gotConst = false;
+  return {};
 }
 
-void ExprConstFolder::mutate(NumericArrayExpr &e) {
-  gotConst = false;
-  e.indices->mutate(this);
-  gotConst = false;
+utils::optional<double> ExprConstFolder::mutate(NumericArrayExpr &e) {
+  e.indices->constify(this);
+  return {};
 }
 
-void ExprConstFolder::mutate(ArrayIndicesExpr &e) {
+utils::optional<double> ExprConstFolder::mutate(ArrayIndicesExpr &e) {
   for (auto &operand : e.operands) {
     fold(operand);
   }
-  gotConst = false;
+  return {};
 }
 
-void ExprConstFolder::mutate(ComplementedExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = static_cast<double>(~static_cast<int>(dvalue));
+utils::optional<double> ExprConstFolder::mutate(ComplementedExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(
+        static_cast<double>(~static_cast<int>(*dvalue)));
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(SgnExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = dvalue < 0 ? -1.0 : dvalue > 0 ? 1.0 : 0.0;
+utils::optional<double> ExprConstFolder::mutate(SgnExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(*dvalue < 0   ? -1.0
+                                   : *dvalue > 0 ? 1.0
+                                                 : 0.0);
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(IntExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = static_cast<double>(static_cast<int>(dvalue));
+utils::optional<double> ExprConstFolder::mutate(IntExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(
+        static_cast<double>(static_cast<int>(*dvalue)));
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(AbsExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = dvalue < 0 ? -dvalue : dvalue;
+utils::optional<double> ExprConstFolder::mutate(AbsExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(*dvalue < 0 ? -*dvalue : *dvalue);
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(SqrExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = std::sqrt(dvalue);
+utils::optional<double> ExprConstFolder::mutate(SqrExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(std::sqrt(*dvalue));
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(ExpExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = std::exp(dvalue);
+utils::optional<double> ExprConstFolder::mutate(ExpExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(std::exp(*dvalue));
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(LogExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = std::log(dvalue);
+utils::optional<double> ExprConstFolder::mutate(LogExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(std::log(*dvalue));
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(SinExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = std::sin(dvalue);
+utils::optional<double> ExprConstFolder::mutate(SinExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(std::sin(*dvalue));
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(CosExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = std::cos(dvalue);
+utils::optional<double> ExprConstFolder::mutate(CosExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(std::cos(*dvalue));
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(TanExpr &e) {
-  if (fold(e.expr)) {
-    dvalue = std::tan(dvalue);
+utils::optional<double> ExprConstFolder::mutate(TanExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(std::tan(*dvalue));
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(RndExpr &e) {
+utils::optional<double> ExprConstFolder::mutate(RndExpr &e) {
   fold(e.expr);
-  gotConst = false;
+  return {};
 }
 
-void ExprConstFolder::mutate(PeekExpr &e) {
+utils::optional<double> ExprConstFolder::mutate(PeekExpr &e) {
   fold(e.expr);
-  gotConst = false;
+  return {};
 }
 
-void ExprConstFolder::mutate(PointExpr &e) {
+utils::optional<double> ExprConstFolder::mutate(PointExpr &e) {
   fold(e.x);
   fold(e.y);
-  gotConst = false;
+  return {};
 }
 
-void ExprConstFolder::mutate(InkeyExpr & /*expr*/) { gotConst = false; }
-
-void ExprConstFolder::mutate(MemExpr & /*expr*/) { gotConst = false; }
-
-void ExprConstFolder::mutate(PosExpr & /*expr*/) { gotConst = false; }
-
-void ExprConstFolder::mutate(TimerExpr & /*expr*/) { gotConst = false; }
-
-void ExprConstFolder::mutate(PeekWordExpr & /*expr*/) { gotConst = false; }
-
-void ExprConstFolder::fold(std::vector<up<NumericExpr>> &operands,
-                           bool &enableFold, bool &folded, int &iOffset,
-                           double &value, void (*op)(double &value, double v)) {
-  for (std::size_t i = 0; i < operands.size(); ++i) {
-    fold(operands[i]);
-    if (gotConst) {
-      op(value, dvalue);
-      if (enableFold) {
-        folded = true;
-        operands.erase(operands.begin() + i);
-        --i;
-      } else {
-        iOffset = i;
-        enableFold = true;
-      }
-    }
-  }
+utils::optional<std::string> ExprConstFolder::mutate(InkeyExpr & /*expr*/) {
+  return {};
 }
 
-void ExprConstFolder::mutate(AdditiveExpr &e) {
-  for (auto &operand : e.operands) {
-    fold(operand);
-  }
+utils::optional<double> ExprConstFolder::mutate(MemExpr & /*expr*/) {
+  return {};
+}
 
-  for (auto &invoperand : e.invoperands) {
-    fold(invoperand);
-  }
+utils::optional<double> ExprConstFolder::mutate(PosExpr & /*expr*/) {
+  return {};
+}
 
-  double value = 0.0;
+utils::optional<double> ExprConstFolder::mutate(TimerExpr & /*expr*/) {
+  return {};
+}
 
-  int iOffset = 0;
-  bool gotFold = false;
+utils::optional<double> ExprConstFolder::mutate(PeekWordExpr & /*expr*/) {
+  return {};
+}
 
-  bool gotAdd = false;
-  fold(e.operands, gotAdd, gotFold, iOffset, value,
-       [](double &value, double v) -> void { value += v; });
+utils::optional<double> ExprConstFolder::mutate(NaryNumericExpr &e) {
 
-  bool gotSub = gotAdd;
-  fold(e.invoperands, gotSub, gotFold, iOffset, value,
-       [](double &value, double v) -> void { value -= v; });
-
-  if (gotFold) {
-    if (gotAdd) {
-      if (value != 0) {
-        e.operands[iOffset] = makeup<NumericConstantExpr>(value);
-      } else {
-        e.operands.erase(e.operands.begin() + iOffset);
-      }
-    } else if (gotSub) {
-      if (value != 0) {
-        e.invoperands[iOffset] = makeup<NumericConstantExpr>(value);
-      } else {
-        e.invoperands.erase(e.invoperands.begin() + iOffset);
-      }
+  double lhs = e.identity;
+  bool haveLHS = false;
+  auto iOp = e.operands.begin();
+  while (iOp != e.operands.end()) {
+    if (auto operand = fold(*iOp)) {
+      haveLHS = true;
+      lhs = e.function(lhs, *operand);
+      iOp = e.operands.erase(iOp);
+    } else {
+      ++iOp;
     }
   }
 
-  if (e.operands.size() == 1 && e.invoperands.empty() &&
-      e.operands[0]->isConst(dvalue)) {
-    gotConst = true;
-  } else if (e.operands.empty() && e.invoperands.size() == 1 &&
-             e.invoperands[0]->isConst(dvalue)) {
-    dvalue = -dvalue;
-    gotConst = true;
-  } else if (e.operands.empty() && e.invoperands.empty()) {
-    dvalue = 0.0;
-    gotConst = true;
-  } else {
-    gotConst = false;
-  }
-}
-
-void ExprConstFolder::mutate(PowerExpr &e) {
-  fold(e.base);
-  fold(e.exponent);
-
-  double base;
-  double exponent;
-  gotConst = e.base->isConst(base) && e.exponent->isConst(exponent);
-  if (gotConst) {
-    dvalue = std::pow(base, exponent);
-  }
-}
-
-void ExprConstFolder::mutate(IntegerDivisionExpr &e) {
-  fold(e.dividend);
-  fold(e.divisor);
-
-  double dividend;
-  double divisor;
-  gotConst = e.dividend->isConst(dividend) && e.divisor->isConst(divisor);
-  if (gotConst) {
-    dvalue = std::floor(dividend / divisor);
-  }
-}
-
-void ExprConstFolder::mutate(MultiplicativeExpr &e) {
-  for (auto &operand : e.operands) {
-    fold(operand);
-  }
-
-  for (auto &invoperand : e.invoperands) {
-    fold(invoperand);
-  }
-
-  double value = 1.0;
-
-  int iOffset = 0;
-  bool gotFold = false;
-
-  bool gotMul = false;
-  fold(e.operands, gotMul, gotFold, iOffset, value,
-       [](double &value, double v) { value *= v; });
-  if (gotMul && value == 0) {
-    gotMul = false;
-    e.operands.clear();
-    e.invoperands.clear();
-    e.operands.emplace_back(makeup<NumericConstantExpr>(value));
-  }
-
-  bool gotDiv = gotMul;
-  fold(e.invoperands, gotDiv, gotFold, iOffset, value,
-       [](double &value, double v) { value /= v; });
-
-  if (gotFold) {
-    if (gotMul) {
-      e.operands[iOffset] = makeup<NumericConstantExpr>(value);
-    } else if (gotDiv) {
-      e.invoperands[iOffset] = makeup<NumericConstantExpr>(value);
+  double rhs = e.identity;
+  bool haveRHS = false;
+  iOp = e.invoperands.begin();
+  while (iOp != e.invoperands.end()) {
+    if (auto operand = fold(*iOp)) {
+      haveRHS = true;
+      rhs = e.function(rhs, *operand);
+      iOp = e.invoperands.erase(iOp);
+    } else {
+      ++iOp;
     }
   }
 
-  if (e.operands.size() == 1 && e.invoperands.empty() &&
-      e.operands[0]->isConst(dvalue)) {
-    gotConst = true;
-  } else if (e.operands.empty() && e.invoperands.size() == 1 &&
-             e.invoperands[0]->isConst(dvalue)) {
-    dvalue = 1 / dvalue;
-    gotConst = true;
-  } else {
-    gotConst = false;
+  double value = e.inverse(lhs, rhs);
+
+  if (value == e.annihilator || (e.operands.empty() && e.invoperands.empty())) {
+    return utils::optional<double>(value);
   }
+
+  if (value != e.identity) {
+    if (haveLHS) {
+      e.operands.emplace_back(makeup<NumericConstantExpr>(value));
+    } else if (haveRHS) {
+      e.invoperands.emplace_back(makeup<NumericConstantExpr>(rhs));
+    } else {
+      fprintf(stderr, "internal error: constant folder of n-ary expressions\n");
+      fprintf(stderr, "inverse(identity, identity) does not preserve identity\n");
+      fprintf(stderr, "op = %s identity = %f value = %f, lhs = %f, rhs = %f\n",
+              e.funcName.c_str(), e.identity, value, lhs, rhs);
+      exit(1);
+    }
+  }
+
+  return {};
 }
 
-void ExprConstFolder::mutate(AndExpr &e) {
-  for (auto &operand : e.operands) {
-    fold(operand);
-  }
-
-  double value = -1.0;
-  int iOffset = 0;
-  bool gotFold = false;
-  bool gotAnd = false;
-
-  fold(e.operands, gotAnd, gotFold, iOffset, value,
-       [](double &value, double v) {
-         value =
-             static_cast<double>(static_cast<int>(value) & static_cast<int>(v));
-       });
-
-  if (gotFold) {
-    e.operands[iOffset] =
-        makeup<NumericConstantExpr>(static_cast<double>(value));
-  }
-
-  gotConst = e.operands.size() == 1 && e.operands[0]->isConst(dvalue);
+utils::optional<double> ExprConstFolder::mutate(AdditiveExpr &e) {
+  return e.NaryNumericExpr::constify(this);
 }
 
-void ExprConstFolder::mutate(OrExpr &e) {
-  for (auto &operand : e.operands) {
-    fold(operand);
+utils::optional<double> ExprConstFolder::mutate(MultiplicativeExpr &e) {
+  return e.NaryNumericExpr::constify(this);
+}
+
+utils::optional<double> ExprConstFolder::mutate(AndExpr &e) {
+  return e.NaryNumericExpr::constify(this);
+}
+
+utils::optional<double> ExprConstFolder::mutate(OrExpr &e) {
+  return e.NaryNumericExpr::constify(this);
+}
+
+utils::optional<double> ExprConstFolder::mutate(PowerExpr &e) {
+  auto base = fold(e.base);
+  auto exponent = fold(e.exponent);
+
+  if (base && exponent) {
+    return utils::optional<double>(std::pow(*base, *exponent));
   }
+  return {};
+}
 
-  double value = 0.0;
-  int iOffset = 0;
-  bool gotFold = false;
-  bool gotOr = false;
+utils::optional<double> ExprConstFolder::mutate(IntegerDivisionExpr &e) {
+  auto dividend = fold(e.dividend);
+  auto divisor = fold(e.divisor);
 
-  fold(e.operands, gotOr, gotFold, iOffset, value, [](double &value, double v) {
-    value = static_cast<double>(static_cast<int>(value) | static_cast<int>(v));
-  });
-
-  if (gotFold) {
-    dvalue = value;
-    e.operands[iOffset] =
-        makeup<NumericConstantExpr>(static_cast<double>(value));
+  if (dividend && divisor) {
+    return utils::optional<double>(std::floor(*dividend / *divisor));
   }
-
-  gotConst = e.operands.size() == 1 && e.operands[0]->isConst(dvalue);
+  return {};
 }
 
 template <typename T>
@@ -696,27 +616,37 @@ static inline double compare(std::string &comparator, const T &a, const T &b) {
                               : 0;
 }
 
-void ExprConstFolder::mutate(RelationalExpr &e) {
+utils::optional<double> ExprConstFolder::mutate(RelationalExpr &e) {
   fold(e.lhs);
   fold(e.rhs);
 
-  std::string lhsStr;
-  std::string rhsStr;
-  double lhsNum;
-  double rhsNum;
-  if (e.lhs->isConst(lhsStr) && e.rhs->isConst(rhsStr)) {
-    dvalue = compare(e.comparator, lhsStr, rhsStr);
-    gotConst = true;
-  } else if (e.lhs->isConst(lhsNum) && e.rhs->isConst(rhsNum)) {
-    dvalue = compare(e.comparator, lhsNum, rhsNum);
-    gotConst = true;
+  auto *nlhs = e.lhs->numExpr();
+  auto *nrhs = e.rhs->numExpr();
+  auto *slhs = e.lhs->strExpr();
+  auto *srhs = e.rhs->strExpr();
+
+  if (nlhs && nrhs) {
+    auto lhs = nlhs->constify(&constInspector);
+    auto rhs = nrhs->constify(&constInspector);
+    if (lhs && rhs) {
+      return utils::optional<double>(compare(e.comparator, *lhs, *rhs));
+    }
+  } else if (slhs && srhs) {
+    auto lhs = slhs->constify(&constInspector);
+    auto rhs = srhs->constify(&constInspector);
+    if (lhs && rhs) {
+      return utils::optional<double>(compare(e.comparator, *lhs, *rhs));
+    }
   } else {
-    gotConst = false;
+    fprintf(stderr, "mismatch in comparison oparator\n");
+    exit(1);
   }
+  return {};
 }
 
-void ExprConstFolder::mutate(SquareExpr &e) {
-  if (fold(e.expr)) {
-    dvalue *= dvalue;
+utils::optional<double> ExprConstFolder::mutate(SquareExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(*dvalue * *dvalue);
   }
+  return {};
 }

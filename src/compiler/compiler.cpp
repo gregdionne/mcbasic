@@ -11,10 +11,10 @@
 #include "utils/memutils.hpp"
 #include <array>
 
-template <typename T> static inline std::string list(T &t) {
+static inline std::string list(const Statement *t) {
   StatementLister that;
   that.generatePredicates = false;
-  t.soak(&that);
+  t->soak(&that);
   return that.result;
 }
 
@@ -80,11 +80,11 @@ void Compiler::operate(Line &l) {
 }
 
 void StatementCompiler::absorb(const Rem &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
 }
 
 void StatementCompiler::absorb(const For &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   // perform LET
   queue.clearRegisters();
   ExprCompiler iter(constTable, symbolTable, queue);
@@ -145,7 +145,7 @@ void StatementCompiler::absorb(const For &s) {
 }
 
 void StatementCompiler::absorb(const Go &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
 
   auto lineNumber = makeup<AddressModeLbl>(s.lineNumber);
 
@@ -154,7 +154,7 @@ void StatementCompiler::absorb(const Go &s) {
 }
 
 void StatementCompiler::absorb(const When &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
 
   auto const *predicate = s.predicate.get();
@@ -190,7 +190,7 @@ void StatementCompiler::absorb(const When &s) {
 }
 
 void StatementCompiler::absorb(const If &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
 
   auto const *predicate = s.predicate.get();
@@ -233,7 +233,7 @@ void StatementCompiler::absorb(const Data & /*statement*/) {
 }
 
 void StatementCompiler::absorb(const Print &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   ExprCompiler value(constTable, symbolTable, queue);
   if (s.at) {
     queue.clearRegisters();
@@ -252,7 +252,7 @@ void StatementCompiler::absorb(const Print &s) {
 }
 
 void StatementCompiler::absorb(const Input &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
   ExprCompiler value(constTable, symbolTable, queue);
 
@@ -274,12 +274,12 @@ void StatementCompiler::absorb(const Input &s) {
 }
 
 void StatementCompiler::absorb(const End &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.append(makeup<InstEnd>());
 }
 
 void StatementCompiler::absorb(const On &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
   ExprCompiler value(constTable, symbolTable, queue);
   s.branchIndex->soak(&value);
@@ -294,7 +294,7 @@ void StatementCompiler::absorb(const On &s) {
 }
 
 void StatementCompiler::absorb(const Next &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   if (s.variables.empty()) {
     queue.append(makeup<InstNext>(generateLines));
   } else {
@@ -309,7 +309,7 @@ void StatementCompiler::absorb(const Next &s) {
 }
 
 void StatementCompiler::absorb(const Dim &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   for (const auto &variable : s.variables) {
     queue.clearRegisters();
     ExprCompiler var(constTable, symbolTable, queue);
@@ -319,7 +319,7 @@ void StatementCompiler::absorb(const Dim &s) {
 }
 
 void StatementCompiler::absorb(const Read &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   for (const auto &variable : s.variables) {
     queue.clearRegisters();
 
@@ -338,7 +338,7 @@ void StatementCompiler::absorb(const Read &s) {
 }
 
 void StatementCompiler::absorb(const Let &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   ExprCompiler dest(constTable, symbolTable, queue);
   ExprCompiler value(constTable, symbolTable, queue);
 
@@ -381,7 +381,7 @@ void StatementCompiler::absorb(const Let &s) {
 }
 
 void StatementCompiler::absorb(const Accum &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   ExprCompiler dest(constTable, symbolTable, queue);
   ExprCompiler value(constTable, symbolTable, queue);
 
@@ -390,7 +390,7 @@ void StatementCompiler::absorb(const Accum &s) {
   s.lhs->soak(&dest); // dest.result will be either indirect or extended.
 
   ConstInspector constInspector;
-  const auto *arg = dynamic_cast<const NumericExpr *>(s.rhs.get());
+  const auto *arg = s.rhs->numExpr();
 
   if (arg && constInspector.isEqual(arg, 1)) {
     queue.append(makeup<InstInc>(dest.result->clone(), dest.result->clone()));
@@ -414,7 +414,7 @@ void StatementCompiler::absorb(const Accum &s) {
 }
 
 void StatementCompiler::absorb(const Decum &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   ExprCompiler dest(constTable, symbolTable, queue);
   ExprCompiler value(constTable, symbolTable, queue);
 
@@ -423,7 +423,7 @@ void StatementCompiler::absorb(const Decum &s) {
   s.lhs->soak(&dest); // dest.result will be either indirect or extended.
 
   ConstInspector constInspector;
-  const auto *arg = dynamic_cast<const NumericExpr *>(s.rhs.get());
+  const auto *arg = s.rhs->numExpr();
 
   if (arg && constInspector.isEqual(arg, 1)) {
     queue.append(makeup<InstDec>(dest.result->clone(), dest.result->clone()));
@@ -447,7 +447,7 @@ void StatementCompiler::absorb(const Decum &s) {
 }
 
 void StatementCompiler::absorb(const Necum &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   ExprCompiler dest(constTable, symbolTable, queue);
   ExprCompiler value(constTable, symbolTable, queue);
 
@@ -456,7 +456,7 @@ void StatementCompiler::absorb(const Necum &s) {
   s.lhs->soak(&dest); // dest.result will be either indirect or extended.
 
   ConstInspector constInspector;
-  const auto *arg = dynamic_cast<const NumericExpr *>(s.rhs.get());
+  const auto *arg = s.rhs->numExpr();
 
   if (arg && constInspector.isEqual(arg, 0)) {
     queue.append(makeup<InstNeg>(dest.result->clone(), dest.result->clone()));
@@ -474,32 +474,43 @@ void StatementCompiler::absorb(const Necum &s) {
                                 mv(value.result)));
 }
 
+void StatementCompiler::absorb(const Eval &s) {
+  queue.append(makeup<InstComment>(list(&s)));
+  queue.clearRegisters();
+  ExprCompiler value(constTable, symbolTable, queue);
+
+  for (const auto &operand : s.operands) {
+    queue.clearRegisters();
+    operand->soak(&value);
+  }
+}
+
 void StatementCompiler::absorb(const Run &s) {
   auto lineNumber =
       makeup<AddressModeLbl>(s.hasLineNumber ? s.lineNumber : firstLine);
 
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.append(makeup<InstClear>());
   queue.append(makeup<InstGoTo>(mv(lineNumber)));
 }
 
 void StatementCompiler::absorb(const Restore &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.append(makeup<InstRestore>());
 }
 
 void StatementCompiler::absorb(const Return &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.append(makeup<InstReturn>(generateLines));
 }
 
 void StatementCompiler::absorb(const Stop &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.append(makeup<InstStop>());
 }
 
 void StatementCompiler::absorb(const Poke &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
 
   ExprCompiler dest(constTable, symbolTable, queue);
@@ -524,14 +535,14 @@ void StatementCompiler::absorb(const Poke &s) {
 }
 
 void StatementCompiler::absorb(const Clear &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
   // arguments are ignored
   queue.append(makeup<InstClear>());
 }
 
 void StatementCompiler::absorb(const Set &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
   ExprCompiler x(constTable, symbolTable, queue);
   ExprCompiler y(constTable, symbolTable, queue);
@@ -553,7 +564,7 @@ void StatementCompiler::absorb(const Set &s) {
 }
 
 void StatementCompiler::absorb(const Reset &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
   ExprCompiler x(constTable, symbolTable, queue);
   ExprCompiler y(constTable, symbolTable, queue);
@@ -568,7 +579,7 @@ void StatementCompiler::absorb(const Reset &s) {
 }
 
 void StatementCompiler::absorb(const Cls &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   if (s.color) {
     queue.clearRegisters();
     ExprCompiler color(constTable, symbolTable, queue);
@@ -581,7 +592,7 @@ void StatementCompiler::absorb(const Cls &s) {
 }
 
 void StatementCompiler::absorb(const Sound &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
 
   ExprCompiler pitch(constTable, symbolTable, queue);
@@ -598,7 +609,7 @@ void StatementCompiler::absorb(const Sound &s) {
 }
 
 void StatementCompiler::absorb(const Exec &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
   ExprCompiler address(constTable, symbolTable, queue);
   s.address->soak(&address);
@@ -607,7 +618,7 @@ void StatementCompiler::absorb(const Exec &s) {
 }
 
 void StatementCompiler::absorb(const Error &s) {
-  queue.append(makeup<InstComment>(list(s)));
+  queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
   ExprCompiler errorCode(constTable, symbolTable, queue);
   s.errorCode->soak(&errorCode);
@@ -1197,7 +1208,11 @@ void ExprCompiler::absorb(const AdditiveExpr &e) {
   up<AddressMode> reg;
 
   if (e.operands.size() < 2 && e.invoperands.empty()) {
-    fprintf(stderr, "internal error: null additive expression\n");
+    ExprLister el;
+    e.soak(&el);
+
+    fprintf(stderr, "internal error: %s null additive expression\n",
+            el.result.c_str());
     exit(1);
   }
 

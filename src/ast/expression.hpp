@@ -7,6 +7,7 @@
 #include "utils/memutils.hpp" // up<T>, makeup<T>, mv()
 #include "utils/optional.hpp" // utils::optional<T>
 
+#include <cmath>
 #include <string>
 #include <vector>
 
@@ -288,19 +289,27 @@ public:
   virtual ~Expr() = default;
 
   virtual bool isString() { return false; }
-  virtual bool isConst(double & /*val*/) const { return false; }
   virtual bool isVar() const { return false; }
+  virtual bool isConst(double & /*val*/) const { return false; }
   virtual bool isConst(std::string & /*val*/) const { return false; }
 
   virtual bool check(const ExprInspector<bool, bool> * /*op*/) const = 0;
   virtual void inspect(const ExprInspector<void, void> * /*op*/) const = 0;
   virtual void soak(ExprAbsorber<void, void> * /*op*/) const = 0;
   virtual void mutate(ExprMutator<void, void> * /*op*/) = 0;
+
+  // downconversions
+  virtual NumericExpr *numExpr() { return nullptr; }
+  virtual StringExpr *strExpr() { return nullptr; }
+  virtual const NumericExpr *numExpr() const { return nullptr; }
+  virtual const StringExpr *strExpr() const { return nullptr; }
 };
 
 class NumericExpr : public Expr {
 public:
   bool isString() override { return false; } // not needed...
+  NumericExpr *numExpr() override { return this; }
+  const NumericExpr *numExpr() const override { return this; }
 
   virtual up<NumericExpr>
   transmutate(ExprMutator<up<NumericExpr>, up<StringExpr>> *transmutator) = 0;
@@ -308,6 +317,10 @@ public:
   virtual utils::optional<double> constify(
       const ExprInspector<utils::optional<double>, utils::optional<std::string>>
           *constifier) const = 0;
+
+  virtual utils::optional<double>
+  constify(ExprMutator<utils::optional<double>, utils::optional<std::string>>
+               *constifier) = 0;
 
   virtual const NumericExpr *
   select(const ExprInspector<const NumericExpr *, const StringExpr *> *selector)
@@ -343,6 +356,12 @@ public:
     return constifier->inspect(*static_cast<const T *>(this));
   }
 
+  utils::optional<double>
+  constify(ExprMutator<utils::optional<double>, utils::optional<std::string>>
+               *constifier) override {
+    return constifier->mutate(*static_cast<T *>(this));
+  }
+
   const NumericExpr *
   select(const ExprInspector<const NumericExpr *, const StringExpr *> *selector)
       const override {
@@ -353,6 +372,8 @@ public:
 class StringExpr : public Expr {
 public:
   bool isString() override { return true; }
+  StringExpr *strExpr() override { return this; }
+  const StringExpr *strExpr() const override { return this; }
 
   virtual up<StringExpr>
   transmutate(ExprMutator<up<NumericExpr>, up<StringExpr>> *transmutator) = 0;
@@ -360,6 +381,10 @@ public:
   virtual utils::optional<std::string> constify(
       const ExprInspector<utils::optional<double>, utils::optional<std::string>>
           *obtainer) const = 0;
+
+  virtual utils::optional<std::string>
+  constify(ExprMutator<utils::optional<double>, utils::optional<std::string>>
+               *obtainer) = 0;
 
   virtual const StringExpr *
   select(const ExprInspector<const NumericExpr *, const StringExpr *> *selector)
@@ -393,6 +418,12 @@ public:
       const ExprInspector<utils::optional<double>, utils::optional<std::string>>
           *constifier) const override {
     return constifier->inspect(*static_cast<const T *>(this));
+  }
+
+  utils::optional<std::string>
+  constify(ExprMutator<utils::optional<double>, utils::optional<std::string>>
+               *constifier) override {
+    return constifier->mutate(*static_cast<T *>(this));
   }
 
   const StringExpr *
@@ -457,17 +488,28 @@ class NaryNumericExpr : public OperableNumericExpr<NaryNumericExpr> {
 public:
   std::vector<up<NumericExpr>> operands;
   std::vector<up<NumericExpr>> invoperands;
-  NaryNumericExpr(double id, const char *func, const char *inv)
-      : identity(id), funcName(func), invName(inv) {}
+  NaryNumericExpr(double id, double a, const char *fn,
+                  double (*f)(double, double), const char *in,
+                  double (*i)(double, double))
+      : identity(id), annihilator(a), funcName(fn), function(f), invName(in),
+        inverse(i) {}
   double identity;
+  double annihilator;
   std::string funcName;
+  double (*function)(double, double);
   std::string invName;
+  double (*inverse)(double, double);
 };
 
 template <typename T> class OperableNaryNumericExpr : public NaryNumericExpr {
 public:
-  OperableNaryNumericExpr(double id, const char *func, const char *inv = "")
-      : NaryNumericExpr(id, func, inv) {}
+  OperableNaryNumericExpr(
+      double id, double a, const char *fn, double (*f)(double, double),
+      const char *in = "",
+      double (*i)(double, double) = [](double a, double) -> double {
+        return a;
+      })
+      : NaryNumericExpr(id, a, fn, f, in, i) {}
 
   bool check(const ExprInspector<bool, bool> *op) const override {
     return op->inspect(*static_cast<const T *>(this));
@@ -528,20 +570,24 @@ public:
 
 class MultiplicativeExpr : public OperableNaryNumericExpr<MultiplicativeExpr> {
 public:
-  MultiplicativeExpr() : OperableNaryNumericExpr(1, "*", "/") {}
+  MultiplicativeExpr() : OperableNaryNumericExpr(1, 0, "*", mul_, "/", div_) {}
   explicit MultiplicativeExpr(up<NumericExpr> e)
-      : OperableNaryNumericExpr(1, "*", "/") {
+      : OperableNaryNumericExpr(1, 0, "*", mul_, "/", div_) {
     operands.emplace_back(mv(e));
   }
+  static double mul_(double a, double b) { return a * b; }
+  static double div_(double a, double b) { return a / b; }
 };
 
 class AdditiveExpr : public OperableNaryNumericExpr<AdditiveExpr> {
 public:
-  AdditiveExpr() : OperableNaryNumericExpr(0, "+", "-") {}
+  AdditiveExpr() : OperableNaryNumericExpr(0, NAN, "+", add_, "-", sub_) {}
   explicit AdditiveExpr(up<NumericExpr> e)
-      : OperableNaryNumericExpr(0, "+", "-") {
+      : OperableNaryNumericExpr(0, NAN, "+", add_, "-", sub_) {
     operands.emplace_back(mv(e));
   }
+  static double add_(double a, double b) { return a + b; }
+  static double sub_(double a, double b) { return a - b; }
 };
 
 class ComplementedExpr : public OperableNumericExpr<ComplementedExpr> {
@@ -561,17 +607,25 @@ public:
 
 class AndExpr : public OperableNaryNumericExpr<AndExpr> {
 public:
-  AndExpr() : OperableNaryNumericExpr(-1, "AND") {}
-  explicit AndExpr(up<NumericExpr> e) : OperableNaryNumericExpr(-1, "AND") {
+  AndExpr() : OperableNaryNumericExpr(-1, 0, "AND", and_) {}
+  explicit AndExpr(up<NumericExpr> e)
+      : OperableNaryNumericExpr(-1, 0, "AND", and_) {
     operands.emplace_back(mv(e));
+  }
+  static double and_(double a, double b) {
+    return static_cast<int>(a) & static_cast<int>(b);
   }
 };
 
 class OrExpr : public OperableNaryNumericExpr<OrExpr> {
 public:
-  OrExpr() : OperableNaryNumericExpr(0, "OR") {}
-  explicit OrExpr(up<NumericExpr> e) : OperableNaryNumericExpr(0, "OR") {
+  OrExpr() : OperableNaryNumericExpr(0, -1, "OR", or_) {}
+  explicit OrExpr(up<NumericExpr> e)
+      : OperableNaryNumericExpr(0, -1, "OR", or_) {
     operands.emplace_back(mv(e));
+  }
+  static double or_(double a, double b) {
+    return static_cast<int>(a) | static_cast<int>(b);
   }
 };
 

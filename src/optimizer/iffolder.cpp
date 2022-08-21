@@ -22,20 +22,16 @@ void IfStatementFolder::mutate(If &s) {
 
   ConstInspector constInspector;
   auto value = s.predicate->constify(&constInspector);
-  bool gotPredicate = value.has_value();
+  needsReplacement = value.has_value();
 
-  if (gotPredicate && *value != 0) {
-    needsReplacement = true;
+  if (needsReplacement) {
     replacement.clear();
-    replacement.insert(replacement.begin(),
-                       std::make_move_iterator(s.consequent.begin()),
-                       std::make_move_iterator(s.consequent.end()));
-    return;
-  }
+    if (*value != 0) {
+      replacement.insert(replacement.begin(),
+                         std::make_move_iterator(s.consequent.begin()),
+                         std::make_move_iterator(s.consequent.end()));
+    }
 
-  if (gotPredicate || s.consequent.empty()) {
-    needsReplacement = true;
-    replacement.clear();
     return;
   }
 

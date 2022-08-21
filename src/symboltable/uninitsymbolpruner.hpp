@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef SYMBOLTABLE_SYMBOLPRUNER_HPP
-#define SYMBOLTABLE_SYMBOLPRUNER_HPP
+#ifndef SYMBOLTABLE_UNINITSYMBOLPRUNER_HPP
+#define SYMBOLTABLE_UNINITSYMBOLPRUNER_HPP
 
 #include "ast/program.hpp"
 #include "symboltable.hpp"
@@ -9,17 +9,17 @@
 
 // Validate symbols exist in symbol table
 
-class ExprSymbolPruner : public ExprMutator<void, void> {
+class ExprUninitSymbolPruner : public ExprMutator<void, void> {
 public:
-  ExprSymbolPruner(SymbolTable &st, int line, Announcer &a)
+  ExprUninitSymbolPruner(SymbolTable &st, int line, Announcer &a)
       : symbolTable(st), lineNumber(line), announcer(a) {}
 
-  ExprSymbolPruner() = delete;
-  ExprSymbolPruner(const ExprSymbolPruner &) = delete;
-  ExprSymbolPruner(ExprSymbolPruner &&) = delete;
-  ExprSymbolPruner &operator=(const ExprSymbolPruner &) = delete;
-  ExprSymbolPruner &operator=(ExprSymbolPruner &&) = delete;
-  ~ExprSymbolPruner() override = default;
+  ExprUninitSymbolPruner() = delete;
+  ExprUninitSymbolPruner(const ExprUninitSymbolPruner &) = delete;
+  ExprUninitSymbolPruner(ExprUninitSymbolPruner &&) = delete;
+  ExprUninitSymbolPruner &operator=(const ExprUninitSymbolPruner &) = delete;
+  ExprUninitSymbolPruner &operator=(ExprUninitSymbolPruner &&) = delete;
+  ~ExprUninitSymbolPruner() override = default;
 
   void mutate(ArrayIndicesExpr & /*expr*/) override;
   void mutate(NumericConstantExpr & /*expr*/) override;
@@ -80,17 +80,19 @@ private:
   Announcer &announcer;
 };
 
-class StatementSymbolPruner : public StatementMutator<void> {
+class StatementUninitSymbolPruner : public StatementMutator<void> {
 public:
-  StatementSymbolPruner(SymbolTable &st, int line, Announcer &a)
+  StatementUninitSymbolPruner(SymbolTable &st, int line, Announcer &a)
       : se(st, line, a), that(&se) {}
 
-  StatementSymbolPruner() = delete;
-  StatementSymbolPruner(const StatementSymbolPruner &) = delete;
-  StatementSymbolPruner(StatementSymbolPruner &&) = delete;
-  StatementSymbolPruner &operator=(const StatementSymbolPruner &) = delete;
-  StatementSymbolPruner &operator=(StatementSymbolPruner &&) = delete;
-  ~StatementSymbolPruner() override = default;
+  StatementUninitSymbolPruner() = delete;
+  StatementUninitSymbolPruner(const StatementUninitSymbolPruner &) = delete;
+  StatementUninitSymbolPruner(StatementUninitSymbolPruner &&) = delete;
+  StatementUninitSymbolPruner &
+  operator=(const StatementUninitSymbolPruner &) = delete;
+  StatementUninitSymbolPruner &
+  operator=(StatementUninitSymbolPruner &&) = delete;
+  ~StatementUninitSymbolPruner() override = default;
 
   void mutate(Rem & /*s*/) override;
   void mutate(For & /*s*/) override;
@@ -109,6 +111,7 @@ public:
   void mutate(Accum & /*s*/) override;
   void mutate(Decum & /*s*/) override;
   void mutate(Necum & /*s*/) override;
+  void mutate(Eval & /*s*/) override;
   void mutate(Run & /*s*/) override;
   void mutate(Restore & /*s*/) override;
   void mutate(Return & /*s*/) override;
@@ -123,13 +126,13 @@ public:
   void mutate(Error & /*s*/) override;
 
 private:
-  ExprSymbolPruner se;
-  ExprSymbolPruner *that;
+  ExprUninitSymbolPruner se;
+  ExprUninitSymbolPruner *that;
 };
 
-class SymbolPruner : public ProgramOp {
+class UninitSymbolPruner : public ProgramOp {
 public:
-  SymbolPruner(SymbolTable &st, Announcer &&a)
+  UninitSymbolPruner(SymbolTable &st, Announcer &&a)
       : symbolTable(st), announcer(a) {}
   void operate(Program &p) override;
   void operate(Line &l) override;

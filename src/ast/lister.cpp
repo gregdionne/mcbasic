@@ -407,9 +407,19 @@ void StatementLister::absorb(const Decum &s) {
 void StatementLister::absorb(const Necum &s) {
   ConstInspector constInspector;
   result = list(s.lhs) + "=-" + list(s.lhs);
-  auto *rhs = dynamic_cast<NumericExpr *>(s.rhs.get());
+  auto *rhs = s.rhs->numExpr();
   if (rhs && !constInspector.isEqual(rhs, 0)) {
     result += "+(" + list(s.rhs) + ")";
+  }
+}
+
+void StatementLister::absorb(const Eval &s) {
+  result = "EVAL";
+
+  bool continuing = false;
+  for (const auto &operand : s.operands) {
+    result += (continuing ? "," : " ") + list(operand);
+    continuing = true;
   }
 }
 

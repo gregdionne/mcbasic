@@ -8,9 +8,7 @@ NonZeroBranchSelector::inspect(const RelationalExpr &e) const {
 
   ConstInspector constInspector;
 
-  return constInspector.isEqual(e.lhs.get(), 0)
-             ? dynamic_cast<NumericExpr *>(e.rhs.get())
-         : constInspector.isEqual(e.rhs.get(), 0)
-             ? dynamic_cast<NumericExpr *>(e.lhs.get())
-             : nullptr;
+  return constInspector.isEqual(e.lhs.get(), 0)   ? e.rhs->numExpr()
+         : constInspector.isEqual(e.rhs.get(), 0) ? e.lhs->numExpr()
+                                                  : nullptr;
 }

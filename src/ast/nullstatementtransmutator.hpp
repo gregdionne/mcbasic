@@ -32,6 +32,7 @@ public:
   up<Statement> mutate(Accum & /*s*/) override { return {}; }
   up<Statement> mutate(Decum & /*s*/) override { return {}; }
   up<Statement> mutate(Necum & /*s*/) override { return {}; }
+  up<Statement> mutate(Eval & /*s*/) override { return {}; }
   up<Statement> mutate(Run & /*s*/) override { return {}; }
   up<Statement> mutate(Restore & /*s*/) override { return {}; }
   up<Statement> mutate(Return & /*s*/) override { return {}; }

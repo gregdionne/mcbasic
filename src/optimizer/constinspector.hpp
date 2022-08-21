@@ -180,7 +180,7 @@ public:
   }
 
   inline bool isEqual(const Expr *e, double value) {
-    if (const auto *ne = dynamic_cast<const NumericExpr *>(e)) {
+    if (const auto *ne = e->numExpr()) {
       auto val = ne->constify(this);
       return val && *val == value;
     }

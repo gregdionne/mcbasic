@@ -232,13 +232,13 @@ LINE_180
 	.byte	bytecode_ld_fx_fr1
 	.byte	bytecode_FLTVAR_XT
 
-	; Y=SHIFT(Y*X,1)+YZ
+	; Y=SHIFT(X*Y,1)+YZ
 
 	.byte	bytecode_ld_fr1_fx
-	.byte	bytecode_FLTVAR_Y
+	.byte	bytecode_FLTVAR_X
 
 	.byte	bytecode_mul_fr1_fr1_fx
-	.byte	bytecode_FLTVAR_X
+	.byte	bytecode_FLTVAR_Y
 
 	.byte	bytecode_dbl_fr1_fr1
 

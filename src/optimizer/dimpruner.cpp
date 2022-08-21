@@ -39,7 +39,7 @@ void StatementDimPruner::mutate(If &s) {
 void StatementDimPruner::mutate(Dim &s) {
   auto it = s.variables.begin();
   while (it != s.variables.end()) {
-    if ((*it)->check(&isDeadSymbol)) {
+    if ((*it)->check(&isMissingSymbol)) {
       ExprLister el;
       (*it)->soak(&el);
       announcer.start(lineNumber);
@@ -50,28 +50,4 @@ void StatementDimPruner::mutate(Dim &s) {
     }
   }
   pruned = s.variables.empty();
-}
-
-bool IsDeadSymbol::inspect(const NumericVariableExpr &e) const {
-  return std::all_of(
-      symbolTable.numVarTable.begin(), symbolTable.numVarTable.end(),
-      [&e](const Symbol &symbol) { return symbol.name != e.varname; });
-}
-
-bool IsDeadSymbol::inspect(const StringVariableExpr &e) const {
-  return std::all_of(
-      symbolTable.strVarTable.begin(), symbolTable.strVarTable.end(),
-      [&e](const Symbol &symbol) { return symbol.name != e.varname; });
-}
-
-bool IsDeadSymbol::inspect(const NumericArrayExpr &e) const {
-  return std::all_of(
-      symbolTable.numArrTable.begin(), symbolTable.numArrTable.end(),
-      [&e](const Symbol &symbol) { return symbol.name != e.varexp->varname; });
-}
-
-bool IsDeadSymbol::inspect(const StringArrayExpr &e) const {
-  return std::all_of(
-      symbolTable.strArrTable.begin(), symbolTable.strArrTable.end(),
-      [&e](const Symbol &symbol) { return symbol.name != e.varexp->varname; });
 }

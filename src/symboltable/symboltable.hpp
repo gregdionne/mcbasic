@@ -8,15 +8,13 @@
 
 // holds string, float, and integer variables
 // isFloat is updated by FloatPromoter
-// isUsed is updated by SymbolPruner
-// isImpure is updated by AssignmentPruner
+// isUsed is updated by SymbolUsageTabulator
 
 struct Symbol {
   std::string name;
   int numDims{0};
   bool isFloat{false};
   bool isUsed{false};
-  bool isImpure{false};
 };
 
 struct SymbolTable {
@@ -27,6 +25,8 @@ struct SymbolTable {
 };
 
 void sortSymbolTable(SymbolTable &table);
+bool pruneUnusedSymbols(SymbolTable &table);
+void clearUsage(SymbolTable &table);
 void removeSymbol(std::vector<Symbol> &table, const std::string &name);
 
 #endif

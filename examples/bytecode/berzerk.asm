@@ -5585,16 +5585,16 @@ LINE_103
 
 	.byte	bytecode_to_ip_ir1
 
-	; PRINT @RND(3)+SHIFT(T,5)+95, MID$(A$,T,1);
+	; PRINT @SHIFT(T,5)+RND(3)+95, MID$(A$,T,1);
 
-	.byte	bytecode_irnd_ir1_pb
-	.byte	3
-
-	.byte	bytecode_ld_ir2_ix
+	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_T
 
-	.byte	bytecode_shift_ir2_ir2_pb
+	.byte	bytecode_shift_ir1_ir1_pb
 	.byte	5
+
+	.byte	bytecode_irnd_ir2_pb
+	.byte	3
 
 	.byte	bytecode_add_ir1_ir1_ir2
 
@@ -7623,80 +7623,80 @@ bytecode_inc_ix_ix	.equ	55
 bytecode_inkey_sx	.equ	56
 bytecode_irnd_ir1_pb	.equ	57
 bytecode_irnd_ir1_pw	.equ	58
-bytecode_jmpeq_ir1_ix	.equ	59
-bytecode_jmpne_ir1_ix	.equ	60
-bytecode_jsrne_ir1_ix	.equ	61
-bytecode_ld_id_ix	.equ	62
-bytecode_ld_ip_ir1	.equ	63
-bytecode_ld_ip_pb	.equ	64
-bytecode_ld_ir1_ix	.equ	65
-bytecode_ld_ir1_pb	.equ	66
-bytecode_ld_ir2_ix	.equ	67
-bytecode_ld_ir2_pb	.equ	68
-bytecode_ld_ir3_pb	.equ	69
-bytecode_ld_ix_ir1	.equ	70
-bytecode_ld_ix_pb	.equ	71
-bytecode_ld_ix_pw	.equ	72
-bytecode_ld_sp_sr1	.equ	73
-bytecode_ld_sr1_ss	.equ	74
-bytecode_ld_sr1_sx	.equ	75
-bytecode_ld_sr2_ss	.equ	76
-bytecode_ld_sx_sr1	.equ	77
-bytecode_ldeq_ir1_ir1_ir2	.equ	78
-bytecode_ldeq_ir1_ir1_pb	.equ	79
-bytecode_ldeq_ir1_ix_id	.equ	80
-bytecode_ldeq_ir1_sr1_ss	.equ	81
-bytecode_ldeq_ir2_ir2_pb	.equ	82
-bytecode_ldge_ir1_ir1_pb	.equ	83
-bytecode_ldge_ir1_ir1_pw	.equ	84
-bytecode_ldlt_ir1_ir1_ix	.equ	85
-bytecode_ldlt_ir1_ir1_pb	.equ	86
-bytecode_ldlt_ir1_ir1_pw	.equ	87
-bytecode_ldlt_ir1_ix_id	.equ	88
-bytecode_ldlt_ir1_sr1_ss	.equ	89
-bytecode_ldlt_ir2_ir2_pw	.equ	90
-bytecode_ldlt_ir2_sr2_sx	.equ	91
-bytecode_ldne_ir2_ir2_pb	.equ	92
-bytecode_len_ir1_sx	.equ	93
-bytecode_midT_sr1_sr1_pb	.equ	94
-bytecode_mul_ir1_ir1_pb	.equ	95
-bytecode_next	.equ	96
-bytecode_one_ip	.equ	97
-bytecode_one_ix	.equ	98
-bytecode_ongosub_ir1_is	.equ	99
-bytecode_ongoto_ir1_is	.equ	100
-bytecode_or_ir1_ir1_ir2	.equ	101
-bytecode_peek_ir1_pb	.equ	102
-bytecode_peek_ir1_pw	.equ	103
-bytecode_peek_ir2_pw	.equ	104
-bytecode_point_ir1_ir1_ir2	.equ	105
-bytecode_point_ir1_ir1_ix	.equ	106
-bytecode_point_ir2_ir2_ir3	.equ	107
-bytecode_point_ir2_ir2_ix	.equ	108
-bytecode_poke_pw_ir1	.equ	109
-bytecode_pr_sr1	.equ	110
-bytecode_pr_ss	.equ	111
-bytecode_pr_sx	.equ	112
-bytecode_prat_ir1	.equ	113
-bytecode_prat_pb	.equ	114
-bytecode_prat_pw	.equ	115
-bytecode_progbegin	.equ	116
-bytecode_progend	.equ	117
-bytecode_read_fx	.equ	118
-bytecode_read_sx	.equ	119
-bytecode_reset_ir1_ix	.equ	120
-bytecode_reset_ir1_pb	.equ	121
-bytecode_restore	.equ	122
-bytecode_return	.equ	123
-bytecode_rnd_fr1_ir1	.equ	124
-bytecode_rsub_ir1_ir1_ix	.equ	125
-bytecode_rsub_ir1_ir1_pb	.equ	126
-bytecode_rsub_ir1_ir1_pw	.equ	127
-bytecode_setc_ir1_ir2_ix	.equ	128
-bytecode_setc_ir1_ir2_pb	.equ	129
-bytecode_sgn_ir1_ir1	.equ	130
-bytecode_shift_ir1_ir1_pb	.equ	131
-bytecode_shift_ir2_ir2_pb	.equ	132
+bytecode_irnd_ir2_pb	.equ	59
+bytecode_jmpeq_ir1_ix	.equ	60
+bytecode_jmpne_ir1_ix	.equ	61
+bytecode_jsrne_ir1_ix	.equ	62
+bytecode_ld_id_ix	.equ	63
+bytecode_ld_ip_ir1	.equ	64
+bytecode_ld_ip_pb	.equ	65
+bytecode_ld_ir1_ix	.equ	66
+bytecode_ld_ir1_pb	.equ	67
+bytecode_ld_ir2_ix	.equ	68
+bytecode_ld_ir2_pb	.equ	69
+bytecode_ld_ir3_pb	.equ	70
+bytecode_ld_ix_ir1	.equ	71
+bytecode_ld_ix_pb	.equ	72
+bytecode_ld_ix_pw	.equ	73
+bytecode_ld_sp_sr1	.equ	74
+bytecode_ld_sr1_ss	.equ	75
+bytecode_ld_sr1_sx	.equ	76
+bytecode_ld_sr2_ss	.equ	77
+bytecode_ld_sx_sr1	.equ	78
+bytecode_ldeq_ir1_ir1_ir2	.equ	79
+bytecode_ldeq_ir1_ir1_pb	.equ	80
+bytecode_ldeq_ir1_ix_id	.equ	81
+bytecode_ldeq_ir1_sr1_ss	.equ	82
+bytecode_ldeq_ir2_ir2_pb	.equ	83
+bytecode_ldge_ir1_ir1_pb	.equ	84
+bytecode_ldge_ir1_ir1_pw	.equ	85
+bytecode_ldlt_ir1_ir1_ix	.equ	86
+bytecode_ldlt_ir1_ir1_pb	.equ	87
+bytecode_ldlt_ir1_ir1_pw	.equ	88
+bytecode_ldlt_ir1_ix_id	.equ	89
+bytecode_ldlt_ir1_sr1_ss	.equ	90
+bytecode_ldlt_ir2_ir2_pw	.equ	91
+bytecode_ldlt_ir2_sr2_sx	.equ	92
+bytecode_ldne_ir2_ir2_pb	.equ	93
+bytecode_len_ir1_sx	.equ	94
+bytecode_midT_sr1_sr1_pb	.equ	95
+bytecode_mul_ir1_ir1_pb	.equ	96
+bytecode_next	.equ	97
+bytecode_one_ip	.equ	98
+bytecode_one_ix	.equ	99
+bytecode_ongosub_ir1_is	.equ	100
+bytecode_ongoto_ir1_is	.equ	101
+bytecode_or_ir1_ir1_ir2	.equ	102
+bytecode_peek_ir1_pb	.equ	103
+bytecode_peek_ir1_pw	.equ	104
+bytecode_peek_ir2_pw	.equ	105
+bytecode_point_ir1_ir1_ir2	.equ	106
+bytecode_point_ir1_ir1_ix	.equ	107
+bytecode_point_ir2_ir2_ir3	.equ	108
+bytecode_point_ir2_ir2_ix	.equ	109
+bytecode_poke_pw_ir1	.equ	110
+bytecode_pr_sr1	.equ	111
+bytecode_pr_ss	.equ	112
+bytecode_pr_sx	.equ	113
+bytecode_prat_ir1	.equ	114
+bytecode_prat_pb	.equ	115
+bytecode_prat_pw	.equ	116
+bytecode_progbegin	.equ	117
+bytecode_progend	.equ	118
+bytecode_read_fx	.equ	119
+bytecode_read_sx	.equ	120
+bytecode_reset_ir1_ix	.equ	121
+bytecode_reset_ir1_pb	.equ	122
+bytecode_restore	.equ	123
+bytecode_return	.equ	124
+bytecode_rnd_fr1_ir1	.equ	125
+bytecode_rsub_ir1_ir1_ix	.equ	126
+bytecode_rsub_ir1_ir1_pb	.equ	127
+bytecode_rsub_ir1_ir1_pw	.equ	128
+bytecode_setc_ir1_ir2_ix	.equ	129
+bytecode_setc_ir1_ir2_pb	.equ	130
+bytecode_sgn_ir1_ir1	.equ	131
+bytecode_shift_ir1_ir1_pb	.equ	132
 bytecode_sound_ir1_ir2	.equ	133
 bytecode_step_ip_ir1	.equ	134
 bytecode_str_sr1_ix	.equ	135
@@ -7772,6 +7772,7 @@ catalog
 	.word	inkey_sx
 	.word	irnd_ir1_pb
 	.word	irnd_ir1_pw
+	.word	irnd_ir2_pb
 	.word	jmpeq_ir1_ix
 	.word	jmpne_ir1_ix
 	.word	jsrne_ir1_ix
@@ -7845,7 +7846,6 @@ catalog
 	.word	setc_ir1_ir2_pb
 	.word	sgn_ir1_ir1
 	.word	shift_ir1_ir1_pb
-	.word	shift_ir2_ir2_pb
 	.word	sound_ir1_ir2
 	.word	step_ip_ir1
 	.word	str_sr1_ix
@@ -10100,7 +10100,7 @@ _gotkey
 _rts
 	rts
 
-irnd_ir1_pb			; numCalls = 9
+irnd_ir1_pb			; numCalls = 8
 	.module	modirnd_ir1_pb
 	jsr	getbyte
 	clra
@@ -10121,6 +10121,18 @@ irnd_ir1_pw			; numCalls = 1
 	std	r1+1
 	ldab	tmp1
 	stab	r1
+	rts
+
+irnd_ir2_pb			; numCalls = 1
+	.module	modirnd_ir2_pb
+	jsr	getbyte
+	clra
+	staa	tmp1+1
+	std	tmp2
+	jsr	irnd
+	std	r2+1
+	ldab	tmp1
+	stab	r2
 	rts
 
 jmpeq_ir1_ix			; numCalls = 36
@@ -10196,7 +10208,7 @@ ld_ip_pb			; numCalls = 30
 	std	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 203
+ld_ir1_ix			; numCalls = 204
 	.module	modld_ir1_ix
 	jsr	extend
 	ldd	1,x
@@ -10213,7 +10225,7 @@ ld_ir1_pb			; numCalls = 146
 	std	r1
 	rts
 
-ld_ir2_ix			; numCalls = 87
+ld_ir2_ix			; numCalls = 86
 	.module	modld_ir2_ix
 	jsr	extend
 	ldd	1,x
@@ -11115,16 +11127,10 @@ _done
 	std	r1
 	rts
 
-shift_ir1_ir1_pb			; numCalls = 4
+shift_ir1_ir1_pb			; numCalls = 5
 	.module	modshift_ir1_ir1_pb
 	jsr	getbyte
 	ldx	#r1
-	jmp	shlint
-
-shift_ir2_ir2_pb			; numCalls = 1
-	.module	modshift_ir2_ir2_pb
-	jsr	getbyte
-	ldx	#r2
 	jmp	shlint
 
 sound_ir1_ir2			; numCalls = 26

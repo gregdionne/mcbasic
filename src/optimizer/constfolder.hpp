@@ -5,84 +5,76 @@
 
 #include "ast/nullstatementmutator.hpp"
 #include "ast/program.hpp"
+#include "constinspector.hpp"
 
 // combines operations on immediately resolvable constants
 
-class ExprConstFolder : public ExprMutator<void, void> {
+class ExprConstFolder : public ExprMutator<utils::optional<double>,
+                                           utils::optional<std::string>> {
 public:
-  void mutate(StringConstantExpr &e) override;
-  void mutate(StringVariableExpr &e) override;
-  void mutate(StringConcatenationExpr &e) override;
-  void mutate(StringArrayExpr &e) override;
-  void mutate(PrintTabExpr &e) override;
-  void mutate(PrintSpaceExpr &e) override;
-  void mutate(PrintCRExpr &e) override;
-  void mutate(LeftExpr &e) override;
-  void mutate(MidExpr &e) override;
-  void mutate(RightExpr &e) override;
-  void mutate(LenExpr &e) override;
-  void mutate(StrExpr &e) override;
-  void mutate(ValExpr &e) override;
-  void mutate(AscExpr &e) override;
-  void mutate(ChrExpr &e) override;
-  void mutate(NumericConstantExpr &e) override;
-  void mutate(NumericVariableExpr &e) override;
-  void mutate(NumericArrayExpr &e) override;
-  void mutate(ArrayIndicesExpr &e) override;
-  void mutate(PowerExpr &e) override;
-  void mutate(IntegerDivisionExpr &e) override;
-  void mutate(MultiplicativeExpr &e) override;
-  void mutate(AdditiveExpr &e) override;
-  void mutate(ComplementedExpr &e) override;
-  void mutate(AndExpr &e) override;
-  void mutate(OrExpr &e) override;
-  void mutate(ShiftExpr &e) override;
-  void mutate(SgnExpr &e) override;
-  void mutate(IntExpr &e) override;
-  void mutate(AbsExpr &e) override;
-  void mutate(SqrExpr &e) override;
-  void mutate(ExpExpr &e) override;
-  void mutate(LogExpr &e) override;
-  void mutate(SinExpr &e) override;
-  void mutate(CosExpr &e) override;
-  void mutate(TanExpr &e) override;
-  void mutate(RndExpr &e) override;
-  void mutate(PeekExpr &e) override;
-  void mutate(RelationalExpr &e) override;
-  void mutate(PointExpr &e) override;
-  void mutate(InkeyExpr &e) override;
-  void mutate(MemExpr &e) override;
-  void mutate(SquareExpr &e) override;
-  void mutate(PosExpr &e) override;
-  void mutate(TimerExpr &e) override;
-  void mutate(PeekWordExpr &e) override;
+  utils::optional<std::string> mutate(StringConstantExpr &e) override;
+  utils::optional<std::string> mutate(StringVariableExpr &e) override;
+  utils::optional<std::string> mutate(StringConcatenationExpr &e) override;
+  utils::optional<std::string> mutate(StringArrayExpr &e) override;
+  utils::optional<std::string> mutate(PrintTabExpr &e) override;
+  utils::optional<std::string> mutate(PrintSpaceExpr &e) override;
+  utils::optional<std::string> mutate(PrintCRExpr &e) override;
+  utils::optional<std::string> mutate(LeftExpr &e) override;
+  utils::optional<std::string> mutate(MidExpr &e) override;
+  utils::optional<std::string> mutate(RightExpr &e) override;
+  utils::optional<double> mutate(LenExpr &e) override;
+  utils::optional<std::string> mutate(StrExpr &e) override;
+  utils::optional<double> mutate(ValExpr &e) override;
+  utils::optional<double> mutate(AscExpr &e) override;
+  utils::optional<std::string> mutate(ChrExpr &e) override;
+  utils::optional<double> mutate(NumericConstantExpr &e) override;
+  utils::optional<double> mutate(NumericVariableExpr &e) override;
+  utils::optional<double> mutate(NumericArrayExpr &e) override;
+  utils::optional<double> mutate(ArrayIndicesExpr &e) override;
+  utils::optional<double> mutate(PowerExpr &e) override;
+  utils::optional<double> mutate(IntegerDivisionExpr &e) override;
+  utils::optional<double> mutate(MultiplicativeExpr &e) override;
+  utils::optional<double> mutate(AdditiveExpr &e) override;
+  utils::optional<double> mutate(ComplementedExpr &e) override;
+  utils::optional<double> mutate(AndExpr &e) override;
+  utils::optional<double> mutate(OrExpr &e) override;
+  utils::optional<double> mutate(ShiftExpr &e) override;
+  utils::optional<double> mutate(SgnExpr &e) override;
+  utils::optional<double> mutate(IntExpr &e) override;
+  utils::optional<double> mutate(AbsExpr &e) override;
+  utils::optional<double> mutate(SqrExpr &e) override;
+  utils::optional<double> mutate(ExpExpr &e) override;
+  utils::optional<double> mutate(LogExpr &e) override;
+  utils::optional<double> mutate(SinExpr &e) override;
+  utils::optional<double> mutate(CosExpr &e) override;
+  utils::optional<double> mutate(TanExpr &e) override;
+  utils::optional<double> mutate(RndExpr &e) override;
+  utils::optional<double> mutate(PeekExpr &e) override;
+  utils::optional<double> mutate(RelationalExpr &e) override;
+  utils::optional<double> mutate(PointExpr &e) override;
+  utils::optional<std::string> mutate(InkeyExpr &e) override;
+  utils::optional<double> mutate(MemExpr &e) override;
+  utils::optional<double> mutate(SquareExpr &e) override;
+  utils::optional<double> mutate(PosExpr &e) override;
+  utils::optional<double> mutate(TimerExpr &e) override;
+  utils::optional<double> mutate(PeekWordExpr &e) override;
 
-  void mutate(NaryNumericExpr & /*e*/) override { gotConst = false; };
-  void mutate(PrintCommaExpr & /*e*/) override { gotConst = false; };
+  utils::optional<double> mutate(NaryNumericExpr & /*e*/) override;
+  utils::optional<std::string> mutate(PrintCommaExpr & /*e*/) override;
 
-  bool fold(up<Expr> &expr);
-  bool fold(up<NumericExpr> &expr);
-  bool fold(up<StringExpr> &expr);
+  void fold(up<Expr> &expr);
+  utils::optional<double> fold(up<NumericExpr> &expr);
+  utils::optional<std::string> fold(up<StringExpr> &expr);
 
 private:
-  bool gotConst{false};
-  double dvalue{0};
-  std::string svalue;
-  double fetchConst(NumericExpr &e);
-  std::string fetchConst(StringExpr &e);
-
-  bool fold(up<NumericExpr> &expr, double &value);
-  bool fold(up<StringExpr> &expr, std::string &value);
-
   void fold(std::vector<up<NumericExpr>> &operands, bool &enableFold,
             bool &folded, int &iOffset, double &value,
             void (*op)(double &value, double v));
+  ConstInspector constInspector;
 };
 
 class StatementConstFolder : public StatementMutator<void> {
 public:
-  StatementConstFolder() = default;
-
   void mutate(For &s) override;
   void mutate(When &s) override;
   void mutate(If &s) override;
@@ -95,6 +87,7 @@ public:
   void mutate(Accum &s) override;
   void mutate(Decum &s) override;
   void mutate(Necum &s) override;
+  void mutate(Eval &s) override;
   void mutate(Poke &s) override;
   void mutate(Clear &s) override;
   void mutate(Set &s) override;
@@ -116,6 +109,7 @@ public:
 
 private:
   ExprConstFolder cfe;
+  ConstInspector constInspector;
 };
 
 class ConstFolder : public ProgramOp {

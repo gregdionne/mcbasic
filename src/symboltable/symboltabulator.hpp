@@ -42,6 +42,9 @@ public:
   void inspect(const Dim &s) const override;
   void inspect(const Read &s) const override;
   void inspect(const Let &s) const override;
+  void inspect(const Accum &s) const override;
+  void inspect(const Decum &s) const override;
+  void inspect(const Necum &s) const override;
   void inspect(const For &s) const override;
   void inspect(const Input &s) const override;
 

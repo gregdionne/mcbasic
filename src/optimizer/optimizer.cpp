@@ -3,7 +3,6 @@
 #include "optimizer.hpp"
 
 #include "accumulizer.hpp"
-#include "assignmentpruner.hpp"
 #include "ast/lister.hpp"
 #include "branchvalidator.hpp"
 #include "constfolder.hpp"
@@ -16,8 +15,9 @@
 #include "merger.hpp"
 #include "onfolder.hpp"
 #include "reachchecker.hpp"
-#include "symboltable/symbolpruner.hpp"
 #include "symboltable/symboltabulator.hpp"
+#include "symboltable/uninitsymbolpruner.hpp"
+#include "unusedassignmentpruner.hpp"
 #include "utils/announcer.hpp"
 #include "whenfolder.hpp"
 #include "whenifier.hpp"
@@ -54,11 +54,12 @@ void Optimizer::optimize(Program &p) {
   SymbolTabulator st(symbolTable);
   st.operate(p);
 
-  SymbolPruner sp(symbolTable, Announcer(options.Wuninit, "Wuninit"));
-  sp.operate(p);
+  UninitSymbolPruner usp(symbolTable, Announcer(options.Wuninit, "Wuninit"));
+  usp.operate(p);
 
-  AssignmentPruner ap(symbolTable, Announcer(options.Wunused, "Wunused"));
-  ap.operate(p);
+  UnusedAssignmentPruner uap(symbolTable,
+                             Announcer(options.Wunused, "Wunused"));
+  uap.operate(p);
 
   FloatPromoter fp(dataTable, symbolTable, Announcer(options.Wfloat, "Wfloat"));
   fp.operate(p);

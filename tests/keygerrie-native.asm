@@ -82,10 +82,9 @@ argv	.block	10
 
 LINE_10
 
-	; M$=INKEY$
+	; EVAL INKEY$
 
-	ldx	#STRVAR_M
-	jsr	inkey_sx
+	jsr	inkey_sr1
 
 	; POKE 16384,PEEK(17023)
 
@@ -129,63 +128,6 @@ LLAST
 
 	jsr	progend
 
-	.module	mdalloc
-; alloc D bytes in array memory.
-; then relink strings.
-alloc
-	std	tmp1
-	ldx	strfree
-	addd	strfree
-	std	strfree
-	ldd	strend
-	addd	tmp1
-	std	strend
-	sts	tmp2
-	subd	tmp2
-	blo	_ok
-	ldab	#OM_ERROR
-	jmp	error
-_ok
-	lds	strfree
-	des
-_again
-	dex
-	dex
-	ldd	,x
-	pshb
-	psha
-	cpx	strbuf
-	bhi	_again
-	lds	tmp2
-	ldx	strbuf
-	ldd	strbuf
-	addd	tmp1
-	std	strbuf
-	clra
-_nxtz
-	staa	,x
-	inx
-	cpx	strbuf
-	blo	_nxtz
-	ldx	strbuf
-; relink permanent strings
-; ENTRY:  X points to offending link word in strbuf
-; EXIT:   X points to strend
-strlink
-	cpx	strend
-	bhs	_rts
-	stx	tmp1
-	ldd	tmp1
-	addd	#2
-	ldx	,x
-	std	1,x
-	ldab	0,x
-	ldx	1,x
-	abx
-	bra	strlink
-_rts
-	rts
-
 	.module	mdpeek
 ; perform PEEK(X), emulating keypolling
 ;   ENTRY: X holds storage byte
@@ -214,46 +156,6 @@ _loop
 	inx
 	decb
 	bne	_loop
-	rts
-
-	.module	mdstrdel
-; remove a permanent string
-; then re-link trailing strings
-strdel
-	ldd	1,x
-	subd	strbuf
-	blo	_rts
-	ldd	1,x
-	subd	strend
-	bhs	_rts
-	ldd	strend
-	subd	#2
-	subb	0,x
-	sbca	#0
-	std	strend
-	ldab	0,x
-	ldx	1,x
-	dex
-	dex
-	stx	tmp1
-	abx
-	inx
-	inx
-	sts	tmp2
-	txs
-	ldx	tmp1
-_nxtwrd
-	pula
-	pulb
-	std	,x
-	inx
-	inx
-	cpx	strend
-	blo	_nxtwrd
-	lds	tmp2
-	ldx	tmp1
-	jmp	strlink
-_rts
 	rts
 
 and_ir1_ir1_ir2			; numCalls = 1
@@ -295,19 +197,18 @@ goto_ix			; numCalls = 1
 	ins
 	jmp	,x
 
-inkey_sx			; numCalls = 1
-	.module	modinkey_sx
-	jsr	strdel
+inkey_sr1			; numCalls = 1
+	.module	modinkey_sr1
 	ldd	#$0100+(charpage>>8)
-	std	0,x
+	std	r1
 	ldaa	M_IKEY
 	bne	_gotkey
 	jsr	R_KEYIN
 _gotkey
 	clr	M_IKEY
-	staa	2,x
+	staa	r1+2
 	bne	_rts
-	staa	0,x
+	staa	r1
 _rts
 	rts
 
@@ -411,7 +312,6 @@ bss
 
 ; Numeric Variables
 ; String Variables
-STRVAR_M	.block	3
 ; Numeric Arrays
 ; String Arrays
 

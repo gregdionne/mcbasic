@@ -31,6 +31,7 @@ public:
   void inspect(const Accum & /*s*/) const override {}
   void inspect(const Decum & /*s*/) const override {}
   void inspect(const Necum & /*s*/) const override {}
+  void inspect(const Eval & /*s*/) const override {}
   void inspect(const Run & /*s*/) const override {}
   void inspect(const Restore & /*s*/) const override {}
   void inspect(const Return & /*s*/) const override {}

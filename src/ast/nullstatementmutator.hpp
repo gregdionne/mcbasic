@@ -31,6 +31,7 @@ public:
   void mutate(Accum & /*s*/) override {}
   void mutate(Decum & /*s*/) override {}
   void mutate(Necum & /*s*/) override {}
+  void mutate(Eval & /*s*/) override {}
   void mutate(Run & /*s*/) override {}
   void mutate(Restore & /*s*/) override {}
   void mutate(Return & /*s*/) override {}

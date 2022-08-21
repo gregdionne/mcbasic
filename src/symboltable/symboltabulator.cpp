@@ -34,6 +34,18 @@ void StatementSymbolTabulator::inspect(const Let &s) const {
   s.lhs->inspect(&exprSymbolTabulator);
 }
 
+void StatementSymbolTabulator::inspect(const Accum &s) const {
+  s.lhs->inspect(&exprSymbolTabulator);
+}
+
+void StatementSymbolTabulator::inspect(const Decum &s) const {
+  s.lhs->inspect(&exprSymbolTabulator);
+}
+
+void StatementSymbolTabulator::inspect(const Necum &s) const {
+  s.lhs->inspect(&exprSymbolTabulator);
+}
+
 void StatementSymbolTabulator::inspect(const For &s) const {
   s.iter->inspect(&exprSymbolTabulator);
   for (auto &symbol : symbolTable.numVarTable) {

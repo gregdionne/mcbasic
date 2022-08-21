@@ -5,6 +5,7 @@
 
 #include "ast/nullstatementmutator.hpp"
 #include "ast/program.hpp"
+#include "constfolder.hpp"
 #include "isfloat.hpp"
 
 // Perform strength reduction and remove (merge)
@@ -49,6 +50,12 @@ public:
   void mutate(SgnExpr &e) override;
   void mutate(IntExpr &e) override;
   void mutate(AbsExpr &e) override;
+  void mutate(SqrExpr &e) override;
+  void mutate(ExpExpr &e) override;
+  void mutate(LogExpr &e) override;
+  void mutate(SinExpr &e) override;
+  void mutate(CosExpr &e) override;
+  void mutate(TanExpr &e) override;
   void mutate(RndExpr &e) override;
   void mutate(PeekExpr &e) override;
   void mutate(RelationalExpr &e) override;
@@ -56,6 +63,7 @@ public:
   void mutate(PrintTabExpr &e) override;
   void mutate(PeekWordExpr &e) override;
   void mutate(SquareExpr &e) override;
+  void mutate(ShiftExpr &e) override;
 
   void mutate(NumericConstantExpr & /*e*/) override {}
   void mutate(StringConstantExpr & /*e*/) override {}
@@ -65,13 +73,6 @@ public:
   void mutate(PrintSpaceExpr & /*e*/) override {}
   void mutate(PrintCRExpr & /*e*/) override {}
   void mutate(PrintCommaExpr & /*e*/) override {}
-  void mutate(ShiftExpr & /*e*/) override {}
-  void mutate(SqrExpr & /*e*/) override {}
-  void mutate(ExpExpr & /*e*/) override {}
-  void mutate(LogExpr & /*e*/) override {}
-  void mutate(SinExpr & /*e*/) override {}
-  void mutate(CosExpr & /*e*/) override {}
-  void mutate(TanExpr & /*e*/) override {}
   void mutate(InkeyExpr & /*e*/) override {}
   void mutate(MemExpr & /*e*/) override {}
   void mutate(PosExpr & /*e*/) override {}
@@ -166,6 +167,7 @@ private:
   static void knead(std::vector<up<NumericExpr>> &operands);
 
   IsFloat isFloat;
+  ExprConstFolder exprConstFolder;
 };
 
 class StatementMerger : public NullStatementMutator {
@@ -181,6 +183,7 @@ public:
   void mutate(Accum &s) override;
   void mutate(Decum &s) override;
   void mutate(Necum &s) override;
+  void mutate(Eval &s) override;
   void mutate(Poke &s) override;
   void mutate(Clear &s) override;
   void mutate(Set &s) override;
@@ -190,6 +193,7 @@ public:
   void mutate(Exec &s) override;
 
 private:
+  using NullStatementMutator::mutate;
   ExprMerger merger;
 };
 

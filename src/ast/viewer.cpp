@@ -386,6 +386,13 @@ void StatementViewer::absorb(const Necum &s) {
   indentOp(s.rhs, that);
 }
 
+void StatementViewer::absorb(const Eval &s) {
+  printtab(n, "EVAL");
+  for (const auto &operand : s.operands) {
+    indentOp(operand, that);
+  }
+}
+
 void StatementViewer::absorb(const Run &s) {
   printtab(n, "RUN");
   if (s.hasLineNumber) {

@@ -89,6 +89,7 @@ public:
   void absorb(const Accum &s) override;
   void absorb(const Decum &s) override;
   void absorb(const Necum &s) override;
+  void absorb(const Eval &s) override;
   void absorb(const Run &s) override;
   void absorb(const Restore &s) override;
   void absorb(const Return &s) override;

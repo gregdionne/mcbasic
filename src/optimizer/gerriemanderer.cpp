@@ -49,10 +49,9 @@ up<NumericExpr> ExprGerriemanderer::mutate(AdditiveExpr &e) {
     if (sz == 1 && constInspector.isEqual(e.operands[0].get(), 1)) {
       Complementer comp;
       return e.invoperands[0]->transmutate(&comp);
-    } else {
-      fprintf(stderr, "Got caught gerriemandering\n");
-      exit(1);
     }
+    fprintf(stderr, "internal error: got caught gerriemandering\n");
+    exit(1);
   }
   return {};
 }

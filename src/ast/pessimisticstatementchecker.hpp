@@ -33,6 +33,7 @@ public:
   bool inspect(const Accum & /*s*/) const override { return false; }
   bool inspect(const Decum & /*s*/) const override { return false; }
   bool inspect(const Necum & /*s*/) const override { return false; }
+  bool inspect(const Eval & /*s*/) const override { return false; }
   bool inspect(const Run & /*s*/) const override { return false; }
   bool inspect(const Restore & /*s*/) const override { return false; }
   bool inspect(const Return & /*s*/) const override { return false; }

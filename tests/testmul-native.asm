@@ -347,7 +347,7 @@ LINE_77
 
 LINE_80
 
-	; X=(SQ(1-T)*S(P))+SHIFT(X(P)*(1-T)*T,1)+(SQ(T)*E(P))
+	; X=(SQ(1-T)*S(P))+SHIFT((1-T)*X(P)*T,1)+(SQ(T)*E(P))
 
 	ldab	#1
 	ldx	#FLTVAR_T
@@ -363,17 +363,17 @@ LINE_80
 
 	jsr	mul_fr1_fr1_ir2
 
-	ldx	#INTVAR_P
-	jsr	ld_ir2_ix
-
-	ldx	#INTARR_X
-	jsr	arrval1_ir2_ix
-
 	ldab	#1
 	ldx	#FLTVAR_T
-	jsr	sub_fr3_pb_fx
+	jsr	sub_fr2_pb_fx
 
-	jsr	mul_fr2_ir2_fr3
+	ldx	#INTVAR_P
+	jsr	ld_ir3_ix
+
+	ldx	#INTARR_X
+	jsr	arrval1_ir3_ix
+
+	jsr	mul_fr2_fr2_ir3
 
 	ldx	#FLTVAR_T
 	jsr	mul_fr2_fr2_fx
@@ -400,7 +400,7 @@ LINE_80
 
 LINE_90
 
-	; Y=(SQ(1-T)*T(P))+SHIFT(Y(P)*(1-T)*T,1)+(SQ(T)*F(P))
+	; Y=(SQ(1-T)*T(P))+SHIFT((1-T)*Y(P)*T,1)+(SQ(T)*F(P))
 
 	ldab	#1
 	ldx	#FLTVAR_T
@@ -416,17 +416,17 @@ LINE_90
 
 	jsr	mul_fr1_fr1_ir2
 
-	ldx	#INTVAR_P
-	jsr	ld_ir2_ix
-
-	ldx	#INTARR_Y
-	jsr	arrval1_ir2_ix
-
 	ldab	#1
 	ldx	#FLTVAR_T
-	jsr	sub_fr3_pb_fx
+	jsr	sub_fr2_pb_fx
 
-	jsr	mul_fr2_ir2_fr3
+	ldx	#INTVAR_P
+	jsr	ld_ir3_ix
+
+	ldx	#INTARR_Y
+	jsr	arrval1_ir3_ix
+
+	jsr	mul_fr2_fr2_ir3
 
 	ldx	#FLTVAR_T
 	jsr	mul_fr2_fr2_fx
@@ -1582,7 +1582,7 @@ arrval1_ir1_ix			; numCalls = 3
 	std	r1+1
 	rts
 
-arrval1_ir2_ix			; numCalls = 9
+arrval1_ir2_ix			; numCalls = 7
 	.module	modarrval1_ir2_ix
 	ldd	r2+1
 	std	0+argv
@@ -1596,7 +1596,7 @@ arrval1_ir2_ix			; numCalls = 9
 	std	r2+1
 	rts
 
-arrval1_ir3_ix			; numCalls = 2
+arrval1_ir3_ix			; numCalls = 4
 	.module	modarrval1_ir3_ix
 	ldd	r3+1
 	std	0+argv
@@ -1755,7 +1755,7 @@ ld_ir1_pb			; numCalls = 6
 	std	r1
 	rts
 
-ld_ir2_ix			; numCalls = 9
+ld_ir2_ix			; numCalls = 7
 	.module	modld_ir2_ix
 	ldd	1,x
 	std	r2+1
@@ -1763,7 +1763,7 @@ ld_ir2_ix			; numCalls = 9
 	stab	r2
 	rts
 
-ld_ir3_ix			; numCalls = 2
+ld_ir3_ix			; numCalls = 4
 	.module	modld_ir3_ix
 	ldd	1,x
 	std	r3+1
@@ -1829,7 +1829,7 @@ mul_fr2_fr2_fx			; numCalls = 2
 	ldx	#r2
 	jmp	mulfltx
 
-mul_fr2_fr2_ir3			; numCalls = 2
+mul_fr2_fr2_ir3			; numCalls = 4
 	.module	modmul_fr2_fr2_ir3
 	ldab	r3
 	stab	0+argv
@@ -1837,19 +1837,6 @@ mul_fr2_fr2_ir3			; numCalls = 2
 	std	1+argv
 	ldd	#0
 	std	3+argv
-	ldx	#r2
-	jmp	mulfltx
-
-mul_fr2_ir2_fr3			; numCalls = 2
-	.module	modmul_fr2_ir2_fr3
-	ldab	r3
-	stab	0+argv
-	ldd	r3+1
-	std	1+argv
-	ldd	r3+3
-	std	3+argv
-	ldd	#0
-	std	r2+3
 	ldx	#r2
 	jmp	mulfltx
 
@@ -2107,19 +2094,19 @@ sub_fr1_pb_fx			; numCalls = 4
 	std	r1
 	rts
 
-sub_fr3_pb_fx			; numCalls = 2
-	.module	modsub_fr3_pb_fx
+sub_fr2_pb_fx			; numCalls = 2
+	.module	modsub_fr2_pb_fx
 	stab	tmp1
 	ldd	#0
 	subd	3,x
-	std	r3+3
+	std	r2+3
 	ldab	tmp1
 	sbcb	2,x
-	stab	r3+2
+	stab	r2+2
 	ldd	#0
 	sbcb	1,x
 	sbca	0,x
-	std	r3
+	std	r2
 	rts
 
 sub_ir1_ir1_ir2			; numCalls = 1

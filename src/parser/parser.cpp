@@ -216,7 +216,7 @@ up<Expr> Parser::seekParenthetical() {
 }
 
 up<NumericExpr> Parser::numeric(up<Expr> expr) {
-  auto *nexpr = dynamic_cast<NumericExpr *>(expr.get());
+  auto *nexpr = expr->numExpr();
 
   if (!nexpr) {
     in.die("numeric expression expected");
@@ -229,7 +229,7 @@ up<NumericExpr> Parser::numeric(up<Expr> expr) {
 up<NumericExpr> Parser::numeric(up<Expr> (Parser::*expr)()) {
   int savecol = in.getColumn();
   up<Expr> e = (this->*expr)();
-  auto *nexpr = dynamic_cast<NumericExpr *>(e.get());
+  auto *nexpr = e->numExpr();
 
   if (!nexpr) {
     in.setColumn(savecol);
@@ -241,7 +241,7 @@ up<NumericExpr> Parser::numeric(up<Expr> (Parser::*expr)()) {
 }
 
 up<StringExpr> Parser::string(up<Expr> expr) {
-  auto *sexpr = dynamic_cast<StringExpr *>(expr.get());
+  auto *sexpr = expr->strExpr();
   if (!sexpr) {
     in.die("string expression expected");
   }
@@ -253,7 +253,7 @@ up<StringExpr> Parser::string(up<Expr> expr) {
 up<StringExpr> Parser::string(up<Expr> (Parser::*expr)()) {
   int savecol = in.getColumn();
   up<Expr> e = (this->*expr)();
-  auto *sexpr = dynamic_cast<StringExpr *>(e.get());
+  auto *sexpr = e->strExpr();
   if (!sexpr) {
     in.setColumn(savecol);
     in.die("string expression expected");

@@ -48,6 +48,10 @@ void StatementConstTabulator::inspect(const Input &s) const {
   if (s.prompt) {
     s.prompt->inspect(that);
   }
+
+  for (const auto &variable : s.variables) {
+    variable->inspect(that);
+  }
 }
 
 void StatementConstTabulator::inspect(const On &s) const {
@@ -58,6 +62,16 @@ void StatementConstTabulator::inspect(const Dim &s) const {
   for (const auto &variable : s.variables) {
     variable->inspect(that);
   }
+}
+
+void StatementConstTabulator::inspect(const Read &s) const {
+  for (const auto &variable : s.variables) {
+    variable->inspect(that);
+  }
+}
+
+void StatementConstTabulator::inspect(const Let &s) const {
+  s.rhs->inspect(that);
 }
 
 void StatementConstTabulator::inspect(const Accum &s) const {
@@ -72,8 +86,10 @@ void StatementConstTabulator::inspect(const Necum &s) const {
   s.rhs->inspect(that);
 }
 
-void StatementConstTabulator::inspect(const Let &s) const {
-  s.rhs->inspect(that);
+void StatementConstTabulator::inspect(const Eval &s) const {
+  for (const auto &operand : s.operands) {
+    operand->inspect(that);
+  }
 }
 
 void StatementConstTabulator::inspect(const Poke &s) const {

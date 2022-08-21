@@ -216,12 +216,12 @@ LINE_180
 	ldx	#FLTVAR_XT
 	jsr	ld_fx_fr1
 
-	; Y=SHIFT(Y*X,1)+YZ
-
-	ldx	#FLTVAR_Y
-	jsr	ld_fr1_fx
+	; Y=SHIFT(X*Y,1)+YZ
 
 	ldx	#FLTVAR_X
+	jsr	ld_fr1_fx
+
+	ldx	#FLTVAR_Y
 	jsr	mul_fr1_fr1_fx
 
 	jsr	dbl_fr1_fr1

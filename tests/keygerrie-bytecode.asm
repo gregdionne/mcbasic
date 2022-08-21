@@ -98,10 +98,9 @@ program
 
 LINE_10
 
-	; M$=INKEY$
+	; EVAL INKEY$
 
-	.byte	bytecode_inkey_sx
-	.byte	bytecode_STRVAR_M
+	.byte	bytecode_inkey_sr1
 
 	; POKE 16384,PEEK(17023)
 
@@ -149,7 +148,7 @@ LLAST
 bytecode_and_ir1_ir1_ir2	.equ	0
 bytecode_clear	.equ	1
 bytecode_goto_ix	.equ	2
-bytecode_inkey_sx	.equ	3
+bytecode_inkey_sr1	.equ	3
 bytecode_peek_ir1_pb	.equ	4
 bytecode_peek_ir1_pw	.equ	5
 bytecode_peek_ir2_pb	.equ	6
@@ -161,70 +160,13 @@ catalog
 	.word	and_ir1_ir1_ir2
 	.word	clear
 	.word	goto_ix
-	.word	inkey_sx
+	.word	inkey_sr1
 	.word	peek_ir1_pb
 	.word	peek_ir1_pw
 	.word	peek_ir2_pb
 	.word	poke_pw_ir1
 	.word	progbegin
 	.word	progend
-
-	.module	mdalloc
-; alloc D bytes in array memory.
-; then relink strings.
-alloc
-	std	tmp1
-	ldx	strfree
-	addd	strfree
-	std	strfree
-	ldd	strend
-	addd	tmp1
-	std	strend
-	sts	tmp2
-	subd	tmp2
-	blo	_ok
-	ldab	#OM_ERROR
-	jmp	error
-_ok
-	lds	strfree
-	des
-_again
-	dex
-	dex
-	ldd	,x
-	pshb
-	psha
-	cpx	strbuf
-	bhi	_again
-	lds	tmp2
-	ldx	strbuf
-	ldd	strbuf
-	addd	tmp1
-	std	strbuf
-	clra
-_nxtz
-	staa	,x
-	inx
-	cpx	strbuf
-	blo	_nxtz
-	ldx	strbuf
-; relink permanent strings
-; ENTRY:  X points to offending link word in strbuf
-; EXIT:   X points to strend
-strlink
-	cpx	strend
-	bhs	_rts
-	stx	tmp1
-	ldd	tmp1
-	addd	#2
-	ldx	,x
-	std	1,x
-	ldab	0,x
-	ldx	1,x
-	abx
-	bra	strlink
-_rts
-	rts
 
 	.module	mdbcode
 noargs
@@ -400,46 +342,6 @@ _loop
 	bne	_loop
 	rts
 
-	.module	mdstrdel
-; remove a permanent string
-; then re-link trailing strings
-strdel
-	ldd	1,x
-	subd	strbuf
-	blo	_rts
-	ldd	1,x
-	subd	strend
-	bhs	_rts
-	ldd	strend
-	subd	#2
-	subb	0,x
-	sbca	#0
-	std	strend
-	ldab	0,x
-	ldx	1,x
-	dex
-	dex
-	stx	tmp1
-	abx
-	inx
-	inx
-	sts	tmp2
-	txs
-	ldx	tmp1
-_nxtwrd
-	pula
-	pulb
-	std	,x
-	inx
-	inx
-	cpx	strend
-	blo	_nxtwrd
-	lds	tmp2
-	ldx	tmp1
-	jmp	strlink
-_rts
-	rts
-
 and_ir1_ir1_ir2			; numCalls = 1
 	.module	modand_ir1_ir1_ir2
 	jsr	noargs
@@ -481,20 +383,19 @@ goto_ix			; numCalls = 1
 	stx	nxtinst
 	rts
 
-inkey_sx			; numCalls = 1
-	.module	modinkey_sx
-	jsr	extend
-	jsr	strdel
+inkey_sr1			; numCalls = 1
+	.module	modinkey_sr1
+	jsr	noargs
 	ldd	#$0100+(charpage>>8)
-	std	0,x
+	std	r1
 	ldaa	M_IKEY
 	bne	_gotkey
 	jsr	R_KEYIN
 _gotkey
 	clr	M_IKEY
-	staa	2,x
+	staa	r1+2
 	bne	_rts
-	staa	0,x
+	staa	r1
 _rts
 	rts
 
@@ -601,11 +502,9 @@ enddata
 ; Bytecode symbol lookup table
 
 
-bytecode_STRVAR_M	.equ	0
 
 symtbl
 
-	.word	STRVAR_M
 
 
 ; block started by symbol
@@ -613,7 +512,6 @@ bss
 
 ; Numeric Variables
 ; String Variables
-STRVAR_M	.block	3
 ; Numeric Arrays
 ; String Arrays
 

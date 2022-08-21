@@ -261,7 +261,7 @@ LINE_77
 
 LINE_80
 
-	; X=(SQ(1-T)*SP)+SHIFT((1-T)*XP*T,1)+(SQ(T)*EP)
+	; X=(SQ(1-T)*SP)+SHIFT((1-T)*T*XP,1)+(SQ(T)*EP)
 
 	.byte	bytecode_sub_fr1_pb_fx
 	.byte	1
@@ -276,11 +276,11 @@ LINE_80
 	.byte	1
 	.byte	bytecode_FLTVAR_T
 
-	.byte	bytecode_mul_fr2_fr2_ix
-	.byte	bytecode_INTVAR_XP
-
 	.byte	bytecode_mul_fr2_fr2_fx
 	.byte	bytecode_FLTVAR_T
+
+	.byte	bytecode_mul_fr2_fr2_ix
+	.byte	bytecode_INTVAR_XP
 
 	.byte	bytecode_dbl_fr2_fr2
 
@@ -299,7 +299,7 @@ LINE_80
 
 LINE_90
 
-	; Y=(SQ(1-T)*TP)+SHIFT((1-T)*YP*T,1)+(SQ(T)*FP)
+	; Y=(SQ(1-T)*TP)+SHIFT((1-T)*T*YP,1)+(SQ(T)*FP)
 
 	.byte	bytecode_sub_fr1_pb_fx
 	.byte	1
@@ -314,11 +314,11 @@ LINE_90
 	.byte	1
 	.byte	bytecode_FLTVAR_T
 
-	.byte	bytecode_mul_fr2_fr2_ix
-	.byte	bytecode_INTVAR_YP
-
 	.byte	bytecode_mul_fr2_fr2_fx
 	.byte	bytecode_FLTVAR_T
+
+	.byte	bytecode_mul_fr2_fr2_ix
+	.byte	bytecode_INTVAR_YP
 
 	.byte	bytecode_dbl_fr2_fr2
 

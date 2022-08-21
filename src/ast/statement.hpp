@@ -42,6 +42,7 @@ class When;
 class Accum;
 class Decum;
 class Necum;
+class Eval;
 class Error;
 
 // Statement Visitors
@@ -95,6 +96,7 @@ public:
   virtual T mutate(Accum & /*s*/) = 0;
   virtual T mutate(Decum & /*s*/) = 0;
   virtual T mutate(Necum & /*s*/) = 0;
+  virtual T mutate(Eval & /*s*/) = 0;
   virtual T mutate(Run & /*s*/) = 0;
   virtual T mutate(Restore & /*s*/) = 0;
   virtual T mutate(Return & /*s*/) = 0;
@@ -138,6 +140,7 @@ public:
   virtual T inspect(const Accum & /*s*/) const = 0;
   virtual T inspect(const Decum & /*s*/) const = 0;
   virtual T inspect(const Necum & /*s*/) const = 0;
+  virtual T inspect(const Eval & /*s*/) const = 0;
   virtual T inspect(const Run & /*s*/) const = 0;
   virtual T inspect(const Restore & /*s*/) const = 0;
   virtual T inspect(const Return & /*s*/) const = 0;
@@ -181,6 +184,7 @@ public:
   virtual T absorb(const Accum & /*s*/) = 0;
   virtual T absorb(const Decum & /*s*/) = 0;
   virtual T absorb(const Necum & /*s*/) = 0;
+  virtual T absorb(const Eval & /*s*/) = 0;
   virtual T absorb(const Run & /*s*/) = 0;
   virtual T absorb(const Restore & /*s*/) = 0;
   virtual T absorb(const Return & /*s*/) = 0;
@@ -365,6 +369,12 @@ public:
   up<Expr> rhs;
   explicit Necum(up<Expr> l, up<Expr> r) : lhs(mv(l)), rhs(mv(r)) {}
   std::string statementName() const override { return "NECUM"; }
+};
+
+class Eval : public OperableStatement<Eval> {
+public:
+  std::vector<up<Expr>> operands;
+  std::string statementName() const override { return "EVAL"; }
 };
 
 class Restore : public OperableStatement<Restore> {

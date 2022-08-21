@@ -101,20 +101,6 @@ LINE_10
 
 LINE_20
 
-	; DIM S1,S2$,S3(0),S4$(0)
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	0
-
-	.byte	bytecode_arrdim1_ir1_ix
-	.byte	bytecode_INTARR_S3
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	0
-
-	.byte	bytecode_arrdim1_ir1_sx
-	.byte	bytecode_STRARR_S4
-
 LINE_100
 
 	; REM PRUNE THESE VALUES
@@ -133,47 +119,50 @@ LINE_200
 
 LINE_210
 
-	; S1=RND(1)
+	; EVAL RND(1)
 
 	.byte	bytecode_irnd_ir1_pb
 	.byte	1
-
-	.byte	bytecode_ld_ix_ir1
-	.byte	bytecode_INTVAR_S1
 
 LINE_220
 
-	; S2$=INKEY$
+	; EVAL INKEY$
 
-	.byte	bytecode_inkey_sx
-	.byte	bytecode_STRVAR_S2
+	.byte	bytecode_inkey_sr1
 
 LINE_230
 
-	; S3(0)=RND(1)
-
-	.byte	bytecode_ld_ir1_pb
-	.byte	0
-
-	.byte	bytecode_arrref1_ir1_ix
-	.byte	bytecode_INTARR_S3
+	; EVAL RND(1)
 
 	.byte	bytecode_irnd_ir1_pb
 	.byte	1
 
-	.byte	bytecode_ld_ip_ir1
-
 LINE_240
 
-	; S4$(0)=INKEY$
+	; EVAL INKEY$
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	0
+	.byte	bytecode_inkey_sr1
 
-	.byte	bytecode_arrref1_ir1_sx
-	.byte	bytecode_STRARR_S4
+LINE_250
 
-	.byte	bytecode_inkey_sp
+	; EVAL RND(6),RND(5)
+
+	.byte	bytecode_irnd_ir1_pb
+	.byte	6
+
+	.byte	bytecode_irnd_ir1_pb
+	.byte	5
+
+LINE_260
+
+	; EVAL INKEY$,RND(6),INKEY$
+
+	.byte	bytecode_inkey_sr1
+
+	.byte	bytecode_irnd_ir1_pb
+	.byte	6
+
+	.byte	bytecode_inkey_sr1
 
 LLAST
 
@@ -182,91 +171,18 @@ LLAST
 	.byte	bytecode_progend
 
 ; Library Catalog
-bytecode_arrdim1_ir1_ix	.equ	0
-bytecode_arrdim1_ir1_sx	.equ	1
-bytecode_arrref1_ir1_ix	.equ	2
-bytecode_arrref1_ir1_sx	.equ	3
-bytecode_clear	.equ	4
-bytecode_inkey_sp	.equ	5
-bytecode_inkey_sx	.equ	6
-bytecode_irnd_ir1_pb	.equ	7
-bytecode_ld_ip_ir1	.equ	8
-bytecode_ld_ir1_pb	.equ	9
-bytecode_ld_ix_ir1	.equ	10
-bytecode_progbegin	.equ	11
-bytecode_progend	.equ	12
+bytecode_clear	.equ	0
+bytecode_inkey_sr1	.equ	1
+bytecode_irnd_ir1_pb	.equ	2
+bytecode_progbegin	.equ	3
+bytecode_progend	.equ	4
 
 catalog
-	.word	arrdim1_ir1_ix
-	.word	arrdim1_ir1_sx
-	.word	arrref1_ir1_ix
-	.word	arrref1_ir1_sx
 	.word	clear
-	.word	inkey_sp
-	.word	inkey_sx
+	.word	inkey_sr1
 	.word	irnd_ir1_pb
-	.word	ld_ip_ir1
-	.word	ld_ir1_pb
-	.word	ld_ix_ir1
 	.word	progbegin
 	.word	progend
-
-	.module	mdalloc
-; alloc D bytes in array memory.
-; then relink strings.
-alloc
-	std	tmp1
-	ldx	strfree
-	addd	strfree
-	std	strfree
-	ldd	strend
-	addd	tmp1
-	std	strend
-	sts	tmp2
-	subd	tmp2
-	blo	_ok
-	ldab	#OM_ERROR
-	jmp	error
-_ok
-	lds	strfree
-	des
-_again
-	dex
-	dex
-	ldd	,x
-	pshb
-	psha
-	cpx	strbuf
-	bhi	_again
-	lds	tmp2
-	ldx	strbuf
-	ldd	strbuf
-	addd	tmp1
-	std	strbuf
-	clra
-_nxtz
-	staa	,x
-	inx
-	cpx	strbuf
-	blo	_nxtz
-	ldx	strbuf
-; relink permanent strings
-; ENTRY:  X points to offending link word in strbuf
-; EXIT:   X points to strend
-strlink
-	cpx	strend
-	bhs	_rts
-	stx	tmp1
-	ldd	tmp1
-	addd	#2
-	ldx	,x
-	std	1,x
-	ldab	0,x
-	ldx	1,x
-	abx
-	bra	strlink
-_rts
-	rts
 
 	.module	mdbcode
 noargs
@@ -422,42 +338,6 @@ _loop
 	bne	_loop
 	rts
 
-	.module	mdref1
-; validate offset from 1D descriptor X and argv
-; if empty desc, then alloc D bytes in array memory and 11 elements.
-; return word offset in D and byte offset in tmp1
-ref1
-	std	tmp1
-	ldd	,x
-	bne	_preexist
-	ldd	strbuf
-	std	,x
-	ldd	#11
-	std	2,x
-	ldd	tmp1
-	pshx
-	jsr	alloc
-	pulx
-_preexist
-	ldd	0+argv
-	subd	2,x
-	bhi	_err
-	ldd	0+argv
-	std	tmp1
-	lsld
-	rts
-_err
-	ldab	#BS_ERROR
-	jmp	error
-
-	.module	mdrefint
-; return int/str array reference in D/tmp1
-refint
-	addd	tmp1
-	addd	0,x
-	std	tmp1
-	rts
-
 	.module	mdrnd
 rnd
 	ldab	tmp1+1
@@ -537,102 +417,6 @@ _done
 _rts
 	rts
 
-	.module	mdstrdel
-; remove a permanent string
-; then re-link trailing strings
-strdel
-	ldd	1,x
-	subd	strbuf
-	blo	_rts
-	ldd	1,x
-	subd	strend
-	bhs	_rts
-	ldd	strend
-	subd	#2
-	subb	0,x
-	sbca	#0
-	std	strend
-	ldab	0,x
-	ldx	1,x
-	dex
-	dex
-	stx	tmp1
-	abx
-	inx
-	inx
-	sts	tmp2
-	txs
-	ldx	tmp1
-_nxtwrd
-	pula
-	pulb
-	std	,x
-	inx
-	inx
-	cpx	strend
-	blo	_nxtwrd
-	lds	tmp2
-	ldx	tmp1
-	jmp	strlink
-_rts
-	rts
-
-arrdim1_ir1_ix			; numCalls = 1
-	.module	modarrdim1_ir1_ix
-	jsr	extend
-	ldd	,x
-	beq	_ok
-	ldab	#DD_ERROR
-	jmp	error
-_ok
-	ldd	strbuf
-	std	,x
-	ldd	r1+1
-	addd	#1
-	std	2,x
-	lsld
-	addd	2,x
-	jmp	alloc
-
-arrdim1_ir1_sx			; numCalls = 1
-	.module	modarrdim1_ir1_sx
-	jsr	extend
-	ldd	,x
-	beq	_ok
-	ldab	#DD_ERROR
-	jmp	error
-_ok
-	ldd	strbuf
-	std	,x
-	ldd	r1+1
-	addd	#1
-	std	2,x
-	lsld
-	addd	2,x
-	jmp	alloc
-
-arrref1_ir1_ix			; numCalls = 1
-	.module	modarrref1_ir1_ix
-	jsr	extend
-	ldd	r1+1
-	std	0+argv
-	ldd	#33
-	jsr	ref1
-	jsr	refint
-	std	letptr
-	rts
-
-arrref1_ir1_sx			; numCalls = 1
-	.module	modarrref1_ir1_sx
-	jsr	extend
-	ldd	r1+1
-	std	0+argv
-	ldd	#33
-	jsr	ref1
-	jsr	refint
-	std	letptr
-	rts
-
 clear			; numCalls = 1
 	.module	modclear
 	jsr	noargs
@@ -656,42 +440,23 @@ _start
 	stx	DP_DATA
 	rts
 
-inkey_sp			; numCalls = 1
-	.module	modinkey_sp
+inkey_sr1			; numCalls = 4
+	.module	modinkey_sr1
 	jsr	noargs
-	ldx	letptr
-	jsr	strdel
 	ldd	#$0100+(charpage>>8)
-	std	0,x
+	std	r1
 	ldaa	M_IKEY
 	bne	_gotkey
 	jsr	R_KEYIN
 _gotkey
 	clr	M_IKEY
-	staa	2,x
+	staa	r1+2
 	bne	_rts
-	staa	0,x
+	staa	r1
 _rts
 	rts
 
-inkey_sx			; numCalls = 1
-	.module	modinkey_sx
-	jsr	extend
-	jsr	strdel
-	ldd	#$0100+(charpage>>8)
-	std	0,x
-	ldaa	M_IKEY
-	bne	_gotkey
-	jsr	R_KEYIN
-_gotkey
-	clr	M_IKEY
-	staa	2,x
-	bne	_rts
-	staa	0,x
-_rts
-	rts
-
-irnd_ir1_pb			; numCalls = 2
+irnd_ir1_pb			; numCalls = 5
 	.module	modirnd_ir1_pb
 	jsr	getbyte
 	clra
@@ -701,33 +466,6 @@ irnd_ir1_pb			; numCalls = 2
 	std	r1+1
 	ldab	tmp1
 	stab	r1
-	rts
-
-ld_ip_ir1			; numCalls = 1
-	.module	modld_ip_ir1
-	jsr	noargs
-	ldx	letptr
-	ldd	r1+1
-	std	1,x
-	ldab	r1
-	stab	0,x
-	rts
-
-ld_ir1_pb			; numCalls = 4
-	.module	modld_ir1_pb
-	jsr	getbyte
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
-ld_ix_ir1			; numCalls = 1
-	.module	modld_ix_ir1
-	jsr	extend
-	ldd	r1+1
-	std	1,x
-	ldab	r1
-	stab	0,x
 	rts
 
 progbegin			; numCalls = 1
@@ -789,30 +527,18 @@ enddata
 ; Bytecode symbol lookup table
 
 
-bytecode_INTVAR_S1	.equ	0
-bytecode_STRVAR_S2	.equ	1
-bytecode_INTARR_S3	.equ	2
-bytecode_STRARR_S4	.equ	3
 
 symtbl
 
-	.word	INTVAR_S1
-	.word	STRVAR_S2
-	.word	INTARR_S3
-	.word	STRARR_S4
 
 
 ; block started by symbol
 bss
 
 ; Numeric Variables
-INTVAR_S1	.block	3
 ; String Variables
-STRVAR_S2	.block	3
 ; Numeric Arrays
-INTARR_S3	.block	4	; dims=1
 ; String Arrays
-STRARR_S4	.block	4	; dims=1
 
 ; block ended by symbol
 bes

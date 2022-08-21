@@ -4861,16 +4861,13 @@ LINE_900
 
 LINE_910
 
-	; NN=RND(-TIMER)
+	; EVAL RND(-TIMER)
 
 	.byte	bytecode_timer_ir1
 
 	.byte	bytecode_neg_ir1_ir1
 
 	.byte	bytecode_rnd_fr1_ir1
-
-	.byte	bytecode_ld_fx_fr1
-	.byte	bytecode_FLTVAR_NN
 
 	; P=144
 
@@ -6968,81 +6965,80 @@ bytecode_inkey_sx	.equ	55
 bytecode_jmpeq_ir1_ix	.equ	56
 bytecode_jmpne_ir1_ix	.equ	57
 bytecode_jsrne_ir1_ix	.equ	58
-bytecode_ld_fx_fr1	.equ	59
-bytecode_ld_id_ix	.equ	60
-bytecode_ld_ip_ir1	.equ	61
-bytecode_ld_ip_nb	.equ	62
-bytecode_ld_ip_pb	.equ	63
-bytecode_ld_ir1_ix	.equ	64
-bytecode_ld_ir1_pb	.equ	65
-bytecode_ld_ir2_ix	.equ	66
-bytecode_ld_ir2_pb	.equ	67
-bytecode_ld_ir3_ix	.equ	68
-bytecode_ld_ir3_pb	.equ	69
-bytecode_ld_ir4_ix	.equ	70
-bytecode_ld_ir4_pb	.equ	71
-bytecode_ld_ix_ir1	.equ	72
-bytecode_ld_ix_pb	.equ	73
-bytecode_ld_ix_pw	.equ	74
-bytecode_ld_sp_sr1	.equ	75
-bytecode_ld_sr1_ss	.equ	76
-bytecode_ld_sr1_sx	.equ	77
-bytecode_ld_sr2_sx	.equ	78
-bytecode_ldeq_ir1_ir1_ir2	.equ	79
-bytecode_ldeq_ir1_ir1_ix	.equ	80
-bytecode_ldeq_ir1_ir1_pb	.equ	81
-bytecode_ldeq_ir1_ix_id	.equ	82
-bytecode_ldeq_ir1_sr1_ss	.equ	83
-bytecode_ldeq_ir2_ir2_pb	.equ	84
-bytecode_ldeq_ir2_sr2_ss	.equ	85
-bytecode_ldlt_ir1_ir1_ir2	.equ	86
-bytecode_ldlt_ir1_ir1_ix	.equ	87
-bytecode_ldlt_ir1_ir1_pb	.equ	88
-bytecode_ldlt_ir2_ir2_ix	.equ	89
-bytecode_ldlt_ir2_ir2_pb	.equ	90
-bytecode_ldne_ir1_ir1_ir2	.equ	91
-bytecode_ldne_ir1_ir1_pb	.equ	92
-bytecode_ldne_ir1_sr1_ss	.equ	93
-bytecode_left_sr1_sr1_ir2	.equ	94
-bytecode_midT_sr1_sr1_pb	.equ	95
-bytecode_mid_sr1_sr1_pb	.equ	96
-bytecode_mid_sr2_sr2_ir3	.equ	97
-bytecode_mul3_ir1_ix	.equ	98
-bytecode_neg_ir1_ir1	.equ	99
-bytecode_next	.equ	100
-bytecode_one_ix	.equ	101
-bytecode_ongoto_ir1_is	.equ	102
-bytecode_or_ir1_ir1_ir2	.equ	103
-bytecode_poke_ir1_ir2	.equ	104
-bytecode_poke_pw_ir1	.equ	105
-bytecode_pr_sr1	.equ	106
-bytecode_pr_ss	.equ	107
-bytecode_prat_ir1	.equ	108
-bytecode_prat_ix	.equ	109
-bytecode_prat_pb	.equ	110
-bytecode_prat_pw	.equ	111
-bytecode_progbegin	.equ	112
-bytecode_progend	.equ	113
-bytecode_return	.equ	114
-bytecode_rnd_fr1_ir1	.equ	115
-bytecode_rnd_fr1_ix	.equ	116
-bytecode_rsub_ir1_ir1_pb	.equ	117
-bytecode_shift_ir1_ir1_pb	.equ	118
-bytecode_shift_ir2_ir2_pb	.equ	119
-bytecode_sound_ir1_ir2	.equ	120
-bytecode_stop	.equ	121
-bytecode_str_sr1_ir1	.equ	122
-bytecode_str_sr1_ix	.equ	123
-bytecode_strcat_sr1_sr1_sr2	.equ	124
-bytecode_strinit_sr1_sr1	.equ	125
-bytecode_sub_ip_ip_pb	.equ	126
-bytecode_sub_ir1_ix_id	.equ	127
-bytecode_timer_ir1	.equ	128
-bytecode_to_ip_ix	.equ	129
-bytecode_to_ip_pb	.equ	130
-bytecode_to_ip_pw	.equ	131
-bytecode_true_ix	.equ	132
-bytecode_val_fr1_sr1	.equ	133
+bytecode_ld_id_ix	.equ	59
+bytecode_ld_ip_ir1	.equ	60
+bytecode_ld_ip_nb	.equ	61
+bytecode_ld_ip_pb	.equ	62
+bytecode_ld_ir1_ix	.equ	63
+bytecode_ld_ir1_pb	.equ	64
+bytecode_ld_ir2_ix	.equ	65
+bytecode_ld_ir2_pb	.equ	66
+bytecode_ld_ir3_ix	.equ	67
+bytecode_ld_ir3_pb	.equ	68
+bytecode_ld_ir4_ix	.equ	69
+bytecode_ld_ir4_pb	.equ	70
+bytecode_ld_ix_ir1	.equ	71
+bytecode_ld_ix_pb	.equ	72
+bytecode_ld_ix_pw	.equ	73
+bytecode_ld_sp_sr1	.equ	74
+bytecode_ld_sr1_ss	.equ	75
+bytecode_ld_sr1_sx	.equ	76
+bytecode_ld_sr2_sx	.equ	77
+bytecode_ldeq_ir1_ir1_ir2	.equ	78
+bytecode_ldeq_ir1_ir1_ix	.equ	79
+bytecode_ldeq_ir1_ir1_pb	.equ	80
+bytecode_ldeq_ir1_ix_id	.equ	81
+bytecode_ldeq_ir1_sr1_ss	.equ	82
+bytecode_ldeq_ir2_ir2_pb	.equ	83
+bytecode_ldeq_ir2_sr2_ss	.equ	84
+bytecode_ldlt_ir1_ir1_ir2	.equ	85
+bytecode_ldlt_ir1_ir1_ix	.equ	86
+bytecode_ldlt_ir1_ir1_pb	.equ	87
+bytecode_ldlt_ir2_ir2_ix	.equ	88
+bytecode_ldlt_ir2_ir2_pb	.equ	89
+bytecode_ldne_ir1_ir1_ir2	.equ	90
+bytecode_ldne_ir1_ir1_pb	.equ	91
+bytecode_ldne_ir1_sr1_ss	.equ	92
+bytecode_left_sr1_sr1_ir2	.equ	93
+bytecode_midT_sr1_sr1_pb	.equ	94
+bytecode_mid_sr1_sr1_pb	.equ	95
+bytecode_mid_sr2_sr2_ir3	.equ	96
+bytecode_mul3_ir1_ix	.equ	97
+bytecode_neg_ir1_ir1	.equ	98
+bytecode_next	.equ	99
+bytecode_one_ix	.equ	100
+bytecode_ongoto_ir1_is	.equ	101
+bytecode_or_ir1_ir1_ir2	.equ	102
+bytecode_poke_ir1_ir2	.equ	103
+bytecode_poke_pw_ir1	.equ	104
+bytecode_pr_sr1	.equ	105
+bytecode_pr_ss	.equ	106
+bytecode_prat_ir1	.equ	107
+bytecode_prat_ix	.equ	108
+bytecode_prat_pb	.equ	109
+bytecode_prat_pw	.equ	110
+bytecode_progbegin	.equ	111
+bytecode_progend	.equ	112
+bytecode_return	.equ	113
+bytecode_rnd_fr1_ir1	.equ	114
+bytecode_rnd_fr1_ix	.equ	115
+bytecode_rsub_ir1_ir1_pb	.equ	116
+bytecode_shift_ir1_ir1_pb	.equ	117
+bytecode_shift_ir2_ir2_pb	.equ	118
+bytecode_sound_ir1_ir2	.equ	119
+bytecode_stop	.equ	120
+bytecode_str_sr1_ir1	.equ	121
+bytecode_str_sr1_ix	.equ	122
+bytecode_strcat_sr1_sr1_sr2	.equ	123
+bytecode_strinit_sr1_sr1	.equ	124
+bytecode_sub_ip_ip_pb	.equ	125
+bytecode_sub_ir1_ix_id	.equ	126
+bytecode_timer_ir1	.equ	127
+bytecode_to_ip_ix	.equ	128
+bytecode_to_ip_pb	.equ	129
+bytecode_to_ip_pw	.equ	130
+bytecode_true_ix	.equ	131
+bytecode_val_fr1_sr1	.equ	132
 
 catalog
 	.word	abs_ir1_ir1
@@ -7104,7 +7100,6 @@ catalog
 	.word	jmpeq_ir1_ix
 	.word	jmpne_ir1_ix
 	.word	jsrne_ir1_ix
-	.word	ld_fx_fr1
 	.word	ld_id_ix
 	.word	ld_ip_ir1
 	.word	ld_ip_nb
@@ -9247,17 +9242,6 @@ _go
 _rts
 	jmp	mainloop
 
-ld_fx_fr1			; numCalls = 1
-	.module	modld_fx_fr1
-	jsr	extend
-	ldd	r1+3
-	std	3,x
-	ldd	r1+1
-	std	1,x
-	ldab	r1
-	stab	0,x
-	rts
-
 ld_id_ix			; numCalls = 27
 	.module	modld_id_ix
 	jsr	dexext
@@ -10333,19 +10317,18 @@ bytecode_INTVAR_T	.equ	12
 bytecode_INTVAR_X	.equ	13
 bytecode_INTVAR_Y	.equ	14
 bytecode_INTVAR_Z	.equ	15
-bytecode_FLTVAR_NN	.equ	16
-bytecode_STRVAR_I	.equ	17
-bytecode_STRVAR_M	.equ	18
-bytecode_INTARR_L	.equ	19
-bytecode_INTARR_P	.equ	20
-bytecode_INTARR_T	.equ	21
-bytecode_INTARR_X	.equ	22
-bytecode_INTARR_Y	.equ	23
-bytecode_INTARR_Z	.equ	24
-bytecode_STRARR_A	.equ	25
-bytecode_STRARR_B	.equ	26
-bytecode_STRARR_L	.equ	27
-bytecode_STRARR_P	.equ	28
+bytecode_STRVAR_I	.equ	16
+bytecode_STRVAR_M	.equ	17
+bytecode_INTARR_L	.equ	18
+bytecode_INTARR_P	.equ	19
+bytecode_INTARR_T	.equ	20
+bytecode_INTARR_X	.equ	21
+bytecode_INTARR_Y	.equ	22
+bytecode_INTARR_Z	.equ	23
+bytecode_STRARR_A	.equ	24
+bytecode_STRARR_B	.equ	25
+bytecode_STRARR_L	.equ	26
+bytecode_STRARR_P	.equ	27
 
 symtbl
 
@@ -10365,7 +10348,6 @@ symtbl
 	.word	INTVAR_X
 	.word	INTVAR_Y
 	.word	INTVAR_Z
-	.word	FLTVAR_NN
 	.word	STRVAR_I
 	.word	STRVAR_M
 	.word	INTARR_L
@@ -10400,7 +10382,6 @@ INTVAR_T	.block	3
 INTVAR_X	.block	3
 INTVAR_Y	.block	3
 INTVAR_Z	.block	3
-FLTVAR_NN	.block	5
 ; String Variables
 STRVAR_I	.block	3
 STRVAR_M	.block	3

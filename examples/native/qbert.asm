@@ -5125,16 +5125,16 @@ LINE_2070
 	ldx	#INTVAR_R
 	jsr	ld_ix_ir1
 
-	; T=SHIFT(R,1)+SHIFT(R,6)+80
+	; T=SHIFT(R,6)+SHIFT(R,1)+80
 
 	ldx	#INTVAR_R
-	jsr	dbl_ir1_ix
-
-	ldx	#INTVAR_R
-	jsr	ld_ir2_ix
+	jsr	ld_ir1_ix
 
 	ldab	#6
-	jsr	shift_ir2_ir2_pb
+	jsr	shift_ir1_ir1_pb
+
+	ldx	#INTVAR_R
+	jsr	dbl_ir2_ix
 
 	jsr	add_ir1_ir1_ir2
 
@@ -7423,7 +7423,7 @@ dbl_ir1_ir1			; numCalls = 2
 	rol	0,x
 	rts
 
-dbl_ir1_ix			; numCalls = 2
+dbl_ir1_ix			; numCalls = 1
 	.module	moddbl_ir1_ix
 	ldd	1,x
 	lsld
@@ -7433,7 +7433,7 @@ dbl_ir1_ix			; numCalls = 2
 	stab	r1
 	rts
 
-dbl_ir2_ix			; numCalls = 2
+dbl_ir2_ix			; numCalls = 3
 	.module	moddbl_ir2_ix
 	ldd	1,x
 	lsld
@@ -7712,7 +7712,7 @@ ld_ip_pb			; numCalls = 15
 	std	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 169
+ld_ir1_ix			; numCalls = 170
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
@@ -7741,7 +7741,7 @@ ld_ir1_pw			; numCalls = 3
 	stab	r1
 	rts
 
-ld_ir2_ix			; numCalls = 37
+ld_ir2_ix			; numCalls = 36
 	.module	modld_ir2_ix
 	ldd	1,x
 	std	r2+1
@@ -8442,12 +8442,12 @@ _done
 	std	r1
 	rts
 
-shift_ir1_ir1_pb			; numCalls = 12
+shift_ir1_ir1_pb			; numCalls = 13
 	.module	modshift_ir1_ir1_pb
 	ldx	#r1
 	jmp	shlint
 
-shift_ir2_ir2_pb			; numCalls = 19
+shift_ir2_ir2_pb			; numCalls = 18
 	.module	modshift_ir2_ir2_pb
 	ldx	#r2
 	jmp	shlint
