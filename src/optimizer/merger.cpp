@@ -7,6 +7,7 @@
 #include "isequal.hpp"
 #include "isrelational.hpp"
 #include "factorizer.hpp"
+#include "shiftcombiner.hpp"
 #include <string>
 
 // TODO:
@@ -700,11 +701,12 @@ void ExprMerger::merge(NaryNumericExpr &e) {
 
 void ExprMerger::mutate(AdditiveExpr &e) {
   Factorizer factorizer;
+  ShiftCombiner shiftCombiner;
   do {
     merge(e);
     knead(e.operands);
     knead(e.invoperands);
-  } while (factorizer.factorize(&e));
+  } while (factorizer.factorize(&e) || shiftCombiner.combine(&e));
 }
 
 void ExprMerger::mutate(MultiplicativeExpr &e) {
@@ -717,18 +719,20 @@ void ExprMerger::mutate(MultiplicativeExpr &e) {
 
 void ExprMerger::mutate(AndExpr &e) {
   Factorizer factorizer;
+  ShiftCombiner shiftCombiner;
   do {
     merge(e);
     knead(e.operands);
-  } while (factorizer.factorize(&e));
+  } while (factorizer.factorize(&e) || shiftCombiner.combine(&e));
 }
 
 void ExprMerger::mutate(OrExpr &e) {
   Factorizer factorizer;
+  ShiftCombiner shiftCombiner;
   do {
     merge(e);
     knead(e.operands);
-  } while (factorizer.factorize(&e));
+  } while (factorizer.factorize(&e) || shiftCombiner.combine(&e));
 }
 
 void ExprMerger::mutate(ShiftExpr &e) {

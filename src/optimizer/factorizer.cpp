@@ -3,10 +3,6 @@
 #include "factorizer.hpp"
 #include "isequal.hpp"
 
-// ( A +  B)( A +  C) -> AA +  A(B+C) + BC.
-// (hA +  B)(hA +  C) -> AA + hA(B+C) + BC
-// ( A + hB)( A + hC) -> AA + hA(B+C) + BC
-
 static std::vector<up<NumericExpr>> &operands(NaryNumericExpr *expr) {
   return expr->operands;
 }
@@ -75,7 +71,8 @@ void Factorizer::mutate(AdditiveExpr &expr) {
     while (itRHS != expr.invoperands.end()) {
       if (auto factor = factorize<AdditiveExpr, MultiplicativeExpr>(*itLHS, *itRHS, invoperands, invoperands)) {
         itRHS = expr.invoperands.erase(itRHS);
-        *itLHS = mv(factor);
+        itLHS = expr.invoperands.erase(itLHS);
+        expr.operands.emplace_back(mv(factor));
         return;
       }
       ++itRHS;

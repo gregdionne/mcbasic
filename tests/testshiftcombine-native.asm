@@ -1,5 +1,5 @@
-; Assembly for testfactor-bytecode.bas
-; compiled with mcbasic
+; Assembly for testshiftcombine-native.bas
+; compiled with mcbasic -native
 
 ; Equates for MC-10 MICROCOLOR BASIC 1.0
 ; 
@@ -68,445 +68,155 @@ tmp4	.block	2
 tmp5	.block	2
 	.org	$af
 r1	.block	5
-r2	.block	5
 rend
-curinst	.block	2
-nxtinst	.block	2
 argv	.block	10
 
+
+; main program
 	.org	M_CODE
 
-	.module	mdmain
-	ldx	#program
-	stx	nxtinst
-mainloop
-	ldx	nxtinst
-	stx	curinst
-	ldab	,x
-	ldx	#catalog
-	abx
-	abx
-	ldx	,x
-	jsr	0,x
-	bra	mainloop
+	jsr	progbegin
 
-program
-
-	.byte	bytecode_progbegin
-
-	.byte	bytecode_clear
+	jsr	clear
 
 LINE_10
 
-	; A=1
+	; X=2
 
-	.byte	bytecode_one_ix
-	.byte	bytecode_INTVAR_A
-
-	; B=2
-
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_B
-	.byte	2
-
-	; C=3
-
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_C
-	.byte	3
-
-	; D=4
-
-	.byte	bytecode_ld_ix_pb
-	.byte	bytecode_INTVAR_D
-	.byte	4
+	ldx	#INTVAR_X
+	ldab	#2
+	jsr	ld_ix_pb
 
 LINE_20
 
-	; PRINT STR$((C+D)*(A+B));" \r";
+	; Y=3
 
-	.byte	bytecode_add_ir1_ix_id
-	.byte	bytecode_INTVAR_C
-	.byte	bytecode_INTVAR_D
-
-	.byte	bytecode_add_ir2_ix_id
-	.byte	bytecode_INTVAR_A
-	.byte	bytecode_INTVAR_B
-
-	.byte	bytecode_mul_ir1_ir1_ir2
-
-	.byte	bytecode_str_sr1_ir1
-
-	.byte	bytecode_pr_sr1
-
-	.byte	bytecode_pr_ss
-	.text	2, " \r"
+	ldx	#INTVAR_Y
+	ldab	#3
+	jsr	ld_ix_pb
 
 LINE_30
 
-	; PRINT STR$((C OR D) AND (A OR B));" \r";
+	; N=4
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_C
-
-	.byte	bytecode_or_ir1_ir1_ix
-	.byte	bytecode_INTVAR_D
-
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_A
-
-	.byte	bytecode_or_ir2_ir2_ix
-	.byte	bytecode_INTVAR_B
-
-	.byte	bytecode_and_ir1_ir1_ir2
-
-	.byte	bytecode_str_sr1_ir1
-
-	.byte	bytecode_pr_sr1
-
-	.byte	bytecode_pr_ss
-	.text	2, " \r"
+	ldx	#INTVAR_N
+	ldab	#4
+	jsr	ld_ix_pb
 
 LINE_40
 
-	; PRINT STR$((C AND D) OR (A AND B));" \r";
+	; PRINT STR$(SHIFT(Y+X,N)+N);" \r";
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_C
+	ldx	#INTVAR_Y
+	ldd	#INTVAR_X
+	jsr	add_ir1_ix_id
 
-	.byte	bytecode_and_ir1_ir1_ix
-	.byte	bytecode_INTVAR_D
+	ldx	#INTVAR_N
+	jsr	shift_fr1_ir1_ix
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_A
+	ldx	#INTVAR_N
+	jsr	add_fr1_fr1_ix
 
-	.byte	bytecode_and_ir2_ir2_ix
-	.byte	bytecode_INTVAR_B
+	jsr	str_sr1_fr1
 
-	.byte	bytecode_or_ir1_ir1_ir2
+	jsr	pr_sr1
 
-	.byte	bytecode_str_sr1_ir1
-
-	.byte	bytecode_pr_sr1
-
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	2, " \r"
-
-LINE_45
-
-	; REM THESE MAY IMPROVE LATER
 
 LINE_50
 
-	; PRINT STR$(((C+D)*A)+((-C-D)*B));" \r";
+	; PRINT STR$(SHIFT(X-Y,N)+N);" \r";
 
-	.byte	bytecode_add_ir1_ix_id
-	.byte	bytecode_INTVAR_C
-	.byte	bytecode_INTVAR_D
+	ldx	#INTVAR_X
+	ldd	#INTVAR_Y
+	jsr	sub_ir1_ix_id
 
-	.byte	bytecode_mul_ir1_ir1_ix
-	.byte	bytecode_INTVAR_A
+	ldx	#INTVAR_N
+	jsr	shift_fr1_ir1_ix
 
-	.byte	bytecode_add_ir2_ix_id
-	.byte	bytecode_INTVAR_C
-	.byte	bytecode_INTVAR_D
+	ldx	#INTVAR_N
+	jsr	add_fr1_fr1_ix
 
-	.byte	bytecode_neg_ir2_ir2
+	jsr	str_sr1_fr1
 
-	.byte	bytecode_mul_ir2_ir2_ix
-	.byte	bytecode_INTVAR_B
+	jsr	pr_sr1
 
-	.byte	bytecode_add_ir1_ir1_ir2
-
-	.byte	bytecode_str_sr1_ir1
-
-	.byte	bytecode_pr_sr1
-
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	2, " \r"
 
 LINE_60
 
-	; PRINT STR$(((-B-A)*C)+((A+B)*D));" \r";
+	; PRINT STR$(SHIFT(X-Y,N)+N);" \r";
 
-	.byte	bytecode_add_ir1_ix_id
-	.byte	bytecode_INTVAR_B
-	.byte	bytecode_INTVAR_A
+	ldx	#INTVAR_X
+	ldd	#INTVAR_Y
+	jsr	sub_ir1_ix_id
 
-	.byte	bytecode_neg_ir1_ir1
+	ldx	#INTVAR_N
+	jsr	shift_fr1_ir1_ix
 
-	.byte	bytecode_mul_ir1_ir1_ix
-	.byte	bytecode_INTVAR_C
+	ldx	#INTVAR_N
+	jsr	add_fr1_fr1_ix
 
-	.byte	bytecode_add_ir2_ix_id
-	.byte	bytecode_INTVAR_A
-	.byte	bytecode_INTVAR_B
+	jsr	str_sr1_fr1
 
-	.byte	bytecode_mul_ir2_ir2_ix
-	.byte	bytecode_INTVAR_D
+	jsr	pr_sr1
 
-	.byte	bytecode_add_ir1_ir1_ir2
-
-	.byte	bytecode_str_sr1_ir1
-
-	.byte	bytecode_pr_sr1
-
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	2, " \r"
 
 LINE_70
 
-	; PRINT STR$(((A+B)*C)+((-A-B)*D));" \r";
+	; PRINT STR$(SHIFT(-X-Y,N)+N);" \r";
 
-	.byte	bytecode_add_ir1_ix_id
-	.byte	bytecode_INTVAR_A
-	.byte	bytecode_INTVAR_B
+	ldx	#INTVAR_X
+	ldd	#INTVAR_Y
+	jsr	add_ir1_ix_id
 
-	.byte	bytecode_mul_ir1_ir1_ix
-	.byte	bytecode_INTVAR_C
+	jsr	neg_ir1_ir1
 
-	.byte	bytecode_add_ir2_ix_id
-	.byte	bytecode_INTVAR_A
-	.byte	bytecode_INTVAR_B
+	ldx	#INTVAR_N
+	jsr	shift_fr1_ir1_ix
 
-	.byte	bytecode_neg_ir2_ir2
+	ldx	#INTVAR_N
+	jsr	add_fr1_fr1_ix
 
-	.byte	bytecode_mul_ir2_ir2_ix
-	.byte	bytecode_INTVAR_D
+	jsr	str_sr1_fr1
 
-	.byte	bytecode_add_ir1_ir1_ir2
+	jsr	pr_sr1
 
-	.byte	bytecode_str_sr1_ir1
-
-	.byte	bytecode_pr_sr1
-
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	2, " \r"
 
 LINE_80
 
-	; PRINT STR$((-B-A)*(C+D));" \r";
+	; PRINT STR$(SHIFT(Y AND X,N) AND N);" \r";
 
-	.byte	bytecode_add_ir1_ix_id
-	.byte	bytecode_INTVAR_B
-	.byte	bytecode_INTVAR_A
+	ldx	#INTVAR_Y
+	jsr	ld_ir1_ix
 
-	.byte	bytecode_neg_ir1_ir1
+	ldx	#INTVAR_X
+	jsr	and_ir1_ir1_ix
 
-	.byte	bytecode_add_ir2_ix_id
-	.byte	bytecode_INTVAR_C
-	.byte	bytecode_INTVAR_D
+	ldx	#INTVAR_N
+	jsr	shift_fr1_ir1_ix
 
-	.byte	bytecode_mul_ir1_ir1_ir2
+	ldx	#INTVAR_N
+	jsr	and_ir1_ir1_ix
 
-	.byte	bytecode_str_sr1_ir1
+	jsr	str_sr1_ir1
 
-	.byte	bytecode_pr_sr1
+	jsr	pr_sr1
 
-	.byte	bytecode_pr_ss
+	jsr	pr_ss
 	.text	2, " \r"
 
 LLAST
 
 	; END
 
-	.byte	bytecode_progend
-
-; Library Catalog
-bytecode_add_ir1_ir1_ir2	.equ	0
-bytecode_add_ir1_ix_id	.equ	1
-bytecode_add_ir2_ix_id	.equ	2
-bytecode_and_ir1_ir1_ir2	.equ	3
-bytecode_and_ir1_ir1_ix	.equ	4
-bytecode_and_ir2_ir2_ix	.equ	5
-bytecode_clear	.equ	6
-bytecode_ld_ir1_ix	.equ	7
-bytecode_ld_ir2_ix	.equ	8
-bytecode_ld_ix_pb	.equ	9
-bytecode_mul_ir1_ir1_ir2	.equ	10
-bytecode_mul_ir1_ir1_ix	.equ	11
-bytecode_mul_ir2_ir2_ix	.equ	12
-bytecode_neg_ir1_ir1	.equ	13
-bytecode_neg_ir2_ir2	.equ	14
-bytecode_one_ix	.equ	15
-bytecode_or_ir1_ir1_ir2	.equ	16
-bytecode_or_ir1_ir1_ix	.equ	17
-bytecode_or_ir2_ir2_ix	.equ	18
-bytecode_pr_sr1	.equ	19
-bytecode_pr_ss	.equ	20
-bytecode_progbegin	.equ	21
-bytecode_progend	.equ	22
-bytecode_str_sr1_ir1	.equ	23
-
-catalog
-	.word	add_ir1_ir1_ir2
-	.word	add_ir1_ix_id
-	.word	add_ir2_ix_id
-	.word	and_ir1_ir1_ir2
-	.word	and_ir1_ir1_ix
-	.word	and_ir2_ir2_ix
-	.word	clear
-	.word	ld_ir1_ix
-	.word	ld_ir2_ix
-	.word	ld_ix_pb
-	.word	mul_ir1_ir1_ir2
-	.word	mul_ir1_ir1_ix
-	.word	mul_ir2_ir2_ix
-	.word	neg_ir1_ir1
-	.word	neg_ir2_ir2
-	.word	one_ix
-	.word	or_ir1_ir1_ir2
-	.word	or_ir1_ir1_ix
-	.word	or_ir2_ir2_ix
-	.word	pr_sr1
-	.word	pr_ss
-	.word	progbegin
-	.word	progend
-	.word	str_sr1_ir1
-
-	.module	mdbcode
-noargs
-	ldx	curinst
-	inx
-	stx	nxtinst
-	rts
-extend
-	ldx	curinst
-	inx
-	ldab	,x
-	inx
-	stx	nxtinst
-	ldx	#symtbl
-	abx
-	abx
-	ldx	,x
-	rts
-getaddr
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldx	1,x
-	rts
-getbyte
-	ldx	curinst
-	inx
-	ldab	,x
-	inx
-	stx	nxtinst
-	rts
-getword
-	ldx	curinst
-	inx
-	ldd	,x
-	inx
-	inx
-	stx	nxtinst
-	rts
-extbyte
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldab	2,x
-	pshb
-	ldab	1,x
-	ldx	#symtbl
-	abx
-	abx
-	ldx	,x
-	pulb
-	rts
-extword
-	ldd	curinst
-	addd	#4
-	std	nxtinst
-	ldx	curinst
-	ldd	2,x
-	pshb
-	ldab	1,x
-	ldx	#symtbl
-	abx
-	abx
-	ldx	,x
-	pulb
-	rts
-byteext
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldab	1,x
-	pshb
-	ldab	2,x
-	ldx	#symtbl
-	abx
-	abx
-	ldx	,x
-	pulb
-	rts
-wordext
-	ldd	curinst
-	addd	#4
-	std	nxtinst
-	ldx	curinst
-	ldd	1,x
-	pshb
-	ldab	3,x
-	ldx	#symtbl
-	abx
-	abx
-	ldx	,x
-	pulb
-	rts
-extdex
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldab	2,x
-	ldx	#symtbl
-	abx
-	abx
-	ldd	,x
-	pshb
-	ldx	curinst
-	ldab	1,x
-	ldx	#symtbl
-	abx
-	abx
-	ldx	,x
-	pulb
-	rts
-dexext
-	ldd	curinst
-	addd	#3
-	std	nxtinst
-	ldx	curinst
-	ldab	1,x
-	ldx	#symtbl
-	abx
-	abx
-	ldd	,x
-	pshb
-	ldx	curinst
-	ldab	2,x
-	ldx	#symtbl
-	abx
-	abx
-	ldx	,x
-	pulb
-	rts
-immstr
-	ldx	curinst
-	inx
-	ldab	,x
-	inx
-	pshx
-	abx
-	stx	nxtinst
-	pulx
-	rts
+	jsr	progend
 
 	.module	mddivflt
 ; divide X by Y
@@ -707,45 +417,6 @@ _dec
 	tst	tmp1+1
 	rts
 
-	.module	mdmulint
-mulint
-	ldaa	2+argv
-	ldab	2,x
-	mul
-	std	tmp2
-	ldaa	1+argv
-	ldab	1,x
-	mul
-	stab	tmp1+1
-	ldaa	2+argv
-	ldab	1,x
-	mul
-	addd	tmp1+1
-	std	tmp1+1
-	ldaa	1+argv
-	ldab	2,x
-	mul
-	addd	tmp1+1
-	std	tmp1+1
-	ldaa	2+argv
-	ldab	0,x
-	mul
-	addb	tmp1+1
-	stab	tmp1+1
-	ldaa	0+argv
-	ldab	2,x
-	mul
-	addb	tmp1+1
-	stab	tmp1+1
-	rts
-mulintx
-	bsr	mulint
-	ldab	tmp1+1
-	stab	0,x
-	ldd	tmp2
-	std	1,x
-	rts
-
 	.module	mdnegargv
 negargv
 	neg	4+argv
@@ -821,6 +492,85 @@ _loop
 	inx
 	decb
 	bne	_loop
+	rts
+
+	.module	mdshift
+; multiply X by 2^ACCB for ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
+;          uses tmp1
+shifti
+	clr	3,x
+	clr	4,x
+shift
+	tstb
+	beq	_rts
+	bpl	shlflt
+	negb
+	bra	shrflt
+_rts
+	rts
+
+	.module	mdshlflt
+; multiply X by 2^ACCB for positive ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
+;          uses tmp1
+shlflt
+	cmpb	#8
+	blo	_shlbit
+	stab	tmp1
+	ldd	1,x
+	std	0,x
+	ldd	3,x
+	std	2,x
+	clr	4,x
+	ldab	tmp1
+	subb	#8
+	bne	shlflt
+	rts
+_shlbit
+	lsl	4,x
+	rol	3,x
+	rol	2,x
+	rol	1,x
+	rol	0,x
+	decb
+	bne	_shlbit
+	rts
+
+	.module	mdshrflt
+; divide X by 2^ACCB for positive ACCB
+;   ENTRY  X contains multiplicand in (0,x 1,x 2,x 3,x 4,x)
+;   EXIT   X*2^ACCB in (0,x 1,x 2,x 3,x 4,x)
+;          uses tmp1
+shrint
+	clr	3,x
+	clr	4,x
+shrflt
+	cmpb	#8
+	blo	_shrbit
+	stab	tmp1
+	ldd	2,x
+	std	3,x
+	ldd	0,x
+	std	1,x
+	clrb
+	lsla
+	sbcb	#0
+	stab	0,x
+	ldab	tmp1
+	subb	#8
+	bne	shrflt
+	rts
+_shrbit
+	asr	0,x
+	ror	1,x
+	ror	2,x
+	ror	3,x
+	ror	4,x
+	decb
+	bne	_shrbit
 	rts
 
 	.module	mdstrflt
@@ -1002,20 +752,18 @@ _panic
 	ldab	#1
 	jmp	error
 
-add_ir1_ir1_ir2			; numCalls = 3
-	.module	modadd_ir1_ir1_ir2
-	jsr	noargs
+add_fr1_fr1_ix			; numCalls = 4
+	.module	modadd_fr1_fr1_ix
 	ldd	r1+1
-	addd	r2+1
+	addd	1,x
 	std	r1+1
 	ldab	r1
-	adcb	r2
+	adcb	0,x
 	stab	r1
 	rts
 
-add_ir1_ix_id			; numCalls = 5
+add_ir1_ix_id			; numCalls = 2
 	.module	modadd_ir1_ix_id
-	jsr	extdex
 	std	tmp1
 	ldab	0,x
 	stab	r1
@@ -1028,36 +776,8 @@ add_ir1_ix_id			; numCalls = 5
 	stab	r1
 	rts
 
-add_ir2_ix_id			; numCalls = 5
-	.module	modadd_ir2_ix_id
-	jsr	extdex
-	std	tmp1
-	ldab	0,x
-	stab	r2
-	ldd	1,x
-	ldx	tmp1
-	addd	1,x
-	std	r2+1
-	ldab	r2
-	adcb	0,x
-	stab	r2
-	rts
-
-and_ir1_ir1_ir2			; numCalls = 1
-	.module	modand_ir1_ir1_ir2
-	jsr	noargs
-	ldd	r2+1
-	andb	r1+2
-	anda	r1+1
-	std	r1+1
-	ldab	r2
-	andb	r1
-	stab	r1
-	rts
-
-and_ir1_ir1_ix			; numCalls = 1
+and_ir1_ir1_ix			; numCalls = 2
 	.module	modand_ir1_ir1_ix
-	jsr	extend
 	ldd	1,x
 	andb	r1+2
 	anda	r1+1
@@ -1065,23 +785,10 @@ and_ir1_ir1_ix			; numCalls = 1
 	ldab	0,x
 	andb	r1
 	stab	r1
-	rts
-
-and_ir2_ir2_ix			; numCalls = 1
-	.module	modand_ir2_ir2_ix
-	jsr	extend
-	ldd	1,x
-	andb	r2+2
-	anda	r2+1
-	std	r2+1
-	ldab	0,x
-	andb	r2
-	stab	r2
 	rts
 
 clear			; numCalls = 1
 	.module	modclear
-	jsr	noargs
 	clra
 	ldx	#bss
 	bra	_start
@@ -1102,121 +809,28 @@ _start
 	stx	DP_DATA
 	rts
 
-ld_ir1_ix			; numCalls = 2
+ld_ir1_ix			; numCalls = 1
 	.module	modld_ir1_ix
-	jsr	extend
 	ldd	1,x
 	std	r1+1
 	ldab	0,x
 	stab	r1
 	rts
 
-ld_ir2_ix			; numCalls = 2
-	.module	modld_ir2_ix
-	jsr	extend
-	ldd	1,x
-	std	r2+1
-	ldab	0,x
-	stab	r2
-	rts
-
 ld_ix_pb			; numCalls = 3
 	.module	modld_ix_pb
-	jsr	extbyte
 	stab	2,x
 	ldd	#0
 	std	0,x
 	rts
 
-mul_ir1_ir1_ir2			; numCalls = 2
-	.module	modmul_ir1_ir1_ir2
-	jsr	noargs
-	ldab	r2
-	stab	0+argv
-	ldd	r2+1
-	std	1+argv
-	ldx	#r1
-	jmp	mulintx
-
-mul_ir1_ir1_ix			; numCalls = 3
-	.module	modmul_ir1_ir1_ix
-	jsr	extend
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldx	#r1
-	jmp	mulintx
-
-mul_ir2_ir2_ix			; numCalls = 3
-	.module	modmul_ir2_ir2_ix
-	jsr	extend
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldx	#r2
-	jmp	mulintx
-
-neg_ir1_ir1			; numCalls = 2
+neg_ir1_ir1			; numCalls = 1
 	.module	modneg_ir1_ir1
-	jsr	noargs
 	ldx	#r1
 	jmp	negxi
 
-neg_ir2_ir2			; numCalls = 2
-	.module	modneg_ir2_ir2
-	jsr	noargs
-	ldx	#r2
-	jmp	negxi
-
-one_ix			; numCalls = 1
-	.module	modone_ix
-	jsr	extend
-	ldd	#1
-	staa	0,x
-	std	1,x
-	rts
-
-or_ir1_ir1_ir2			; numCalls = 1
-	.module	modor_ir1_ir1_ir2
-	jsr	noargs
-	ldd	r2+1
-	orab	r1+2
-	oraa	r1+1
-	std	r1+1
-	ldab	r2
-	orab	r1
-	stab	r1
-	rts
-
-or_ir1_ir1_ix			; numCalls = 1
-	.module	modor_ir1_ir1_ix
-	jsr	extend
-	ldd	1,x
-	orab	r1+2
-	oraa	r1+1
-	std	r1+1
-	ldab	0,x
-	orab	r1
-	stab	r1
-	rts
-
-or_ir2_ir2_ix			; numCalls = 1
-	.module	modor_ir2_ir2_ix
-	jsr	extend
-	ldd	1,x
-	orab	r2+2
-	oraa	r2+1
-	std	r2+1
-	ldab	0,x
-	orab	r2
-	stab	r2
-	rts
-
-pr_sr1			; numCalls = 7
+pr_sr1			; numCalls = 5
 	.module	modpr_sr1
-	jsr	noargs
 	ldab	r1
 	beq	_rts
 	ldx	r1+1
@@ -1226,24 +840,19 @@ pr_sr1			; numCalls = 7
 _rts
 	rts
 
-pr_ss			; numCalls = 7
+pr_ss			; numCalls = 5
 	.module	modpr_ss
-	ldx	curinst
-	inx
+	pulx
 	ldab	,x
 	beq	_null
 	inx
 	jsr	print
-	stx	nxtinst
-	rts
+	jmp	,x
 _null
-	inx
-	stx	nxtinst
-	rts
+	jmp	1,x
 
 progbegin			; numCalls = 1
 	.module	modprogbegin
-	jsr	noargs
 	ldx	R_MCXID
 	cpx	#'h'*256+'C'
 	beq	_ok
@@ -1274,7 +883,6 @@ _mcbasic
 
 progend			; numCalls = 1
 	.module	modprogend
-	jsr	noargs
 	pulx
 	pula
 	pula
@@ -1293,9 +901,28 @@ LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 
-str_sr1_ir1			; numCalls = 7
+shift_fr1_ir1_ix			; numCalls = 5
+	.module	modshift_fr1_ir1_ix
+	ldab	2,x
+	ldx	#r1
+	jmp	shifti
+
+str_sr1_fr1			; numCalls = 4
+	.module	modstr_sr1_fr1
+	ldd	r1+1
+	std	tmp2
+	ldab	r1
+	stab	tmp1+1
+	ldd	r1+3
+	std	tmp3
+	jsr	strflt
+	std	r1+1
+	ldab	tmp1
+	stab	r1
+	rts
+
+str_sr1_ir1			; numCalls = 1
 	.module	modstr_sr1_ir1
-	jsr	noargs
 	ldd	r1+1
 	std	tmp2
 	ldab	r1
@@ -1308,34 +935,32 @@ str_sr1_ir1			; numCalls = 7
 	stab	r1
 	rts
 
+sub_ir1_ix_id			; numCalls = 2
+	.module	modsub_ir1_ix_id
+	std	tmp1
+	ldab	0,x
+	stab	r1
+	ldd	1,x
+	ldx	tmp1
+	subd	1,x
+	std	r1+1
+	ldab	r1
+	sbcb	0,x
+	stab	r1
+	rts
+
 ; data table
 startdata
 enddata
-
-; Bytecode symbol lookup table
-
-
-bytecode_INTVAR_A	.equ	0
-bytecode_INTVAR_B	.equ	1
-bytecode_INTVAR_C	.equ	2
-bytecode_INTVAR_D	.equ	3
-
-symtbl
-
-	.word	INTVAR_A
-	.word	INTVAR_B
-	.word	INTVAR_C
-	.word	INTVAR_D
 
 
 ; block started by symbol
 bss
 
 ; Numeric Variables
-INTVAR_A	.block	3
-INTVAR_B	.block	3
-INTVAR_C	.block	3
-INTVAR_D	.block	3
+INTVAR_N	.block	3
+INTVAR_X	.block	3
+INTVAR_Y	.block	3
 ; String Variables
 ; Numeric Arrays
 ; String Arrays

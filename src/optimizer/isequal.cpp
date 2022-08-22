@@ -58,15 +58,21 @@ bool IsEqual::checkOps(const std::vector<up<NumericExpr>> &lhs,
     return false;
   }
 
-  auto iOpLhs = lhs.begin();
-  auto iOpRhs = rhs.begin();
-  while (iOpLhs != lhs.end()) {
-    IsEqual isEqual(iOpRhs->get());
-    if (!(*iOpLhs)->check(&isEqual)) {
+  std::vector<bool> matched(rhs.size(), false);
+
+  for (const auto &lop : lhs) {
+    bool found = false;
+    IsEqual isEqual(lop.get());
+    for (size_t i = 0; i<rhs.size(); ++i) {
+      if (!matched[i] && rhs[i]->check(&isEqual)) {
+        matched[i] = true;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
       return false;
     }
-    ++iOpLhs;
-    ++iOpRhs;
   }
 
   return true;
