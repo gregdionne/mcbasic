@@ -1090,6 +1090,12 @@ _panic
 ;        B holds string length
 ; EXIT:  D holds new string pointer
 strtmp
+	cpx	strfree
+	bls	_reserve
+	stx	tmp1
+	ldd	tmp1
+	rts
+_reserve
 	inc	strtcnt
 strcat
 	tstb

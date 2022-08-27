@@ -4,9 +4,9 @@
 #include "constfolder.hpp"
 #include "constinspector.hpp"
 #include "consttable/fixedpoint.hpp"
+#include "factorizer.hpp"
 #include "isequal.hpp"
 #include "isrelational.hpp"
-#include "factorizer.hpp"
 #include "shiftcombiner.hpp"
 #include <string>
 

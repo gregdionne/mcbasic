@@ -3,6 +3,7 @@
 #include "compiler.hpp"
 #include "ast/lister.hpp"
 #include "consttable/fixedpoint.hpp"
+#include "isnumericdatamode.hpp"
 #include "optimizer/constinspector.hpp"
 #include "optimizer/ischar.hpp"
 #include "optimizer/iscmpeqzero.hpp"
@@ -1110,17 +1111,16 @@ void ExprCompiler::absorb(const PeekWordExpr &e) {
 
 // helper function for AdditiveExpr visitor
 //
-// returns true if any of the operands gets
-// returned in a register
-static bool needsAlloc(const std::vector<up<NumericExpr>> &operands) {
-  ConstInspector constInspector;
+// returns true if empty or all operands resolve to an address or a constant
+static bool allData(const std::vector<up<NumericExpr>> &operands) {
+  IsNumericDataMode isNumericDataMode;
 
-  bool allocated = false;
+  bool alldata = true;
   for (const auto &operand : operands) {
-    allocated |= !operand->isVar() && !operand->constify(&constInspector);
+    alldata &= operand->check(&isNumericDataMode);
   }
 
-  return allocated;
+  return alldata;
 }
 
 // helper function for AdditiveExpr visitor
@@ -1132,6 +1132,7 @@ template <typename TposOne, typename TnegOne, typename TaddSub>
 static void addSub(ExprCompiler *that, const NumericExpr *operand,
                    up<AddressMode> &reg) {
   ConstInspector constInspector;
+  IsNumericDataMode isNumericDataMode;
 
   auto &result = that->result;
   auto &queue = that->queue;
@@ -1143,10 +1144,15 @@ static void addSub(ExprCompiler *that, const NumericExpr *operand,
   } else if (opval && *opval == -1) {
     reg = queue.alloc(result->clone());
     result = queue.append(makeup<TnegOne>(reg->clone(), mv(result)));
-  } else if (result->isExtended() && operand->isVar()) {
+  } else if (result->isExtended() && !opval &&
+             operand->check(&isNumericDataMode)) {
     auto svresult = result->clone();
     reg = queue.alloc(mv(result));
     operand->soak(that);
+    if (!result->isExtended()) {
+      fprintf(stderr, "internal error: double extended\n");
+      exit(1);
+    }
     result = makeup<AddressModeDex>(result->dataType, result->vsymbol());
     result = queue.append(makeup<TaddSub>(mv(reg), mv(svresult), mv(result)));
   } else if ((result->isImmediate() && operand->isVar()) ||
@@ -1224,7 +1230,7 @@ void ExprCompiler::absorb(const AdditiveExpr &e) {
     return;
   }
 
-  if (needsAlloc(e.operands) || !needsAlloc(e.invoperands)) {
+  if (!allData(e.operands) || allData(e.invoperands)) {
     // avoid reverse subtractions if not needed
     addDelayed(this, e.operands);
     subNow(this, e.invoperands);
@@ -1234,7 +1240,7 @@ void ExprCompiler::absorb(const AdditiveExpr &e) {
   // add up all the subtrahends via the delayed add
   addDelayed(this, e.invoperands);
 
-  // we know from prior needsAlloc check the result
+  // we know from prior allData check the result
   // gets into a register anyway
   reg = mv(result);
 

@@ -29,9 +29,10 @@ private:
   using NullExprMutator::mutate;
 
   template <typename OuterExpr>
-  up<NumericExpr> combine(up<NumericExpr> &lhs, up<NumericExpr> &rhs,
-    std::vector<up<NumericExpr>> &(* lhsops)(NaryNumericExpr *),
-    std::vector<up<NumericExpr>> &(* rhsops)(NaryNumericExpr *));
+  up<NumericExpr>
+  combine(up<NumericExpr> &lhs, up<NumericExpr> &rhs,
+          std::vector<up<NumericExpr>> &(*lhsops)(NaryNumericExpr *),
+          std::vector<up<NumericExpr>> &(*rhsops)(NaryNumericExpr *));
 
   bool combined{false};
 };

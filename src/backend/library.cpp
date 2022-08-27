@@ -422,6 +422,12 @@ std::string Library::mdStrTmp() {
   tasm.comment("       B holds string length");
   tasm.comment("EXIT:  D holds new string pointer");
   tasm.label("strtmp");
+  tasm.cpx("strfree");
+  tasm.bls("_reserve");
+  tasm.stx("tmp1"); // already in buffer
+  tasm.ldd("tmp1"); // nothing to reserve
+  tasm.rts();
+  tasm.label("_reserve");
   tasm.inc("strtcnt");
   tasm.label("strcat");
   tasm.tstb();

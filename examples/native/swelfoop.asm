@@ -3761,7 +3761,10 @@ _rts
 
 inkey_sx			; numCalls = 2
 	.module	modinkey_sx
+	pshx
 	jsr	strdel
+	pulx
+	clr	strtcnt
 	ldd	#$0100+(charpage>>8)
 	std	0,x
 	ldaa	M_IKEY

@@ -90,7 +90,7 @@ void Assembler::singlearg(std::string const &opcode, std::string const &operand,
   std::string op = '\t' + opcode;
   op += '\t' + operand;
   if (!comment.empty()) {
-    op += '\t' + comment;
+    op += "\t; " + comment;
   }
   op += '\n';
   buffer += op;

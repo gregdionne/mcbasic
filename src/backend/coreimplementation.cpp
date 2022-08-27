@@ -1997,7 +1997,10 @@ std::string CoreImplementation::extStr(InstInkey &inst) {
 
   Assembler tasm;
   preamble(tasm, inst);
+  tasm.pshx();
   tasm.jsr("strdel");
+  tasm.pulx();
+  tasm.clr("strtcnt");
   tasm.ldd("#$0100+(charpage>>8)");
   tasm.std(inst.arg1->sbyte());
   tasm.ldaa("M_IKEY");
@@ -2020,6 +2023,8 @@ std::string CoreImplementation::indStr(InstInkey &inst) {
   preamble(tasm, inst);
   tasm.ldx("letptr");
   tasm.jsr("strdel");
+  tasm.ldx("letptr");
+  tasm.clr("strtcnt");
   tasm.ldd("#$0100+(charpage>>8)");
   tasm.std(inst.arg1->sbyte());
   tasm.ldaa("M_IKEY");

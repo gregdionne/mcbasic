@@ -1233,7 +1233,10 @@ goto_ix			; numCalls = 1
 inkey_sx			; numCalls = 1
 	.module	modinkey_sx
 	jsr	extend
+	pshx
 	jsr	strdel
+	pulx
+	clr	strtcnt
 	ldd	#$0100+(charpage>>8)
 	std	0,x
 	ldaa	M_IKEY

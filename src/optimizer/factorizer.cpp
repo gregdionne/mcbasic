@@ -12,9 +12,10 @@ static std::vector<up<NumericExpr>> &invoperands(NaryNumericExpr *expr) {
 }
 
 template <typename OuterExpr, typename InnerExpr>
-up<NumericExpr> Factorizer::factorize(up<NumericExpr> &lhs, up<NumericExpr> &rhs, 
-    std::vector<up<NumericExpr>> &(* lhsops)(NaryNumericExpr *),
-    std::vector<up<NumericExpr>> &(* rhsops)(NaryNumericExpr *)) {
+up<NumericExpr> Factorizer::factorize(
+    up<NumericExpr> &lhs, up<NumericExpr> &rhs,
+    std::vector<up<NumericExpr>> &(*lhsops)(NaryNumericExpr *),
+    std::vector<up<NumericExpr>> &(*rhsops)(NaryNumericExpr *)) {
   auto *lexp = dynamic_cast<InnerExpr *>(lhs.get());
   auto *rexp = dynamic_cast<InnerExpr *>(rhs.get());
   if (lexp && lexp->invoperands.empty() && rexp && rexp->invoperands.empty()) {
@@ -47,7 +48,8 @@ void Factorizer::mutate(AdditiveExpr &expr) {
   while (itLHS != expr.operands.end()) {
     auto itRHS = std::next(itLHS);
     while (itRHS != expr.operands.end()) {
-      if (auto factor = factorize<AdditiveExpr, MultiplicativeExpr>(*itLHS, *itRHS, operands, operands)) {
+      if (auto factor = factorize<AdditiveExpr, MultiplicativeExpr>(
+              *itLHS, *itRHS, operands, operands)) {
         itRHS = expr.operands.erase(itRHS);
         *itLHS = mv(factor);
         return;
@@ -56,7 +58,8 @@ void Factorizer::mutate(AdditiveExpr &expr) {
     }
     itRHS = expr.invoperands.begin();
     while (itRHS != expr.invoperands.end()) {
-      if (auto factor = factorize<AdditiveExpr, MultiplicativeExpr>(*itLHS, *itRHS, operands, invoperands)) {
+      if (auto factor = factorize<AdditiveExpr, MultiplicativeExpr>(
+              *itLHS, *itRHS, operands, invoperands)) {
         itRHS = expr.invoperands.erase(itRHS);
         *itLHS = mv(factor);
         return;
@@ -69,7 +72,8 @@ void Factorizer::mutate(AdditiveExpr &expr) {
   while (itLHS != expr.invoperands.end()) {
     auto itRHS = std::next(itLHS);
     while (itRHS != expr.invoperands.end()) {
-      if (auto factor = factorize<AdditiveExpr, MultiplicativeExpr>(*itLHS, *itRHS, invoperands, invoperands)) {
+      if (auto factor = factorize<AdditiveExpr, MultiplicativeExpr>(
+              *itLHS, *itRHS, invoperands, invoperands)) {
         itRHS = expr.invoperands.erase(itRHS);
         itLHS = expr.invoperands.erase(itLHS);
         expr.operands.emplace_back(mv(factor));
@@ -86,7 +90,8 @@ void Factorizer::mutate(AndExpr &expr) {
   while (itLHS != expr.operands.end()) {
     auto itRHS = std::next(itLHS);
     while (itRHS != expr.operands.end()) {
-      if (auto factor = factorize<AndExpr, OrExpr>(*itLHS, *itRHS, operands, operands)) {
+      if (auto factor =
+              factorize<AndExpr, OrExpr>(*itLHS, *itRHS, operands, operands)) {
         itRHS = expr.operands.erase(itRHS);
         *itLHS = mv(factor);
         return;
@@ -102,7 +107,8 @@ void Factorizer::mutate(OrExpr &expr) {
   while (itLHS != expr.operands.end()) {
     auto itRHS = std::next(itLHS);
     while (itRHS != expr.operands.end()) {
-      if (auto factor = factorize<OrExpr, AndExpr>(*itLHS, *itRHS, operands, operands)) {
+      if (auto factor =
+              factorize<OrExpr, AndExpr>(*itLHS, *itRHS, operands, operands)) {
         itRHS = expr.operands.erase(itRHS);
         *itLHS = mv(factor);
         return;
@@ -119,4 +125,3 @@ bool Factorizer::factorize(NumericExpr *expr) {
   expr->mutate(this);
   return factorized;
 }
-

@@ -3245,6 +3245,12 @@ _panic
 ;        B holds string length
 ; EXIT:  D holds new string pointer
 strtmp
+	cpx	strfree
+	bls	_reserve
+	stx	tmp1
+	ldd	tmp1
+	rts
+_reserve
 	inc	strtcnt
 strcat
 	tstb
@@ -3683,7 +3689,10 @@ _rts
 
 inkey_sx			; numCalls = 1
 	.module	modinkey_sx
+	pshx
 	jsr	strdel
+	pulx
+	clr	strtcnt
 	ldd	#$0100+(charpage>>8)
 	std	0,x
 	ldaa	M_IKEY

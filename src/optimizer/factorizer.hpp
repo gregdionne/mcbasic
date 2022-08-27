@@ -29,9 +29,10 @@ private:
   using NullExprMutator::mutate;
 
   template <typename OuterExpr, typename InnerExpr>
-  up<NumericExpr> factorize(up<NumericExpr> &lhs, up<NumericExpr> &rhs,
-    std::vector<up<NumericExpr>> &(* lhsops)(NaryNumericExpr *),
-    std::vector<up<NumericExpr>> &(* rhsops)(NaryNumericExpr *));
+  up<NumericExpr>
+  factorize(up<NumericExpr> &lhs, up<NumericExpr> &rhs,
+            std::vector<up<NumericExpr>> &(*lhsops)(NaryNumericExpr *),
+            std::vector<up<NumericExpr>> &(*rhsops)(NaryNumericExpr *));
 
   bool factorized{false};
 };

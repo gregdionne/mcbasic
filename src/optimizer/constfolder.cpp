@@ -559,7 +559,8 @@ utils::optional<double> ExprConstFolder::mutate(NaryNumericExpr &e) {
       e.invoperands.emplace_back(makeup<NumericConstantExpr>(rhs));
     } else {
       fprintf(stderr, "internal error: constant folder of n-ary expressions\n");
-      fprintf(stderr, "inverse(identity, identity) does not preserve identity\n");
+      fprintf(stderr,
+              "inverse(identity, identity) does not preserve identity\n");
       fprintf(stderr, "op = %s identity = %f value = %f, lhs = %f, rhs = %f\n",
               e.funcName.c_str(), e.identity, value, lhs, rhs);
       exit(1);

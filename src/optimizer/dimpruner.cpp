@@ -2,7 +2,6 @@
 // Distributed under MIT License
 #include "dimpruner.hpp"
 #include "ast/lister.hpp"
-#include <algorithm> // std::all_of
 
 void DimPruner::operate(Program &p) {
   for (auto &line : p.lines) {

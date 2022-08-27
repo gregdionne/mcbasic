@@ -290,8 +290,6 @@ public:
 
   virtual bool isString() { return false; }
   virtual bool isVar() const { return false; }
-  virtual bool isConst(double & /*val*/) const { return false; }
-  virtual bool isConst(std::string & /*val*/) const { return false; }
 
   virtual bool check(const ExprInspector<bool, bool> * /*op*/) const = 0;
   virtual void inspect(const ExprInspector<void, void> * /*op*/) const = 0;
@@ -442,20 +440,12 @@ class NumericConstantExpr : public OperableNumericExpr<NumericConstantExpr> {
 public:
   double value;
   explicit NumericConstantExpr(double v) : value(v) {}
-  bool isConst(double &val) const override {
-    val = value;
-    return true;
-  }
 };
 
 class StringConstantExpr : public OperableStringExpr<StringConstantExpr> {
 public:
   std::string value;
   explicit StringConstantExpr(std::string v) : value(mv(v)) {}
-  bool isConst(std::string &val) const override {
-    val = value;
-    return true;
-  }
 };
 
 class NumericArrayExpr : public OperableNumericExpr<NumericArrayExpr> {

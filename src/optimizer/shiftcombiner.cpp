@@ -12,9 +12,10 @@ static std::vector<up<NumericExpr>> &invoperands(NaryNumericExpr *expr) {
 }
 
 template <typename OuterExpr>
-up<NumericExpr> ShiftCombiner::combine(up<NumericExpr> &lhs, up<NumericExpr> &rhs, 
-    std::vector<up<NumericExpr>> &(* lhsops)(NaryNumericExpr *),
-    std::vector<up<NumericExpr>> &(* rhsops)(NaryNumericExpr *)) {
+up<NumericExpr> ShiftCombiner::combine(
+    up<NumericExpr> &lhs, up<NumericExpr> &rhs,
+    std::vector<up<NumericExpr>> &(*lhsops)(NaryNumericExpr *),
+    std::vector<up<NumericExpr>> &(*rhsops)(NaryNumericExpr *)) {
   auto *lexp = dynamic_cast<ShiftExpr *>(lhs.get());
   auto *rexp = dynamic_cast<ShiftExpr *>(rhs.get());
   if (lexp && rexp) {
@@ -24,7 +25,7 @@ up<NumericExpr> ShiftCombiner::combine(up<NumericExpr> &lhs, up<NumericExpr> &rh
       lhsops(innerExpr.get()).emplace_back(mv(lexp->expr));
       rhsops(innerExpr.get()).emplace_back(mv(rexp->expr));
       combined = true;
-      return makeup<ShiftExpr>(mv(innerExpr),mv(lexp->count));
+      return makeup<ShiftExpr>(mv(innerExpr), mv(lexp->count));
     }
   }
   return {};
@@ -35,7 +36,8 @@ void ShiftCombiner::mutate(AdditiveExpr &expr) {
   while (itLHS != expr.operands.end()) {
     auto itRHS = std::next(itLHS);
     while (itRHS != expr.operands.end()) {
-      if (auto shift = combine<AdditiveExpr>(*itLHS, *itRHS, operands, operands)) {
+      if (auto shift =
+              combine<AdditiveExpr>(*itLHS, *itRHS, operands, operands)) {
         itRHS = expr.operands.erase(itRHS);
         *itLHS = mv(shift);
         return;
@@ -44,7 +46,8 @@ void ShiftCombiner::mutate(AdditiveExpr &expr) {
     }
     itRHS = expr.invoperands.begin();
     while (itRHS != expr.invoperands.end()) {
-      if (auto shift = combine<AdditiveExpr>(*itLHS, *itRHS, operands, invoperands)) {
+      if (auto shift =
+              combine<AdditiveExpr>(*itLHS, *itRHS, operands, invoperands)) {
         itRHS = expr.invoperands.erase(itRHS);
         *itLHS = mv(shift);
         return;
@@ -57,7 +60,8 @@ void ShiftCombiner::mutate(AdditiveExpr &expr) {
   while (itLHS != expr.invoperands.end()) {
     auto itRHS = std::next(itLHS);
     while (itRHS != expr.invoperands.end()) {
-      if (auto shift = combine<AdditiveExpr>(*itLHS, *itRHS, invoperands, invoperands)) {
+      if (auto shift =
+              combine<AdditiveExpr>(*itLHS, *itRHS, invoperands, invoperands)) {
         itRHS = expr.invoperands.erase(itRHS);
         itLHS = expr.invoperands.erase(itLHS);
         expr.operands.emplace_back(mv(shift));
@@ -107,4 +111,3 @@ bool ShiftCombiner::combine(NumericExpr *expr) {
   expr->mutate(this);
   return combined;
 }
-

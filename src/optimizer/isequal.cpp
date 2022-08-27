@@ -63,7 +63,7 @@ bool IsEqual::checkOps(const std::vector<up<NumericExpr>> &lhs,
   for (const auto &lop : lhs) {
     bool found = false;
     IsEqual isEqual(lop.get());
-    for (size_t i = 0; i<rhs.size(); ++i) {
+    for (size_t i = 0; i < rhs.size(); ++i) {
       if (!matched[i] && rhs[i]->check(&isEqual)) {
         matched[i] = true;
         found = true;
