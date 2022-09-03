@@ -5,38 +5,25 @@
 
 #include "ast/nullstatementmutator.hpp"
 #include "ast/program.hpp"
-#include "consttable/consttable.hpp"
-#include "datatable/datatable.hpp"
+#include "ast/text.hpp"
 #include "instqueue.hpp"
-#include "symboltable/symboltable.hpp"
 
 // Compiles the program AST into (virtual) instructions
 
-class Compiler : public ProgramOp {
+class Compiler {
 public:
-  Compiler(DataTable &dt_in, ConstTable &ct_in, SymbolTable &st_in,
-           InstQueue &queue_in, bool g)
-      : dataTable(dt_in), constTable(ct_in), symbolTable(st_in),
-        queue(queue_in), generateLines(g) {}
-  void operate(Program &p) override;
-  void operate(Line &l) override;
-  DataTable &dataTable;
-  ConstTable &constTable;
-  SymbolTable &symbolTable;
-  InstQueue &queue;
-  bool generateLines;
-  int firstLine{0};
-  std::vector<up<Line>>::iterator itCurrentLine;
+  Compiler(Text &text_in, const Option &g) : text(text_in), generateLines(g) {}
+  InstQueue compile(Program &p);
+  Text &text;
+  const Option &generateLines;
 };
 
 class StatementCompiler : public StatementAbsorber<void> {
 public:
-  StatementCompiler(ConstTable &ct_in, SymbolTable &st_in, DataTable &dt_in,
-                    InstQueue &queue_in, int firstLine_in,
+  StatementCompiler(Text &text_in, InstQueue &queue_in, int firstLine_in,
                     std::vector<up<Line>>::iterator &itCurLine, bool g_in)
-      : constTable(ct_in), symbolTable(st_in), dataTable(dt_in),
-        queue(queue_in), firstLine(firstLine_in), itCurrentLine(itCurLine),
-        generateLines(g_in) {}
+      : text(text_in), queue(queue_in), firstLine(firstLine_in),
+        itCurrentLine(itCurLine), generateLines(g_in) {}
   void absorb(const Rem &s) override;
   void absorb(const For &s) override;
   void absorb(const Go &s) override;
@@ -67,9 +54,7 @@ public:
   void absorb(const Sound &s) override;
   void absorb(const Exec &s) override;
   void absorb(const Error &s) override;
-  ConstTable &constTable;
-  SymbolTable &symbolTable;
-  DataTable &dataTable;
+  Text &text;
   InstQueue &queue;
   int firstLine;
   std::vector<up<Line>>::iterator &itCurrentLine;
@@ -78,12 +63,10 @@ public:
 
 class ExprCompiler : public ExprAbsorber<void, void> {
 public:
-  ExprCompiler(ConstTable &ct_in, SymbolTable &st_in, InstQueue &queue_in)
-      : constTable(ct_in), symbolTable(st_in), queue(queue_in), arrayRef(false),
-        arrayDim(false){};
+  ExprCompiler(Text &text_in, InstQueue &queue_in)
+      : text(text_in), queue(queue_in), arrayRef(false), arrayDim(false){};
   explicit ExprCompiler(ExprCompiler *a)
-      : constTable(a->constTable), symbolTable(a->symbolTable), queue(a->queue),
-        arrayRef(false), arrayDim(false){};
+      : text(a->text), queue(a->queue), arrayRef(false), arrayDim(false){};
   void absorb(const NumericConstantExpr &e) override;
   void absorb(const StringConstantExpr &e) override;
   void absorb(const NumericVariableExpr &e) override;
@@ -128,20 +111,19 @@ public:
   void absorb(const InkeyExpr &e) override;
   void absorb(const MemExpr &e) override;
   void absorb(const SquareExpr &e) override;
+  void absorb(const FractExpr &e) override;
   void absorb(const TimerExpr &e) override;
   void absorb(const PosExpr &e) override;
   void absorb(const PeekWordExpr &e) override;
 
-  void absorb(const NaryNumericExpr &e) override {
-    fprintf(stderr, "panic! %s\n", e.funcName.c_str());
-  }
-
-  ConstTable &constTable;
-  SymbolTable &symbolTable;
+  Text &text;
   InstQueue &queue;
   up<AddressMode> result;
   bool arrayRef;
   bool arrayDim;
+
+private:
+  void absorb(const NaryNumericExpr & /*e*/) override {}
 };
 
 #endif

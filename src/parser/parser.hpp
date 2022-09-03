@@ -19,12 +19,9 @@
 
 class Parser {
 public:
-  Parser(int c, char *v[], Options &opts)
-      : in(c, v), emptyLineNumbers(opts.el), unlistedLineNumbers(opts.ul),
-        enableMachineCode(opts.mcode) {}
+  Parser(const char *progname, const char *filename, const Options &opts)
+      : in(progname, filename), options(opts) {}
   Program parse();
-  bool openNext() { return in.openNext(); }
-  int currentArgNum() { return in.currentArgNum(); }
 
 private:
   bool isKeyword(const char *keyword);
@@ -116,10 +113,9 @@ private:
   static up<Statement> getError(uint8_t errorCode);
   void getLine(Program &p);
   void getEndLines(Program &p);
+  void cleanupLines(Program &p);
 
   fetch in;
-  bool emptyLineNumbers = false;
-  bool unlistedLineNumbers = false;
-  bool enableMachineCode = false;
+  const Options &options;
 };
 #endif

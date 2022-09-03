@@ -1,5 +1,6 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
+#include "arguments.hpp"
 #include "backend/bytecodetarget.hpp"
 #include "backend/nativetarget.hpp"
 #include "backend/writer.hpp"
@@ -9,39 +10,23 @@
 #include "parser/parser.hpp"
 
 int main(int argc, char *argv[]) {
-  Options opts;
-  opts.init(argc, argv);
+  const Arguments args(argc, argv);
 
-  Parser parser(argc, argv, opts);
+  for (const auto &filename : args.filenames) {
+    fprintf(stderr, "Compiling %s...\n", filename);
 
-  Writer out(argc, argv);
+    Program program = Parser(args.progname, filename, args.options).parse();
 
-  do {
-    fprintf(stderr, "Compiling %s...\n", argv[parser.currentArgNum()]);
+    Text text = Optimizer(args.options).optimize(program);
 
-    Program p = parser.parse();
-    p.sortLines();
-    p.removeDuplicateLines(opts.Wduplicate);
+    InstQueue queue = Compiler(text, args.options.g).compile(program);
 
-    DataTable dataTable;
-    SymbolTable symbolTable;
-    ConstTable constTable;
-    Optimizer o(dataTable, symbolTable, constTable, opts);
-    o.optimize(p);
+    auto target = args.options.native.isEnabled()
+                      ? up<Target>(makeup<NativeTarget>())
+                      : up<Target>(makeup<ByteCodeTarget>());
 
-    InstQueue q;
-    Compiler c(dataTable, constTable, symbolTable, q, opts.g);
-    c.operate(p);
+    auto assembly = target->generateAssembly(text, queue, args.options);
 
-    auto target = opts.native ? up<Target>(makeup<NativeTarget>())
-                              : up<Target>(makeup<ByteCodeTarget>());
-
-    out.openNext();
-    out.writeHeader();
-
-    out.writeString(
-        target->generateAssembly(dataTable, constTable, symbolTable, q, opts));
-
-    out.close();
-  } while (parser.openNext());
+    Writer(args.progname, filename, args.options).write(assembly);
+  }
 }

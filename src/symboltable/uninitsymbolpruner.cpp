@@ -253,6 +253,8 @@ void ExprUninitSymbolPruner::mutate(PointExpr &e) {
 
 void ExprUninitSymbolPruner::mutate(SquareExpr &e) { numPrune(e.expr, this); }
 
+void ExprUninitSymbolPruner::mutate(FractExpr &e) { numPrune(e.expr, this); }
+
 void StatementUninitSymbolPruner::mutate(Rem & /*s*/) {}
 
 void StatementUninitSymbolPruner::mutate(For &s) {

@@ -237,6 +237,10 @@ void ExprSymbolUsageTabulator::inspect(const SquareExpr &e) const {
   e.expr->inspect(this);
 }
 
+void ExprSymbolUsageTabulator::inspect(const FractExpr &e) const {
+  e.expr->inspect(this);
+}
+
 void StatementSymbolUsageInspector::inspect(const Rem & /*s*/) const {}
 
 void AssignSymbolUsageInspector::inspect(const NumericArrayExpr &e) const {

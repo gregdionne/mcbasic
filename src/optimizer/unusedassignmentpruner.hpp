@@ -55,8 +55,8 @@ private:
 // removes unused assignments from program
 class UnusedAssignmentPruner : public ProgramOp {
 public:
-  explicit UnusedAssignmentPruner(SymbolTable &st, const Announcer &&a)
-      : symbolTable(st), announcer(a) {}
+  explicit UnusedAssignmentPruner(SymbolTable &st, const Option &option)
+      : symbolTable(st), announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

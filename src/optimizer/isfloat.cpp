@@ -95,3 +95,5 @@ bool IsFloat::inspect(const NumericArrayExpr &e) const {
 }
 
 bool IsFloat::inspect(const SquareExpr &e) const { return e.expr->check(this); }
+
+bool IsFloat::inspect(const FractExpr &e) const { return e.expr->check(this); }

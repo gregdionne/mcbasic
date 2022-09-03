@@ -79,6 +79,7 @@ public:
   bool inspect(const InkeyExpr & /*expr*/) const override { return true; }
   bool inspect(const MemExpr & /*expr*/) const override { return true; }
   bool inspect(const SquareExpr & /*expr*/) const override { return true; }
+  bool inspect(const FractExpr & /*expr*/) const override { return true; }
   bool inspect(const TimerExpr & /*expr*/) const override { return true; }
   bool inspect(const PosExpr & /*expr*/) const override { return true; }
   bool inspect(const PeekWordExpr & /*expr*/) const override { return true; }

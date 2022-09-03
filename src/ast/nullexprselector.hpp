@@ -158,6 +158,9 @@ public:
   const NumericExpr *inspect(const SquareExpr & /*expr*/) const override {
     return nullptr;
   }
+  const NumericExpr *inspect(const FractExpr & /*expr*/) const override {
+    return nullptr;
+  }
   const NumericExpr *inspect(const TimerExpr & /*expr*/) const override {
     return nullptr;
   }

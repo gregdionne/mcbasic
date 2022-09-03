@@ -23,7 +23,7 @@ public:
   void mutate(AndExpr &expr) override;
   void mutate(OrExpr &expr) override;
 
-  bool combine(NumericExpr *nexp);
+  bool combine(NumericExpr *expr);
 
 private:
   using NullExprMutator::mutate;

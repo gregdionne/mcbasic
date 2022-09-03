@@ -312,3 +312,7 @@ void ExprConstTabulator::inspect(const RelationalExpr &e) const {
 void ExprConstTabulator::inspect(const SquareExpr &e) const {
   e.expr->inspect(this);
 }
+
+void ExprConstTabulator::inspect(const FractExpr &e) const {
+  e.expr->inspect(this);
+}

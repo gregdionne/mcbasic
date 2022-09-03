@@ -111,6 +111,9 @@ public:
   utils::optional<double> inspect(const SquareExpr & /*expr*/) const override {
     return {};
   }
+  utils::optional<double> inspect(const FractExpr & /*expr*/) const override {
+    return {};
+  }
   utils::optional<double> inspect(const PosExpr & /*expr*/) const override {
     return {};
   }

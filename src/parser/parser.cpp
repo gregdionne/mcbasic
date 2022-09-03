@@ -2,7 +2,9 @@
 // Distributed under MIT License
 #include "parser.hpp"
 #include "mcbasic/constants.hpp"
+#include "utils/announcer.hpp"
 
+#include <algorithm>
 #include <cstring>
 
 //  This file was originally a K&R C file.
@@ -66,7 +68,7 @@ bool Parser::matchEitherKeyword(const char *const k1, const char *const k2) {
 int Parser::getLineNumber() {
   in.skipWhitespace();
   if (in.iseol() || in.isChar(':') || in.isChar(',')) {
-    if (!emptyLineNumbers) {
+    if (!options.el.isEnabled()) {
       in.sputter("error: empty (missing) line number.");
       fprintf(stderr, "\n");
       fprintf(stderr, "This is almost always an error, unless of course it was "
@@ -938,7 +940,7 @@ up<Statement> Parser::getSound() {
 }
 
 up<Statement> Parser::getExec() {
-  if (!enableMachineCode) {
+  if (!options.mcode.isEnabled()) {
     in.sputter(
         "error: machine code invocation without '-mcode' compiler flag.");
     fprintf(stderr, "\n");
@@ -1058,7 +1060,7 @@ void Parser::getEndLines(Program &p) {
   line->statements.emplace_back(getEnd());
   p.lines.emplace_back(mv(line));
 
-  if (unlistedLineNumbers) {
+  if (options.ul.isEnabled()) {
     line = makeup<Line>();
     line->lineNumber = constants::unlistedLineNumber;
     line->statements.emplace_back(getError(constants::ULError));
@@ -1068,9 +1070,36 @@ void Parser::getEndLines(Program &p) {
 
 Program Parser::parse() {
   Program p;
+  in.open();
   while (in.getFileLine()) {
     getLine(p);
   }
   getEndLines(p);
+  cleanupLines(p);
+
   return p;
+}
+
+void Parser::cleanupLines(Program &p) {
+  struct {
+    bool operator()(const up<Line> &a, const up<Line> &b) const {
+      return a->lineNumber < b->lineNumber;
+    }
+  } linecmp;
+
+  std::stable_sort(p.lines.begin(), p.lines.end(), linecmp);
+
+  auto itLine = p.lines.begin();
+  if (itLine != p.lines.end()) {
+    auto itOldLine = itLine;
+    while (++itLine != p.lines.end()) {
+      if (!linecmp(*itOldLine, *itLine)) {
+        Announcer announcer(options.Wduplicate);
+        announcer.start((*itLine)->lineNumber);
+        announcer.finish("removed duplicate line");
+        itLine = p.lines.erase(itOldLine);
+      }
+      itOldLine = itLine;
+    }
+  }
 }

@@ -63,6 +63,7 @@ class MemExpr;
 
 // extensions
 class SquareExpr;
+class FractExpr;
 class TimerExpr;
 class PosExpr;
 class PeekWordExpr;
@@ -148,6 +149,7 @@ public:
   virtual String mutate(InkeyExpr & /*expr*/) = 0;
   virtual Number mutate(MemExpr & /*expr*/) = 0;
   virtual Number mutate(SquareExpr & /*expr*/) = 0;
+  virtual Number mutate(FractExpr & /*expr*/) = 0;
   virtual Number mutate(TimerExpr & /*expr*/) = 0;
   virtual Number mutate(PosExpr & /*expr*/) = 0;
   virtual Number mutate(PeekWordExpr & /*expr*/) = 0;
@@ -210,6 +212,7 @@ public:
   virtual String inspect(const InkeyExpr & /*expr*/) const = 0;
   virtual Number inspect(const MemExpr & /*expr*/) const = 0;
   virtual Number inspect(const SquareExpr & /*expr*/) const = 0;
+  virtual Number inspect(const FractExpr & /*expr*/) const = 0;
   virtual Number inspect(const TimerExpr & /*expr*/) const = 0;
   virtual Number inspect(const PosExpr & /*expr*/) const = 0;
   virtual Number inspect(const PeekWordExpr & /*expr*/) const = 0;
@@ -273,6 +276,7 @@ public:
   virtual Number absorb(const PosExpr & /*expr*/) = 0;
   virtual Number absorb(const MemExpr & /*expr*/) = 0;
   virtual Number absorb(const SquareExpr & /*expr*/) = 0;
+  virtual Number absorb(const FractExpr & /*expr*/) = 0;
   virtual Number absorb(const TimerExpr & /*expr*/) = 0;
   virtual Number absorb(const PeekWordExpr & /*expr*/) = 0;
 };
@@ -736,6 +740,11 @@ class InkeyExpr : public OperableStringExpr<InkeyExpr> {};
 class MemExpr : public OperableNumericExpr<MemExpr> {};
 
 class SquareExpr : public OperableNumericExpr<SquareExpr> {
+public:
+  up<NumericExpr> expr;
+};
+
+class FractExpr : public OperableNumericExpr<FractExpr> {
 public:
   up<NumericExpr> expr;
 };

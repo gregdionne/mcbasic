@@ -5386,7 +5386,7 @@ LINE_3030
 
 LINE_3035
 
-	; IF (LV/3)=IDIV(LV,3) THEN
+	; IF FRACT(LV/3)=0 THEN
 
 	ldx	#INTVAR_LV
 	jsr	ld_ir1_ix
@@ -5394,13 +5394,10 @@ LINE_3035
 	ldab	#3
 	jsr	div_fr1_ir1_pb
 
-	ldx	#INTVAR_LV
-	jsr	idiv3_ir2_ix
-
-	jsr	ldeq_ir1_fr1_ir2
+	jsr	fract_fr1_fr1
 
 	ldx	#LINE_3040
-	jsr	jmpeq_ir1_ix
+	jsr	jmpne_fr1_ix
 
 	; LF+=1
 
@@ -6003,28 +6000,6 @@ getne
 _1
 	ldd	#-1
 	rts
-
-	.module	mdidiv35
-; fast divide by 3 or 5
-; ENTRY: X in tmp1+1,tmp2,tmp2+1
-;        ACCD is $CC05 for divide by 5
-;        ACCD is $AA03 for divide by 3
-; EXIT:  INT(X/(3 or 5)) in tmp1+1,tmp2,tmp2+1
-;   tmp3,tmp3+1,tmp4 used for storage
-idiv35
-	psha
-	jsr	imodb
-	tab
-	ldaa	tmp2+1
-	sba
-	staa	tmp2+1
-	bcc	_dodiv
-	ldd	tmp1+1
-	subd	#1
-	std	tmp1+1
-_dodiv
-	pulb
-	jmp	idivb
 
 	.module	mdidivb
 ; fast integer division by three or five
@@ -7526,6 +7501,13 @@ forone_ix			; numCalls = 19
 	std	1,x
 	rts
 
+fract_fr1_fr1			; numCalls = 1
+	.module	modfract_fr1_fr1
+	ldd	#0
+	stab	r1
+	std	r1+1
+	rts
+
 gosub_ix			; numCalls = 19
 	.module	modgosub_ix
 	ldab	#3
@@ -7537,20 +7519,6 @@ goto_ix			; numCalls = 11
 	ins
 	ins
 	jmp	,x
-
-idiv3_ir2_ix			; numCalls = 1
-	.module	modidiv3_ir2_ix
-	ldab	0,x
-	stab	tmp1+1
-	ldd	1,x
-	std	tmp2
-	ldd	#$AA03
-	jsr	idiv35
-	ldd	tmp2
-	std	r2+1
-	ldab	tmp1+1
-	stab	r2
-	rts
 
 inc_ir1_ix			; numCalls = 12
 	.module	modinc_ir1_ix
@@ -7638,7 +7606,7 @@ irnd_ir2_pb			; numCalls = 1
 	stab	r2
 	rts
 
-jmpeq_ir1_ix			; numCalls = 19
+jmpeq_ir1_ix			; numCalls = 18
 	.module	modjmpeq_ir1_ix
 	ldd	r1+1
 	bne	_rts
@@ -7649,6 +7617,20 @@ jmpeq_ir1_ix			; numCalls = 19
 	jmp	,x
 _rts
 	rts
+
+jmpne_fr1_ix			; numCalls = 1
+	.module	modjmpne_fr1_ix
+	ldd	r1+1
+	bne	_go
+	ldaa	r1
+	bne	_go
+	ldd	r1+3
+	bne	_go
+	rts
+_go
+	ins
+	ins
+	jmp	,x
 
 jmpne_ir1_ix			; numCalls = 7
 	.module	modjmpne_ir1_ix
@@ -7828,21 +7810,6 @@ ld_sx_sr1			; numCalls = 2
 	ldd	r1+1
 	std	1+argv
 	jmp	strprm
-
-ldeq_ir1_fr1_ir2			; numCalls = 1
-	.module	modldeq_ir1_fr1_ir2
-	ldd	r1+3
-	bne	_done
-	ldd	r1+1
-	subd	r2+1
-	bne	_done
-	ldab	r1
-	cmpb	r2
-_done
-	jsr	geteq
-	std	r1+1
-	stab	r1
-	rts
 
 ldeq_ir1_ir1_ix			; numCalls = 2
 	.module	modldeq_ir1_ir1_ix

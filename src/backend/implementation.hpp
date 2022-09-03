@@ -239,6 +239,11 @@ public:
   virtual std::string regFlt_extFlt(InstAbs &inst) = 0;
   virtual std::string regInt_extInt(InstAbs &inst) = 0;
 
+  virtual std::string regFlt_regFlt(InstFract &inst) = 0;
+  virtual std::string regInt_regInt(InstFract &inst) = 0;
+  virtual std::string regFlt_extFlt(InstFract &inst) = 0;
+  virtual std::string regInt_extInt(InstFract &inst) = 0;
+
   virtual std::string regFlt_regFlt(InstDbl &inst) = 0;
   virtual std::string regInt_regInt(InstDbl &inst) = 0;
   virtual std::string regFlt_extFlt(InstDbl &inst) = 0;

@@ -34,7 +34,7 @@
 
 class ExprFloatPromoter : public NullExprMutator {
 public:
-  ExprFloatPromoter(bool &gf, SymbolTable &st, Announcer &wf)
+  ExprFloatPromoter(bool &gf, SymbolTable &st, const Option &wf)
       : gotFloat(gf), symbolTable(st), announcer(wf) {}
   bool makeFloat(std::vector<Symbol> &table, std::string &symbolName);
   void mutate(NumericVariableExpr &e) override;
@@ -46,7 +46,7 @@ public:
 private:
   bool &gotFloat;
   SymbolTable &symbolTable;
-  Announcer &announcer;
+  const Announcer announcer;
   int lineNumber{0};
   StatementLister ls;
 };
@@ -54,7 +54,7 @@ private:
 class StatementFloatPromoter : public NullStatementMutator {
 public:
   StatementFloatPromoter(bool &gf, DataTable &dt, SymbolTable &st, IsFloat &isf,
-                         Announcer &wf)
+                         const Option &wf)
       : dataTable(dt), isFloat(isf), fe(gf, st, wf) {}
   void mutate(If &s) override;
   void mutate(Let &s) override;
@@ -76,7 +76,7 @@ private:
 
 class FloatPromoter : public ProgramOp {
 public:
-  FloatPromoter(DataTable &dt, SymbolTable &st, Announcer wf)
+  FloatPromoter(DataTable &dt, SymbolTable &st, const Option &wf)
       : symbolTable(st), isFloat(st), fs(gotFloat, dt, st, isFloat, wf) {}
   void operate(Program &p) override;
   void operate(Line &l) override;

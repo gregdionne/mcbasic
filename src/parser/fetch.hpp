@@ -19,14 +19,12 @@
 
 class fetch {
 public:
-  fetch(int argc_in, char *argv_in[]) : argc(argc_in), argv(argv_in) { init(); }
+  explicit fetch(const char *progName, const char *fileName)
+      : progname(progName), filename(fileName) {}
 
-  int currentArgNum() const { return argfile; }
-  void processOpts();
-  bool openNext();
+  void open();
   char *getFileLine();
   char *getLine();
-  void spitLine();
   void sputter(const char *formatstr, va_list &vl);
   void sputter(const char *formatstr, ...);
   void die(const char *formatstr, ...);
@@ -77,11 +75,9 @@ private:
   char *efgets(char *str, int bufsiz, FILE *stream);
   void expandTabs(char *b, int m, int n);
 
+  const char *progname;
+  const char *filename;
   char buf[BUFSIZ];
-  int argc;
-  char **argv;
-  int argcnt{0};
-  int argfile{0};
   int linenum{0};
   int linelen{0};
   int colnum{0};

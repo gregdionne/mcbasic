@@ -63,6 +63,7 @@ public:
   void mutate(PrintTabExpr &e) override;
   void mutate(PeekWordExpr &e) override;
   void mutate(SquareExpr &e) override;
+  void mutate(FractExpr &e) override;
   void mutate(ShiftExpr &e) override;
 
   void mutate(NumericConstantExpr & /*e*/) override {}
@@ -127,6 +128,11 @@ private:
   // replace
   //    X^2 with SQ(X)
   void reduceSquarePower(up<NumericExpr> &expr);
+
+  // replace
+  //   <expr>-INT(<expr>) with FRACT(<expr>)
+  bool reduceProperFraction(std::vector<up<NumericExpr>> &ops1,
+                            std::vector<up<NumericExpr>> &ops2);
 
   // replace
   //   INT(<expr1>/<expr2>) with IDIV(<expr1>,<expr2>)

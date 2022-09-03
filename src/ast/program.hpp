@@ -3,6 +3,7 @@
 #ifndef AST_PROGRAM_HPP
 #define AST_PROGRAM_HPP
 
+#include "mcbasic/option.hpp"
 #include "statement.hpp"
 
 // For simplicity, use a single non-const void visitor
@@ -33,8 +34,6 @@ class Program {
 public:
   std::vector<up<Line>> lines;
   void operate(ProgramOp *op) { op->operate(*this); }
-  void sortLines();
-  void removeDuplicateLines(bool warn);
 };
 
 #endif

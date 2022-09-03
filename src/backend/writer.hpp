@@ -9,31 +9,21 @@
 
 class Writer {
 public:
-  Writer(int argc_in, char *argv_in[]) : argc(argc_in), argv(argv_in) {
-    init();
-  }
+  Writer(const char *p, const char *f, const Options &opts)
+      : progname(p), filename(f), options(opts) {}
 
-  // opens files for output based upon command line order
-  bool openNext();
-
-  // closes current file
-  void close();
-
-  // write header
-  void writeHeader();
-
-  // writes string to output file
-  void writeString(const std::string &ops);
+  void write(const std::string &ops);
 
 private:
-  void init();
-  void processOpts();
+  void open();
+  void close();
+  void writeHeader();
+  void writeString(const std::string &ops);
 
-  int argc;
-  char **argv;
-  int filecnt{0};
-  int argcnt{0};
-  Options opts;
+  const char *progname;
+  const char *filename;
+  const Options &options;
+
   FILE *fp{nullptr};
 };
 #endif

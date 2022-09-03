@@ -97,11 +97,10 @@ LINE_10
 
 LINE_20
 
-	; D=C-INT(C)
+	; D=FRACT(C)
 
 	ldx	#FLTVAR_C
-	ldd	#FLTVAR_C
-	jsr	sub_fr1_fx_id
+	jsr	fract_fr1_fx
 
 	ldx	#FLTVAR_D
 	jsr	ld_fx_fr1
@@ -988,6 +987,15 @@ _start
 	stx	DP_DATA
 	rts
 
+fract_fr1_fx			; numCalls = 1
+	.module	modfract_fr1_fx
+	ldd	#0
+	stab	r1
+	std	r1+1
+	ldd	3,x
+	std	r1+3
+	rts
+
 ld_fd_fx			; numCalls = 2
 	.module	modld_fd_fx
 	std	tmp1
@@ -1157,22 +1165,6 @@ sub_fr1_fx_fd			; numCalls = 1
 	ldd	r1+1
 	sbcb	2,x
 	sbca	1,x
-	std	r1+1
-	ldab	r1
-	sbcb	0,x
-	stab	r1
-	rts
-
-sub_fr1_fx_id			; numCalls = 1
-	.module	modsub_fr1_fx_id
-	std	tmp1
-	ldd	3,x
-	std	r1+3
-	ldab	0,x
-	stab	r1
-	ldd	1,x
-	ldx	tmp1
-	subd	1,x
 	std	r1+1
 	ldab	r1
 	sbcb	0,x

@@ -260,6 +260,11 @@ void ExprViewer::absorb(const SquareExpr &e) {
   indentOp(e.expr, this);
 }
 
+void ExprViewer::absorb(const FractExpr &e) {
+  printtab(n, "FRACT");
+  indentOp(e.expr, this);
+}
+
 void ExprViewer::absorb(const TimerExpr & /*expr*/) { printtab(n, "TIMER"); }
 
 void ExprViewer::absorb(const PosExpr & /*expr*/) { printtab(n, "POS"); }

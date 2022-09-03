@@ -65,6 +65,7 @@ public:
   void absorb(const InkeyExpr &e) override;
   void absorb(const MemExpr &e) override;
   void absorb(const SquareExpr &e) override;
+  void absorb(const FractExpr &e) override;
   void absorb(const TimerExpr &e) override;
   void absorb(const PosExpr &e) override;
   void absorb(const PeekWordExpr &e) override;

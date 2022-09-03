@@ -52,32 +52,33 @@ static bool is5Smooth(int n) {
   return n == 1;
 }
 
-void Compiler::operate(Program &p) {
+InstQueue Compiler::compile(Program &p) {
+  InstQueue queue;
   queue.append(makeup<InstBegin>());
   queue.append(makeup<InstClear>());
-  itCurrentLine = p.lines.begin();
 
-  if (itCurrentLine != p.lines.end()) {
-    firstLine = (*itCurrentLine)->lineNumber;
+  int firstLine = 0;
+
+  auto itLine = p.lines.begin();
+  if (itLine != p.lines.end()) {
+    firstLine = (*itLine)->lineNumber;
   }
 
-  while (itCurrentLine != p.lines.end()) {
-    (*itCurrentLine)->operate(this);
-    ++itCurrentLine;
+  while (itLine != p.lines.end()) {
+    queue.append(makeup<InstLabel>(
+        makeup<AddressModeLin>((*itLine)->lineNumber),
+        generateLines.isEnabled() &&
+            (*itLine)->lineNumber != constants::unlistedLineNumber));
+
+    StatementCompiler that(text, queue, firstLine, itLine,
+                           generateLines.isEnabled());
+
+    for (auto &statement : (*itLine)->statements) {
+      statement->soak(&that);
+    }
+    ++itLine;
   }
-}
-
-void Compiler::operate(Line &l) {
-  queue.append(makeup<InstLabel>(
-      makeup<AddressModeLin>(l.lineNumber),
-      generateLines && l.lineNumber != constants::unlistedLineNumber));
-
-  StatementCompiler that(constTable, symbolTable, dataTable, queue, firstLine,
-                         itCurrentLine, generateLines);
-
-  for (auto &statement : l.statements) {
-    statement->soak(&that);
-  }
+  return queue;
 }
 
 void StatementCompiler::absorb(const Rem &s) {
@@ -88,8 +89,8 @@ void StatementCompiler::absorb(const For &s) {
   queue.append(makeup<InstComment>(list(&s)));
   // perform LET
   queue.clearRegisters();
-  ExprCompiler iter(constTable, symbolTable, queue);
-  ExprCompiler from(constTable, symbolTable, queue);
+  ExprCompiler iter(text, queue);
+  ExprCompiler from(text, queue);
 
   s.iter->soak(&iter); // iter.result will be extended.
 
@@ -124,7 +125,7 @@ void StatementCompiler::absorb(const For &s) {
   // get TO operand
   queue.clearRegisters();
 
-  ExprCompiler to(constTable, symbolTable, queue);
+  ExprCompiler to(text, queue);
   s.to->soak(&to);
 
   // check to see if we can avoid integer argument to TO if STEP is not
@@ -138,7 +139,7 @@ void StatementCompiler::absorb(const For &s) {
   // get STEP operand (if any)
   if (s.step) {
     queue.clearRegisters();
-    ExprCompiler step(constTable, symbolTable, queue);
+    ExprCompiler step(text, queue);
     s.step->soak(&step);
     step.result = queue.load(mv(step.result));
     queue.append(makeup<InstStep>(mv(result), mv(step.result)));
@@ -174,7 +175,7 @@ void StatementCompiler::absorb(const When &s) {
     needEq = true;
   }
 
-  ExprCompiler cond(constTable, symbolTable, queue);
+  ExprCompiler cond(text, queue);
   predicate->soak(&cond);
 
   auto lineNumber = makeup<AddressModeLbl>(s.lineNumber);
@@ -210,7 +211,7 @@ void StatementCompiler::absorb(const If &s) {
     needEq = false;
   }
 
-  ExprCompiler cond(constTable, symbolTable, queue);
+  ExprCompiler cond(text, queue);
   predicate->soak(&cond);
 
   auto lineNumber =
@@ -235,7 +236,7 @@ void StatementCompiler::absorb(const Data & /*statement*/) {
 
 void StatementCompiler::absorb(const Print &s) {
   queue.append(makeup<InstComment>(list(&s)));
-  ExprCompiler value(constTable, symbolTable, queue);
+  ExprCompiler value(text, queue);
   if (s.at) {
     queue.clearRegisters();
     s.at->soak(&value);
@@ -255,7 +256,7 @@ void StatementCompiler::absorb(const Print &s) {
 void StatementCompiler::absorb(const Input &s) {
   queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
-  ExprCompiler value(constTable, symbolTable, queue);
+  ExprCompiler value(text, queue);
 
   if (s.prompt) {
     s.prompt->soak(&value);
@@ -282,7 +283,7 @@ void StatementCompiler::absorb(const End &s) {
 void StatementCompiler::absorb(const On &s) {
   queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
-  ExprCompiler value(constTable, symbolTable, queue);
+  ExprCompiler value(text, queue);
   s.branchIndex->soak(&value);
   value.result = queue.load(mv(value.result));
   value.result->castToInt(); // override
@@ -301,7 +302,7 @@ void StatementCompiler::absorb(const Next &s) {
   } else {
     for (const auto &variable : s.variables) {
       queue.clearRegisters();
-      ExprCompiler var(constTable, symbolTable, queue);
+      ExprCompiler var(text, queue);
       variable->soak(&var);
       queue.append(makeup<InstNextVar>(mv(var.result), generateLines));
       queue.append(makeup<InstNext>(generateLines));
@@ -313,7 +314,7 @@ void StatementCompiler::absorb(const Dim &s) {
   queue.append(makeup<InstComment>(list(&s)));
   for (const auto &variable : s.variables) {
     queue.clearRegisters();
-    ExprCompiler var(constTable, symbolTable, queue);
+    ExprCompiler var(text, queue);
     var.arrayDim = true;
     variable->soak(&var);
   }
@@ -324,24 +325,24 @@ void StatementCompiler::absorb(const Read &s) {
   for (const auto &variable : s.variables) {
     queue.clearRegisters();
 
-    ExprCompiler dest(constTable, symbolTable, queue);
+    ExprCompiler dest(text, queue);
 
     dest.arrayRef = !variable->isVar();
     variable->soak(&dest); // dest.result will be either indirect or extended.
 
     auto inst = makeup<InstRead>(mv(dest.result));
-    inst->pureUnsigned = dataTable.isPureUnsigned();
-    inst->pureByte = dataTable.isPureByte();
-    inst->pureWord = dataTable.isPureWord();
-    inst->pureNumeric = dataTable.isPureNumeric();
+    inst->pureUnsigned = text.dataTable.isPureUnsigned();
+    inst->pureByte = text.dataTable.isPureByte();
+    inst->pureWord = text.dataTable.isPureWord();
+    inst->pureNumeric = text.dataTable.isPureNumeric();
     queue.append(mv(inst));
   }
 }
 
 void StatementCompiler::absorb(const Let &s) {
   queue.append(makeup<InstComment>(list(&s)));
-  ExprCompiler dest(constTable, symbolTable, queue);
-  ExprCompiler value(constTable, symbolTable, queue);
+  ExprCompiler dest(text, queue);
+  ExprCompiler value(text, queue);
 
   queue.clearRegisters();
   dest.arrayRef = !s.lhs->isVar();
@@ -363,7 +364,7 @@ void StatementCompiler::absorb(const Let &s) {
     return;
   }
 
-  if (auto *rhs = dynamic_cast<InkeyExpr *>(s.rhs.get())) {
+  if (dynamic_cast<InkeyExpr *>(s.rhs.get())) {
     queue.append(makeup<InstInkey>(mv(dest.result)));
     return;
   }
@@ -383,8 +384,8 @@ void StatementCompiler::absorb(const Let &s) {
 
 void StatementCompiler::absorb(const Accum &s) {
   queue.append(makeup<InstComment>(list(&s)));
-  ExprCompiler dest(constTable, symbolTable, queue);
-  ExprCompiler value(constTable, symbolTable, queue);
+  ExprCompiler dest(text, queue);
+  ExprCompiler value(text, queue);
 
   queue.clearRegisters();
   dest.arrayRef = !s.lhs->isVar();
@@ -416,8 +417,8 @@ void StatementCompiler::absorb(const Accum &s) {
 
 void StatementCompiler::absorb(const Decum &s) {
   queue.append(makeup<InstComment>(list(&s)));
-  ExprCompiler dest(constTable, symbolTable, queue);
-  ExprCompiler value(constTable, symbolTable, queue);
+  ExprCompiler dest(text, queue);
+  ExprCompiler value(text, queue);
 
   queue.clearRegisters();
   dest.arrayRef = !s.lhs->isVar();
@@ -449,8 +450,8 @@ void StatementCompiler::absorb(const Decum &s) {
 
 void StatementCompiler::absorb(const Necum &s) {
   queue.append(makeup<InstComment>(list(&s)));
-  ExprCompiler dest(constTable, symbolTable, queue);
-  ExprCompiler value(constTable, symbolTable, queue);
+  ExprCompiler dest(text, queue);
+  ExprCompiler value(text, queue);
 
   queue.clearRegisters();
   dest.arrayRef = !s.lhs->isVar();
@@ -478,7 +479,7 @@ void StatementCompiler::absorb(const Necum &s) {
 void StatementCompiler::absorb(const Eval &s) {
   queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
-  ExprCompiler value(constTable, symbolTable, queue);
+  ExprCompiler value(text, queue);
 
   for (const auto &operand : s.operands) {
     queue.clearRegisters();
@@ -514,11 +515,11 @@ void StatementCompiler::absorb(const Poke &s) {
   queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
 
-  ExprCompiler dest(constTable, symbolTable, queue);
+  ExprCompiler dest(text, queue);
   s.dest->soak(&dest);
   dest.result->castToInt();
 
-  ExprCompiler value(constTable, symbolTable, queue);
+  ExprCompiler value(text, queue);
   s.val->soak(&value);
   value.result->castToInt();
 
@@ -545,8 +546,8 @@ void StatementCompiler::absorb(const Clear &s) {
 void StatementCompiler::absorb(const Set &s) {
   queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
-  ExprCompiler x(constTable, symbolTable, queue);
-  ExprCompiler y(constTable, symbolTable, queue);
+  ExprCompiler x(text, queue);
+  ExprCompiler y(text, queue);
 
   s.x->soak(&x);
   x.result->castToInt();
@@ -555,7 +556,7 @@ void StatementCompiler::absorb(const Set &s) {
   y.result->castToInt();
   y.result = queue.load(mv(y.result));
   if (s.c) {
-    ExprCompiler c(constTable, symbolTable, queue);
+    ExprCompiler c(text, queue);
     s.c->soak(&c);
     c.result->castToInt();
     queue.append(makeup<InstSetC>(mv(x.result), mv(y.result), mv(c.result)));
@@ -567,8 +568,8 @@ void StatementCompiler::absorb(const Set &s) {
 void StatementCompiler::absorb(const Reset &s) {
   queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
-  ExprCompiler x(constTable, symbolTable, queue);
-  ExprCompiler y(constTable, symbolTable, queue);
+  ExprCompiler x(text, queue);
+  ExprCompiler y(text, queue);
 
   s.x->soak(&x);
   x.result->castToInt();
@@ -583,7 +584,7 @@ void StatementCompiler::absorb(const Cls &s) {
   queue.append(makeup<InstComment>(list(&s)));
   if (s.color) {
     queue.clearRegisters();
-    ExprCompiler color(constTable, symbolTable, queue);
+    ExprCompiler color(text, queue);
     s.color->soak(&color);
     color.result->castToInt();
     queue.append(makeup<InstClsN>(mv(color.result)));
@@ -596,12 +597,12 @@ void StatementCompiler::absorb(const Sound &s) {
   queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
 
-  ExprCompiler pitch(constTable, symbolTable, queue);
+  ExprCompiler pitch(text, queue);
   s.pitch->soak(&pitch);
   pitch.result->castToInt();
   pitch.result = queue.load(mv(pitch.result));
 
-  ExprCompiler duration(constTable, symbolTable, queue);
+  ExprCompiler duration(text, queue);
   s.duration->soak(&duration);
   duration.result->castToInt();
   duration.result = queue.load(mv(duration.result));
@@ -612,7 +613,7 @@ void StatementCompiler::absorb(const Sound &s) {
 void StatementCompiler::absorb(const Exec &s) {
   queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
-  ExprCompiler address(constTable, symbolTable, queue);
+  ExprCompiler address(text, queue);
   s.address->soak(&address);
   address.result->castToInt();
   queue.append(makeup<InstExec>(mv(address.result)));
@@ -621,7 +622,7 @@ void StatementCompiler::absorb(const Exec &s) {
 void StatementCompiler::absorb(const Error &s) {
   queue.append(makeup<InstComment>(list(&s)));
   queue.clearRegisters();
-  ExprCompiler errorCode(constTable, symbolTable, queue);
+  ExprCompiler errorCode(text, queue);
   s.errorCode->soak(&errorCode);
   queue.append(makeup<InstError>(mv(errorCode.result)));
 }
@@ -640,7 +641,7 @@ void ExprCompiler::absorb(const StringConstantExpr &e) {
 }
 
 void ExprCompiler::absorb(const NumericVariableExpr &e) {
-  for (auto &symbol : symbolTable.numVarTable) {
+  for (auto &symbol : text.symbolTable.numVarTable) {
     if (symbol.name == e.varname) {
       auto dataType = symbol.isFloat ? DataType::Flt : DataType::Int;
       auto varLabel = (symbol.isFloat ? "FLTVAR_" : "INTVAR_") + e.varname;
@@ -656,7 +657,7 @@ void ExprCompiler::absorb(const NumericVariableExpr &e) {
 }
 
 void ExprCompiler::absorb(const StringVariableExpr &e) {
-  for (auto &symbol : symbolTable.strVarTable) {
+  for (auto &symbol : text.symbolTable.strVarTable) {
     if (symbol.name == e.varname) {
       auto dataType = DataType::Str;
       auto varLabel = "STRVAR_" + e.varname;
@@ -721,7 +722,7 @@ void ExprCompiler::absorb(const NumericArrayExpr &e) {
   bool useRef(arrayRef); // save state
   arrayRef = false;
   e.indices->soak(this);
-  for (auto &symbol : symbolTable.numArrTable) {
+  for (auto &symbol : text.symbolTable.numArrTable) {
     if (symbol.name == e.varexp->varname) {
       int n = static_cast<int>(e.indices->operands.size());
       auto count = makeup<AddressModeImm>(false, n);
@@ -775,7 +776,7 @@ void ExprCompiler::absorb(const StringArrayExpr &e) {
 
   arrayRef = false;
   e.indices->soak(this);
-  for (auto &symbol : symbolTable.strArrTable) {
+  for (auto &symbol : text.symbolTable.strArrTable) {
     if (symbol.name == e.varexp->varname) {
 
       int n = static_cast<int>(e.indices->operands.size());
@@ -1088,6 +1089,12 @@ void ExprCompiler::absorb(const SquareExpr &e) {
   e.expr->soak(this);
   auto dest = queue.alloc(result->clone());
   result = queue.append(makeup<InstSq>(mv(dest), mv(result)));
+}
+
+void ExprCompiler::absorb(const FractExpr &e) {
+  e.expr->soak(this);
+  auto dest = queue.alloc(result->clone());
+  result = queue.append(makeup<InstFract>(mv(dest), mv(result)));
 }
 
 void ExprCompiler::absorb(const TimerExpr & /*expr*/) {

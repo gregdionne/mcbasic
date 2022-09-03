@@ -3,6 +3,8 @@
 #ifndef DATATABLE_DATATABLE_HPP
 #define DATATABLE_DATATABLE_HPP
 
+#include "mcbasic/option.hpp"
+
 #include <string>
 #include <vector>
 
@@ -16,7 +18,7 @@ class DataTable {
 public:
   void add(std::string &entry);
   void testPurity();
-  void floatDiagnostic(bool generate) const;
+  void floatDiagnostic(const Option &generate) const;
   bool isPureUnsigned() const { return pureUnsigned; }
   bool isPureByte() const { return pureByte; }
   bool isPureWord() const { return pureWord; }

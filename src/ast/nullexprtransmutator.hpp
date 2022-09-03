@@ -63,6 +63,7 @@ public:
   up<StringExpr> mutate(InkeyExpr & /*expr*/) override { return {}; }
   up<NumericExpr> mutate(MemExpr & /*expr*/) override { return {}; }
   up<NumericExpr> mutate(SquareExpr & /*expr*/) override { return {}; }
+  up<NumericExpr> mutate(FractExpr & /*expr*/) override { return {}; }
   up<NumericExpr> mutate(TimerExpr & /*expr*/) override { return {}; }
   up<NumericExpr> mutate(PosExpr & /*expr*/) override { return {}; }
   up<NumericExpr> mutate(PeekWordExpr & /*expr*/) override { return {}; }

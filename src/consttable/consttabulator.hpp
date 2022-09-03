@@ -50,6 +50,7 @@ public:
   void inspect(const RelationalExpr &e) const override;
   void inspect(const PointExpr &e) const override;
   void inspect(const SquareExpr &e) const override;
+  void inspect(const FractExpr &e) const override;
 
   void inspect(const NumericVariableExpr & /*e*/) const override{};
   void inspect(const StringVariableExpr & /*e*/) const override{};

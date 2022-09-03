@@ -2571,7 +2571,7 @@ LINE_88
 	ldx	#INTVAR_Y
 	jsr	ld_ix_ir1
 
-	; X=(((P/C)-IDIV(P,C))*K)+(Y*3)+2
+	; X=(FRACT(P/C)*K)+(Y*3)+2
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -2579,13 +2579,7 @@ LINE_88
 	ldx	#INTVAR_C
 	jsr	div_fr1_ir1_ix
 
-	ldx	#INTVAR_P
-	jsr	ld_ir2_ix
-
-	ldx	#INTVAR_C
-	jsr	idiv_ir2_ir2_ix
-
-	jsr	sub_fr1_fr1_ir2
+	jsr	fract_fr1_fr1
 
 	ldx	#INTVAR_K
 	jsr	mul_fr1_fr1_ix
@@ -5986,47 +5980,6 @@ divuflt
 	bsr	divumod
 	bra	_com
 
-	.module	mddivflti
-; divide X by Y and mask off fraction
-;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
-;                     scratch in  (5,x 6,x 7,x 8,x 9,x)
-;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
-;   EXIT   INT(X/Y) in (0,x 1,x 2,x)
-;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
-idivflt
-	ldaa	#8*3
-	bsr	divmod
-	tst	tmp4
-	bmi	_neg
-	ldd	8,x
-	comb
-	coma
-	std	1,x
-	ldab	7,x
-	comb
-	stab	0,x
-	rts
-_neg
-	ldd	3,x
-	bne	_copy
-	ldd	1,x
-	bne	_copy
-	ldab	,x
-	bne	_copy
-	ldd	8,x
-	addd	#1
-	std	1,x
-	ldab	7,x
-	adcb	#0
-	stab	0,x
-	rts
-_copy
-	ldd	8,x
-	std	1,x
-	ldab	7,x
-	stab	0,x
-	rts
-
 	.module	mddivmod
 ; divide/modulo X by Y with remainder
 ;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
@@ -7783,6 +7736,13 @@ forone_ix			; numCalls = 7
 	std	1,x
 	rts
 
+fract_fr1_fr1			; numCalls = 1
+	.module	modfract_fr1_fr1
+	ldd	#0
+	stab	r1
+	std	r1+1
+	rts
+
 gosub_ix			; numCalls = 44
 	.module	modgosub_ix
 	ldab	#3
@@ -7808,18 +7768,6 @@ hlf_fr1_ix			; numCalls = 4
 	rora
 	std	r1+3
 	rts
-
-idiv_ir2_ir2_ix			; numCalls = 1
-	.module	modidiv_ir2_ir2_ix
-	ldab	0,x
-	stab	0+argv
-	ldd	1,x
-	std	1+argv
-	ldd	#0
-	std	3+argv
-	std	r2+3
-	ldx	#r2
-	jmp	idivflt
 
 inc_fr1_fr1			; numCalls = 2
 	.module	modinc_fr1_fr1
@@ -8015,7 +7963,7 @@ ld_ir1_pb			; numCalls = 152
 	std	r1
 	rts
 
-ld_ir2_ix			; numCalls = 8
+ld_ir2_ix			; numCalls = 7
 	.module	modld_ir2_ix
 	ldd	1,x
 	std	r2+1
@@ -8840,16 +8788,6 @@ str_sr1_ix			; numCalls = 6
 	jsr	strflt
 	std	r1+1
 	ldab	tmp1
-	stab	r1
-	rts
-
-sub_fr1_fr1_ir2			; numCalls = 1
-	.module	modsub_fr1_fr1_ir2
-	ldd	r1+1
-	subd	r2+1
-	std	r1+1
-	ldab	r1
-	sbcb	r2
 	stab	r1
 	rts
 

@@ -7,13 +7,14 @@
 
 #include "ast/nullstatementmutator.hpp"
 #include "ast/program.hpp"
+#include "mcbasic/option.hpp"
 
 // error if label not found for WHEN,THEN,GOTO,GOSUB,RUN
 
 class StatementBranchValidator : public NullStatementMutator {
 public:
   StatementBranchValidator(std::unordered_set<int> &lineNums, int curline,
-                           bool ul)
+                           const Option &ul)
       : lineNumbers(lineNums), currentLineNumber(curline), allowUnlisted(ul) {}
   void mutate(If &s) override;
   void mutate(Go &s) override;
@@ -29,17 +30,17 @@ private:
 
   const std::unordered_set<int> &lineNumbers;
   const int currentLineNumber;
-  const bool allowUnlisted;
+  const Option &allowUnlisted;
 };
 
 class BranchValidator : public ProgramOp {
 public:
-  explicit BranchValidator(bool ul) : allowUnlisted(ul) {}
+  explicit BranchValidator(const Option &ul) : allowUnlisted(ul) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 
 private:
-  bool allowUnlisted;
+  const Option &allowUnlisted;
   std::unordered_set<int> lineNumbers;
 };
 

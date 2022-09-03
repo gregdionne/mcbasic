@@ -3,12 +3,10 @@
 #ifndef BACKEND_TARGET_HPP
 #define BACKEND_TARGET_HPP
 
+#include "ast/text.hpp"
 #include "coder.hpp"
 #include "compiler/instqueue.hpp"
-#include "consttable/consttable.hpp"
-#include "datatable/datatable.hpp"
 #include "mcbasic/options.hpp"
-#include "symboltable/symboltable.hpp"
 
 // Top level class to generate assembly for the target.
 
@@ -21,10 +19,8 @@ public:
   Target &operator=(Target &&) = delete;
   virtual ~Target() = default;
 
-  virtual std::string generateAssembly(DataTable &dataTable,
-                                       ConstTable &constTable,
-                                       SymbolTable &symbolTable,
-                                       InstQueue &queue, Options &options) = 0;
+  virtual std::string generateAssembly(Text &text, InstQueue &queue,
+                                       const Options &options) = 0;
 };
 
 #endif

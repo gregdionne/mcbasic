@@ -55,6 +55,7 @@ public:
   utils::optional<std::string> mutate(InkeyExpr &e) override;
   utils::optional<double> mutate(MemExpr &e) override;
   utils::optional<double> mutate(SquareExpr &e) override;
+  utils::optional<double> mutate(FractExpr &e) override;
   utils::optional<double> mutate(PosExpr &e) override;
   utils::optional<double> mutate(TimerExpr &e) override;
   utils::optional<double> mutate(PeekWordExpr &e) override;

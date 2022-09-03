@@ -27,7 +27,7 @@ private:
 
 class ReachChecker : public ProgramOp {
 public:
-  explicit ReachChecker(const Announcer &&a) : announcer(a) {}
+  explicit ReachChecker(const Option &option) : announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

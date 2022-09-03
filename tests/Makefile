@@ -16,7 +16,7 @@ all: $(C10S)
 	cp $< $@
 
 %-native.asm: %-native.bas $(MCBASIC)
-	mcbasic -native $<
+	$(MCBASIC) -native $<
 
 %-bytecode.bas: %.bas
 	cp $< $@

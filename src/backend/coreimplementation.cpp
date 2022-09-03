@@ -2725,6 +2725,48 @@ std::string CoreImplementation::regInt_extInt(InstAbs &inst) {
   return tasm.source();
 }
 
+std::string CoreImplementation::regInt_regInt(InstFract &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd("#0");
+  tasm.stab(inst.arg1->sbyte());
+  tasm.std(inst.arg1->lword());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_regFlt(InstFract &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd("#0");
+  tasm.stab(inst.arg1->sbyte());
+  tasm.std(inst.arg1->lword());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regInt_extInt(InstFract &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd("#0");
+  tasm.stab(inst.arg1->sbyte());
+  tasm.std(inst.arg1->lword());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_extFlt(InstFract &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd("#0");
+  tasm.stab(inst.arg1->sbyte());
+  tasm.std(inst.arg1->lword());
+  tasm.ldd(inst.arg2->fract());
+  tasm.std(inst.arg1->fract());
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string CoreImplementation::regFlt_regFlt(InstDbl &inst) {
   Assembler tasm;
   preamble(tasm, inst);

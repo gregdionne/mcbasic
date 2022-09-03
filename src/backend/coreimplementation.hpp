@@ -239,6 +239,11 @@ public:
   std::string regFlt_extFlt(InstAbs &inst) override;
   std::string regInt_extInt(InstAbs &inst) override;
 
+  std::string regFlt_regFlt(InstFract &inst) override;
+  std::string regInt_regInt(InstFract &inst) override;
+  std::string regFlt_extFlt(InstFract &inst) override;
+  std::string regInt_extInt(InstFract &inst) override;
+
   std::string regFlt_regFlt(InstDbl &inst) override;
   std::string regInt_regInt(InstDbl &inst) override;
   std::string regFlt_extFlt(InstDbl &inst) override;

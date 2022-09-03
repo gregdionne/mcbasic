@@ -1,6 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "ismissingsymbol.hpp"
+#include <algorithm>
 
 bool IsMissingSymbol::inspect(const NumericVariableExpr &e) const {
   return std::all_of(

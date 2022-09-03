@@ -60,6 +60,7 @@ public:
   void mutate(InkeyExpr & /*expr*/) override {}
   void mutate(MemExpr & /*expr*/) override {}
   void mutate(SquareExpr & /*expr*/) override {}
+  void mutate(FractExpr & /*expr*/) override {}
   void mutate(TimerExpr & /*expr*/) override {}
   void mutate(PosExpr & /*expr*/) override {}
   void mutate(PeekWordExpr & /*expr*/) override {}

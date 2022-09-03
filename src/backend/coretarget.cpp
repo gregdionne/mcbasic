@@ -4,13 +4,11 @@
 #include "library.hpp"
 #include "utils/strescape.hpp"
 
-std::string CoreTarget::generateAssembly(DataTable &dataTable,
-                                         ConstTable &constTable,
-                                         SymbolTable &symbolTable,
-                                         InstQueue &queue, Options &options) {
+std::string CoreTarget::generateAssembly(Text &text, InstQueue &queue,
+                                         const Options &options) {
   return generateDirectPage(queue) + generateCode(queue) +
-         generateLibrary(queue, options) + generateDataTable(dataTable) +
-         generateSymbols(constTable, symbolTable);
+         generateLibrary(queue, options) + generateDataTable(text.dataTable) +
+         generateSymbols(text.constTable, text.symbolTable);
 }
 
 std::string CoreTarget::generateDirectPage(InstQueue &queue) {
@@ -109,8 +107,9 @@ std::string CoreTarget::generateMicroColorConstants() {
   return tasm.source();
 }
 
-std::string CoreTarget::generateLibrary(InstQueue &queue, Options &options) {
-  Library library(queue, options.undoc);
+std::string CoreTarget::generateLibrary(InstQueue &queue,
+                                        const Options &options) {
+  Library library(queue, options.undoc.isEnabled());
   library.assemble(makeDispatcher().get());
 
   std::string ops = generateLibraryCatalog(library);

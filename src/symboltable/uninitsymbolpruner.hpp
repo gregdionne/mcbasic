@@ -11,7 +11,7 @@
 
 class ExprUninitSymbolPruner : public ExprMutator<void, void> {
 public:
-  ExprUninitSymbolPruner(SymbolTable &st, int line, Announcer &a)
+  ExprUninitSymbolPruner(SymbolTable &st, int line, const Announcer &a)
       : symbolTable(st), lineNumber(line), announcer(a) {}
 
   ExprUninitSymbolPruner() = delete;
@@ -66,6 +66,7 @@ public:
   void mutate(InkeyExpr & /*expr*/) override;
   void mutate(MemExpr & /*expr*/) override;
   void mutate(SquareExpr & /*expr*/) override;
+  void mutate(FractExpr & /*expr*/) override;
   void mutate(TimerExpr & /*expr*/) override;
   void mutate(PosExpr & /*expr*/) override;
   void mutate(PeekWordExpr & /*expr*/) override;
@@ -77,12 +78,12 @@ private:
   bool missing{false};
   SymbolTable &symbolTable;
   int lineNumber;
-  Announcer &announcer;
+  const Announcer &announcer;
 };
 
 class StatementUninitSymbolPruner : public StatementMutator<void> {
 public:
-  StatementUninitSymbolPruner(SymbolTable &st, int line, Announcer &a)
+  StatementUninitSymbolPruner(SymbolTable &st, int line, const Announcer &a)
       : se(st, line, a), that(&se) {}
 
   StatementUninitSymbolPruner() = delete;
@@ -132,13 +133,13 @@ private:
 
 class UninitSymbolPruner : public ProgramOp {
 public:
-  UninitSymbolPruner(SymbolTable &st, Announcer &&a)
-      : symbolTable(st), announcer(a) {}
+  UninitSymbolPruner(SymbolTable &st, const Option &option)
+      : symbolTable(st), announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 
 private:
   SymbolTable &symbolTable;
-  Announcer announcer;
+  const Announcer announcer;
 };
 #endif

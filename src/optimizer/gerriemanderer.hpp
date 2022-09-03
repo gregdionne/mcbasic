@@ -47,12 +47,12 @@ private:
 
 class Gerriemanderer : public ProgramOp {
 public:
-  explicit Gerriemanderer(const Announcer &&a) : announcer(a) {}
+  explicit Gerriemanderer(const Option &option) : announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 
 private:
-  Announcer announcer;
+  const Announcer announcer;
 };
 
 #endif

@@ -3,38 +3,42 @@
 #ifndef MCBASIC_OPTIONS_HPP
 #define MCBASIC_OPTIONS_HPP
 
-struct Options {
-  // bool gline_tables_only
-  // bool ftrapv = false;
-  bool native = false;
-  bool g = false;
-  bool v = false;
-  bool list = false;
-  bool el = false;
-  bool ul = false;
-  bool mcode = false;
-  bool undoc = false;
-  bool Wfloat = true;
-  bool Wduplicate = true;
-  bool Wunreached = true;
-  bool Wuninit = true;
-  bool Wunused = true;
-  bool Wbranch = true;
-  int argcnt = 0;
+#include "option.hpp"
 
-  // check option list, generate usage if invalid options detected
-  void init(int argc, char *argv[]);
+#include <vector>
+
+class Options {
+public:
+  Options();
+  std::vector<const char *> parse(int argc, const char *const argv[]);
+  const std::vector<Option *> &getTable() const { return table; }
+  Option native;
+  Option g;
+  Option v;
+  Option list;
+  Option el;
+  Option ul;
+  Option mcode;
+  Option undoc;
+  Option Wfloat;
+  Option Wduplicate;
+  Option Wunreached;
+  Option Wuninit;
+  Option Wunused;
+  Option Wbranch;
+  Option dash;
 
 private:
-  static void validate(int argc, char *argv[]);
-  void process(int argc, char *argv[]);
+  Option *findOption(const char *arg);
+  Option *findOnSwitch(const char *arg);
+  Option *findOffSwitch(const char *arg);
+  void usage(const char *progname) const;
+  void helpOptionSummary(const Option *option) const;
+  void helpOptionDetails(const Option *option) const;
+  void helpOptions() const;
+  void helpTopic(const char *progname, const char *target) const;
+  std::vector<Option *> table;
+  const int nWrap = 65;
 };
-
-// NOTE: usage() is a holdover from an old C program
-// This should eventually get moved into the options parser
-//
-// generate a (globally accessible) usage message to stderr.
-
-void usage(char *argv[]);
 
 #endif

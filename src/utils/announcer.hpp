@@ -1,21 +1,22 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef UTILS_WARNER_HPP
-#define UTILS_WARNER_HPP
+#ifndef UTILS_ANNOUNCER_HPP
+#define UTILS_ANNOUNCER_HPP
+
+#include "mcbasic/option.hpp"
 
 #include <string>
 
 class Announcer {
 public:
-  Announcer(bool w, const char *f) : warn(w), flag(f) {}
+  explicit Announcer(const Option &opt) : option(opt) {}
 
   void start(int lineNumber) const;
   void say(const char *formatstr, ...) const;
   void finish(const char *formatstr, ...) const;
 
 private:
-  const bool warn;
-  const std::string flag;
+  const Option &option;
 };
 
 #endif

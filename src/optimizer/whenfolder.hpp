@@ -11,8 +11,8 @@
 
 class WhenStatementFolder : public NullStatementTransmutator {
 public:
-  WhenStatementFolder(int linenum, const Announcer &w)
-      : lineNumber(linenum), announcer(w) {}
+  WhenStatementFolder(int linenum, const Announcer &a)
+      : lineNumber(linenum), announcer(a) {}
   up<Statement> mutate(If &s) override;
   up<Statement> mutate(When &s) override;
 
@@ -27,7 +27,7 @@ private:
 
 class WhenFolder : public ProgramOp {
 public:
-  explicit WhenFolder(Announcer &&w) : announcer(w) {}
+  explicit WhenFolder(const Option &option) : announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

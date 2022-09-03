@@ -60,6 +60,7 @@ public:
   void inspect(const InkeyExpr & /*expr*/) const override {}
   void inspect(const MemExpr & /*expr*/) const override {}
   void inspect(const SquareExpr & /*expr*/) const override {}
+  void inspect(const FractExpr & /*expr*/) const override {}
   void inspect(const TimerExpr & /*expr*/) const override {}
   void inspect(const PosExpr & /*expr*/) const override {}
   void inspect(const PeekWordExpr & /*expr*/) const override {}

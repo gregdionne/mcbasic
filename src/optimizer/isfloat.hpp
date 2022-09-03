@@ -27,6 +27,7 @@ public:
   bool inspect(const NumericVariableExpr &e) const override;
   bool inspect(const NumericArrayExpr &e) const override;
   bool inspect(const SquareExpr &e) const override;
+  bool inspect(const FractExpr &e) const override;
 
 private:
   SymbolTable &symbolTable;

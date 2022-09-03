@@ -50,7 +50,7 @@ void StatementBranchValidator::mutate(Run &s) {
 void StatementBranchValidator::validate(const std::string &statementName,
                                         int &lineNumber) const {
   if (lineNumbers.find(lineNumber) == lineNumbers.end()) {
-    if (allowUnlisted) {
+    if (allowUnlisted.isEnabled()) {
       lineNumber = constants::unlistedLineNumber;
     } else {
       ulError(statementName, lineNumber);

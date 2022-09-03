@@ -29,31 +29,6 @@
 //
 //  It will then need to be modernized again in another ten years.
 
-void fetch::init() {
-  processOpts();
-  if (!openNext()) {
-    usage(argv);
-  }
-}
-
-void fetch::processOpts() {
-  argcnt = 1;
-  while (argcnt < argc && (strncmp(argv[argcnt], "-", 1) == 0) &&
-         (strcmp(argv[argcnt], "--") != 0)) {
-    argcnt++;
-  }
-
-  if (argcnt < argc && (strcmp(argv[argcnt], "--") == 0)) {
-    argcnt++;
-  }
-}
-
-void fetch::spitLine() {
-  if ((linenum != 0) && (argcnt != 0) && argcnt < argc) {
-    fprintf(stderr, "%s(%i): %s", argv[argfile], linenum, buf);
-  }
-}
-
 static std::string strEscape(std::string const &in) {
   std::string out;
   const char *in_c = in.c_str();
@@ -73,8 +48,8 @@ static std::string strEscape(std::string const &in) {
 
 void fetch::sputter(const char *formatstr, va_list &vl) {
 
-  if ((linenum != 0) && (argcnt != 0) && argfile < argc) {
-    int len = fprintf(stderr, "%s(%i): ", argv[argfile], linenum);
+  if (linenum != 0) {
+    int len = fprintf(stderr, "%s(%i): ", filename, linenum);
     fprintf(stderr, "%s", strEscape(buf).c_str());
     for (int i = 0; i < len + colnum; i++) {
       fprintf(stderr, " ");
@@ -100,20 +75,13 @@ void fetch::die(const char *formatstr, ...) {
   exit(1);
 }
 
-bool fetch::openNext() {
-  if (argcnt < argc) {
-    fp = fopen(argv[argcnt], "r");
-    if (!fp) {
-      fprintf(stderr, "%s: ", argv[0]);
-      perror(argv[argcnt]);
-      exit(1);
-    }
-    argfile = argcnt;
-    argcnt++;
-    return true;
+void fetch::open() {
+  fp = fopen(filename, "r");
+  if (!fp) {
+    fprintf(stderr, "%s: ", progname);
+    perror(filename);
+    exit(1);
   }
-  argcnt = 0;
-  return false;
 }
 
 // convert CR or CRLF terminations to LF
@@ -170,19 +138,15 @@ char *fetch::getFileLine() {
 }
 
 char *fetch::getLine() {
-  while (!efgets(buf, BUFSIZ, fp)) {
+  if (!efgets(buf, BUFSIZ, fp)) {
     fclose(fp);
-    linenum = 0;
-    if (!openNext()) {
-      return nullptr;
-    }
+    return nullptr;
   }
 
-  if (fp) {
-    ++linenum;
-    linelen = static_cast<int>(strlen(buf));
-    colnum = 0;
-  }
+  ++linenum;
+  linelen = static_cast<int>(strlen(buf));
+  colnum = 0;
+
   return buf;
 }
 

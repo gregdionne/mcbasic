@@ -1,4 +1,4 @@
-MCBASIC := ../../../mcbasic
+MCBASIC ?= ../../../mcbasic
 
 SRCS := $(shell find . -name \*.bas)
 BC10S := $(SRCS:%.bas=%-bytecode.c10)
@@ -16,13 +16,13 @@ all: $(C10S)
 	cp $< $@
 
 %-native.asm: %-native.bas $(MCBASIC)
-	mcbasic -native $<
+	$(MCBASIC) -native $<
 
 %-bytecode.bas: %.bas
 	cp $< $@
 
 %-bytecode.asm: %-bytecode.bas $(MCBASIC)
-	mcbasic $<
+	$(MCBASIC) $<
 
 clean:
 	rm -f *.lst *.obj *.c10 *.asm *-native.bas *-bytecode.bas

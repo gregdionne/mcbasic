@@ -113,10 +113,9 @@ LINE_10
 
 LINE_20
 
-	; D=C-INT(C)
+	; D=FRACT(C)
 
-	.byte	bytecode_sub_fr1_fx_id
-	.byte	bytecode_FLTVAR_C
+	.byte	bytecode_fract_fr1_fx
 	.byte	bytecode_FLTVAR_C
 
 	.byte	bytecode_ld_fx_fr1
@@ -178,22 +177,23 @@ LLAST
 
 ; Library Catalog
 bytecode_clear	.equ	0
-bytecode_ld_fd_fx	.equ	1
-bytecode_ld_fr1_fx	.equ	2
-bytecode_ld_fx_fr1	.equ	3
-bytecode_pr_sr1	.equ	4
-bytecode_pr_ss	.equ	5
-bytecode_progbegin	.equ	6
-bytecode_progend	.equ	7
-bytecode_rsub_fr1_fr1_fx	.equ	8
-bytecode_rsub_fx_fx_fr1	.equ	9
-bytecode_sqr_fr1_fr1	.equ	10
-bytecode_str_sr1_fx	.equ	11
-bytecode_sub_fr1_fx_fd	.equ	12
-bytecode_sub_fr1_fx_id	.equ	13
+bytecode_fract_fr1_fx	.equ	1
+bytecode_ld_fd_fx	.equ	2
+bytecode_ld_fr1_fx	.equ	3
+bytecode_ld_fx_fr1	.equ	4
+bytecode_pr_sr1	.equ	5
+bytecode_pr_ss	.equ	6
+bytecode_progbegin	.equ	7
+bytecode_progend	.equ	8
+bytecode_rsub_fr1_fr1_fx	.equ	9
+bytecode_rsub_fx_fx_fr1	.equ	10
+bytecode_sqr_fr1_fr1	.equ	11
+bytecode_str_sr1_fx	.equ	12
+bytecode_sub_fr1_fx_fd	.equ	13
 
 catalog
 	.word	clear
+	.word	fract_fr1_fx
 	.word	ld_fd_fx
 	.word	ld_fr1_fx
 	.word	ld_fx_fr1
@@ -206,7 +206,6 @@ catalog
 	.word	sqr_fr1_fr1
 	.word	str_sr1_fx
 	.word	sub_fr1_fx_fd
-	.word	sub_fr1_fx_id
 
 	.module	mdbcode
 noargs
@@ -1181,6 +1180,16 @@ _start
 	stx	DP_DATA
 	rts
 
+fract_fr1_fx			; numCalls = 1
+	.module	modfract_fr1_fx
+	jsr	extend
+	ldd	#0
+	stab	r1
+	std	r1+1
+	ldd	3,x
+	std	r1+3
+	rts
+
 ld_fd_fx			; numCalls = 2
 	.module	modld_fd_fx
 	jsr	dexext
@@ -1365,23 +1374,6 @@ sub_fr1_fx_fd			; numCalls = 1
 	ldd	r1+1
 	sbcb	2,x
 	sbca	1,x
-	std	r1+1
-	ldab	r1
-	sbcb	0,x
-	stab	r1
-	rts
-
-sub_fr1_fx_id			; numCalls = 1
-	.module	modsub_fr1_fx_id
-	jsr	extdex
-	std	tmp1
-	ldd	3,x
-	std	r1+3
-	ldab	0,x
-	stab	r1
-	ldd	1,x
-	ldx	tmp1
-	subd	1,x
 	std	r1+1
 	ldab	r1
 	sbcb	0,x

@@ -271,6 +271,10 @@ void ExprLister::absorb(const SquareExpr &e) {
   result = "SQ(" + list(e.expr) + ')';
 }
 
+void ExprLister::absorb(const FractExpr &e) {
+  result = "FRACT(" + list(e.expr) + ')';
+}
+
 void ExprLister::absorb(const TimerExpr & /*expr*/) { result = "TIMER"; }
 
 void ExprLister::absorb(const PosExpr & /*expr*/) { result = "POS"; }

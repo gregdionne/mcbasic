@@ -185,6 +185,7 @@ void ExprImpurityReaper::mutate(InkeyExpr & /*expr*/) {
 
 void ExprImpurityReaper::mutate(MemExpr & /*expr*/) {}
 void ExprImpurityReaper::mutate(SquareExpr &expr) { reap(expr.expr); }
+void ExprImpurityReaper::mutate(FractExpr &expr) { reap(expr.expr); }
 void ExprImpurityReaper::mutate(TimerExpr & /*expr*/) {}
 void ExprImpurityReaper::mutate(PosExpr & /*expr*/) {}
 void ExprImpurityReaper::mutate(PeekWordExpr &expr) { reap(expr.expr); }

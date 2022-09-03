@@ -11,8 +11,8 @@
 
 class OnStatementFolder : public NullStatementTransmutator {
 public:
-  OnStatementFolder(int linenum, const Announcer &w)
-      : lineNumber(linenum), announcer(w) {}
+  OnStatementFolder(int linenum, const Announcer &a)
+      : lineNumber(linenum), announcer(a) {}
   OnStatementFolder(const OnStatementFolder &) = delete;
   OnStatementFolder(OnStatementFolder &&) = delete;
   OnStatementFolder &operator=(const OnStatementFolder &) = delete;
@@ -34,7 +34,7 @@ private:
 
 class OnFolder : public ProgramOp {
 public:
-  explicit OnFolder(Announcer &&w) : announcer(w) {}
+  explicit OnFolder(const Option &option) : announcer(option) {}
   OnFolder(const OnFolder &) = delete;
   OnFolder(OnFolder &&) = delete;
   OnFolder &operator=(const OnFolder &) = delete;

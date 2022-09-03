@@ -4,7 +4,7 @@ The "circle" folder draws a circle on the TRS-80 MC-10 using three different met
 
 # Sort Benchmark
 
-The "sort" folder contains identical versions of the classic bubblesort and quicksort algorithms that may be run on a TRS80 MC-10.
+The "sort" folder contains identical versions of the classic bubblesort, quicksort and countsourt algorithms that may be run on a TRS80 MC-10.
 
 # For-Loop Benchmark
 

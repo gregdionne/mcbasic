@@ -301,6 +301,25 @@ void ExprMerger::reduceSquarePower(up<NumericExpr> &expr) {
   }
 }
 
+bool ExprMerger::reduceProperFraction(std::vector<up<NumericExpr>> &ops1,
+                                      std::vector<up<NumericExpr>> &ops2) {
+  for (auto iOp2 = ops2.begin(); iOp2 != ops2.end(); ++iOp2) {
+    if (auto iexpr = dynamic_cast<IntExpr *>(iOp2->get())) {
+      IsEqual isEqual(iexpr->expr.get());
+      for (auto iOp1 = ops1.begin(); iOp1 != ops1.end(); ++iOp1) {
+        if ((*iOp1)->check(&isEqual)) {
+          auto fract = makeup<FractExpr>();
+          fract->expr = mv(*iOp1);
+          *iOp1 = mv(fract);
+          iOp2 = ops2.erase(iOp2);
+          return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
 bool ExprMerger::mergeDoublePeek(std::vector<up<NumericExpr>> &ops) {
 
   for (auto iOp1 = ops.begin(); iOp1 != ops.end(); ++iOp1) {
@@ -700,13 +719,20 @@ void ExprMerger::merge(NaryNumericExpr &e) {
 }
 
 void ExprMerger::mutate(AdditiveExpr &e) {
+  // give (X/Y)-INT(X/Y) a shot before X/Y-IDIV(X,Y)
+  while (reduceProperFraction(e.operands, e.invoperands) ||
+         reduceProperFraction(e.invoperands, e.operands)) {
+  }
+
   Factorizer factorizer;
   ShiftCombiner shiftCombiner;
   do {
     merge(e);
     knead(e.operands);
     knead(e.invoperands);
-  } while (factorizer.factorize(&e) || shiftCombiner.combine(&e));
+  } while (factorizer.factorize(&e) || shiftCombiner.combine(&e) ||
+           reduceProperFraction(e.operands, e.invoperands) ||
+           reduceProperFraction(e.invoperands, e.operands));
 }
 
 void ExprMerger::mutate(MultiplicativeExpr &e) {
@@ -789,3 +815,5 @@ void ExprMerger::mutate(RelationalExpr &e) {
 void ExprMerger::mutate(PrintTabExpr &e) { merge(e.tabstop); }
 
 void ExprMerger::mutate(SquareExpr &e) { merge(e.expr); }
+
+void ExprMerger::mutate(FractExpr &e) { merge(e.expr); }

@@ -68,6 +68,7 @@ public:
   void inspect(const InkeyExpr &e) const override;
   void inspect(const MemExpr &e) const override;
   void inspect(const SquareExpr &e) const override;
+  void inspect(const FractExpr &e) const override;
   void inspect(const TimerExpr &e) const override;
   void inspect(const PosExpr &e) const override;
   void inspect(const PeekWordExpr &e) const override;

@@ -11,8 +11,8 @@
 
 class IfStatementFolder : public NullStatementMutator {
 public:
-  IfStatementFolder(int linenum, const Announcer &w)
-      : lineNumber(linenum), announcer(w) {}
+  IfStatementFolder(int linenum, const Announcer &a)
+      : lineNumber(linenum), announcer(a) {}
   void mutate(If &s) override;
 
   using NullStatementMutator::mutate;
@@ -28,7 +28,7 @@ private:
 
 class IfFolder : public ProgramOp {
 public:
-  explicit IfFolder(Announcer &&w) : announcer(w) {}
+  explicit IfFolder(const Option &option) : announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

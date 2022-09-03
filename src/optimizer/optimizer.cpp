@@ -4,6 +4,7 @@
 
 #include "accumulizer.hpp"
 #include "ast/lister.hpp"
+#include "ast/text.hpp"
 #include "branchvalidator.hpp"
 #include "constfolder.hpp"
 #include "consttable/consttabulator.hpp"
@@ -18,82 +19,84 @@
 #include "symboltable/symboltabulator.hpp"
 #include "symboltable/uninitsymbolpruner.hpp"
 #include "unusedassignmentpruner.hpp"
-#include "utils/announcer.hpp"
 #include "whenfolder.hpp"
 #include "whenifier.hpp"
 
 // for debug
 // #include "ast/viewer.hpp"
 
-void Optimizer::optimize(Program &p) {
+Text Optimizer::optimize(Program &p) {
+  Text t;
+
   //  Viewer v;
   //  v.operate(p);
 
   BranchValidator bv(options.ul);
   bv.operate(p);
 
-  Gerriemanderer gm(Announcer(options.v, "verbose"));
+  Gerriemanderer gm(options.v);
   gm.operate(p);
 
-  Whenifier w(Announcer(options.v, "verbose"));
+  Whenifier w(options.v);
   w.operate(p);
 
   ConstFolder cf;
   cf.operate(p);
 
-  DataTabulator dt(dataTable);
+  DataTabulator dt(t.dataTable);
   dt.operate(p);
 
-  dataTable.floatDiagnostic(options.v);
+  t.dataTable.floatDiagnostic(options.v);
 
-  if (!options.list) {
+  if (!options.list.isEnabled()) {
     DataPruner dp;
     dp.operate(p);
   }
 
-  SymbolTabulator st(symbolTable);
+  SymbolTabulator st(t.symbolTable);
   st.operate(p);
 
-  UninitSymbolPruner usp(symbolTable, Announcer(options.Wuninit, "Wuninit"));
+  UninitSymbolPruner usp(t.symbolTable, options.Wuninit);
   usp.operate(p);
 
-  UnusedAssignmentPruner uap(symbolTable,
-                             Announcer(options.Wunused, "Wunused"));
+  UnusedAssignmentPruner uap(t.symbolTable, options.Wunused);
   uap.operate(p);
 
-  FloatPromoter fp(dataTable, symbolTable, Announcer(options.Wfloat, "Wfloat"));
+  FloatPromoter fp(t.dataTable, t.symbolTable, options.Wfloat);
   fp.operate(p);
 
-  Merger m(symbolTable);
+  Merger m(t.symbolTable);
   m.operate(p);
 
   cf.operate(p);
 
-  OnFolder of(Announcer(options.Wbranch, "Wbranch"));
+  OnFolder of(options.Wbranch);
   of.operate(p);
 
-  IfFolder ifld(Announcer(options.Wbranch, "Wbranch"));
+  IfFolder ifld(options.Wbranch);
   ifld.operate(p);
 
-  WhenFolder wf(Announcer(options.Wbranch, "Wbranch"));
+  WhenFolder wf(options.Wbranch);
   wf.operate(p);
 
-  if (options.Wunreached) {
-    ReachChecker rc(Announcer(options.Wunreached, "Wunreached"));
+  if (options.Wunreached.isEnabled()) {
+    ReachChecker rc(options.Wunreached);
     rc.operate(p);
   }
 
-  Accumulizer a(Announcer(options.v, "verbose"));
+  Accumulizer a(options.v);
   a.operate(p);
 
   m.operate(p);
 
-  ConstTabulator ct(constTable);
+  ConstTabulator ct(t.constTable);
   ct.operate(p);
 
-  if (options.list) {
+  if (options.list.isEnabled()) {
     Lister l;
     l.operate(p);
     fprintf(stderr, "%s\n", l.result.c_str());
   }
+
+  return t;
 }

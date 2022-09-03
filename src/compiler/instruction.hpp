@@ -36,6 +36,7 @@ class InstClr;
 class InstInc;
 class InstDec;
 class InstAbs;
+class InstFract;
 class InstDbl;
 class InstHlf;
 class InstSq;
@@ -168,6 +169,7 @@ public:
   virtual std::string operate(InstInc &inst) = 0;
   virtual std::string operate(InstDec &inst) = 0;
   virtual std::string operate(InstAbs &inst) = 0;
+  virtual std::string operate(InstFract &inst) = 0;
   virtual std::string operate(InstDbl &inst) = 0;
   virtual std::string operate(InstHlf &inst) = 0;
   virtual std::string operate(InstSq &inst) = 0;
@@ -739,6 +741,14 @@ class InstAbs : public OperableInstruction<InstAbs> {
 public:
   InstAbs(up<AddressMode> dest, up<AddressMode> am)
       : OperableInstruction("abs", mv(dest), mv(am)) {
+    resultArg();
+  }
+};
+
+class InstFract : public OperableInstruction<InstFract> {
+public:
+  InstFract(up<AddressMode> dest, up<AddressMode> am)
+      : OperableInstruction("fract", mv(dest), mv(am)) {
     resultArg();
   }
 };

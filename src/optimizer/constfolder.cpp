@@ -651,3 +651,10 @@ utils::optional<double> ExprConstFolder::mutate(SquareExpr &e) {
   }
   return {};
 }
+
+utils::optional<double> ExprConstFolder::mutate(FractExpr &e) {
+  if (auto dvalue = fold(e.expr)) {
+    return utils::optional<double>(*dvalue - std::floor(*dvalue));
+  }
+  return {};
+}
