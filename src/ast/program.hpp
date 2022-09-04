@@ -3,8 +3,8 @@
 #ifndef AST_PROGRAM_HPP
 #define AST_PROGRAM_HPP
 
-#include "mcbasic/option.hpp"
 #include "statement.hpp"
+#include "utils/option.hpp"
 
 // For simplicity, use a single non-const void visitor
 class Line;

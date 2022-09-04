@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef MCBASIC_OPTION_HPP
-#define MCBASIC_OPTION_HPP
+#ifndef UTILS_OPTION_HPP
+#define UTILS_OPTION_HPP
 
 class Option {
 public:

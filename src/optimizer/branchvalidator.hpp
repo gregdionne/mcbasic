@@ -7,7 +7,7 @@
 
 #include "ast/nullstatementmutator.hpp"
 #include "ast/program.hpp"
-#include "mcbasic/option.hpp"
+#include "utils/option.hpp"
 
 // error if label not found for WHEN,THEN,GOTO,GOSUB,RUN
 
