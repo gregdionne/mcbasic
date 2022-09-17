@@ -81,7 +81,7 @@ void Options::helpOptionDetails(const Option *option) const {
       ++n;
     }
 
-    fprintf(stderr, " %s\n", std::string(text, n ? n : n - 1).c_str());
+    fprintf(stderr, " %s\n", std::string(text, n).c_str());
 
     while (text[n] == ' ') {
       ++n;

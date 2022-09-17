@@ -52,7 +52,8 @@ void Writer::writeHeader() {
   // (skip the verbose, list, and warning flags)
   for (const auto &option : options.getTable()) {
     const char *opt = option->c_str();
-    if (option->isEnabled() && strcmp(opt, "-list") && strncmp(opt, "W", 1)) {
+    if (option->isEnabled() && strcmp(opt, "v") && strcmp(opt, "list") &&
+        strncmp(opt, "W", 1)) {
       fprintf(fp, " -%s", opt);
     }
   }

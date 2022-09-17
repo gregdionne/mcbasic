@@ -5,7 +5,7 @@
 #include "consttable/fixedpoint.hpp"
 #include "isnumericdatamode.hpp"
 #include "optimizer/constinspector.hpp"
-#include "optimizer/ischar.hpp"
+#include "optimizer/isfloat.hpp"
 #include "optimizer/iscmpeqzero.hpp"
 #include "optimizer/iscmpnezero.hpp"
 #include "optimizer/nonzerobranchselector.hpp"
@@ -971,8 +971,8 @@ void ExprCompiler::absorb(const ValExpr &e) {
   auto dest = queue.alloc(result->clone());
   result = queue.append(makeup<InstVal>(mv(dest), mv(result)));
 
-  IsChar isChar;
-  if (e.expr->check(&isChar)) {
+  IsFloat isFloat(text.symbolTable);
+  if (!e.check(&isFloat)) {
     result->castToInt();
   }
 }

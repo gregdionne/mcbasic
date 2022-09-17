@@ -1,13 +1,15 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "isfloat.hpp"
+#include "isdecimalfree.hpp"
 #include "constinspector.hpp"
 #include "consttable/fixedpoint.hpp"
 #include "ischar.hpp"
 
 bool IsFloat::inspect(const ValExpr &e) const {
   IsChar isChar;
-  return !e.expr->check(&isChar);
+  IsDecimalFree isDecimalFree(symbolTable);
+  return !e.expr->check(&isChar) && !e.expr->check(&isDecimalFree);
 }
 
 bool IsFloat::inspect(const AbsExpr &e) const { return e.expr->check(this); }
