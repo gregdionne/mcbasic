@@ -5,9 +5,9 @@
 #include "consttable/fixedpoint.hpp"
 #include "isnumericdatamode.hpp"
 #include "optimizer/constinspector.hpp"
-#include "optimizer/isfloat.hpp"
 #include "optimizer/iscmpeqzero.hpp"
 #include "optimizer/iscmpnezero.hpp"
+#include "optimizer/isfloat.hpp"
 #include "optimizer/nonzerobranchselector.hpp"
 #include "utils/memutils.hpp"
 #include <array>

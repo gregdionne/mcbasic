@@ -180,10 +180,10 @@ std::string CoreTarget::generateDataTable(DataTable &dataTable) {
       try {
         char buf[1024];
         FixedPoint entry(std::stod(i));
-        sprintf(buf, "$%02x, $%02x, $%02x, $%02x, $%02x ; %s",
-                0x0ff & (entry.wholenum >> 16), 0x0ff & (entry.wholenum >> 8),
-                0x0ff & (entry.wholenum), 0x0ff & (entry.fraction >> 8),
-                0x0ff & (entry.fraction), i.c_str());
+        snprintf(buf, 1024, "$%02x, $%02x, $%02x, $%02x, $%02x ; %s",
+                 0x0ff & (entry.wholenum >> 16), 0x0ff & (entry.wholenum >> 8),
+                 0x0ff & (entry.wholenum), 0x0ff & (entry.fraction >> 8),
+                 0x0ff & (entry.fraction), i.c_str());
         tasm.byte(buf);
       } catch (...) {
         tasm.text("!BAD DATA FORMAT");
@@ -216,8 +216,8 @@ std::string CoreTarget::generateSymbols(ConstTable &constTable,
     for (auto &entry : constTable.ints) {
       if (((entry & 0xff0000) != 0) && ((entry & 0xff0000) != 0xff0000)) {
         char buf[1024];
-        sprintf(buf, "$%02x, $%02x, $%02x", 0x0ff & (entry >> 16),
-                0x0ff & (entry >> 8), 0x0ff & (entry));
+        snprintf(buf, 1024, "$%02x, $%02x, $%02x", 0x0ff & (entry >> 16),
+                 0x0ff & (entry >> 8), 0x0ff & (entry));
         tasm.labelByte(FixedPoint(entry).label(), buf);
       }
     }
@@ -228,10 +228,10 @@ std::string CoreTarget::generateSymbols(ConstTable &constTable,
     tasm.comment("fixed-point constants");
     for (auto &entry : constTable.flts) {
       char buf[1024];
-      sprintf(buf, "$%02x, $%02x, $%02x, $%02x, $%02x",
-              0x0ff & (entry.wholenum >> 16), 0x0ff & (entry.wholenum >> 8),
-              0x0ff & (entry.wholenum), 0x0ff & (entry.fraction >> 8),
-              0x0ff & (entry.fraction));
+      snprintf(buf, 1024, "$%02x, $%02x, $%02x, $%02x, $%02x",
+               0x0ff & (entry.wholenum >> 16), 0x0ff & (entry.wholenum >> 8),
+               0x0ff & (entry.wholenum), 0x0ff & (entry.fraction >> 8),
+               0x0ff & (entry.fraction));
       tasm.labelByte(entry.label(), buf);
     }
     tasm.blank();

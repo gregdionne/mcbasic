@@ -89,13 +89,13 @@ std::string FixedPoint::label() const {
   if (fraction == 0) {
     const char *sgn = wholenum < 0 ? "m" : "";
     int abs_wholenum = wholenum < 0 ? -wholenum : wholenum;
-    sprintf(buf, "INT_%s%i", sgn, abs_wholenum);
+    snprintf(buf, 1024, "INT_%s%i", sgn, abs_wholenum);
   } else {
     const char *sgn = wholenum < 0 ? "m" : "";
     int abs_wholenum = wholenum < 0 ? -(wholenum + 1) : wholenum;
     int abs_fraction = wholenum < 0 ? 65536 - fraction : fraction;
-    sprintf(buf, "FLT_%s%ip%05i", sgn, abs_wholenum,
-            static_cast<int>(100000.0 * abs_fraction / 65536.0));
+    snprintf(buf, 1024, "FLT_%s%ip%05i", sgn, abs_wholenum,
+             static_cast<int>(100000.0 * abs_fraction / 65536.0));
   }
   return {buf};
 }

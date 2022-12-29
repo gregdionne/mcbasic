@@ -49,15 +49,33 @@ std::string ByteCodeTarget::generateLibraryCatalog(Library &library) {
   Assembler tasm;
   tasm.comment("Library Catalog");
 
+  auto entries = library.getCalls();
+
+  if (entries.size() > 256) {
+    fprintf(stderr, "error:  Too many bytecodes!\n");
+    fprintf(stderr,
+            "Sadly, mcbasic has generated "
+            "%lu unique virtual instructions.\n",
+            entries.size());
+    fprintf(stderr,
+            "This is %lu more instruction%s than can be "
+            "indexed using a single byte.\n",
+            entries.size() - 256, entries.size() > 257 ? "s" : "");
+    fprintf(stderr, "Try reducing the size of the BASIC program; or, if "
+                    "you have lots of memroy, use the -native compilation "
+                    "switch.\n");
+    exit(1);
+  }
+
   int i = 0;
-  for (const auto &entry : library.getCalls()) {
+  for (const auto &entry : entries) {
     tasm.equ("bytecode_" + entry.first, std::to_string(i++));
   }
 
   tasm.blank();
 
   tasm.label("catalog");
-  for (const auto &entry : library.getCalls()) {
+  for (const auto &entry : entries) {
     tasm.word(entry.first);
   }
 

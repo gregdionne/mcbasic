@@ -3,8 +3,8 @@
 #include "isdecimalfree.hpp"
 #include "isfloat.hpp"
 
-#include <string>
 #include <algorithm>
+#include <string>
 
 bool IsDecimalFree::inspect(const StringConstantExpr &e) const {
   return e.value.find_first_of('.') == std::string::npos &&
@@ -12,7 +12,10 @@ bool IsDecimalFree::inspect(const StringConstantExpr &e) const {
 }
 
 bool IsDecimalFree::inspect(const StringConcatenationExpr &e) const {
-  return std::all_of(e.operands.cbegin(), e.operands.cend(), [this](const up<StringExpr> &expr) { return expr->check(this); }); }
+  return std::all_of(
+      e.operands.cbegin(), e.operands.cend(),
+      [this](const up<StringExpr> &expr) { return expr->check(this); });
+}
 
 bool IsDecimalFree::inspect(const LeftExpr &e) const {
   return e.str->check(this);

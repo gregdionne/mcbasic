@@ -22,7 +22,7 @@
 // * RND(<expr>)
 //   when <expr> is not a positive constant.
 //
-// * FOR <s> = <expr1> TO <expr2> STEP <expr3>
+// * FOR <s> = <start> TO <stop> STEP <step>
 //   when either <start> or <step> has a floating point value.
 //
 // * INPUT <s>
