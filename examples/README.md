@@ -25,6 +25,8 @@ bytecode/rubik.bas   | Puzzle/Rubik/RUBIK5.TXT
 native/four.bas      | Puzzle/Four/FOUR2.TXT
 native/hurkle.bas    | Puzzle/Hurkle/HURKLE.TXT
 native/pentomin.bas  | Puzzle/Pentomin/PENTOMIN2.TXT
+native/klondike.bas  | Casino/Card Games/Klondike/KLONDIKE14.TXT
+native/bingo.bas     | Casino/Bingo/BINGO3.TXT
 
 #### Jim Gerrie's Compiled Programs
 Jim also has made a dedicated repository of original and ported programs modified to for use with this compiler (at https://github.com/jggames/MCBasic).  While the files are replicated here, his latest official versions can be found there.  Some of these are ports of his earlier work that are tweaked to make the original program playable at the increased speed.
