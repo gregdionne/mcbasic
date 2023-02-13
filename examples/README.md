@@ -43,6 +43,7 @@ native/jailbrk.bas   | JAILBRK9.TXT
 native/qbert.bas     | QBERTcompiler21.TXT
 native/scramble.bas  | SCRAMBLEcompiler39.TXT
 native/swelfoop.bas  | SWELFOOPcompiler8.TXT
+native/tresearch.bas | TRESEARCH4.TXT
 bytecode/berzerk.bas | BERZERKcompiler30.TXT
 bytecode/mahjong.bas | NEWMAHJcompiler18.TXT
 bytecode/loderun.bas | LODERUNcompiler38.TXT
