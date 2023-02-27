@@ -35,7 +35,7 @@ R_EXTRA	.equ	$E8AB	; emit "?EXTRA IGNORED" to console
 R_DMODE	.equ	$F7AA	; display OK prompt and restore direct mode
 R_KPOLL	.equ	$F879	; if key is down, do KEYIN, else set Z CCR flag
 R_KEYIN	.equ	$F883	; poll key for key-down transition set Z otherwise
-R_PUTC	.equ	$F9C9	; write ACCA to console
+R_PUTC	.equ	$F9C6	; write ACCA to console
 R_MKTAB	.equ	$FA7B	; setup tabs for console
 R_GETLN	.equ	$FAA4	; get line, returning with X pointing to M_BUF-1
 R_SETPX	.equ	$FB44	; write pixel character to X

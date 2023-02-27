@@ -27,6 +27,7 @@ native/hurkle.bas    | Puzzle/Hurkle/HURKLE.TXT
 native/pentomin.bas  | Puzzle/Pentomin/PENTOMIN2.TXT
 native/klondike.bas  | Casino/Card Games/Klondike/KLONDIKE14.TXT
 native/bingo.bas     | Casino/Bingo/BINGO3.TXT
+native/treasrch.bas  | Board Games/Treasrch/TREASRCH4.TXT
 
 #### Jim Gerrie's Compiled Programs
 Jim also has made a dedicated repository of original and ported programs modified to for use with this compiler (at https://github.com/jggames/MCBasic).  While the files are replicated here, his latest official versions can be found there.  Some of these are ports of his earlier work that are tweaked to make the original program playable at the increased speed.
@@ -39,11 +40,11 @@ native/chess.bas     | CHESScompiler2.TXT
 native/closeout.bas  | CLOSEOUTcompiler9.TXT
 native/coloroid.bas  | COLOROIDcompiler9.TXT
 native/defcon1.bas   | DEFCON1compiler17.TXT
+native/life.bas      | LIFEcompiler4.TXT
 native/jailbrk.bas   | JAILBRK9.TXT
 native/qbert.bas     | QBERTcompiler21.TXT
 native/scramble.bas  | SCRAMBLEcompiler39.TXT
 native/swelfoop.bas  | SWELFOOPcompiler8.TXT
-native/tresearch.bas | TRESEARCH4.TXT
 bytecode/berzerk.bas | BERZERKcompiler30.TXT
 bytecode/mahjong.bas | NEWMAHJcompiler18.TXT
 bytecode/loderun.bas | LODERUNcompiler38.TXT

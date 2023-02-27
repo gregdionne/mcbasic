@@ -86,7 +86,7 @@ std::string CoreTarget::generateMicroColorConstants() {
   tasm.equ("R_KPOLL", "$F879", "if key is down, do KEYIN, else set Z CCR flag");
   tasm.equ("R_KEYIN", "$F883",
            "poll key for key-down transition set Z otherwise");
-  tasm.equ("R_PUTC", "$F9C9", "write ACCA to console");
+  tasm.equ("R_PUTC", "$F9C6", "write ACCA to console");
   tasm.equ("R_MKTAB", "$FA7B", "setup tabs for console");
   tasm.equ("R_GETLN", "$FAA4",
            "get line, returning with X pointing to M_BUF-1");
