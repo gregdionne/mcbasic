@@ -108,6 +108,7 @@ private:
   static std::string mdPowFlt();
   static std::string mdRMul315();
   static std::string mdMSBit();
+  static std::string mdSetBit();
   static std::string mdTmp2XF();
   static std::string mdTmp2XI();
   static std::string mdArg2X();

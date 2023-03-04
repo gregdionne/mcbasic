@@ -19,6 +19,7 @@ void Library::makeFoundation() {
   foundation["mdmodflt"] = Lib{0, mdModFlt(), {"mddivmod"}};
   foundation["mdinvflt"] = Lib{0, mdInvFlt(), {"mddivflt"}};
   foundation["mdmsbit"] = Lib{0, mdMSBit(), {}};
+  foundation["mdsetbit"] = Lib{0, mdSetBit(), {}};
   foundation["mdrmul315"] = Lib{0, mdRMul315(), {"mdmulflt"}};
   foundation["mdshlflt"] = Lib{0, mdShlFlt(), {}};
   foundation["mdshlint"] = Lib{0, mdShlInt(), {}};
@@ -63,7 +64,7 @@ void Library::makeFoundation() {
   foundation["mdtmp2xi"] = Lib{0, mdTmp2XI(), {}};
   foundation["mdarg2x"] = Lib{0, mdArg2X(), {}};
   foundation["mdx2arg"] = Lib{0, mdX2Arg(), {}};
-  foundation["mdsqr"] = Lib{0, mdSqr(), {"mdmulflt", "mddivflt", "mdmsbit"}};
+  foundation["mdsqr"] = Lib{0, mdSqr(), {"mdmsbit", "mdsetbit", "mdx2arg"}};
   foundation["mdexp"] =
       Lib{0, mdExp(), {"mdrmul315", "mdmodflt", "mdshift", "mdarg2x"}};
   foundation["mdlog"] =
@@ -2509,15 +2510,47 @@ std::string Library::mdMSBit() {
   return tasm.source();
 }
 
+std::string Library::mdSetBit() {
+  Assembler tasm;
+  tasm.comment("SetBit");
+  tasm.comment("  ENTRY  ACCA holds bit to set");
+  tasm.comment("  ENTRY  X holds floating point reg");
+  tasm.comment("  EXIT   bit set in register");
+  tasm.comment("         0 = sign bit, 39 = LSB.");
+
+  tasm.label("setbit");
+  tasm.suba("#8");
+  tasm.blo("_dobit");
+  tasm.inx();
+  tasm.bra("setbit");
+
+  tasm.label("_dobit");
+  tasm.ldab("#$80");
+  tasm.adda("#8");
+  tasm.beq("_set");
+  tasm.label("_nxtbit");
+  tasm.lsrb();
+  tasm.deca();
+  tasm.bne("_nxtbit");
+
+  tasm.label("_set");
+  tasm.orab(",x");
+  tasm.stab(",x");
+  tasm.rts();
+
+  return tasm.source();
+}
+
 std::string Library::mdSqr() {
   Assembler tasm;
   tasm.comment("X = SQR(X)");
   tasm.comment("  ENTRY  X in 0,X 1,X 2,X 3,X 4,X");
-  tasm.comment("  EXIT   SQRT(X) in (0,x 1,x 2,x 3,x 4,x)");
-  tasm.comment("         uses ( 5,x  6,x  7,x  8,x  9,x)");
-  tasm.comment("         uses (10,x 11,x 12,x 13,x 14,x)");
-  tasm.comment("         uses (15,x 16,x 17,x 18,x 19,x)");
-  tasm.comment("         uses argv for guess and tmp1-tmp4");
+  tasm.comment("  EXIT   Y = SQRT(X) in (0,x 1,x 2,x 3,x 4,x)");
+  tasm.comment("         Ysq   ( 5,x  6,x  7,x  8,x  9,x)");
+  tasm.comment("         Yd    (10,x 11,x 12,x 13,x 14,x)");
+  tasm.comment("         bit   (15,x 16,x 17,x 18,x 19,x)");
+  tasm.comment("         bitsq (20,x 21,x 22,x 23,x 24,x)");
+  tasm.comment("         uses argv for radicand and tmp1-tmp4");
   tasm.label("sqr");
 
   tasm.jsr("msbit");
@@ -2526,106 +2559,155 @@ std::string Library::mdSqr() {
   tasm.rts(); // return zero if zero
 
   tasm.label("_chkpos");  // if returned MSB is 0,
-  tasm.tsta();            // argument is negative.
-  tasm.bne("_pos");       // Bail out with
-  tasm.ldab("#FC_ERROR"); // an FC error
+  tasm.tsta();            // argument is negative
+  tasm.bne("_pos");       // bail out with
+  tasm.ldab("#FC_ERROR"); // a function call error
   tasm.jmp("error");
 
   tasm.label("_pos");
-  tasm.pshx();
-  tasm.eora("#1"); // init with an extra
-  tasm.lsra();     // bit if not div by 4
-  tasm.rol("tmp1");
-  tasm.adda("#12"); // perform SQR of first bit
-  tasm.ldx("#argv");
-  tasm.clrb();
-  tasm.label("_nxtargv");
-  tasm.stab(",x"); // pre-emptively clear byte
-  tasm.inx();      // and decrement a full byte
-  tasm.suba("#8");
-  tasm.bhs("_nxtargv");
+  tasm.staa("tmp1");  // save MSB
+  tasm.stx("tmp4");   // save X
+  tasm.jsr("x2arg");  // store radicand in argv
 
-  tasm.adda("#8");   // undo decrement
-  tasm.dex();        //
-  tasm.lsr("tmp1");  // load b with guess
-  tasm.rorb();       // we don't care if
-  tasm.rorb();       // ACCA is 7 on entry
-  tasm.orab("#$80"); // since it is set only
-  tasm.tsta();       // for even ACCA.
-  tasm.beq("_setargb");
+  // clear 0,x through 24,x
+  tasm.ldab("#12");
+  tasm.stab("tmp1+1");
+  tasm.ldd("#0");
 
-  tasm.label("_nxtargb");
-  tasm.lsrb();
-  tasm.deca();
-  tasm.bne("_nxtargb");
+  tasm.label("_clrx");
+  tasm.std(",x");
+  tasm.inx();
+  tasm.inx();
+  tasm.dec("tmp1+1"); // sqrt ( x * 65536 ) = 256 * sqrt ( x )
+  tasm.bne("_clrx");
+  tasm.std("tmp2");
+  tasm.std("tmp3");
 
-  tasm.label("_setargb"); // save guess
-  tasm.stab(",x");
-  tasm.clrb();         // zero out rest of argv
-  tasm.label("_more"); //
-  tasm.inx();          // we will always have
-  tasm.stab(",x");     // at least one zero
-  tasm.cpx("#5+argv"); // after our guess
-  tasm.blo("_more");
-
-  tasm.incomment("Newton-Raphson step");
-  tasm.incomment("WHILE AND(X/ARGV-X, NOT 1)");
-  tasm.incomment("     X = (X/ARGV + X)/2");
-  tasm.incomment("WEND");
-  tasm.label("_newton"); // Do Newton step
-  tasm.pulx();           // get back original word
-  tasm.ldab("0,x");      // copy over to dividend
-  tasm.stab("5,x");
-  tasm.ldd("1,x");
-  tasm.std("6,x");
-  tasm.ldd("3,x");
-  tasm.std("8,x");
-  tasm.pshx();
-  tasm.ldab("#5");
+  // 01234567 89ABCDEF GHIJKLMN OPQRSTUV WXYZabcd
+  //  C D E F  G H I J  K L M N  O P Q R  S T U V
+  tasm.incomment("setup bitsq");
+  tasm.ldx("tmp4");
+  tasm.ldab("#20");    // load X to bitsq
   tasm.abx();
+  tasm.ldaa("tmp1");   // restore MSB
+  tasm.oraa("#1");     // force to odd bit
+  tasm.jsr("setbit");
+  tasm.incomment("setup bit");
+  tasm.ldx("tmp4");    // load X to bit
+  tasm.ldab("#15");
+  tasm.abx();
+  tasm.ldaa("tmp1");   // restore MSB
+  tasm.lsra();         // set sqrt bit
+  tasm.adda("#12");
+  tasm.jsr("setbit");
+  tasm.ldx("tmp4");
 
-  tasm.jsr("divflt"); // dividend is now the quotient
+  tasm.incomment("tmp = ysq + (yd=2*ysq*bitsq) + bitsq");
+  tasm.label("_loop");
+  tasm.ldd("23,x");
+  tasm.addd("13,x");
+  tasm.rol("tmp1");
+  tasm.addd("8,x");
+  tasm.std("tmp3");
+  tasm.ldaa("tmp1");
+  tasm.ldab("22,x");
+  tasm.adcb("12,x");
+  tasm.rora();
+  tasm.adcb("7,x");
+  tasm.stab("tmp2+1");
+  tasm.ldab("21,x");
+  tasm.adcb("11,x");
+  tasm.rola();
+  tasm.adcb("6,x");
+  tasm.stab("tmp2");
+  tasm.ldab("20,x");
+  tasm.adcb("10,x");
+  tasm.rora();
+  tasm.adcb("5,x");
+  tasm.stab("tmp1+1");
 
-  // compare X with argv (ignore last bit)
-  tasm.ldd("0,x");
-  tasm.subd("0+argv");
-  tasm.bne("_avg");
-  tasm.ldd("2,x");
-  tasm.subd("2+argv");
-  tasm.bne("_avg");
-  tasm.ldab("4,x");
-  tasm.subb("4+argv");
-  tasm.andb("#$FE");
-  tasm.bne("_avg");
+  tasm.incomment("see if tmp <= x");
+  tasm.subb("0+argv");
+  tasm.bhi("_nogood");
+  tasm.blo("_good");
+  tasm.ldd("tmp2");
+  tasm.subd("1+argv");
+  tasm.bhi("_nogood");
+  tasm.blo("_good");
+  tasm.ldd("tmp3");
+  tasm.subd("3+argv");
+  tasm.bhi("_nogood");
 
-  // result is good
-  tasm.pulx();
-  tasm.ldab("0+argv");
-  tasm.stab("0,x");
-  tasm.ldd("1+argv");
-  tasm.std("1,x");
-  tasm.ldd("3+argv");
-  tasm.std("3,x");
-  tasm.rts();
-
-  // average
-  tasm.label("_avg");
+  tasm.label("_good");
+  tasm.incomment("ysq = tmp");
+  tasm.ldd("tmp3");
+  tasm.std("8,x");
+  tasm.ldd("tmp2");
+  tasm.std("6,x");
+  tasm.ldab("tmp1+1");
+  tasm.stab("5,x");
+  tasm.incomment("y += bit");
   tasm.ldd("3,x");
-  tasm.addd("3+argv");
-  tasm.std("3+argv");
+  tasm.addd("18,x");
+  tasm.std("3,x");
   tasm.ldd("1,x");
-  tasm.adcb("2+argv");
-  tasm.adca("1+argv");
-  tasm.std("1+argv");
+  tasm.adcb("17,x");
+  tasm.adca("16,x");
+  tasm.std("1,x");
   tasm.ldab("0,x");
-  tasm.adcb("0+argv");
-  tasm.lsrb();
-  tasm.stab("0+argv");
-  tasm.ror("1+argv");
-  tasm.ror("2+argv");
-  tasm.ror("3+argv");
-  tasm.ror("4+argv");
-  tasm.bra("_newton");
+  tasm.adcb("15,x");
+  tasm.stab("0,x");
+  tasm.incomment("yd = (yd + 2*bitsq)/2");
+  tasm.lsr("10,x");
+  tasm.ror("11,x");
+  tasm.ror("12,x");
+  tasm.ldd("13,x");
+  tasm.rora();
+  tasm.rorb();
+  tasm.addd("23,x");
+  tasm.std("13,x");
+  tasm.ldd("11,x");
+  tasm.adcb("22,x");
+  tasm.adca("21,x");
+  tasm.std("11,x");
+  tasm.ldab("10,x");
+  tasm.adcb("20,x");
+  tasm.stab("10,x");
+  tasm.bra("_shift");
+  tasm.label("_nogood");
+  tasm.incomment("yd = yd/2");
+  tasm.lsr("10,x");
+  tasm.ror("11,x");
+  tasm.ror("12,x");
+  tasm.ror("13,x");
+  tasm.ror("14,x");
+  tasm.label("_shift");
+  tasm.incomment("bitsq /= 4");
+  tasm.lsr("20,x");
+  tasm.ror("21,x");
+  tasm.ror("22,x");
+  tasm.ror("23,x");
+  tasm.ror("24,x");
+  tasm.lsr("20,x");
+  tasm.ror("21,x");
+  tasm.ror("22,x");
+  tasm.ror("23,x");
+  tasm.ror("24,x");
+  tasm.incomment("bit /= 2");
+  tasm.lsr("15,x");
+  tasm.ror("16,x");
+  tasm.ror("17,x");
+  tasm.ror("18,x");
+  tasm.ror("19,x");
+  tasm.incomment("loop while bit exists");
+  tasm.bne("_jloop");
+  tasm.ldd("17,x");
+  tasm.bne("_jloop");
+  tasm.ldd("15,x");
+  tasm.bne("_jloop");
+  tasm.rts();
+  tasm.label("_jloop");
+  tasm.jmp("_loop");
 
   return tasm.source();
 }

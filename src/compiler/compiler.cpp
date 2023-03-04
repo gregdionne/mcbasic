@@ -885,7 +885,7 @@ void ExprCompiler::absorb(const SqrExpr &e) {
   result = queue.load(mv(result));
   auto dest = result->clone();
   result = queue.append(makeup<InstSqr>(mv(dest), mv(result)));
-  queue.reserve(2); // allocate two phantom regs for guess and division
+  queue.reserve(4); // allocate four phantom regs for intermed vars
 }
 
 void ExprCompiler::absorb(const ExpExpr &e) {

@@ -8464,7 +8464,7 @@ std::string CoreImplementation::regFlt_posWord_extFlt(InstSub &inst) {
   tasm.sbca(inst.arg3->hbyte());
   tasm.std(inst.arg1->lword());
   tasm.ldab("#0");
-  tasm.sbcb(inst.arg3->hbyte());
+  tasm.sbcb(inst.arg3->sbyte());
   tasm.stab(inst.arg1->sbyte());
   tasm.rts();
   return tasm.source();
@@ -8482,7 +8482,7 @@ std::string CoreImplementation::regFlt_negWord_extFlt(InstSub &inst) {
   tasm.sbca(inst.arg3->hbyte());
   tasm.std(inst.arg1->lword());
   tasm.ldab("#-1");
-  tasm.sbcb(inst.arg3->hbyte());
+  tasm.sbcb(inst.arg3->sbyte());
   tasm.stab(inst.arg1->sbyte());
   tasm.rts();
   return tasm.source();

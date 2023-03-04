@@ -70,6 +70,8 @@ tmp5	.block	2
 r1	.block	5
 r2	.block	5
 r3	.block	5
+r4	.block	5
+r5	.block	5
 rend
 argv	.block	10
 
@@ -857,14 +859,39 @@ _loop
 	bne	_loop
 	rts
 
+	.module	mdsetbit
+; SetBit
+;   ENTRY  ACCA holds bit to set
+;   ENTRY  X holds floating point reg
+;   EXIT   bit set in register
+;          0 = sign bit, 39 = LSB.
+setbit
+	suba	#8
+	blo	_dobit
+	inx
+	bra	setbit
+_dobit
+	ldab	#$80
+	adda	#8
+	beq	_set
+_nxtbit
+	lsrb
+	deca
+	bne	_nxtbit
+_set
+	orab	,x
+	stab	,x
+	rts
+
 	.module	mdsqr
 ; X = SQR(X)
 ;   ENTRY  X in 0,X 1,X 2,X 3,X 4,X
-;   EXIT   SQRT(X) in (0,x 1,x 2,x 3,x 4,x)
-;          uses ( 5,x  6,x  7,x  8,x  9,x)
-;          uses (10,x 11,x 12,x 13,x 14,x)
-;          uses (15,x 16,x 17,x 18,x 19,x)
-;          uses argv for guess and tmp1-tmp4
+;   EXIT   Y = SQRT(X) in (0,x 1,x 2,x 3,x 4,x)
+;          Ysq   ( 5,x  6,x  7,x  8,x  9,x)
+;          Yd    (10,x 11,x 12,x 13,x 14,x)
+;          bit   (15,x 16,x 17,x 18,x 19,x)
+;          bitsq (20,x 21,x 22,x 23,x 24,x)
+;          uses argv for radicand and tmp1-tmp4
 sqr
 	jsr	msbit
 	cmpa	#40
@@ -876,89 +903,140 @@ _chkpos
 	ldab	#FC_ERROR
 	jmp	error
 _pos
-	pshx
-	eora	#1
-	lsra
-	rol	tmp1
-	adda	#12
-	ldx	#argv
-	clrb
-_nxtargv
-	stab	,x
+	staa	tmp1
+	stx	tmp4
+	jsr	x2arg
+	ldab	#12
+	stab	tmp1+1
+	ldd	#0
+_clrx
+	std	,x
 	inx
-	suba	#8
-	bhs	_nxtargv
-	adda	#8
-	dex
-	lsr	tmp1
-	rorb
-	rorb
-	orab	#$80
-	tsta
-	beq	_setargb
-_nxtargb
-	lsrb
-	deca
-	bne	_nxtargb
-_setargb
-	stab	,x
-	clrb
-_more
 	inx
-	stab	,x
-	cpx	#5+argv
-	blo	_more
-	; Newton-Raphson step
-	; WHILE AND(X/ARGV-X, NOT 1)
-	;      X = (X/ARGV + X)/2
-	; WEND
-_newton
-	pulx
-	ldab	0,x
-	stab	5,x
-	ldd	1,x
-	std	6,x
-	ldd	3,x
-	std	8,x
-	pshx
-	ldab	#5
+	dec	tmp1+1
+	bne	_clrx
+	std	tmp2
+	std	tmp3
+	; setup bitsq
+	ldx	tmp4
+	ldab	#20
 	abx
-	jsr	divflt
-	ldd	0,x
-	subd	0+argv
-	bne	_avg
-	ldd	2,x
-	subd	2+argv
-	bne	_avg
-	ldab	4,x
-	subb	4+argv
-	andb	#$FE
-	bne	_avg
-	pulx
-	ldab	0+argv
-	stab	0,x
-	ldd	1+argv
-	std	1,x
-	ldd	3+argv
-	std	3,x
-	rts
-_avg
+	ldaa	tmp1
+	oraa	#1
+	jsr	setbit
+	; setup bit
+	ldx	tmp4
+	ldab	#15
+	abx
+	ldaa	tmp1
+	lsra
+	adda	#12
+	jsr	setbit
+	ldx	tmp4
+	; tmp = ysq + (yd=2*ysq*bitsq) + bitsq
+_loop
+	ldd	23,x
+	addd	13,x
+	rol	tmp1
+	addd	8,x
+	std	tmp3
+	ldaa	tmp1
+	ldab	22,x
+	adcb	12,x
+	rora
+	adcb	7,x
+	stab	tmp2+1
+	ldab	21,x
+	adcb	11,x
+	rola
+	adcb	6,x
+	stab	tmp2
+	ldab	20,x
+	adcb	10,x
+	rora
+	adcb	5,x
+	stab	tmp1+1
+	; see if tmp <= x
+	subb	0+argv
+	bhi	_nogood
+	blo	_good
+	ldd	tmp2
+	subd	1+argv
+	bhi	_nogood
+	blo	_good
+	ldd	tmp3
+	subd	3+argv
+	bhi	_nogood
+_good
+	; ysq = tmp
+	ldd	tmp3
+	std	8,x
+	ldd	tmp2
+	std	6,x
+	ldab	tmp1+1
+	stab	5,x
+	; y += bit
 	ldd	3,x
-	addd	3+argv
-	std	3+argv
+	addd	18,x
+	std	3,x
 	ldd	1,x
-	adcb	2+argv
-	adca	1+argv
-	std	1+argv
+	adcb	17,x
+	adca	16,x
+	std	1,x
 	ldab	0,x
-	adcb	0+argv
-	lsrb
-	stab	0+argv
-	ror	1+argv
-	ror	2+argv
-	ror	3+argv
-	ror	4+argv
-	bra	_newton
+	adcb	15,x
+	stab	0,x
+	; yd = (yd + 2*bitsq)/2
+	lsr	10,x
+	ror	11,x
+	ror	12,x
+	ldd	13,x
+	rora
+	rorb
+	addd	23,x
+	std	13,x
+	ldd	11,x
+	adcb	22,x
+	adca	21,x
+	std	11,x
+	ldab	10,x
+	adcb	20,x
+	stab	10,x
+	bra	_shift
+_nogood
+	; yd = yd/2
+	lsr	10,x
+	ror	11,x
+	ror	12,x
+	ror	13,x
+	ror	14,x
+_shift
+	; bitsq /= 4
+	lsr	20,x
+	ror	21,x
+	ror	22,x
+	ror	23,x
+	ror	24,x
+	lsr	20,x
+	ror	21,x
+	ror	22,x
+	ror	23,x
+	ror	24,x
+	; bit /= 2
+	lsr	15,x
+	ror	16,x
+	ror	17,x
+	ror	18,x
+	ror	19,x
+	; loop while bit exists
+	bne	_jloop
+	ldd	17,x
+	bne	_jloop
+	ldd	15,x
+	bne	_jloop
+	rts
+_jloop
+	jmp	_loop
 
 	.module	mdstrflt
 strflt
