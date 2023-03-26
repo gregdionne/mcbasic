@@ -821,7 +821,6 @@ _4_4
 	ldab	4,x
 	beq	_rndup
 	mul
-	lslb
 	adca	tmp4
 	staa	tmp4
 	bsr	mulflt3

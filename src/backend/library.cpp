@@ -1743,7 +1743,6 @@ std::string Library::mdMulFlt() {
   tasm.ldab("4,x");
   tasm.beq("_rndup");
   tasm.mul();
-  tasm.lslb();
   tasm.adca("tmp4");
   tasm.staa("tmp4");
   tasm.bsr("mulflt3");
