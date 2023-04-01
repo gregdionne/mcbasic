@@ -188,11 +188,14 @@ std::string Library::mdArrayRef1() {
   tasm.jsr("alloc");
   tasm.pulx();
   tasm.label("_preexist");
-  tasm.ldd("0+argv");
-  tasm.subd("2,x");
-  tasm.bhi("_err");
+
   tasm.ldd("0+argv");
   tasm.std("tmp1");
+  tasm.subd("2,x");
+  tasm.bhs("_err");
+
+  tasm.ldd("tmp1");
+
   tasm.lsld();
   tasm.rts();
   tasm.label("_err");
@@ -206,17 +209,22 @@ std::string Library::mdArrayRef2() {
   tasm.comment("get offset from 2D descriptor X and argv.");
   tasm.comment("return word offset in D and byte offset in tmp1");
   tasm.label("ref2");
-  tasm.ldd("2,x");
-  tasm.std("tmp1");
-  tasm.subd("0+argv");
-  tasm.bls("_err");
+  tasm.ldd(",x");
+  tasm.beq("_err");
+
   tasm.ldd("2+argv");
-  tasm.std("tmp2");
+  tasm.std("tmp1");
   tasm.subd("4,x");
   tasm.bhs("_err");
+
+  tasm.ldd("2,x");
+  tasm.std("tmp2");
+  tasm.subd("0+argv");
+  tasm.bls("_err");
   tasm.jsr("mul12");
   tasm.addd("0+argv");
   tasm.std("tmp1");
+
   tasm.lsld();
   tasm.rts();
   tasm.label("_err");
@@ -230,25 +238,30 @@ std::string Library::mdArrayRef3() {
   tasm.comment("get offset from 3D descriptor X and argv.");
   tasm.comment("return word offset in D and byte offset in tmp1");
   tasm.label("ref3");
-  tasm.ldd("4,x");
-  tasm.std("tmp1");
-  tasm.subd("2+argv");
-  tasm.bls("_err");
+  tasm.ldd(",x");
+  tasm.beq("_err");
+
   tasm.ldd("4+argv");
-  tasm.std("tmp2");
+  tasm.std("tmp1");
   tasm.subd("6,x");
   tasm.bhs("_err");
+
+  tasm.ldd("4,x");
+  tasm.std("tmp2");
+  tasm.subd("2+argv");
+  tasm.bls("_err");
   tasm.jsr("mul12");
   tasm.addd("2+argv");
-  tasm.std("tmp2");
+  tasm.std("tmp1");
 
   tasm.ldd("2,x");
-  tasm.std("tmp1");
+  tasm.std("tmp2");
   tasm.subd("0+argv");
   tasm.bls("_err");
   tasm.jsr("mul12");
   tasm.addd("0+argv");
   tasm.std("tmp1");
+
   tasm.lsld();
   tasm.rts();
   tasm.label("_err");
@@ -262,37 +275,38 @@ std::string Library::mdArrayRef4() {
   tasm.comment("get offset from 4D descriptor X and argv.");
   tasm.comment("return word offset in D and byte offset in tmp1");
   tasm.label("ref4");
-  tasm.ldd("6,x");
-  tasm.std("tmp1");
-  tasm.subd("4+argv");
-  tasm.bls("_err");
+  tasm.ldd(",x");
+  tasm.beq("_err");
+
   tasm.ldd("6+argv");
-  tasm.std("tmp2");
+  tasm.std("tmp1");
   tasm.subd("8,x");
   tasm.bhs("_err");
+
+  tasm.ldd("6,x");
+  tasm.std("tmp2");
+  tasm.subd("4+argv");
+  tasm.bls("_err");
   tasm.jsr("mul12");
   tasm.addd("4+argv");
-  tasm.std("tmp2");
+  tasm.std("tmp1");
 
   tasm.ldd("4,x");
-  tasm.std("tmp1");
+  tasm.std("tmp2");
   tasm.subd("2+argv");
   tasm.bls("_err");
-  tasm.ldd("4+argv");
-  tasm.std("tmp2");
-  tasm.subd("6,x");
-  tasm.bhs("_err");
   tasm.jsr("mul12");
   tasm.addd("2+argv");
-  tasm.std("tmp2");
+  tasm.std("tmp1");
 
   tasm.ldd("2,x");
-  tasm.std("tmp1");
+  tasm.std("tmp2");
   tasm.subd("0+argv");
   tasm.bls("_err");
   tasm.jsr("mul12");
   tasm.addd("0+argv");
   tasm.std("tmp1");
+
   tasm.lsld();
   tasm.rts();
   tasm.label("_err");
@@ -303,53 +317,49 @@ std::string Library::mdArrayRef4() {
 
 std::string Library::mdArrayRef5() {
   Assembler tasm;
-  tasm.comment("get offset from 4D descriptor X and argv.");
+  tasm.comment("get offset from 5D descriptor X and argv.");
   tasm.comment("return word offset in D and byte offset in tmp1");
   tasm.label("ref5");
+  tasm.ldd(",x");
+  tasm.beq("_err");
 
-  tasm.ldd("8,x");
-  tasm.std("tmp1");
-  tasm.subd("6+argv");
-  tasm.bls("_err");
   tasm.ldd("8+argv");
-  tasm.std("tmp2");
+  tasm.std("tmp1");
   tasm.subd("10,x");
   tasm.bhs("_err");
+
+  tasm.ldd("8,x");
+  tasm.std("tmp2");
+  tasm.subd("6+argv");
+  tasm.bls("_err");
   tasm.jsr("mul12");
   tasm.addd("6+argv");
-  tasm.std("tmp2");
+  tasm.std("tmp1");
 
   tasm.ldd("6,x");
-  tasm.std("tmp1");
+  tasm.std("tmp2");
   tasm.subd("4+argv");
   tasm.bls("_err");
-  tasm.ldd("6+argv");
-  tasm.std("tmp2");
-  tasm.subd("8,x");
-  tasm.bhs("_err");
   tasm.jsr("mul12");
   tasm.addd("4+argv");
-  tasm.std("tmp2");
+  tasm.std("tmp1");
 
   tasm.ldd("4,x");
-  tasm.std("tmp1");
+  tasm.std("tmp2");
   tasm.subd("2+argv");
   tasm.bls("_err");
-  tasm.ldd("4+argv");
-  tasm.std("tmp2");
-  tasm.subd("6,x");
-  tasm.bhs("_err");
   tasm.jsr("mul12");
   tasm.addd("2+argv");
-  tasm.std("tmp2");
+  tasm.std("tmp1");
 
   tasm.ldd("2,x");
-  tasm.std("tmp1");
+  tasm.std("tmp2");
   tasm.subd("0+argv");
   tasm.bls("_err");
   tasm.jsr("mul12");
   tasm.addd("0+argv");
   tasm.std("tmp1");
+
   tasm.lsld();
   tasm.rts();
   tasm.label("_err");
@@ -374,6 +384,7 @@ std::string Library::mdArrayRefFlt() {
   tasm.comment("return flt array reference in D/tmp1");
   tasm.label("refflt");
   tasm.lsld();
+  tasm.addd("tmp1");
   tasm.addd("0,x");
   tasm.std("tmp1");
   tasm.rts();

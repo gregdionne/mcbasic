@@ -4437,10 +4437,10 @@ ref1
 	pulx
 _preexist
 	ldd	0+argv
-	subd	2,x
-	bhi	_err
-	ldd	0+argv
 	std	tmp1
+	subd	2,x
+	bhs	_err
+	ldd	tmp1
 	lsld
 	rts
 _err

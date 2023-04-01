@@ -783,19 +783,21 @@ _loop
 ; get offset from 3D descriptor X and argv.
 ; return word offset in D and byte offset in tmp1
 ref3
-	ldd	4,x
-	std	tmp1
-	subd	2+argv
-	bls	_err
+	ldd	,x
+	beq	_err
 	ldd	4+argv
-	std	tmp2
+	std	tmp1
 	subd	6,x
 	bhs	_err
+	ldd	4,x
+	std	tmp2
+	subd	2+argv
+	bls	_err
 	jsr	mul12
 	addd	2+argv
-	std	tmp2
-	ldd	2,x
 	std	tmp1
+	ldd	2,x
+	std	tmp2
 	subd	0+argv
 	bls	_err
 	jsr	mul12

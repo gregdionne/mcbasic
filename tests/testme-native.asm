@@ -549,10 +549,10 @@ ref1
 	pulx
 _preexist
 	ldd	0+argv
-	subd	2,x
-	bhi	_err
-	ldd	0+argv
 	std	tmp1
+	subd	2,x
+	bhs	_err
+	ldd	tmp1
 	lsld
 	rts
 _err
@@ -563,14 +563,16 @@ _err
 ; get offset from 2D descriptor X and argv.
 ; return word offset in D and byte offset in tmp1
 ref2
-	ldd	2,x
-	std	tmp1
-	subd	0+argv
-	bls	_err
+	ldd	,x
+	beq	_err
 	ldd	2+argv
-	std	tmp2
+	std	tmp1
 	subd	4,x
 	bhs	_err
+	ldd	2,x
+	std	tmp2
+	subd	0+argv
+	bls	_err
 	jsr	mul12
 	addd	0+argv
 	std	tmp1
