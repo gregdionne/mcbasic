@@ -6,7 +6,7 @@
 #include "ast/text.hpp"
 #include "coder.hpp"
 #include "compiler/instqueue.hpp"
-#include "mcbasic/options.hpp"
+#include "mcbasic/clioptions.hpp"
 
 // Top level class to generate assembly for the target.
 
@@ -20,7 +20,7 @@ public:
   virtual ~Target() = default;
 
   virtual std::string generateAssembly(Text &text, InstQueue &queue,
-                                       const Options &options) = 0;
+                                       const CLIOptions &options) = 0;
 };
 
 #endif

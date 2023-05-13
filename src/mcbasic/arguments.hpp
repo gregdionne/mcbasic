@@ -3,13 +3,13 @@
 #ifndef MCBASIC_ARGUMENTS_HPP
 #define MCBASIC_ARGUMENTS_HPP
 
-#include "options.hpp"
+#include "clioptions.hpp"
 
 struct Arguments {
   Arguments(int argc, const char *const argv[]);
   const char *progname;
   std::vector<const char *> filenames;
-  Options options;
+  CLIOptions options;
 };
 
 #endif

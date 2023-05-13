@@ -5,19 +5,19 @@
 
 #include "ast/program.hpp"
 #include "ast/text.hpp"
-#include "mcbasic/options.hpp"
+#include "mcbasic/clioptions.hpp"
 
 // given the program AST, calls all optimizations
 // builds final data table, constant table, and symbol table (variables/arrays)
 
 class Optimizer {
 public:
-  explicit Optimizer(const Options &opts) : options(opts) {}
+  explicit Optimizer(const CLIOptions &opts) : options(opts) {}
 
   Text optimize(Program &p);
 
 private:
-  const Options &options;
+  const CLIOptions &options;
 };
 
 #endif

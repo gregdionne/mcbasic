@@ -4,7 +4,7 @@
 #define PARSER_PARSER_HPP
 #include "ast/program.hpp"
 #include "fetch.hpp"
-#include "mcbasic/options.hpp"
+#include "mcbasic/clioptions.hpp"
 
 //  This file was originally a K&R C file.
 //  Then it bacame ANSI C.
@@ -19,7 +19,7 @@
 
 class Parser {
 public:
-  Parser(const char *progname, const char *filename, const Options &opts)
+  Parser(const char *progname, const char *filename, const CLIOptions &opts)
       : in(progname, filename), options(opts) {}
   Program parse();
 
@@ -116,6 +116,6 @@ private:
   void cleanupLines(Program &p);
 
   fetch in;
-  const Options &options;
+  const CLIOptions &options;
 };
 #endif

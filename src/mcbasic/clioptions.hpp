@@ -5,9 +5,9 @@
 
 #include "utils/options.hpp"
 
-class Options : public utils::Options {
+class CLIOptions : public utils::Options {
 public:
-  Options();
+  CLIOptions();
   Option native;
   Option g;
   Option v;

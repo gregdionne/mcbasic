@@ -1,8 +1,8 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#include "options.hpp"
+#include "clioptions.hpp"
 
-Options::Options()
+CLIOptions::CLIOptions()
     : native{false, "native", nullptr,
              "Use native instructions instead of creating bytecode.",
              "This improves execution speed at the cost of increased codesize. "

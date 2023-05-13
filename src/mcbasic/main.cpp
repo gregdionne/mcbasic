@@ -6,7 +6,6 @@
 #include "backend/writer.hpp"
 #include "compiler/compiler.hpp"
 #include "optimizer/optimizer.hpp"
-#include "options.hpp"
 #include "parser/parser.hpp"
 
 int main(int argc, char *argv[]) {

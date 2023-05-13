@@ -5,7 +5,7 @@
 #include "utils/strescape.hpp"
 
 std::string CoreTarget::generateAssembly(Text &text, InstQueue &queue,
-                                         const Options &options) {
+                                         const CLIOptions &options) {
   return generateDirectPage(queue) + generateCode(queue) +
          generateLibrary(queue, options) + generateDataTable(text.dataTable) +
          generateSymbols(text.constTable, text.symbolTable);
@@ -108,7 +108,7 @@ std::string CoreTarget::generateMicroColorConstants() {
 }
 
 std::string CoreTarget::generateLibrary(InstQueue &queue,
-                                        const Options &options) {
+                                        const CLIOptions &options) {
   Library library(queue, options.undoc.isEnabled());
   library.assemble(makeDispatcher().get());
 

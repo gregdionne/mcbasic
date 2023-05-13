@@ -3,13 +3,13 @@
 #ifndef BACKEND_WRITER_HPP
 #define BACKEND_WRITER_HPP
 
-#include "mcbasic/options.hpp"
+#include "mcbasic/clioptions.hpp"
 #include <cstdio>
 #include <string>
 
 class Writer {
 public:
-  Writer(const char *p, const char *f, const Options &opts)
+  Writer(const char *p, const char *f, const CLIOptions &opts)
       : progname(p), filename(f), options(opts) {}
 
   void write(const std::string &ops);
@@ -22,7 +22,7 @@ private:
 
   const char *progname;
   const char *filename;
-  const Options &options;
+  const CLIOptions &options;
 
   FILE *fp{nullptr};
 };
