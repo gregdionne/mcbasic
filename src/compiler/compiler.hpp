@@ -12,10 +12,11 @@
 
 class Compiler {
 public:
-  Compiler(Text &text_in, const Option &g) : text(text_in), generateLines(g) {}
+  Compiler(Text &text_in, const BinaryOption &g)
+      : text(text_in), generateLines(g) {}
   InstQueue compile(Program &p);
   Text &text;
-  const Option &generateLines;
+  const BinaryOption &generateLines;
 };
 
 class StatementCompiler : public StatementAbsorber<void> {

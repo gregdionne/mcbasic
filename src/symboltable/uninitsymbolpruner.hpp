@@ -133,7 +133,7 @@ private:
 
 class UninitSymbolPruner : public ProgramOp {
 public:
-  UninitSymbolPruner(SymbolTable &st, const Option &option)
+  UninitSymbolPruner(SymbolTable &st, const BinaryOption &option)
       : symbolTable(st), announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;

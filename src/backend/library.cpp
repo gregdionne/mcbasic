@@ -2575,9 +2575,9 @@ std::string Library::mdSqr() {
   tasm.jmp("error");
 
   tasm.label("_pos");
-  tasm.staa("tmp1");  // save MSB
-  tasm.stx("tmp4");   // save X
-  tasm.jsr("x2arg");  // store radicand in argv
+  tasm.staa("tmp1"); // save MSB
+  tasm.stx("tmp4");  // save X
+  tasm.jsr("x2arg"); // store radicand in argv
 
   // clear 0,x through 24,x
   tasm.ldab("#12");
@@ -2597,17 +2597,17 @@ std::string Library::mdSqr() {
   //  C D E F  G H I J  K L M N  O P Q R  S T U V
   tasm.incomment("setup bitsq");
   tasm.ldx("tmp4");
-  tasm.ldab("#20");    // load X to bitsq
+  tasm.ldab("#20"); // load X to bitsq
   tasm.abx();
-  tasm.ldaa("tmp1");   // restore MSB
-  tasm.oraa("#1");     // force to odd bit
+  tasm.ldaa("tmp1"); // restore MSB
+  tasm.oraa("#1");   // force to odd bit
   tasm.jsr("setbit");
   tasm.incomment("setup bit");
-  tasm.ldx("tmp4");    // load X to bit
+  tasm.ldx("tmp4"); // load X to bit
   tasm.ldab("#15");
   tasm.abx();
-  tasm.ldaa("tmp1");   // restore MSB
-  tasm.lsra();         // set sqrt bit
+  tasm.ldaa("tmp1"); // restore MSB
+  tasm.lsra();       // set sqrt bit
   tasm.adda("#12");
   tasm.jsr("setbit");
   tasm.ldx("tmp4");

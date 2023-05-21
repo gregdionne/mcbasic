@@ -4,7 +4,7 @@
 #define AST_PROGRAM_HPP
 
 #include "statement.hpp"
-#include "utils/option.hpp"
+#include "utils/binaryoption.hpp"
 
 // For simplicity, use a single non-const void visitor
 class Line;

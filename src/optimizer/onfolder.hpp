@@ -34,7 +34,7 @@ private:
 
 class OnFolder : public ProgramOp {
 public:
-  explicit OnFolder(const Option &option) : announcer(option) {}
+  explicit OnFolder(const BinaryOption &option) : announcer(option) {}
   OnFolder(const OnFolder &) = delete;
   OnFolder(OnFolder &&) = delete;
   OnFolder &operator=(const OnFolder &) = delete;

@@ -30,7 +30,7 @@ private:
 
 class Whenifier : public ProgramOp {
 public:
-  explicit Whenifier(const Option &option) : announcer(option) {}
+  explicit Whenifier(const BinaryOption &option) : announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

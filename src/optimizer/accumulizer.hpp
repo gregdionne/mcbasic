@@ -15,7 +15,7 @@
 
 class Accumulizer : public ProgramOp {
 public:
-  explicit Accumulizer(const Option &option) : announcer(option) {}
+  explicit Accumulizer(const BinaryOption &option) : announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

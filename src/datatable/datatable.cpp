@@ -47,7 +47,7 @@ void DataTable::testPurity() {
   }
 }
 
-void DataTable::floatDiagnostic(const Option &generate) const {
+void DataTable::floatDiagnostic(const BinaryOption &generate) const {
   if (generate.isEnabled() && !data.empty()) {
     if (pureStrings) {
       fprintf(stderr, "DATA values consist of pure strings\n");

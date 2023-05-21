@@ -28,7 +28,8 @@ protected:
   virtual std::string generateCode(InstQueue & /*queue*/) = 0;
 
   // invokes the dispatcher to create the library
-  virtual std::string generateLibrary(InstQueue &queue, const CLIOptions &options);
+  virtual std::string generateLibrary(InstQueue &queue,
+                                      const CLIOptions &options);
 
   // writes the DATA text
   virtual std::string generateDataTable(DataTable &dataTable);

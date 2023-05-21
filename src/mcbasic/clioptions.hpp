@@ -3,26 +3,26 @@
 #ifndef MCBASIC_OPTIONS_HPP
 #define MCBASIC_OPTIONS_HPP
 
-#include "utils/options.hpp"
+#include "utils/binaryoptions.hpp"
 
-class CLIOptions : public utils::Options {
+class CLIOptions : public utils::BinaryOptions {
 public:
   CLIOptions();
-  Option native;
-  Option g;
-  Option v;
-  Option list;
-  Option el;
-  Option ul;
-  Option mcode;
-  Option undoc;
-  Option Wfloat;
-  Option Wduplicate;
-  Option Wunreached;
-  Option Wuninit;
-  Option Wunused;
-  Option Wbranch;
-  Option dash;
+  BinaryOption native;
+  BinaryOption g;
+  BinaryOption v;
+  BinaryOption list;
+  BinaryOption el;
+  BinaryOption ul;
+  BinaryOption mcode;
+  BinaryOption undoc;
+  BinaryOption Wfloat;
+  BinaryOption Wduplicate;
+  BinaryOption Wunreached;
+  BinaryOption Wuninit;
+  BinaryOption Wunused;
+  BinaryOption Wbranch;
+  BinaryOption dash;
 };
 
 #endif

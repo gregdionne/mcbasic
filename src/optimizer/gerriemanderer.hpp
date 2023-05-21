@@ -47,7 +47,7 @@ private:
 
 class Gerriemanderer : public ProgramOp {
 public:
-  explicit Gerriemanderer(const Option &option) : announcer(option) {}
+  explicit Gerriemanderer(const BinaryOption &option) : announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

@@ -27,7 +27,7 @@ private:
 
 class WhenFolder : public ProgramOp {
 public:
-  explicit WhenFolder(const Option &option) : announcer(option) {}
+  explicit WhenFolder(const BinaryOption &option) : announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

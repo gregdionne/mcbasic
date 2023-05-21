@@ -28,7 +28,7 @@ private:
 
 class IfFolder : public ProgramOp {
 public:
-  explicit IfFolder(const Option &option) : announcer(option) {}
+  explicit IfFolder(const BinaryOption &option) : announcer(option) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

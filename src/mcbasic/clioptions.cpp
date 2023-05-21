@@ -125,19 +125,19 @@ CLIOptions::CLIOptions()
            "The '--' option allows compilation of filenames beginning with a "
            "dash "
            "('-')."} {
-  addOption(&native);
-  addOption(&g);
-  addOption(&v);
-  addOption(&list);
-  addOption(&el);
-  addOption(&ul);
-  addOption(&mcode);
-  addOption(&undoc);
-  addOption(&Wfloat);
-  addOption(&Wduplicate);
-  addOption(&Wunreached);
-  addOption(&Wuninit);
-  addOption(&Wunused);
-  addOption(&Wbranch);
-  addOption(&dash);
+  addBinaryOption(&native);
+  addBinaryOption(&g);
+  addBinaryOption(&v);
+  addBinaryOption(&list);
+  addBinaryOption(&el);
+  addBinaryOption(&ul);
+  addBinaryOption(&mcode);
+  addBinaryOption(&undoc);
+  addBinaryOption(&Wfloat);
+  addBinaryOption(&Wduplicate);
+  addBinaryOption(&Wunreached);
+  addBinaryOption(&Wuninit);
+  addBinaryOption(&Wunused);
+  addBinaryOption(&Wbranch);
+  addBinaryOption(&dash);
 }
