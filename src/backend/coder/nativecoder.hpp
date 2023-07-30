@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_NATIVECODER_HPP
-#define BACKEND_NATIVECODER_HPP
+#ifndef BACKEND_CODER_NATIVECODER_HPP
+#define BACKEND_CODER_NATIVECODER_HPP
 
 #include "coder.hpp"
 

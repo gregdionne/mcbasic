@@ -278,7 +278,7 @@ LINE_8
 
 LINE_9
 
-	; ON L(POINT(X,Y),POINT(A,B)+POINT(X,B)+POINT(C,B)+POINT(A,Y)+POINT(C,Y)+POINT(A,D)+POINT(X,D)+POINT(C,D)) GOSUB 2,3
+	; ON L(POINT(X,Y),POINT(A,B)+POINT(X,B)+POINT(C,B)+POINT(A,Y)+POINT(C,Y)+POINT(A,D)+POINT(X,D)+POINT(C,D)) GOTO 2,3
 
 	ldx	#INTVAR_X
 	jsr	ld_ir1_ix
@@ -351,7 +351,7 @@ LINE_9
 	ldx	#INTARR_L
 	jsr	arrval2_ir1_ix
 
-	jsr	ongosub_ir1_is
+	jsr	ongoto_ir1_is
 	.byte	2
 	.word	LINE_2, LINE_3
 
@@ -3279,7 +3279,7 @@ one_ix			; numCalls = 2
 	std	1,x
 	rts
 
-ongosub_ir1_is			; numCalls = 3
+ongosub_ir1_is			; numCalls = 2
 	.module	modongosub_ir1_is
 	pulx
 	ldd	r1
@@ -3299,6 +3299,25 @@ ongosub_ir1_is			; numCalls = 3
 	psha
 	ldx	tmp1
 	ldab	tmp2
+	abx
+	abx
+	ldx	1,x
+	jmp	,x
+_fail
+	ldab	,x
+	abx
+	abx
+	jmp	1,x
+
+ongoto_ir1_is			; numCalls = 1
+	.module	modongoto_ir1_is
+	pulx
+	ldd	r1
+	bne	_fail
+	ldab	r1+2
+	decb
+	cmpb	0,x
+	bhs	_fail
 	abx
 	abx
 	ldx	1,x

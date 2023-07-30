@@ -12,6 +12,7 @@
 #include "datatabulator.hpp"
 #include "floatpromoter.hpp"
 #include "gerriemanderer.hpp"
+#include "gotoifier.hpp"
 #include "iffolder.hpp"
 #include "merger.hpp"
 #include "onfolder.hpp"
@@ -36,6 +37,10 @@ Text Optimizer::optimize(Program &p) {
 
   // make sure labels of GOTO/GOSUB are valid
   BranchValidator(options.ul).operate(p);
+
+  // replace GOSUB:RETURN statements with GOTO
+  // replace ON..GOSUB:RETURN statements with ON..GOTO:RETURN
+  Gotoifier(options.v).operate(p);
 
   // replace Gerrieatric expressions with WHEN statements
   Gerriemanderer(options.v).operate(p);

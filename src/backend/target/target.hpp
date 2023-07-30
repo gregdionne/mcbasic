@@ -1,10 +1,10 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_TARGET_HPP
-#define BACKEND_TARGET_HPP
+#ifndef BACKEND_TARGET_TARGET_HPP
+#define BACKEND_TARGET_TARGET_HPP
 
 #include "ast/text.hpp"
-#include "coder.hpp"
+#include "backend/coder/coder.hpp"
 #include "compiler/instqueue.hpp"
 #include "mcbasic/clioptions.hpp"
 

@@ -7936,14 +7936,10 @@ LINE_5110
 	.byte	bytecode_INTVAR_B
 	.byte	12
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_5120
 
@@ -7975,14 +7971,10 @@ LINE_5120
 	.byte	bytecode_INTVAR_B
 	.byte	5
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_5130
 
@@ -10791,14 +10783,10 @@ LINE_5805
 	.byte	bytecode_INTVAR_B
 	.byte	5
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_5810
 
@@ -10908,14 +10896,10 @@ LINE_5815
 	.byte	bytecode_INTVAR_B
 	.byte	5
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_5820
 
@@ -11166,14 +11150,10 @@ LINE_5846
 	.byte	bytecode_INTVAR_B
 	.byte	4
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_5850
 
@@ -11363,14 +11343,10 @@ LINE_5856
 	.byte	bytecode_INTVAR_B
 	.byte	10
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_5860
 
@@ -11543,14 +11519,10 @@ LINE_6010
 	.byte	bytecode_INTVAR_B
 	.byte	8
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_6020
 
@@ -11626,14 +11598,10 @@ LINE_6020
 	.byte	bytecode_INTVAR_B
 	.byte	5
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_6030
 
@@ -11708,14 +11676,10 @@ LINE_6030
 	.byte	bytecode_INTVAR_B
 	.byte	11
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_6040
 
@@ -11790,14 +11754,10 @@ LINE_6040
 	.byte	bytecode_INTVAR_B
 	.byte	2
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_6100
 
@@ -12290,14 +12250,10 @@ LINE_6201
 	.byte	bytecode_INTVAR_B
 	.byte	4
 
-	; GOSUB 2480
+	; GOTO 2480
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_2480
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_6210
 
@@ -14933,7 +14889,7 @@ forone_ix			; numCalls = 37
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 232
+gosub_ix			; numCalls = 221
 	.module	modgosub_ix
 	pulx
 	jsr	getaddr
@@ -14945,7 +14901,7 @@ gosub_ix			; numCalls = 232
 	stx	nxtinst
 	jmp	mainloop
 
-goto_ix			; numCalls = 104
+goto_ix			; numCalls = 115
 	.module	modgoto_ix
 	jsr	getaddr
 	stx	nxtinst
@@ -16279,7 +16235,7 @@ restore			; numCalls = 1
 	stx	DP_DATA
 	rts
 
-return			; numCalls = 35
+return			; numCalls = 24
 	.module	modreturn
 	pulx
 	tsx

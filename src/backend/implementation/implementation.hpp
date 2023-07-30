@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_IMPLEMENTATION_HPP
-#define BACKEND_IMPLEMENTATION_HPP
+#ifndef BACKEND_IMPLEMENTATION_IMPLEMENTATION_HPP
+#define BACKEND_IMPLEMENTATION_IMPLEMENTATION_HPP
 
 #include "compiler/instruction.hpp"
 

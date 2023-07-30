@@ -2,7 +2,7 @@
 // Distributed under MIT License
 #include "library.hpp"
 
-#include "assembler.hpp"
+#include "backend/assembler/assembler.hpp"
 
 void Library::makeFoundation() {
   foundation["mdalloc"] = Lib{0, mdAlloc(), {}};

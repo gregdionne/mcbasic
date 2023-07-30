@@ -1,8 +1,8 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "bytecodetarget.hpp"
-#include "bytecodeimplementation.hpp"
-#include "bytecoder.hpp"
+#include "backend/coder/bytecoder.hpp"
+#include "backend/implementation/bytecodeimplementation.hpp"
 
 void ByteCodeTarget::extendDirectPage(Assembler &tasm) {
   tasm.block("curinst", "2");

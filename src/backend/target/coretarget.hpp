@@ -1,11 +1,11 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_CORETARGET_HPP
-#define BACKEND_CORETARGET_HPP
+#ifndef BACKEND_TARGET_CORETARGET_HPP
+#define BACKEND_TARGET_CORETARGET_HPP
 
-#include "assembler.hpp"
-#include "dispatcher.hpp"
-#include "library.hpp"
+#include "backend/assembler/assembler.hpp"
+#include "backend/implementation/dispatcher.hpp"
+#include "backend/implementation/library.hpp"
 #include "target.hpp"
 
 // core routines for generating a target

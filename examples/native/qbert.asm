@@ -1243,12 +1243,12 @@ LINE_20
 
 	jsr	pr_sr1
 
-	; ON A GOSUB 38
+	; ON A GOTO 38
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix
 
-	jsr	ongosub_ir1_is
+	jsr	ongoto_ir1_is
 	.byte	1
 	.word	LINE_38
 
@@ -1378,7 +1378,7 @@ LINE_22
 
 LINE_24
 
-	; ON K(P) GOSUB 50,8,6,6,6,6,6,70,80,200
+	; ON K(P) GOTO 50,8,6,6,6,6,6,70,80,200
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -1386,7 +1386,7 @@ LINE_24
 	ldx	#INTARR_K
 	jsr	arrval1_ir1_ix
 
-	jsr	ongosub_ir1_is
+	jsr	ongoto_ir1_is
 	.byte	10
 	.word	LINE_50, LINE_8, LINE_6, LINE_6, LINE_6, LINE_6, LINE_6, LINE_70, LINE_80, LINE_200
 
@@ -3061,14 +3061,10 @@ LINE_70
 	jsr	pr_ss
 	.text	14, "HIT THE SNAKE!"
 
-	; GOSUB 99
+	; GOTO 99
 
 	ldx	#LINE_99
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_80
 
@@ -3233,14 +3229,10 @@ LINE_91
 	jsr	pr_ss
 	.text	14, "HIT BY EGG!   "
 
-	; GOSUB 99
+	; GOTO 99
 
 	ldx	#LINE_99
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_95
 
@@ -3948,7 +3940,7 @@ LINE_250
 
 	jsr	pr_sr1
 
-	; ON K(P) GOSUB 50,8,6,6,6,6,6,70,80,200
+	; ON K(P) GOTO 50,8,6,6,6,6,6,70,80,200
 
 	ldx	#INTVAR_P
 	jsr	ld_ir1_ix
@@ -3956,7 +3948,7 @@ LINE_250
 	ldx	#INTARR_K
 	jsr	arrval1_ir1_ix
 
-	jsr	ongosub_ir1_is
+	jsr	ongoto_ir1_is
 	.byte	10
 	.word	LINE_50, LINE_8, LINE_6, LINE_6, LINE_6, LINE_6, LINE_6, LINE_70, LINE_80, LINE_200
 
@@ -7510,13 +7502,13 @@ fract_fr1_fr1			; numCalls = 1
 	std	r1+1
 	rts
 
-gosub_ix			; numCalls = 19
+gosub_ix			; numCalls = 17
 	.module	modgosub_ix
 	ldab	#3
 	pshb
 	jmp	,x
 
-goto_ix			; numCalls = 11
+goto_ix			; numCalls = 13
 	.module	modgoto_ix
 	ins
 	ins
@@ -8115,7 +8107,7 @@ one_ix			; numCalls = 4
 	std	1,x
 	rts
 
-ongosub_ir1_is			; numCalls = 12
+ongosub_ir1_is			; numCalls = 9
 	.module	modongosub_ir1_is
 	pulx
 	ldd	r1
@@ -8145,7 +8137,7 @@ _fail
 	abx
 	jmp	1,x
 
-ongoto_ir1_is			; numCalls = 8
+ongoto_ir1_is			; numCalls = 11
 	.module	modongoto_ir1_is
 	pulx
 	ldd	r1
@@ -8303,7 +8295,7 @@ LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 
-return			; numCalls = 33
+return			; numCalls = 31
 	.module	modreturn
 	pulx
 	tsx

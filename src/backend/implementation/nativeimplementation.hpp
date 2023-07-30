@@ -1,28 +1,26 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_BYTECODEIMPLEMENTATION_HPP
-#define BACKEND_BYTECODEIMPLEMENTATION_HPP
+#ifndef BACKEND_IMPLEMENTATION_NATIVEIMPLEMENTATION_HPP
+#define BACKEND_IMPLEMENTATION_NATIVEIMPLEMENTATION_HPP
 
 #include "coreimplementation.hpp"
 
-// bytecode-specific implementation of virtual instruction set
+// native call specific implementation of virtual instruction set
 // these usually deal with items that use the "stack" address
 // mode (labels, string constants) or uses the stack itself.
 //
-// Otherwise, the core implementation will call preamble() to manage
-// fetching data into the X and ACCD registers and adjust the next
-// instruction pointer (nxtinst) before executing.
+// Otherwise, preamble returns empty() as the X and ACCD registers
+// are loaded explicitly by the coder; and the return address of the
+// JSR is used for the next instruction.
 
-class ByteCodeImplementation : public CoreImplementation {
+class NativeImplementation : public CoreImplementation {
 public:
-  ByteCodeImplementation() = default;
-  ByteCodeImplementation(const ByteCodeImplementation &) = delete;
-  ByteCodeImplementation(ByteCodeImplementation &&) = delete;
-  ByteCodeImplementation &operator=(const ByteCodeImplementation &) = delete;
-  ByteCodeImplementation &operator=(ByteCodeImplementation &&) = delete;
-  ~ByteCodeImplementation() override = default;
-
-  std::string inherent(InstBegin &inst) override;
+  NativeImplementation() = default;
+  NativeImplementation(const NativeImplementation &) = delete;
+  NativeImplementation(NativeImplementation &&) = delete;
+  NativeImplementation &operator=(const NativeImplementation &) = delete;
+  NativeImplementation &operator=(NativeImplementation &&) = delete;
+  ~NativeImplementation() override = default;
 
   std::string regInt_immLbl(InstJmpIfEqual &inst) override;
   std::string regFlt_immLbl(InstJmpIfEqual &inst) override;
@@ -37,11 +35,6 @@ public:
   std::string immLbl(InstGoTo &inst) override;
   std::string immLbl(InstGoSub &inst) override;
 
-  std::string regInt_immLbls(InstOnGoTo &inst) override;
-  std::string regInt_immLbls(InstOnGoSub &inst) override;
-
-  std::string inherent(InstReturn &inst) override;
-
   std::string regStr_immStr(InstLd &inst) override;
   std::string extStr_immStr(InstLd &inst) override;
   std::string indStr_immStr(InstLd &inst) override;
@@ -51,9 +44,7 @@ public:
   std::string regStr_regStr_immStr(InstStrCat &inst) override;
 
   std::string regInt_regStr_immStr(InstLdEq &inst) override;
-
   std::string regInt_regStr_immStr(InstLdNe &inst) override;
-
   std::string regInt_regStr_immStr(InstLdLt &inst) override;
   std::string regInt_regStr_immStr(InstLdGe &inst) override;
 
@@ -74,14 +65,18 @@ public:
   std::string ptrFlt_regFlt(InstTo &inst) override;
   std::string ptrFlt_extFlt(InstTo &inst) override;
 
+  std::string extInt(InstNextVar &inst) override;
+  std::string extFlt(InstNextVar &inst) override;
+
+  std::string inherent(InstNext &inst) override;
+
   std::string ptrInt_regInt(InstStep &inst) override;
   std::string ptrFlt_regInt(InstStep &inst) override;
   std::string ptrFlt_regFlt(InstStep &inst) override;
 
-  std::string inherent(InstNext &inst) override;
-
-  std::string extInt(InstNextVar &inst) override;
-  std::string extFlt(InstNextVar &inst) override;
+  std::string inherent(InstReturn &inst) override;
+  std::string regInt_immLbls(InstOnGoTo &inst) override;
+  std::string regInt_immLbls(InstOnGoSub &inst) override;
 
   std::string immStr(InstPr &inst) override;
 
@@ -90,26 +85,6 @@ public:
   std::string indFlt(InstReadBuf &inst) override;
   std::string extStr(InstReadBuf &inst) override;
   std::string indStr(InstReadBuf &inst) override;
-
-protected:
-  // hook for core implementation to implement bytecode interpreter
-  void preamble(Assembler &tasm, Instruction &inst) override;
-
-private:
-  // hints for preamble() to call various address modes
-  // "stack" address modes are excepted from these routines
-  // and have bytecode-specific implementation
-  static bool isGetAddr(Instruction &inst);
-  static bool isExtend(Instruction &inst);
-  static bool isGetByte(Instruction &inst);
-  static bool isGetWord(Instruction &inst);
-  static bool isExtByte(Instruction &inst);
-  static bool isExtWord(Instruction &inst);
-  static bool isByteExt(Instruction &inst);
-  static bool isWordExt(Instruction &inst);
-  static bool isExtDex(Instruction &inst);
-  static bool isDexExt(Instruction &inst);
-  static bool isNoArgs(Instruction &inst);
 };
 
 #endif

@@ -1481,14 +1481,10 @@ LINE_640
 
 LINE_650
 
-	; GOSUB 990
+	; GOTO 990
 
 	ldx	#LINE_990
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_660
 
@@ -1921,14 +1917,10 @@ LINE_836
 
 LINE_838
 
-	; GOSUB 990
+	; GOTO 990
 
 	ldx	#LINE_990
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_840
 
@@ -5057,22 +5049,13 @@ LINE_3415
 
 LINE_3420
 
-	; IF NC=0 THEN
+	; WHEN NC=0 GOTO 3520
 
 	ldx	#INTVAR_NC
 	jsr	ld_ir1_ix
 
-	ldx	#LINE_3430
-	jsr	jmpne_ir1_ix
-
-	; GOSUB 3520
-
 	ldx	#LINE_3520
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	jmpeq_ir1_ix
 
 LINE_3430
 
@@ -7448,13 +7431,13 @@ forone_ix			; numCalls = 22
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 55
+gosub_ix			; numCalls = 52
 	.module	modgosub_ix
 	ldab	#3
 	pshb
 	jmp	,x
 
-goto_ix			; numCalls = 27
+goto_ix			; numCalls = 29
 	.module	modgoto_ix
 	ins
 	ins
@@ -7550,7 +7533,7 @@ irnd_ir1_pb			; numCalls = 1
 	stab	r1
 	rts
 
-jmpeq_ir1_ix			; numCalls = 46
+jmpeq_ir1_ix			; numCalls = 47
 	.module	modjmpeq_ir1_ix
 	ldd	r1+1
 	bne	_rts
@@ -7562,7 +7545,7 @@ jmpeq_ir1_ix			; numCalls = 46
 _rts
 	rts
 
-jmpne_ir1_ix			; numCalls = 24
+jmpne_ir1_ix			; numCalls = 23
 	.module	modjmpne_ir1_ix
 	ldd	r1+1
 	bne	_go
@@ -8422,7 +8405,7 @@ LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 
-return			; numCalls = 55
+return			; numCalls = 52
 	.module	modreturn
 	pulx
 	tsx

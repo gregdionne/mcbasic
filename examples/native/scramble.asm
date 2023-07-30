@@ -2690,14 +2690,10 @@ LINE_61
 	ldx	#INTVAR_LV
 	jsr	inc_ix_ix
 
-	; GOSUB 12
+	; GOTO 12
 
 	ldx	#LINE_12
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_62
 
@@ -2947,14 +2943,10 @@ LINE_67
 	ldab	#66
 	jsr	ld_ix_pb
 
-	; GOSUB 71
+	; GOTO 71
 
 	ldx	#LINE_71
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_68
 
@@ -6334,13 +6326,13 @@ forone_ix			; numCalls = 16
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 35
+gosub_ix			; numCalls = 33
 	.module	modgosub_ix
 	ldab	#3
 	pshb
 	jmp	,x
 
-goto_ix			; numCalls = 8
+goto_ix			; numCalls = 10
 	.module	modgoto_ix
 	ins
 	ins
@@ -7418,7 +7410,7 @@ LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 
-return			; numCalls = 54
+return			; numCalls = 52
 	.module	modreturn
 	pulx
 	tsx

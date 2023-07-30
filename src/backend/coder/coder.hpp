@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_CODER_HPP
-#define BACKEND_CODER_HPP
+#ifndef BACKEND_CODER_CODER_HPP
+#define BACKEND_CODER_CODER_HPP
 
 #include "compiler/instruction.hpp"
 

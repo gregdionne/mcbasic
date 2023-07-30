@@ -52,43 +52,49 @@ public:
   virtual std::string postoperands() { return ""; }
   virtual std::string suffix() { return ""; }
   virtual std::string vsymbol() { return ""; }
-  virtual bool isInherent() { return false; }
-  virtual bool isImmediate() { return false; }
   virtual bool isPosByte() { return false; }
   virtual bool isNegByte() { return false; }
   virtual bool isPosWord() { return false; }
   virtual bool isNegWord() { return false; }
-  virtual bool isPtrFlt() { return false; }
-  virtual bool isPtrInt() { return false; }
-  virtual bool isPtrStr() { return false; }
   virtual bool isByte() { return false; }
   virtual bool isWord() { return false; }
-  virtual bool isRegister() { return false; }
-  virtual bool isExtended() { return false; }
-  virtual bool isDoubleEx() { return false; }
-  virtual bool isIndirect() { return false; }
-  virtual bool isImmStr() { return false; }
-  virtual bool isImmLin() { return false; }
-  virtual bool isImmLbl() { return false; }
-  virtual bool isImmLbls() { return false; }
-  virtual bool isInteger() { return dataType == DataType::Int; }
-  virtual bool isFloat() { return dataType == DataType::Flt; }
-  virtual bool isString() { return dataType == DataType::Str; }
-  virtual bool isRegInt() { return isRegister() && isInteger(); }
-  virtual bool isRegFlt() { return isRegister() && isFloat(); }
-  virtual bool isRegStr() { return isRegister() && isString(); }
-  virtual bool isExtInt() { return isExtended() && isInteger(); }
-  virtual bool isExtFlt() { return isExtended() && isFloat(); }
-  virtual bool isExtStr() { return isExtended() && isString(); }
-  virtual bool isDexInt() { return isDoubleEx() && isInteger(); }
-  virtual bool isDexFlt() { return isDoubleEx() && isFloat(); }
-  virtual bool isDexStr() { return isDoubleEx() && isString(); }
-  virtual bool isIndInt() { return isIndirect() && isInteger(); }
-  virtual bool isIndFlt() { return isIndirect() && isFloat(); }
-  virtual bool isIndStr() { return isIndirect() && isString(); }
   virtual int getRegister() { return 0; }
   virtual up<AddressMode> clone() = 0;
   virtual std::string modeStr() = 0;
+
+  bool isInteger() { return dataType == DataType::Int; }
+  bool isFloat() { return dataType == DataType::Flt; }
+  bool isString() { return dataType == DataType::Str; }
+
+  bool isInherent() { return modeType == ModeType::Inh; }
+  bool isImmediate() { return modeType == ModeType::Imm; }
+  bool isImmLbl() { return modeType == ModeType::Lbl; }
+  bool isImmLin() { return modeType == ModeType::Lin; }
+  bool isExtended() { return modeType == ModeType::Ext; }
+  bool isDoubleEx() { return modeType == ModeType::Dex; }
+  bool isIndirect() { return modeType == ModeType::Ind; }
+  bool isRegister() { return modeType == ModeType::Reg; }
+  bool isStack() { return modeType == ModeType::Stk; }
+  bool isPointer() { return modeType == ModeType::Ptr; }
+
+  bool isImmStr() { return isStack() && isString(); }
+  bool isImmLbls() { return isStack() && isInteger(); }
+
+  bool isPtrInt() { return isPointer() && isInteger(); }
+  bool isPtrFlt() { return isPointer() && isFloat(); }
+  bool isPtrStr() { return isPointer() && isString(); }
+  bool isRegInt() { return isRegister() && isInteger(); }
+  bool isRegFlt() { return isRegister() && isFloat(); }
+  bool isRegStr() { return isRegister() && isString(); }
+  bool isExtInt() { return isExtended() && isInteger(); }
+  bool isExtFlt() { return isExtended() && isFloat(); }
+  bool isExtStr() { return isExtended() && isString(); }
+  bool isDexInt() { return isDoubleEx() && isInteger(); }
+  bool isDexFlt() { return isDoubleEx() && isFloat(); }
+  bool isDexStr() { return isDoubleEx() && isString(); }
+  bool isIndInt() { return isIndirect() && isInteger(); }
+  bool isIndFlt() { return isIndirect() && isFloat(); }
+  bool isIndStr() { return isIndirect() && isString(); }
 
   bool exists() { return !isInherent(); }
   void castToInt() {
@@ -112,7 +118,6 @@ public:
   AddressModeInh() : AddressMode(AddressMode::ModeType::Inh, DataType::Null) {}
 
   std::string modeStr() override { return "inh"; }
-  bool isInherent() override { return true; }
   up<AddressMode> clone() override { return makeup<AddressModeInh>(); }
 };
 
@@ -142,13 +147,13 @@ public:
   up<AddressMode> clone() override {
     return makeup<AddressModeImm>(isNeg, word);
   }
-  bool isImmediate() override { return true; }
   bool isByte() override { return -word < 256 && word < 256; }
   bool isWord() override { return !isByte(); }
   bool isPosByte() override { return word < 256 && !isNeg; }
   bool isNegByte() override { return -word < 256 && isNeg; }
   bool isPosWord() override { return !isNeg; }
   bool isNegWord() override { return isNeg; }
+private:
   bool isNeg;
   int word;
 };
@@ -172,7 +177,6 @@ public:
   up<AddressMode> clone() override {
     return makeup<AddressModeLbl>(lineNumber);
   }
-  bool isImmLbl() override { return true; }
   std::string symbol() const {
     return lineNumber == constants::lastLineNumber ? std::string("LLAST")
            : lineNumber == constants::unlistedLineNumber
@@ -205,7 +209,6 @@ public:
   up<AddressMode> clone() override {
     return makeup<AddressModeLin>(lineNumber);
   }
-  bool isImmLin() override { return true; }
   std::string symbol() const { return std::to_string(lineNumber); }
   int lineNumber;
 };
@@ -238,7 +241,6 @@ public:
   up<AddressMode> clone() override {
     return makeup<AddressModeExt>(dataType, symbol);
   }
-  bool isExtended() override { return true; }
   std::string symbol;
 };
 
@@ -270,7 +272,6 @@ public:
   up<AddressMode> clone() override {
     return makeup<AddressModeDex>(dataType, symbol);
   }
-  bool isDoubleEx() override { return true; }
   std::string symbol;
 };
 
@@ -297,7 +298,6 @@ public:
   up<AddressMode> clone() override {
     return makeup<AddressModeInd>(dataType, symbol);
   }
-  bool isIndirect() override { return true; }
   std::string symbol;
 };
 
@@ -338,7 +338,6 @@ public:
   up<AddressMode> clone() override {
     return makeup<AddressModeReg>(registerNumber, dataType);
   }
-  bool isRegister() override { return true; }
   int getRegister() override { return registerNumber; }
 
   int registerNumber; // register is a reserved word
@@ -368,8 +367,6 @@ public:
     return dataType == DataType::Int ? makeup<AddressModeStk>(labels)
                                      : makeup<AddressModeStk>(text);
   }
-  bool isImmStr() override { return dataType == DataType::Str; }
-  bool isImmLbls() override { return dataType == DataType::Int; }
   std::vector<int> labels;
   std::string text;
 };
@@ -384,9 +381,6 @@ public:
   up<AddressMode> clone() override {
     return makeup<AddressModePtr>(dataType, symbol);
   }
-  bool isPtrFlt() override { return dataType == DataType::Flt; }
-  bool isPtrInt() override { return dataType == DataType::Int; }
-  bool isPtrStr() override { return dataType == DataType::Str; }
   std::string symbol;
 };
 #endif

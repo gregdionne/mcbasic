@@ -48,15 +48,12 @@ public:
   void advance(int n);
   bool peekKeyword(const char *const keywords[]);
   bool skipKeyword(const char *const keywords[]);
-  bool isNumber(int (*id)(int), int (*d)(int), int m, int limit);
   bool isBinaryByte();
   bool isDecimalByte();
   bool isHexadecimalByte();
   bool isBinaryWord();
   bool isDecimalWord();
   bool isHexadecimalWord();
-  int getNumber(int (*id)(int), int (*d)(int), int m, int limit,
-                const char *errmsg);
   int getBinaryByte();
   int getBinaryWord();
   int getHexadecimalByte();
@@ -71,9 +68,11 @@ public:
   void setColumn(int n) { colnum = n; }
 
 private:
-  void init();
   char *efgets(char *str, int bufsiz, FILE *stream);
   void expandTabs(char *b, int m, int n);
+  bool isNumber(int (*id)(int), int (*d)(int), int m, int limit);
+  int getNumber(int (*id)(int), int (*d)(int), int m, int limit,
+                const char *errmsg);
 
   const char *progname;
   const char *filename;

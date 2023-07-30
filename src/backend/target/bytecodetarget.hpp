@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_BYTECODETARGET_HPP
-#define BACKEND_BYTECODETARGET_HPP
+#ifndef BACKEND_TARGET_BYTECODETARGET_HPP
+#define BACKEND_TARGET_BYTECODETARGET_HPP
 
 #include "coretarget.hpp"
 

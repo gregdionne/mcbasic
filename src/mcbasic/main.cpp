@@ -1,12 +1,12 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "arguments.hpp"
-#include "backend/bytecodetarget.hpp"
-#include "backend/nativetarget.hpp"
-#include "backend/writer.hpp"
+#include "backend/target/bytecodetarget.hpp"
+#include "backend/target/nativetarget.hpp"
 #include "compiler/compiler.hpp"
 #include "optimizer/optimizer.hpp"
 #include "parser/parser.hpp"
+#include "utils/writer.hpp"
 
 int main(int argc, char *argv[]) {
   const Arguments args(argc, argv);

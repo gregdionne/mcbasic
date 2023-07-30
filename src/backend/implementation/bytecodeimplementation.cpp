@@ -2,7 +2,7 @@
 // Distributed under MIT License
 #include "bytecodeimplementation.hpp"
 
-#include "assembler.hpp"
+#include "backend/assembler/assembler.hpp"
 
 std::string ByteCodeImplementation::inherent(InstBegin &inst) {
   inst.dependencies.insert("mdbcode");

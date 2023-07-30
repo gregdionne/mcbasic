@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "coretarget.hpp"
-#include "library.hpp"
+#include "backend/implementation/library.hpp"
 #include "utils/strescape.hpp"
 
 std::string CoreTarget::generateAssembly(Text &text, InstQueue &queue,

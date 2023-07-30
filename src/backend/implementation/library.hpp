@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_LIBRARY_HPP
-#define BACKEND_LIBRARY_HPP
+#ifndef BACKEND_IMPLEMENTATION_LIBRARY_HPP
+#define BACKEND_IMPLEMENTATION_LIBRARY_HPP
 
 #include <map>
 #include <set>

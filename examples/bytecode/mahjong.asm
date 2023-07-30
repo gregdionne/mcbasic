@@ -3799,14 +3799,10 @@ LINE_430
 	.byte	bytecode_add_ip_ip_pb
 	.byte	2
 
-	; GOSUB 880
+	; GOTO 880
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_880
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_500
 
@@ -4291,14 +4287,10 @@ LINE_568
 	.byte	bytecode_INTVAR_Y
 	.byte	bytecode_INTVAR_R
 
-	; GOSUB 580
+	; GOTO 580
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_580
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_577
 
@@ -9120,7 +9112,7 @@ forone_ix			; numCalls = 24
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 44
+gosub_ix			; numCalls = 42
 	.module	modgosub_ix
 	pulx
 	jsr	getaddr
@@ -9132,7 +9124,7 @@ gosub_ix			; numCalls = 44
 	stx	nxtinst
 	jmp	mainloop
 
-goto_ix			; numCalls = 31
+goto_ix			; numCalls = 33
 	.module	modgoto_ix
 	jsr	getaddr
 	stx	nxtinst
@@ -10045,7 +10037,7 @@ LS_ERROR	.equ	28
 error
 	jmp	R_ERROR
 
-return			; numCalls = 27
+return			; numCalls = 25
 	.module	modreturn
 	pulx
 	tsx

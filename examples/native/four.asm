@@ -685,14 +685,10 @@ LINE_50
 
 LINE_51
 
-	; GOSUB 200
+	; GOTO 200
 
 	ldx	#LINE_200
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_54
 
@@ -1660,14 +1656,10 @@ LINE_112
 	ldx	#INTVAR_D1
 	jsr	one_ix
 
-	; GOSUB 114
+	; GOTO 114
 
 	ldx	#LINE_114
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_114
 
@@ -3803,13 +3795,13 @@ forone_ix			; numCalls = 16
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 12
+gosub_ix			; numCalls = 10
 	.module	modgosub_ix
 	ldab	#3
 	pshb
 	jmp	,x
 
-goto_ix			; numCalls = 16
+goto_ix			; numCalls = 18
 	.module	modgoto_ix
 	ins
 	ins
@@ -4515,7 +4507,7 @@ read_ip			; numCalls = 1
 	std	1,x
 	rts
 
-return			; numCalls = 4
+return			; numCalls = 2
 	.module	modreturn
 	pulx
 	tsx

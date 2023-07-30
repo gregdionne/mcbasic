@@ -337,14 +337,10 @@ LINE_7
 	ldx	#INTVAR_T
 	jsr	ld_fd_ix
 
-	; GOSUB 44
+	; GOTO 44
 
 	ldx	#LINE_44
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_8
 
@@ -7742,13 +7738,13 @@ fract_fr1_fr1			; numCalls = 1
 	std	r1+1
 	rts
 
-gosub_ix			; numCalls = 44
+gosub_ix			; numCalls = 43
 	.module	modgosub_ix
 	ldab	#3
 	pshb
 	jmp	,x
 
-goto_ix			; numCalls = 35
+goto_ix			; numCalls = 36
 	.module	modgoto_ix
 	ins
 	ins
@@ -8609,7 +8605,7 @@ reset_ir1_pb			; numCalls = 2
 	jsr	getxym
 	jmp	R_CLRPX
 
-return			; numCalls = 20
+return			; numCalls = 19
 	.module	modreturn
 	pulx
 	tsx

@@ -2,7 +2,7 @@
 // Distributed under MIT License
 #include "nativeimplementation.hpp"
 
-#include "assembler.hpp"
+#include "backend/assembler/assembler.hpp"
 
 std::string NativeImplementation::regInt_immLbl(InstJmpIfEqual &inst) {
   Assembler tasm;

@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_NATIVETARGET_HPP
-#define BACKEND_NATIVETARGET_HPP
+#ifndef BACKEND_TARGET_NATIVETARGET_HPP
+#define BACKEND_TARGET_NATIVETARGET_HPP
 
 #include "coretarget.hpp"
 

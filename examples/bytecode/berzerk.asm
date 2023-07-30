@@ -2206,14 +2206,10 @@ LINE_38
 
 	.byte	bytecode_next
 
-	; GOSUB 32
+	; GOTO 32
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_32
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_39
 
@@ -5066,12 +5062,12 @@ LINE_90
 
 LINE_91
 
-	; ON EX GOSUB 92,93,94,95
+	; ON EX GOTO 92,93,94,95
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_EX
 
-	.byte	bytecode_ongosub_ir1_is
+	.byte	bytecode_ongoto_ir1_is
 	.byte	4
 	.word	LINE_92, LINE_93, LINE_94, LINE_95
 
@@ -6310,22 +6306,13 @@ LINE_151
 	.byte	bytecode_clsn_pb
 	.byte	0
 
-	; IF SC=0 THEN
+	; WHEN SC=0 GOTO 161
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_SC
 
-	.byte	bytecode_jmpne_ir1_ix
-	.word	LINE_152
-
-	; GOSUB 161
-
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_161
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_152
 
@@ -10008,7 +9995,7 @@ forone_ix			; numCalls = 34
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 30
+gosub_ix			; numCalls = 28
 	.module	modgosub_ix
 	pulx
 	jsr	getaddr
@@ -10020,7 +10007,7 @@ gosub_ix			; numCalls = 30
 	stx	nxtinst
 	jmp	mainloop
 
-goto_ix			; numCalls = 21
+goto_ix			; numCalls = 22
 	.module	modgoto_ix
 	jsr	getaddr
 	stx	nxtinst
@@ -10148,7 +10135,7 @@ irnd_ir2_pb			; numCalls = 1
 	stab	r2
 	rts
 
-jmpeq_ir1_ix			; numCalls = 36
+jmpeq_ir1_ix			; numCalls = 37
 	.module	modjmpeq_ir1_ix
 	jsr	getaddr
 	ldd	r1+1
@@ -10159,7 +10146,7 @@ jmpeq_ir1_ix			; numCalls = 36
 _rts
 	rts
 
-jmpne_ir1_ix			; numCalls = 11
+jmpne_ir1_ix			; numCalls = 10
 	.module	modjmpne_ir1_ix
 	jsr	getaddr
 	ldd	r1+1
@@ -10708,7 +10695,7 @@ one_ix			; numCalls = 10
 	std	1,x
 	rts
 
-ongosub_ir1_is			; numCalls = 6
+ongosub_ir1_is			; numCalls = 5
 	.module	modongosub_ir1_is
 	pulx
 	ldx	curinst
@@ -10743,7 +10730,7 @@ _fail
 	stx	nxtinst
 	jmp	mainloop
 
-ongoto_ir1_is			; numCalls = 19
+ongoto_ir1_is			; numCalls = 20
 	.module	modongoto_ir1_is
 	ldx	curinst
 	inx
@@ -11017,7 +11004,7 @@ restore			; numCalls = 1
 	stx	DP_DATA
 	rts
 
-return			; numCalls = 53
+return			; numCalls = 51
 	.module	modreturn
 	pulx
 	tsx

@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_ASSEMBLER_HPP
-#define BACKEND_ASSEMBLER_HPP
+#ifndef BACKEND_ASSEMBLER_ASSEMBLER_HPP
+#define BACKEND_ASSEMBLER_ASSEMBLER_HPP
 
 #include <string>
 

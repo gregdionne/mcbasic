@@ -1,7 +1,7 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_WRITER_HPP
-#define BACKEND_WRITER_HPP
+#ifndef UTILS_WRITER_HPP
+#define UTILS_WRITER_HPP
 
 #include "mcbasic/clioptions.hpp"
 #include <cstdio>

@@ -2191,14 +2191,10 @@ LINE_41
 	.byte	bytecode_gosub_ix
 	.word	LINE_35
 
-	; GOSUB 40
+	; GOTO 40
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_40
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_42
 
@@ -2207,14 +2203,10 @@ LINE_42
 	.byte	bytecode_gosub_ix
 	.word	LINE_9
 
-	; GOSUB 40
+	; GOTO 40
 
-	.byte	bytecode_gosub_ix
+	.byte	bytecode_goto_ix
 	.word	LINE_40
-
-	; RETURN
-
-	.byte	bytecode_return
 
 LINE_43
 
@@ -10172,7 +10164,7 @@ forone_ix			; numCalls = 5
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 26
+gosub_ix			; numCalls = 24
 	.module	modgosub_ix
 	pulx
 	jsr	getaddr
@@ -10184,7 +10176,7 @@ gosub_ix			; numCalls = 26
 	stx	nxtinst
 	jmp	mainloop
 
-goto_ix			; numCalls = 30
+goto_ix			; numCalls = 32
 	.module	modgoto_ix
 	jsr	getaddr
 	stx	nxtinst
@@ -11118,7 +11110,7 @@ readbuf_fx			; numCalls = 1
 _rts
 	rts
 
-return			; numCalls = 40
+return			; numCalls = 38
 	.module	modreturn
 	pulx
 	tsx

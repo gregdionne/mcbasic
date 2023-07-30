@@ -1987,7 +1987,7 @@ LINE_450
 	ldab	#4
 	jsr	add_ix_ix_pb
 
-	; IF (B<9) AND (A>0) AND (A<9) THEN
+	; WHEN (B<9) AND (A>0) AND (A<9) GOTO 650
 
 	ldx	#INTVAR_B
 	jsr	ld_ir1_ix
@@ -2011,17 +2011,8 @@ LINE_450
 
 	jsr	and_ir1_ir1_ir2
 
-	ldx	#LINE_451
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 650
-
 	ldx	#LINE_650
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	jmpne_ir1_ix
 
 LINE_451
 
@@ -2193,7 +2184,7 @@ LINE_520
 	ldab	#2
 	jsr	sub_ix_ix_pb
 
-	; IF A(A,B)<0 THEN
+	; WHEN A(A,B)<0 GOTO 660
 
 	ldx	#INTVAR_A
 	jsr	ld_ir1_ix
@@ -2207,17 +2198,8 @@ LINE_520
 	ldab	#0
 	jsr	ldlt_ir1_ir1_pb
 
-	ldx	#LINE_521
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 660
-
 	ldx	#LINE_660
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	jmpne_ir1_ix
 
 LINE_521
 
@@ -2391,7 +2373,7 @@ LINE_570
 	ldab	#2
 	jsr	add_ix_ix_pb
 
-	; IF A(A,B)>1 THEN
+	; WHEN A(A,B)>1 GOTO 660
 
 	ldab	#1
 	jsr	ld_ir1_pb
@@ -2407,17 +2389,8 @@ LINE_570
 
 	jsr	ldlt_ir1_ir1_ir2
 
-	ldx	#LINE_571
-	jsr	jmpeq_ir1_ix
-
-	; GOSUB 660
-
 	ldx	#LINE_660
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	jmpne_ir1_ix
 
 LINE_571
 
@@ -5467,14 +5440,10 @@ LINE_1741
 
 LINE_1742
 
-	; GOSUB 1790
+	; GOTO 1790
 
 	ldx	#LINE_1790
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_1790
 
@@ -5524,14 +5493,10 @@ LINE_1800
 	ldx	#LINE_1790
 	jsr	gosub_ix
 
-	; GOSUB 900
+	; GOTO 900
 
 	ldx	#LINE_900
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_1820
 
@@ -7047,14 +7012,10 @@ LINE_2291
 	jsr	pr_ss
 	.text	1, "\r"
 
-	; GOSUB 2310
+	; GOTO 2310
 
 	ldx	#LINE_2310
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LINE_2300
 
@@ -7292,14 +7253,10 @@ LINE_2500
 
 	jsr	next
 
-	; GOSUB 900
+	; GOTO 900
 
 	ldx	#LINE_900
-	jsr	gosub_ix
-
-	; RETURN
-
-	jsr	return
+	jsr	goto_ix
 
 LLAST
 
@@ -9135,13 +9092,13 @@ forone_ix			; numCalls = 20
 	std	1,x
 	rts
 
-gosub_ix			; numCalls = 62
+gosub_ix			; numCalls = 55
 	.module	modgosub_ix
 	ldab	#3
 	pshb
 	jmp	,x
 
-goto_ix			; numCalls = 51
+goto_ix			; numCalls = 55
 	.module	modgoto_ix
 	ins
 	ins
@@ -9299,7 +9256,7 @@ inv_fr2_ir2			; numCalls = 1
 	ldx	#r2
 	jmp	invflt
 
-jmpeq_ir1_ix			; numCalls = 74
+jmpeq_ir1_ix			; numCalls = 71
 	.module	modjmpeq_ir1_ix
 	ldd	r1+1
 	bne	_rts
@@ -9311,7 +9268,7 @@ jmpeq_ir1_ix			; numCalls = 74
 _rts
 	rts
 
-jmpne_ir1_ix			; numCalls = 33
+jmpne_ir1_ix			; numCalls = 36
 	.module	modjmpne_ir1_ix
 	ldd	r1+1
 	bne	_go
@@ -10428,7 +10385,7 @@ _null
 	std	1,x
 	bra	_rdredo
 
-return			; numCalls = 73
+return			; numCalls = 66
 	.module	modreturn
 	pulx
 	tsx

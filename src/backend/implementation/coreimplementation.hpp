@@ -1,9 +1,9 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef BACKEND_COREIMPLEMENTATION_HPP
-#define BACKEND_COREIMPLEMENTATION_HPP
+#ifndef BACKEND_IMPLEMENTATION_COREIMPLEMENTATION_HPP
+#define BACKEND_IMPLEMENTATION_COREIMPLEMENTATION_HPP
 
-#include "assembler.hpp"
+#include "backend/assembler/assembler.hpp"
 #include "implementation.hpp"
 
 // core implementation of virtual instruction set

@@ -1,8 +1,8 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "nativetarget.hpp"
-#include "nativecoder.hpp"
-#include "nativeimplementation.hpp"
+#include "backend/coder/nativecoder.hpp"
+#include "backend/implementation/nativeimplementation.hpp"
 
 std::string NativeTarget::generateCode(InstQueue &queue) {
   Assembler tasm;
