@@ -151,11 +151,9 @@ LINE_66
 	ldx	#INTVAR_J
 	jsr	ld_ir2_ix
 
-	ldx	#INTVAR_K
-	jsr	ld_ir3_ix
-
 	ldx	#INTARR_X
-	jsr	arrref3_ir1_ix
+	ldd	#INTVAR_K
+	jsr	arrref3_ir1_ix_id
 
 	ldx	#INTVAR_L
 	jsr	ld_ir1_ix
@@ -172,11 +170,9 @@ LINE_67
 	ldx	#INTVAR_J
 	jsr	ld_ir2_ix
 
-	ldx	#INTVAR_K
-	jsr	ld_ir3_ix
-
 	ldx	#INTARR_X
-	jsr	arrval3_ir1_ix
+	ldd	#INTVAR_K
+	jsr	arrval3_ir1_ix_id
 
 	ldx	#INTVAR_S
 	jsr	add_ix_ix_ir1
@@ -403,6 +399,18 @@ _shift
 	rol	7,x
 	rol	6,x
 	rol	5,x
+	rts
+
+	.module	mdgetlw
+; fetch lower word from integer variable descriptor
+;  ENTRY: D holds integer variable descriptor
+;  EXIT: D holds lower word of integer variable
+getlw
+	std	tmp1
+	stx	tmp2
+	ldx	tmp1
+	ldd	1,x
+	ldx	tmp2
 	rts
 
 	.module	mdidivb
@@ -885,27 +893,27 @@ _ok
 	addd	tmp3
 	jmp	alloc
 
-arrref3_ir1_ix			; numCalls = 1
-	.module	modarrref3_ir1_ix
+arrref3_ir1_ix_id			; numCalls = 1
+	.module	modarrref3_ir1_ix_id
+	jsr	getlw
+	std	4+argv
 	ldd	r1+1
 	std	0+argv
 	ldd	r1+1+5
 	std	2+argv
-	ldd	r1+1+10
-	std	4+argv
 	jsr	ref3
 	jsr	refint
 	std	letptr
 	rts
 
-arrval3_ir1_ix			; numCalls = 1
-	.module	modarrval3_ir1_ix
+arrval3_ir1_ix_id			; numCalls = 1
+	.module	modarrval3_ir1_ix_id
+	jsr	getlw
+	std	4+argv
 	ldd	r1+1
 	std	0+argv
 	ldd	r1+1+5
 	std	2+argv
-	ldd	r1+1+10
-	std	4+argv
 	jsr	ref3
 	jsr	refint
 	ldx	tmp1
@@ -999,14 +1007,6 @@ ld_ir2_pb			; numCalls = 1
 	stab	r2+2
 	ldd	#0
 	std	r2
-	rts
-
-ld_ir3_ix			; numCalls = 2
-	.module	modld_ir3_ix
-	ldd	1,x
-	std	r3+1
-	ldab	0,x
-	stab	r3
 	rts
 
 ld_ir3_pb			; numCalls = 1

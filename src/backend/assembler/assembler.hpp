@@ -151,10 +151,22 @@ public:
   // clear the assembly
   void clear();
 
+  // load external source
+  void load(const std::string &source) { buffer = source; }
+
+  // assemble with source hints
+  void assemble(const char *progname, const char *filename);
+  void setLstEnable(bool enable) { lst = enable; }
+  void setObjEnable(bool enable) { obj = enable; }
+  void setC10Enable(bool enable) { c10 = enable; }
+
 private:
   void inherent(std::string const &opcode, std::string const &comment);
   void singlearg(std::string const &opcode, std::string const &operand,
                  std::string const &comment);
   std::string buffer;
+  bool lst = false;
+  bool obj = false;
+  bool c10 = true;
 };
 #endif

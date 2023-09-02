@@ -119,7 +119,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	0
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_one_ip
@@ -132,7 +132,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	1
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -146,7 +146,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	2
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -160,7 +160,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	3
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -174,7 +174,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	4
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -188,7 +188,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	0
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -202,7 +202,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	1
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -216,7 +216,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	2
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -230,7 +230,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	3
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -244,7 +244,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	4
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -258,7 +258,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	0
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -272,7 +272,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	1
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -286,7 +286,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	2
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -300,7 +300,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	3
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -314,7 +314,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	4
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -328,7 +328,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	0
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -342,7 +342,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	1
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -356,7 +356,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	2
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -370,7 +370,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	3
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -384,7 +384,7 @@ LINE_20
 	.byte	bytecode_ld_ir2_pb
 	.byte	4
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_ld_ip_pb
@@ -400,7 +400,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	0
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -418,7 +418,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	1
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -436,7 +436,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	2
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -454,7 +454,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	3
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -472,7 +472,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	4
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -490,7 +490,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	0
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -508,7 +508,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	1
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -526,7 +526,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	2
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -544,7 +544,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	3
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -562,7 +562,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	4
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -580,7 +580,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	0
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -598,7 +598,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	1
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -616,7 +616,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	2
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -634,7 +634,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	3
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -652,7 +652,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	4
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -670,7 +670,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	0
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -688,7 +688,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	1
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -706,7 +706,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	2
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -724,7 +724,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	3
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -742,7 +742,7 @@ LINE_25
 	.byte	bytecode_ld_ir2_pb
 	.byte	4
 
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_str_sr1_ir1
@@ -762,7 +762,7 @@ LINE_30
 	.byte	bytecode_ld_ir2_pb
 	.byte	5
 
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_ir2
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_clr_ip
@@ -775,8 +775,8 @@ LLAST
 
 ; Library Catalog
 bytecode_arrdim2_ir1_ix	.equ	0
-bytecode_arrref2_ir1_ix	.equ	1
-bytecode_arrval2_ir1_ix	.equ	2
+bytecode_arrref2_ir1_ix_ir2	.equ	1
+bytecode_arrval2_ir1_ix_ir2	.equ	2
 bytecode_clear	.equ	3
 bytecode_clr_ip	.equ	4
 bytecode_ld_ip_pb	.equ	5
@@ -791,8 +791,8 @@ bytecode_str_sr1_ir1	.equ	13
 
 catalog
 	.word	arrdim2_ir1_ix
-	.word	arrref2_ir1_ix
-	.word	arrval2_ir1_ix
+	.word	arrref2_ir1_ix_ir2
+	.word	arrval2_ir1_ix_ir2
 	.word	clear
 	.word	clr_ip
 	.word	ld_ip_pb
@@ -994,6 +994,25 @@ dexext
 	abx
 	ldx	,x
 	pulb
+	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
 	rts
 immstr
 	ldx	curinst
@@ -1537,8 +1556,8 @@ _ok
 	addd	tmp3
 	jmp	alloc
 
-arrref2_ir1_ix			; numCalls = 21
-	.module	modarrref2_ir1_ix
+arrref2_ir1_ix_ir2			; numCalls = 21
+	.module	modarrref2_ir1_ix_ir2
 	jsr	extend
 	ldd	r1+1
 	std	0+argv
@@ -1549,8 +1568,8 @@ arrref2_ir1_ix			; numCalls = 21
 	std	letptr
 	rts
 
-arrval2_ir1_ix			; numCalls = 20
-	.module	modarrval2_ir1_ix
+arrval2_ir1_ix_ir2			; numCalls = 20
+	.module	modarrval2_ir1_ix_ir2
 	jsr	extend
 	ldd	r1+1
 	std	0+argv

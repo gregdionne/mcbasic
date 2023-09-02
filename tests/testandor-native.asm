@@ -96,10 +96,8 @@ LINE_10
 	; IF (B=2) AND A THEN
 
 	ldx	#INTVAR_B
-	jsr	ld_ir1_ix
-
 	ldab	#2
-	jsr	ldeq_ir1_ir1_pb
+	jsr	ldeq_ir1_ix_pb
 
 	ldx	#INTVAR_A
 	jsr	and_ir1_ir1_ix
@@ -129,10 +127,8 @@ LINE_20
 	; IF (B=-1) OR A THEN
 
 	ldx	#INTVAR_B
-	jsr	ld_ir1_ix
-
 	ldab	#-1
-	jsr	ldeq_ir1_ir1_nb
+	jsr	ldeq_ir1_ix_nb
 
 	ldx	#INTVAR_A
 	jsr	or_ir1_ir1_ix
@@ -162,10 +158,8 @@ LINE_30
 	; IF (B=-1) OR (A+0.01) THEN
 
 	ldx	#INTVAR_B
-	jsr	ld_ir1_ix
-
 	ldab	#-1
-	jsr	ldeq_ir1_ir1_nb
+	jsr	ldeq_ir1_ix_nb
 
 	ldx	#INTVAR_A
 	jsr	ld_ir2_ix
@@ -200,10 +194,8 @@ LINE_40
 	; IF (B=2) AND (A+0.01) THEN
 
 	ldx	#INTVAR_B
-	jsr	ld_ir1_ix
-
 	ldab	#2
-	jsr	ldeq_ir1_ir1_pb
+	jsr	ldeq_ir1_ix_pb
 
 	ldx	#INTVAR_A
 	jsr	ld_ir2_ix
@@ -371,14 +363,6 @@ jmpeq_ir1_ix			; numCalls = 4
 _rts
 	rts
 
-ld_ir1_ix			; numCalls = 4
-	.module	modld_ir1_ix
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_ir2_ix			; numCalls = 2
 	.module	modld_ir2_ix
 	ldd	1,x
@@ -394,11 +378,11 @@ ld_ix_pb			; numCalls = 1
 	std	0,x
 	rts
 
-ldeq_ir1_ir1_nb			; numCalls = 2
-	.module	modldeq_ir1_ir1_nb
-	cmpb	r1+2
+ldeq_ir1_ix_nb			; numCalls = 2
+	.module	modldeq_ir1_ix_nb
+	cmpb	2,x
 	bne	_done
-	ldd	r1
+	ldd	0,x
 	subd	#-1
 _done
 	jsr	geteq
@@ -406,11 +390,11 @@ _done
 	stab	r1
 	rts
 
-ldeq_ir1_ir1_pb			; numCalls = 2
-	.module	modldeq_ir1_ir1_pb
-	cmpb	r1+2
+ldeq_ir1_ix_pb			; numCalls = 2
+	.module	modldeq_ir1_ix_pb
+	cmpb	2,x
 	bne	_done
-	ldd	r1
+	ldd	0,x
 _done
 	jsr	geteq
 	std	r1+1

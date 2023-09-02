@@ -173,10 +173,8 @@ LINE_90
 
 	; WHEN (Z=0) OR (RND(7)=3) GOTO 150
 
-	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_ldeq_ir1_ix_pb
 	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_ldeq_ir1_ir1_pb
 	.byte	0
 
 	.byte	bytecode_irnd_ir2_pb
@@ -337,18 +335,17 @@ bytecode_goto_ix	.equ	6
 bytecode_irnd_ir1_pb	.equ	7
 bytecode_irnd_ir2_pb	.equ	8
 bytecode_jmpne_ir1_ix	.equ	9
-bytecode_ld_ir1_ix	.equ	10
-bytecode_ld_ix_ir1	.equ	11
-bytecode_ldeq_ir1_ir1_pb	.equ	12
-bytecode_ldeq_ir2_ir2_pb	.equ	13
-bytecode_or_ir1_ir1_ir2	.equ	14
-bytecode_progbegin	.equ	15
-bytecode_progend	.equ	16
-bytecode_reset_ir1_ir2	.equ	17
-bytecode_return	.equ	18
-bytecode_setc_ir1_ir2_ix	.equ	19
-bytecode_sub_ir1_pb_ix	.equ	20
-bytecode_sub_ir2_pb_ix	.equ	21
+bytecode_ld_ix_ir1	.equ	10
+bytecode_ldeq_ir1_ix_pb	.equ	11
+bytecode_ldeq_ir2_ir2_pb	.equ	12
+bytecode_or_ir1_ir1_ir2	.equ	13
+bytecode_progbegin	.equ	14
+bytecode_progend	.equ	15
+bytecode_reset_ir1_ir2	.equ	16
+bytecode_return	.equ	17
+bytecode_setc_ir1_ir2_ix	.equ	18
+bytecode_sub_ir1_pb_ix	.equ	19
+bytecode_sub_ir2_pb_ix	.equ	20
 
 catalog
 	.word	add_ir1_ix_pb
@@ -361,9 +358,8 @@ catalog
 	.word	irnd_ir1_pb
 	.word	irnd_ir2_pb
 	.word	jmpne_ir1_ix
-	.word	ld_ir1_ix
 	.word	ld_ix_ir1
-	.word	ldeq_ir1_ir1_pb
+	.word	ldeq_ir1_ix_pb
 	.word	ldeq_ir2_ir2_pb
 	.word	or_ir1_ir1_ir2
 	.word	progbegin
@@ -506,6 +502,25 @@ dexext
 	abx
 	ldx	,x
 	pulb
+	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
 	rts
 immstr
 	ldx	curinst
@@ -773,15 +788,6 @@ _go
 _rts
 	rts
 
-ld_ir1_ix			; numCalls = 1
-	.module	modld_ir1_ix
-	jsr	extend
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_ix_ir1			; numCalls = 3
 	.module	modld_ix_ir1
 	jsr	extend
@@ -791,12 +797,12 @@ ld_ix_ir1			; numCalls = 3
 	stab	0,x
 	rts
 
-ldeq_ir1_ir1_pb			; numCalls = 1
-	.module	modldeq_ir1_ir1_pb
-	jsr	getbyte
-	cmpb	r1+2
+ldeq_ir1_ix_pb			; numCalls = 1
+	.module	modldeq_ir1_ix_pb
+	jsr	extbyte
+	cmpb	2,x
 	bne	_done
-	ldd	r1
+	ldd	0,x
 _done
 	jsr	geteq
 	std	r1+1

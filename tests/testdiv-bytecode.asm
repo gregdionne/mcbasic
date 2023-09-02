@@ -292,6 +292,25 @@ dexext
 	ldx	,x
 	pulb
 	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
+	rts
 immstr
 	ldx	curinst
 	inx

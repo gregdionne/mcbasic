@@ -69,7 +69,6 @@ tmp5	.block	2
 	.org	$af
 r1	.block	5
 r2	.block	5
-r3	.block	5
 rend
 argv	.block	10
 
@@ -155,18 +154,16 @@ LINE_170
 
 	; IF (SQ(X)+SQ(Y))>4 THEN
 
-	ldab	#4
-	jsr	ld_ir1_pb
-
 	ldx	#FLTVAR_X
-	jsr	sq_fr2_fx
+	jsr	sq_fr1_fx
 
 	ldx	#FLTVAR_Y
-	jsr	sq_fr3_fx
+	jsr	sq_fr2_fx
 
-	jsr	add_fr2_fr2_fr3
+	jsr	add_fr1_fr1_fr2
 
-	jsr	ldlt_ir1_ir1_fr2
+	ldab	#4
+	jsr	ldlt_ir1_pb_fr1
 
 	ldx	#LINE_180
 	jsr	jmpeq_ir1_ix
@@ -685,6 +682,20 @@ x2arg
 	std	3+argv
 	rts
 
+add_fr1_fr1_fr2			; numCalls = 1
+	.module	modadd_fr1_fr1_fr2
+	ldd	r1+3
+	addd	r2+3
+	std	r1+3
+	ldd	r1+1
+	adcb	r2+2
+	adca	r2+1
+	std	r1+1
+	ldab	r1
+	adcb	r2
+	stab	r1
+	rts
+
 add_fr1_fr1_fx			; numCalls = 2
 	.module	modadd_fr1_fr1_fx
 	ldd	r1+3
@@ -697,20 +708,6 @@ add_fr1_fr1_fx			; numCalls = 2
 	ldab	r1
 	adcb	0,x
 	stab	r1
-	rts
-
-add_fr2_fr2_fr3			; numCalls = 1
-	.module	modadd_fr2_fr2_fr3
-	ldd	r2+3
-	addd	r3+3
-	std	r2+3
-	ldd	r2+1
-	adcb	r3+2
-	adca	r3+1
-	std	r2+1
-	ldab	r2
-	adcb	r3
-	stab	r2
 	rts
 
 clear			; numCalls = 1
@@ -895,13 +892,6 @@ ld_ir1_ix			; numCalls = 2
 	stab	r1
 	rts
 
-ld_ir1_pb			; numCalls = 1
-	.module	modld_ir1_pb
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
 ld_ir2_ix			; numCalls = 2
 	.module	modld_ir2_ix
 	ldd	1,x
@@ -925,15 +915,17 @@ ld_ix_pb			; numCalls = 1
 	std	0,x
 	rts
 
-ldlt_ir1_ir1_fr2			; numCalls = 1
-	.module	modldlt_ir1_ir1_fr2
-	ldd	#0
-	subd	r2+3
-	ldd	r1+1
-	sbcb	r2+2
-	sbca	r2+1
-	ldab	r1
-	sbcb	r2
+ldlt_ir1_pb_fr1			; numCalls = 1
+	.module	modldlt_ir1_pb_fr1
+	clra
+	std	tmp1
+	clrb
+	subd	r1+3
+	ldd	tmp1
+	sbcb	r1+2
+	sbca	r1+1
+	ldab	#0
+	sbcb	r1
 	jsr	getlt
 	std	r1+1
 	stab	r1
@@ -1119,7 +1111,7 @@ setc_ir1_ir2_ix			; numCalls = 2
 	pulb
 	jmp	setc
 
-sq_fr1_fx			; numCalls = 1
+sq_fr1_fx			; numCalls = 2
 	.module	modsq_fr1_fx
 	jsr	x2arg
 	jsr	mulfltt
@@ -1131,13 +1123,6 @@ sq_fr2_fx			; numCalls = 2
 	jsr	x2arg
 	jsr	mulfltt
 	ldx	#r2
-	jmp	tmp2xf
-
-sq_fr3_fx			; numCalls = 1
-	.module	modsq_fr3_fx
-	jsr	x2arg
-	jsr	mulfltt
-	ldx	#r3
 	jmp	tmp2xf
 
 sub_fr1_fr1_fr2			; numCalls = 1

@@ -300,6 +300,23 @@ std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdEq &inst) {
   return tasm.source();
 }
 
+std::string ByteCodeImplementation::regInt_extStr_immStr(InstLdEq &inst) {
+  inst.dependencies.insert("mdstreqx");
+  inst.dependencies.insert("mdgeteq");
+
+  Assembler tasm;
+  tasm.jsr("eistr");
+  tasm.stab("tmp1+1");
+  tasm.stx("tmp2");
+  tasm.ldx("tmp3");
+  tasm.jsr("streqx");
+  tasm.jsr("geteq");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdNe &inst) {
   inst.dependencies.insert("mdstreqbs");
   inst.dependencies.insert("mdgetne");
@@ -310,6 +327,23 @@ std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdNe &inst) {
   tasm.ldd(inst.arg2->lword());
   tasm.std("tmp2");
   tasm.jsr("streqbs");
+  tasm.jsr("getne");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string ByteCodeImplementation::regInt_extStr_immStr(InstLdNe &inst) {
+  inst.dependencies.insert("mdstreqx");
+  inst.dependencies.insert("mdgetne");
+
+  Assembler tasm;
+  tasm.jsr("eistr");
+  tasm.stab("tmp1+1");
+  tasm.stx("tmp2");
+  tasm.ldx("tmp3");
+  tasm.jsr("streqx");
   tasm.jsr("getne");
   tasm.std(inst.arg1->lword());
   tasm.stab(inst.arg1->sbyte());
@@ -334,6 +368,60 @@ std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdLt &inst) {
   return tasm.source();
 }
 
+std::string ByteCodeImplementation::regInt_extStr_immStr(InstLdLt &inst) {
+  inst.dependencies.insert("mdstrloxr");
+  inst.dependencies.insert("mdgetlo");
+
+  Assembler tasm;
+  tasm.jsr("eistr");
+  tasm.stab("tmp1+1");
+  tasm.stx("tmp2");
+  tasm.ldx("tmp3");
+  tasm.jsr("strloxr");
+  tasm.jsr("getlo");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string ByteCodeImplementation::regInt_immStr_regStr(InstLdLt &inst) {
+  inst.dependencies.insert("mdstrlo");
+  inst.dependencies.insert("mdgetlo");
+
+  Assembler tasm;
+  tasm.jsr("immstr");
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldx(inst.arg3->lword());
+  tasm.stx("tmp2");
+  tasm.jsr("strlo");
+  tasm.jsr("getlo");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string ByteCodeImplementation::regInt_immStr_extStr(InstLdLt &inst) {
+  inst.dependencies.insert("mdstrlox");
+  inst.dependencies.insert("mdgetlo");
+
+  Assembler tasm;
+  tasm.jsr("eistr");
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.ldx("tmp3");
+  tasm.jsr("strlox");
+  tasm.jsr("getlo");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdGe &inst) {
   inst.dependencies.insert("mdstrlobs");
   inst.dependencies.insert("mdgeths");
@@ -344,6 +432,60 @@ std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdGe &inst) {
   tasm.ldd(inst.arg2->lword());
   tasm.std("1+argv");
   tasm.jsr("strlobs");
+  tasm.jsr("geths");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string ByteCodeImplementation::regInt_extStr_immStr(InstLdGe &inst) {
+  inst.dependencies.insert("mdstrloxr");
+  inst.dependencies.insert("mdgetlo");
+
+  Assembler tasm;
+  tasm.jsr("eistr");
+  tasm.stab("tmp1+1");
+  tasm.stx("tmp2");
+  tasm.ldx("tmp3");
+  tasm.jsr("strloxr");
+  tasm.jsr("geths");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string ByteCodeImplementation::regInt_immStr_regStr(InstLdGe &inst) {
+  inst.dependencies.insert("mdstrlo");
+  inst.dependencies.insert("mdgetlo");
+
+  Assembler tasm;
+  tasm.jsr("immstr");
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldx(inst.arg3->lword());
+  tasm.stx("tmp2");
+  tasm.jsr("strlo");
+  tasm.jsr("geths");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string ByteCodeImplementation::regInt_immStr_extStr(InstLdGe &inst) {
+  inst.dependencies.insert("mdstrlox");
+  inst.dependencies.insert("mdgetlo");
+
+  Assembler tasm;
+  tasm.jsr("eistr");
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.ldx("tmp3");
+  tasm.jsr("strlox");
   tasm.jsr("geths");
   tasm.std(inst.arg1->lword());
   tasm.stab(inst.arg1->sbyte());
@@ -1126,10 +1268,11 @@ bool ByteCodeImplementation::isExtend(Instruction &inst) {
   bool in5 = arg1->isExtended() && arg2->isExtended() && arg3->isInherent();
   bool in6 = arg1->isExtended() && arg2->isExtended() && arg3->isRegister();
   bool in7 = arg1->isRegister() && arg2->isExtended() && arg3->isInherent();
-  bool in8 = arg1->isRegister() && arg2->isRegister() && arg3->isExtended();
-  bool in9 = arg1->isIndirect() && arg2->isExtended() && arg3->isInherent();
+  bool in8 = arg1->isRegister() && arg2->isExtended() && arg3->isRegister();
+  bool in9 = arg1->isRegister() && arg2->isRegister() && arg3->isExtended();
+  bool in10 = arg1->isIndirect() && arg2->isExtended() && arg3->isInherent();
 
-  return in1 || in2 || in3 || in4 || in5 || in6 || in7 || in8 || in9;
+  return in1 || in2 || in3 || in4 || in5 || in6 || in7 || in8 || in9 || in10;
 }
 
 bool ByteCodeImplementation::isGetByte(Instruction &inst) {

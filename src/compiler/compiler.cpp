@@ -694,7 +694,9 @@ void ExprCompiler::absorb(const StringConcatenationExpr &e) {
 void ExprCompiler::absorb(const ArrayIndicesExpr &e) {
   for (const auto &operand : e.operands) {
     operand->soak(this);
-    result = queue.load(mv(result));
+    if (!result->isExtended() || operand.get() != e.operands.back().get()) {
+      result = queue.load(mv(result));
+    }
     result->castToInt();
   }
 }
@@ -722,13 +724,24 @@ void ExprCompiler::absorb(const NumericArrayExpr &e) {
   bool useRef(arrayRef); // save state
   arrayRef = false;
   e.indices->soak(this);
+
+  int n = static_cast<int>(e.indices->operands.size());
+  if (useDim || !result->isExtended() || n >= 6) {
+    result = queue.load(mv(result));
+  }
+
+  auto lastReg = queue.alloc(result->clone());
+  auto firstReg =
+      makeup<AddressModeReg>(lastReg->getRegister() - n + 1, DataType::Int);
+
+  auto lastArg = mv(result);
+  if (lastArg->isExtended()) {
+    lastArg = makeup<AddressModeDex>(lastArg->dataType, lastArg->vsymbol());
+  }
+
   for (auto &symbol : text.symbolTable.numArrTable) {
     if (symbol.name == e.varexp->varname) {
-      int n = static_cast<int>(e.indices->operands.size());
       auto count = makeup<AddressModeImm>(false, n);
-
-      auto firstReg =
-          makeup<AddressModeReg>(result->getRegister() - n + 1, DataType::Int);
 
       auto dataType = symbol.isFloat ? DataType::Flt : DataType::Int;
       auto arrLabel = (symbol.isFloat ? "FLTARR_" : "INTARR_") + symbol.name;
@@ -741,24 +754,34 @@ void ExprCompiler::absorb(const NumericArrayExpr &e) {
       tag += n < 6 ? std::to_string(n) : std::string("");
 
       auto inst =
-          tag == "Dim1"   ? makeupInstMv<InstArrayDim1>(firstReg, result)
-          : tag == "Ref1" ? makeupInstMv<InstArrayRef1>(firstReg, result)
-          : tag == "Val1" ? makeupInstMv<InstArrayVal1>(firstReg, result)
+          tag == "Dim1" ? makeupInstMv<InstArrayDim1>(firstReg, result)
+          : tag == "Ref1"
+              ? makeupInstMv<InstArrayRef1>(firstReg, result, lastArg)
+          : tag == "Val1"
+              ? makeupInstMv<InstArrayVal1>(firstReg, result, lastArg)
           : tag == "Dim2" ? makeupInstMv<InstArrayDim2>(firstReg, result)
-          : tag == "Ref2" ? makeupInstMv<InstArrayRef2>(firstReg, result)
-          : tag == "Val2" ? makeupInstMv<InstArrayVal2>(firstReg, result)
+          : tag == "Ref2"
+              ? makeupInstMv<InstArrayRef2>(firstReg, result, lastArg)
+          : tag == "Val2"
+              ? makeupInstMv<InstArrayVal2>(firstReg, result, lastArg)
           : tag == "Dim3" ? makeupInstMv<InstArrayDim3>(firstReg, result)
-          : tag == "Ref3" ? makeupInstMv<InstArrayRef3>(firstReg, result)
-          : tag == "Val3" ? makeupInstMv<InstArrayVal3>(firstReg, result)
+          : tag == "Ref3"
+              ? makeupInstMv<InstArrayRef3>(firstReg, result, lastArg)
+          : tag == "Val3"
+              ? makeupInstMv<InstArrayVal3>(firstReg, result, lastArg)
           : tag == "Dim4" ? makeupInstMv<InstArrayDim4>(firstReg, result)
-          : tag == "Ref4" ? makeupInstMv<InstArrayRef4>(firstReg, result)
-          : tag == "Val4" ? makeupInstMv<InstArrayVal4>(firstReg, result)
+          : tag == "Ref4"
+              ? makeupInstMv<InstArrayRef4>(firstReg, result, lastArg)
+          : tag == "Val4"
+              ? makeupInstMv<InstArrayVal4>(firstReg, result, lastArg)
           : tag == "Dim5" ? makeupInstMv<InstArrayDim5>(firstReg, result)
-          : tag == "Ref5" ? makeupInstMv<InstArrayRef5>(firstReg, result)
-          : tag == "Val5" ? makeupInstMv<InstArrayVal5>(firstReg, result)
-          : tag == "Dim"  ? makeupInstMv<InstArrayDim>(firstReg, result, count)
-          : tag == "Ref"  ? makeupInstMv<InstArrayRef>(firstReg, result, count)
-                          : makeupInstMv<InstArrayVal>(firstReg, result, count);
+          : tag == "Ref5"
+              ? makeupInstMv<InstArrayRef5>(firstReg, result, lastArg)
+          : tag == "Val5"
+              ? makeupInstMv<InstArrayVal5>(firstReg, result, lastArg)
+          : tag == "Dim" ? makeupInstMv<InstArrayDim>(firstReg, result, count)
+          : tag == "Ref" ? makeupInstMv<InstArrayRef>(firstReg, result, count)
+                         : makeupInstMv<InstArrayVal>(firstReg, result, count);
 
       result = queue.append(mv(inst));
       return;
@@ -773,17 +796,26 @@ void ExprCompiler::absorb(const NumericArrayExpr &e) {
 void ExprCompiler::absorb(const StringArrayExpr &e) {
   bool useDim(arrayDim); // save state
   bool useRef(arrayRef); // save state
-
   arrayRef = false;
   e.indices->soak(this);
+
+  int n = static_cast<int>(e.indices->operands.size());
+  if (useDim || !result->isExtended() || n >= 6) {
+    result = queue.load(mv(result));
+  }
+
+  auto lastReg = queue.alloc(result->clone());
+  auto firstReg =
+      makeup<AddressModeReg>(lastReg->getRegister() - n + 1, DataType::Int);
+
+  auto lastArg = mv(result);
+  if (lastArg->isExtended()) {
+    lastArg = makeup<AddressModeDex>(lastArg->dataType, lastArg->vsymbol());
+  }
+
   for (auto &symbol : text.symbolTable.strArrTable) {
     if (symbol.name == e.varexp->varname) {
-
-      int n = static_cast<int>(e.indices->operands.size());
       auto count = makeup<AddressModeImm>(false, n);
-
-      auto firstReg =
-          makeup<AddressModeReg>(result->getRegister() - n + 1, DataType::Int);
 
       auto dataType = DataType::Str;
       auto arrLabel = "STRARR_" + symbol.name;
@@ -796,24 +828,34 @@ void ExprCompiler::absorb(const StringArrayExpr &e) {
       tag += n < 6 ? std::to_string(n) : std::string("");
 
       auto inst =
-          tag == "Dim1"   ? makeupInstMv<InstArrayDim1>(firstReg, result)
-          : tag == "Ref1" ? makeupInstMv<InstArrayRef1>(firstReg, result)
-          : tag == "Val1" ? makeupInstMv<InstArrayVal1>(firstReg, result)
+          tag == "Dim1" ? makeupInstMv<InstArrayDim1>(firstReg, result)
+          : tag == "Ref1"
+              ? makeupInstMv<InstArrayRef1>(firstReg, result, lastArg)
+          : tag == "Val1"
+              ? makeupInstMv<InstArrayVal1>(firstReg, result, lastArg)
           : tag == "Dim2" ? makeupInstMv<InstArrayDim2>(firstReg, result)
-          : tag == "Ref2" ? makeupInstMv<InstArrayRef2>(firstReg, result)
-          : tag == "Val2" ? makeupInstMv<InstArrayVal2>(firstReg, result)
+          : tag == "Ref2"
+              ? makeupInstMv<InstArrayRef2>(firstReg, result, lastArg)
+          : tag == "Val2"
+              ? makeupInstMv<InstArrayVal2>(firstReg, result, lastArg)
           : tag == "Dim3" ? makeupInstMv<InstArrayDim3>(firstReg, result)
-          : tag == "Ref3" ? makeupInstMv<InstArrayRef3>(firstReg, result)
-          : tag == "Val3" ? makeupInstMv<InstArrayVal3>(firstReg, result)
+          : tag == "Ref3"
+              ? makeupInstMv<InstArrayRef3>(firstReg, result, lastArg)
+          : tag == "Val3"
+              ? makeupInstMv<InstArrayVal3>(firstReg, result, lastArg)
           : tag == "Dim4" ? makeupInstMv<InstArrayDim4>(firstReg, result)
-          : tag == "Ref4" ? makeupInstMv<InstArrayRef4>(firstReg, result)
-          : tag == "Val4" ? makeupInstMv<InstArrayVal4>(firstReg, result)
+          : tag == "Ref4"
+              ? makeupInstMv<InstArrayRef4>(firstReg, result, lastArg)
+          : tag == "Val4"
+              ? makeupInstMv<InstArrayVal4>(firstReg, result, lastArg)
           : tag == "Dim5" ? makeupInstMv<InstArrayDim5>(firstReg, result)
-          : tag == "Ref5" ? makeupInstMv<InstArrayRef5>(firstReg, result)
-          : tag == "Val5" ? makeupInstMv<InstArrayVal5>(firstReg, result)
-          : tag == "Dim"  ? makeupInstMv<InstArrayDim>(firstReg, result, count)
-          : tag == "Ref"  ? makeupInstMv<InstArrayRef>(firstReg, result, count)
-                          : makeupInstMv<InstArrayVal>(firstReg, result, count);
+          : tag == "Ref5"
+              ? makeupInstMv<InstArrayRef5>(firstReg, result, lastArg)
+          : tag == "Val5"
+              ? makeupInstMv<InstArrayVal5>(firstReg, result, lastArg)
+          : tag == "Dim" ? makeupInstMv<InstArrayDim>(firstReg, result, count)
+          : tag == "Ref" ? makeupInstMv<InstArrayRef>(firstReg, result, count)
+                         : makeupInstMv<InstArrayVal>(firstReg, result, count);
 
       result = queue.append(mv(inst));
       return;
@@ -999,11 +1041,57 @@ void ExprCompiler::absorb(const RelationalExpr &e) {
 
   auto initRegAndLhs = [this, &reg, &lhs](const Expr *elhs, const Expr *erhs) {
     elhs->soak(this);
-    if (result->isExtended() && erhs->isVar()) {
+    if (result->isRegister()) {
+      reg = result->clone();
+      lhs = mv(result);
+      erhs->soak(this);
+    } else if (result->isExtended()) {
+      lhs = mv(result);
+      erhs->soak(this);
+      reg = queue.alloc(result->clone());
+      if (result->isExtended()) {
+        result = makeup<AddressModeDex>(result->dataType, result->vsymbol());
+      }
+    } else if (result->isImmediate() || result->isStack()) {
+      lhs = mv(result);
+      erhs->soak(this);
+      reg = queue.alloc(result->clone());
+    } else {
+      lhs = queue.load(mv(result));
+      reg = lhs->clone();
+      erhs->soak(this);
+    }
+  };
+
+  auto initRegAndLhsCommutative = [this, &reg, &lhs](const Expr *elhs,
+                                                     const Expr *erhs) {
+    elhs->soak(this);
+    if (result->isRegister()) {
+      reg = result->clone();
+      lhs = mv(result);
+      erhs->soak(this);
+    } else if (result->isExtended() && erhs->isVar()) {
       lhs = mv(result);
       erhs->soak(this);
       reg = queue.alloc(result->clone());
       result = makeup<AddressModeDex>(result->dataType, result->vsymbol());
+    } else if (result->isExtended()) {
+      lhs = mv(result);
+      erhs->soak(this);
+      if (result->isRegister()) {
+        reg = result->clone();
+        std::swap(lhs, result);
+      } else if (result->isExtended()) {
+        reg = queue.alloc(result->clone());
+        result = makeup<AddressModeDex>(result->dataType, result->vsymbol());
+      } else {
+        reg = queue.alloc(result->clone());
+      }
+    } else if (result->isImmediate()) {
+      lhs = mv(result);
+      erhs->soak(this);
+      reg = queue.alloc(result->clone());
+      std::swap(lhs, result);
     } else {
       lhs = queue.load(mv(result));
       reg = lhs->clone();
@@ -1023,7 +1111,7 @@ void ExprCompiler::absorb(const RelationalExpr &e) {
                               ? makeupInstMv<InstLdLt>(reg, lhs, result)
                               : makeupInstMv<InstLdGe>(reg, lhs, result));
   } else {
-    initRegAndLhs(e.lhs.get(), e.rhs.get());
+    initRegAndLhsCommutative(e.lhs.get(), e.rhs.get());
     result = queue.append(e.comparator == "="
                               ? makeupInstMv<InstLdEq>(reg, lhs, result)
                               : makeupInstMv<InstLdNe>(reg, lhs, result));

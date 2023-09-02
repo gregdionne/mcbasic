@@ -109,10 +109,8 @@ LINE_20
 
 	; PRINT STR$(X$="FRED");" \r";
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldeq_ir1_sx_ss
 	.byte	bytecode_STRVAR_X
-
-	.byte	bytecode_ldeq_ir1_sr1_ss
 	.text	4, "FRED"
 
 	.byte	bytecode_str_sr1_ir1
@@ -126,10 +124,8 @@ LINE_30
 
 	; PRINT STR$(X$="FRE");" \r";
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldeq_ir1_sx_ss
 	.byte	bytecode_STRVAR_X
-
-	.byte	bytecode_ldeq_ir1_sr1_ss
 	.text	3, "FRE"
 
 	.byte	bytecode_str_sr1_ir1
@@ -233,23 +229,21 @@ LLAST
 ; Library Catalog
 bytecode_clear	.equ	0
 bytecode_ld_sr1_ss	.equ	1
-bytecode_ld_sr1_sx	.equ	2
-bytecode_ld_sx_sr1	.equ	3
-bytecode_ldeq_ir1_sr1_ss	.equ	4
-bytecode_ldeq_ir1_sx_sd	.equ	5
-bytecode_pr_sr1	.equ	6
-bytecode_pr_ss	.equ	7
-bytecode_progbegin	.equ	8
-bytecode_progend	.equ	9
-bytecode_str_sr1_ir1	.equ	10
+bytecode_ld_sx_sr1	.equ	2
+bytecode_ldeq_ir1_sx_sd	.equ	3
+bytecode_ldeq_ir1_sx_ss	.equ	4
+bytecode_pr_sr1	.equ	5
+bytecode_pr_ss	.equ	6
+bytecode_progbegin	.equ	7
+bytecode_progend	.equ	8
+bytecode_str_sr1_ir1	.equ	9
 
 catalog
 	.word	clear
 	.word	ld_sr1_ss
-	.word	ld_sr1_sx
 	.word	ld_sx_sr1
-	.word	ldeq_ir1_sr1_ss
 	.word	ldeq_ir1_sx_sd
+	.word	ldeq_ir1_sx_ss
 	.word	pr_sr1
 	.word	pr_ss
 	.word	progbegin
@@ -445,6 +439,25 @@ dexext
 	abx
 	ldx	,x
 	pulb
+	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
 	rts
 immstr
 	ldx	curinst
@@ -782,37 +795,11 @@ _nxtwrd
 _rts
 	rts
 
-	.module	mdstreqbs
-; compare string against bytecode "stack"
-; ENTRY: tmp1+1 holds length, tmp2 holds compare
-; EXIT:  we return correct Z flag for caller
-streqbs
-	ldx	tmp2
-	jsr	strrel
-	jsr	immstr
-	sts	tmp3
-	cmpb	tmp1+1
-	bne	_ne
-	tstb
-	beq	_eq
-	txs
-	ldx	tmp2
-_nxtchr
-	pula
-	cmpa	,x
-	bne	_ne
-	inx
-	decb
-	bne	_nxtchr
-_eq
-	lds	tmp3
-	clra
-	rts
-_ne
-	lds	tmp3
-	rts
-
 	.module	mdstreqx
+; equality comparison with string release
+; ENTRY:  X holds descriptor of LHS
+;         tmp1+1 and tmp2 are RHS
+; EXIT:  Z CCR flag set
 streqx
 	ldab	0,x
 	cmpb	tmp1+1
@@ -1172,15 +1159,6 @@ ld_sr1_ss			; numCalls = 5
 	stx	nxtinst
 	rts
 
-ld_sr1_sx			; numCalls = 2
-	.module	modld_sr1_sx
-	jsr	extend
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_sx_sr1			; numCalls = 5
 	.module	modld_sx_sr1
 	jsr	extend
@@ -1190,18 +1168,6 @@ ld_sx_sr1			; numCalls = 5
 	std	1+argv
 	jmp	strprm
 
-ldeq_ir1_sr1_ss			; numCalls = 2
-	.module	modldeq_ir1_sr1_ss
-	ldab	r1
-	stab	tmp1+1
-	ldd	r1+1
-	std	tmp2
-	jsr	streqbs
-	jsr	geteq
-	std	r1+1
-	stab	r1
-	rts
-
 ldeq_ir1_sx_sd			; numCalls = 3
 	.module	modldeq_ir1_sx_sd
 	jsr	extdex
@@ -1210,6 +1176,18 @@ ldeq_ir1_sx_sd			; numCalls = 3
 	stab	tmp1+1
 	ldd	1,x
 	std	tmp2
+	ldx	tmp3
+	jsr	streqx
+	jsr	geteq
+	std	r1+1
+	stab	r1
+	rts
+
+ldeq_ir1_sx_ss			; numCalls = 2
+	.module	modldeq_ir1_sx_ss
+	jsr	eistr
+	stab	tmp1+1
+	stx	tmp2
 	ldx	tmp3
 	jsr	streqx
 	jsr	geteq

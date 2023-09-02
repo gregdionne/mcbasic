@@ -6,6 +6,7 @@
 
 void Library::makeFoundation() {
   foundation["mdalloc"] = Lib{0, mdAlloc(), {}};
+  foundation["mdgetlw"] = Lib{0, mdGetLW(), {}};
   foundation["mdref1"] = Lib{0, mdArrayRef1(), {"mdalloc"}};
   foundation["mdref2"] = Lib{0, mdArrayRef2(), {"mdmul12"}};
   foundation["mdref3"] = Lib{0, mdArrayRef3(), {"mdmul12"}};
@@ -58,8 +59,10 @@ void Library::makeFoundation() {
   foundation["mdstreqx"] = Lib{0, mdStrEqx(), {"mdstrrel"}};
   foundation["mdstrlo"] = Lib{0, mdStrLo(), {"mdstrrel"}};
   foundation["mdstrlos"] = Lib{0, mdStrLos(), {"mdstrlo"}};
+  foundation["mdstrlosr"] = Lib{0, mdStrLosr(), {"mdstrlo"}};
   foundation["mdstrlobs"] = Lib{0, mdStrLobs(), {"mdstrlo"}};
   foundation["mdstrlox"] = Lib{0, mdStrLox(), {"mdstrlo"}};
+  foundation["mdstrloxr"] = Lib{0, mdStrLoxr(), {"mdstrlo"}};
   foundation["mdtmp2xf"] = Lib{0, mdTmp2XF(), {}};
   foundation["mdtmp2xi"] = Lib{0, mdTmp2XI(), {}};
   foundation["mdarg2x"] = Lib{0, mdArg2X(), {}};
@@ -165,6 +168,21 @@ std::string Library::mdAlloc() {
   tasm.abx();
   tasm.bra("strlink");
   tasm.label("_rts");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdGetLW() {
+  Assembler tasm;
+  tasm.comment("fetch lower word from integer variable descriptor");
+  tasm.comment(" ENTRY: D holds integer variable descriptor");
+  tasm.comment(" EXIT: D holds lower word of integer variable");
+  tasm.label("getlw");
+  tasm.std("tmp1");
+  tasm.stx("tmp2");
+  tasm.ldx("tmp1");
+  tasm.ldd("1,x");
+  tasm.ldx("tmp2");
   tasm.rts();
   return tasm.source();
 }
@@ -1292,6 +1310,10 @@ std::string Library::mdStrVal() {
 
 std::string Library::mdStrEqx() {
   Assembler tasm;
+  tasm.comment("equality comparison with string release");
+  tasm.comment("ENTRY:  X holds descriptor of LHS");
+  tasm.comment("        tmp1+1 and tmp2 are RHS");
+  tasm.comment("EXIT:  Z CCR flag set");
   tasm.label("streqx");
   tasm.ldab("0,x");
   tasm.cmpb("tmp1+1");
@@ -1429,12 +1451,16 @@ std::string Library::mdStrEqbs() {
 
 std::string Library::mdStrLo() {
   Assembler tasm;
-  tasm.label("strlo"); // entry argv0 holds len, lhs
-  tasm.stab("tmp1+1"); //      tmp1+1 holds len, rhs
+  tasm.comment("compare A$ < B$ with string release");
+  tasm.comment("ENTRY:  A$ = 0+argv (len) 1+argv (ptr)");
+  tasm.comment("        B$ = tmp1+1 (len) tmp2   (ptr)");
+  tasm.comment("EXIT: C flag set if A$ < B$");
+  tasm.label("strlo");
   tasm.ldx("1+argv");
   tasm.jsr("strrel");
   tasm.ldx("tmp2");
   tasm.jsr("strrel");
+  tasm.ldab("tmp1+1");
   tasm.cmpb("0+argv");
   tasm.bls("_ok");
   tasm.ldab("0+argv");
@@ -1478,7 +1504,24 @@ std::string Library::mdStrLos() {
   tasm.tsx();
   tasm.ldd("tmp3");
   tasm.std("2,x");
-  tasm.ldab("tmp1+1");
+  tasm.bra("strlo");
+  return tasm.source();
+}
+
+std::string Library::mdStrLosr() {
+  Assembler tasm;
+  tasm.label("strlosr");
+  tasm.tsx();
+  tasm.ldx("2,x");
+  tasm.ldab(",x");
+  tasm.stab("0+argv");
+  tasm.inx();
+  tasm.stx("1+argv");
+  tasm.abx();
+  tasm.stx("tmp3");
+  tasm.tsx();
+  tasm.ldd("tmp3");
+  tasm.std("2,x");
   tasm.bra("strlo");
   return tasm.source();
 }
@@ -1488,6 +1531,7 @@ std::string Library::mdStrLobs() {
   tasm.label("strlobs");
   tasm.jsr("immstr");
   tasm.stx("tmp2");
+  tasm.stab("tmp1+1");
   tasm.bra("strlo");
   return tasm.source();
 }
@@ -1496,8 +1540,20 @@ std::string Library::mdStrLox() {
   Assembler tasm;
   tasm.label("strlox");
   tasm.ldab(",x");
+  tasm.stab("tmp1+1");
   tasm.ldx("1,x");
   tasm.stx("tmp2");
+  tasm.bra("strlo");
+  return tasm.source();
+}
+
+std::string Library::mdStrLoxr() {
+  Assembler tasm;
+  tasm.label("strloxr");
+  tasm.ldab(",x");
+  tasm.stab("0+argv");
+  tasm.ldx("1,x");
+  tasm.stx("1+argv");
   tasm.bra("strlo");
   return tasm.source();
 }
@@ -4023,6 +4079,26 @@ std::string Library::mdByteCode() {
   tasm.abx();
   tasm.ldx(",x");
   tasm.pulb();
+  tasm.rts();
+
+  tasm.label("eistr");
+  tasm.ldx("curinst");
+  tasm.inx();
+  tasm.pshx();
+  tasm.ldab("0,x");
+  tasm.ldx("#symtbl");
+  tasm.abx();
+  tasm.abx();
+  tasm.ldd(",x");
+  tasm.std("tmp3");
+  tasm.pulx();
+  tasm.inx();
+  tasm.ldab(",x");
+  tasm.inx();
+  tasm.pshx();
+  tasm.abx();
+  tasm.stx("nxtinst");
+  tasm.pulx();
   tasm.rts();
 
   tasm.label("immstr");

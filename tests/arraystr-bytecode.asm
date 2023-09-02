@@ -117,7 +117,7 @@ LINE_5
 	.byte	bytecode_ld_ir1_pb
 	.byte	0
 
-	.byte	bytecode_arrref1_ir1_sx
+	.byte	bytecode_arrref1_ir1_sx_ir1
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_ld_sr1_ss
@@ -132,7 +132,7 @@ LINE_10
 	.byte	bytecode_ld_ir1_pb
 	.byte	1
 
-	.byte	bytecode_arrref1_ir1_sx
+	.byte	bytecode_arrref1_ir1_sx_ir1
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_ld_sr1_ss
@@ -147,7 +147,7 @@ LINE_20
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
 
-	.byte	bytecode_arrref1_ir1_sx
+	.byte	bytecode_arrref1_ir1_sx_ir1
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_ld_sr1_ss
@@ -162,7 +162,7 @@ LINE_30
 	.byte	bytecode_ld_ir1_pb
 	.byte	3
 
-	.byte	bytecode_arrref1_ir1_sx
+	.byte	bytecode_arrref1_ir1_sx_ir1
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_ld_sr1_ss
@@ -177,7 +177,7 @@ LINE_40
 	.byte	bytecode_ld_ir1_pb
 	.byte	4
 
-	.byte	bytecode_arrref1_ir1_sx
+	.byte	bytecode_arrref1_ir1_sx_ir1
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_ld_sr1_ss
@@ -192,7 +192,7 @@ LINE_50
 	.byte	bytecode_ld_ir1_pb
 	.byte	5
 
-	.byte	bytecode_arrref1_ir1_sx
+	.byte	bytecode_arrref1_ir1_sx_ir1
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_ld_sr1_ss
@@ -207,7 +207,7 @@ LINE_60
 	.byte	bytecode_ld_ir1_pb
 	.byte	6
 
-	.byte	bytecode_arrref1_ir1_sx
+	.byte	bytecode_arrref1_ir1_sx_ir1
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_ld_sr1_ss
@@ -222,7 +222,7 @@ LINE_100
 	.byte	bytecode_ld_ir1_pb
 	.byte	1
 
-	.byte	bytecode_arrval1_ir1_sx
+	.byte	bytecode_arrval1_ir1_sx_ir1
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_ld_sx_sr1
@@ -233,7 +233,7 @@ LINE_100
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
 
-	.byte	bytecode_arrval1_ir1_sx
+	.byte	bytecode_arrval1_ir1_sx_ir1
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_ld_sx_sr1
@@ -244,7 +244,7 @@ LINE_100
 	.byte	bytecode_ld_ir1_pb
 	.byte	3
 
-	.byte	bytecode_arrval1_ir1_sx
+	.byte	bytecode_arrval1_ir1_sx_ir1
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_ld_sx_sr1
@@ -272,7 +272,7 @@ LINE_112
 	.byte	bytecode_ld_ir2_pb
 	.byte	1
 
-	.byte	bytecode_arrval1_ir2_sx
+	.byte	bytecode_arrval1_ir2_sx_ir2
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_strcat_sr1_sr1_sr2
@@ -302,7 +302,7 @@ LINE_114
 	.byte	bytecode_ld_ir2_pb
 	.byte	2
 
-	.byte	bytecode_arrval1_ir2_sx
+	.byte	bytecode_arrval1_ir2_sx_ir2
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_strcat_sr1_sr1_sr2
@@ -332,7 +332,7 @@ LINE_116
 	.byte	bytecode_ld_ir2_pb
 	.byte	3
 
-	.byte	bytecode_arrval1_ir2_sx
+	.byte	bytecode_arrval1_ir2_sx_ir2
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_strcat_sr1_sr1_sr2
@@ -362,7 +362,7 @@ LINE_122
 	.byte	bytecode_ld_ir2_pb
 	.byte	1
 
-	.byte	bytecode_arrval1_ir2_sx
+	.byte	bytecode_arrval1_ir2_sx_ir2
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_strcat_sr1_sr1_sr2
@@ -392,7 +392,7 @@ LINE_124
 	.byte	bytecode_ld_ir2_pb
 	.byte	2
 
-	.byte	bytecode_arrval1_ir2_sx
+	.byte	bytecode_arrval1_ir2_sx_ir2
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_strcat_sr1_sr1_sr2
@@ -422,7 +422,7 @@ LINE_126
 	.byte	bytecode_ld_ir2_pb
 	.byte	3
 
-	.byte	bytecode_arrval1_ir2_sx
+	.byte	bytecode_arrval1_ir2_sx_ir2
 	.byte	bytecode_STRARR_C
 
 	.byte	bytecode_strcat_sr1_sr1_sr2
@@ -450,9 +450,9 @@ LLAST
 
 ; Library Catalog
 bytecode_arrdim1_ir1_sx	.equ	0
-bytecode_arrref1_ir1_sx	.equ	1
-bytecode_arrval1_ir1_sx	.equ	2
-bytecode_arrval1_ir2_sx	.equ	3
+bytecode_arrref1_ir1_sx_ir1	.equ	1
+bytecode_arrval1_ir1_sx_ir1	.equ	2
+bytecode_arrval1_ir2_sx_ir2	.equ	3
 bytecode_clear	.equ	4
 bytecode_cls	.equ	5
 bytecode_inkey_sr1	.equ	6
@@ -470,9 +470,9 @@ bytecode_strinit_sr1_sx	.equ	17
 
 catalog
 	.word	arrdim1_ir1_sx
-	.word	arrref1_ir1_sx
-	.word	arrval1_ir1_sx
-	.word	arrval1_ir2_sx
+	.word	arrref1_ir1_sx_ir1
+	.word	arrval1_ir1_sx_ir1
+	.word	arrval1_ir2_sx_ir2
 	.word	clear
 	.word	cls
 	.word	inkey_sr1
@@ -677,6 +677,25 @@ dexext
 	abx
 	ldx	,x
 	pulb
+	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
 	rts
 immstr
 	ldx	curinst
@@ -1005,8 +1024,8 @@ _ok
 	addd	2,x
 	jmp	alloc
 
-arrref1_ir1_sx			; numCalls = 7
-	.module	modarrref1_ir1_sx
+arrref1_ir1_sx_ir1			; numCalls = 7
+	.module	modarrref1_ir1_sx_ir1
 	jsr	extend
 	ldd	r1+1
 	std	0+argv
@@ -1016,8 +1035,8 @@ arrref1_ir1_sx			; numCalls = 7
 	std	letptr
 	rts
 
-arrval1_ir1_sx			; numCalls = 3
-	.module	modarrval1_ir1_sx
+arrval1_ir1_sx_ir1			; numCalls = 3
+	.module	modarrval1_ir1_sx_ir1
 	jsr	extend
 	ldd	r1+1
 	std	0+argv
@@ -1031,8 +1050,8 @@ arrval1_ir1_sx			; numCalls = 3
 	std	r1+1
 	rts
 
-arrval1_ir2_sx			; numCalls = 6
-	.module	modarrval1_ir2_sx
+arrval1_ir2_sx_ir2			; numCalls = 6
+	.module	modarrval1_ir2_sx_ir2
 	jsr	extend
 	ldd	r2+1
 	std	0+argv

@@ -94,9 +94,7 @@ LINE_20
 	; PRINT STR$(X$="FRED");" \r";
 
 	ldx	#STRVAR_X
-	jsr	ld_sr1_sx
-
-	jsr	ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sx_ss
 	.text	4, "FRED"
 
 	jsr	str_sr1_ir1
@@ -111,9 +109,7 @@ LINE_30
 	; PRINT STR$(X$="FRE");" \r";
 
 	ldx	#STRVAR_X
-	jsr	ld_sr1_sx
-
-	jsr	ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sx_ss
 	.text	3, "FRE"
 
 	jsr	str_sr1_ir1
@@ -646,6 +642,10 @@ _fudge
 	rts
 
 	.module	mdstreqx
+; equality comparison with string release
+; ENTRY:  X holds descriptor of LHS
+;         tmp1+1 and tmp2 are RHS
+; EXIT:  Z CCR flag set
 streqx
 	ldab	0,x
 	cmpb	tmp1+1
@@ -1002,14 +1002,6 @@ ld_sr1_ss			; numCalls = 5
 	abx
 	jmp	,x
 
-ld_sr1_sx			; numCalls = 2
-	.module	modld_sr1_sx
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_sx_sr1			; numCalls = 5
 	.module	modld_sx_sr1
 	ldab	r1
@@ -1017,18 +1009,6 @@ ld_sx_sr1			; numCalls = 5
 	ldd	r1+1
 	std	1+argv
 	jmp	strprm
-
-ldeq_ir1_sr1_ss			; numCalls = 2
-	.module	modldeq_ir1_sr1_ss
-	ldab	r1
-	stab	tmp1+1
-	ldd	r1+1
-	std	tmp2
-	jsr	streqs
-	jsr	geteq
-	std	r1+1
-	stab	r1
-	rts
 
 ldeq_ir1_sx_sd			; numCalls = 3
 	.module	modldeq_ir1_sx_sd
@@ -1039,6 +1019,18 @@ ldeq_ir1_sx_sd			; numCalls = 3
 	std	tmp2
 	ldx	tmp3
 	jsr	streqx
+	jsr	geteq
+	std	r1+1
+	stab	r1
+	rts
+
+ldeq_ir1_sx_ss			; numCalls = 2
+	.module	modldeq_ir1_sx_ss
+	ldab	0,x
+	stab	tmp1+1
+	ldd	1,x
+	std	tmp2
+	jsr	streqs
 	jsr	geteq
 	std	r1+1
 	stab	r1

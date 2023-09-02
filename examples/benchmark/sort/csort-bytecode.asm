@@ -130,11 +130,9 @@ LINE_40
 
 	; C(I)+=1
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_I
-
-	.byte	bytecode_arrref1_ir1_ix
+	.byte	bytecode_arrref1_ir1_ix_id
 	.byte	bytecode_INTARR_C
+	.byte	bytecode_INTVAR_I
 
 	.byte	bytecode_inc_ip_ip
 
@@ -166,11 +164,9 @@ LINE_80
 
 	; C=C(I)
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_I
-
-	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_arrval1_ir1_ix_id
 	.byte	bytecode_INTARR_C
+	.byte	bytecode_INTVAR_I
 
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_C
@@ -179,10 +175,8 @@ LINE_90
 
 	; IF C>0 THEN
 
-	.byte	bytecode_ld_ir1_pb
+	.byte	bytecode_ldlt_ir1_pb_ix
 	.byte	0
-
-	.byte	bytecode_ldlt_ir1_ir1_ix
 	.byte	bytecode_INTVAR_C
 
 	.byte	bytecode_jmpeq_ir1_ix
@@ -226,8 +220,8 @@ LLAST
 
 ; Library Catalog
 bytecode_arrdim1_ir1_ix	.equ	0
-bytecode_arrref1_ir1_ix	.equ	1
-bytecode_arrval1_ir1_ix	.equ	2
+bytecode_arrref1_ir1_ix_id	.equ	1
+bytecode_arrval1_ir1_ix_id	.equ	2
 bytecode_clear	.equ	3
 bytecode_dec_ix_ix	.equ	4
 bytecode_for_ix_pw	.equ	5
@@ -236,24 +230,23 @@ bytecode_goto_ix	.equ	7
 bytecode_inc_ip_ip	.equ	8
 bytecode_inc_ix_ix	.equ	9
 bytecode_jmpeq_ir1_ix	.equ	10
-bytecode_ld_ir1_ix	.equ	11
-bytecode_ld_ir1_pb	.equ	12
-bytecode_ld_ix_ir1	.equ	13
-bytecode_ld_ix_pw	.equ	14
-bytecode_ldlt_ir1_ir1_ix	.equ	15
-bytecode_next	.equ	16
-bytecode_nextvar_ix	.equ	17
-bytecode_peek_ir1_ix	.equ	18
-bytecode_poke_id_ix	.equ	19
-bytecode_progbegin	.equ	20
-bytecode_progend	.equ	21
-bytecode_to_ip_pb	.equ	22
-bytecode_to_ip_pw	.equ	23
+bytecode_ld_ir1_pb	.equ	11
+bytecode_ld_ix_ir1	.equ	12
+bytecode_ld_ix_pw	.equ	13
+bytecode_ldlt_ir1_pb_ix	.equ	14
+bytecode_next	.equ	15
+bytecode_nextvar_ix	.equ	16
+bytecode_peek_ir1_ix	.equ	17
+bytecode_poke_id_ix	.equ	18
+bytecode_progbegin	.equ	19
+bytecode_progend	.equ	20
+bytecode_to_ip_pb	.equ	21
+bytecode_to_ip_pw	.equ	22
 
 catalog
 	.word	arrdim1_ir1_ix
-	.word	arrref1_ir1_ix
-	.word	arrval1_ir1_ix
+	.word	arrref1_ir1_ix_id
+	.word	arrval1_ir1_ix_id
 	.word	clear
 	.word	dec_ix_ix
 	.word	for_ix_pw
@@ -262,11 +255,10 @@ catalog
 	.word	inc_ip_ip
 	.word	inc_ix_ix
 	.word	jmpeq_ir1_ix
-	.word	ld_ir1_ix
 	.word	ld_ir1_pb
 	.word	ld_ix_ir1
 	.word	ld_ix_pw
-	.word	ldlt_ir1_ir1_ix
+	.word	ldlt_ir1_pb_ix
 	.word	next
 	.word	nextvar_ix
 	.word	peek_ir1_ix
@@ -466,6 +458,25 @@ dexext
 	ldx	,x
 	pulb
 	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
+	rts
 immstr
 	ldx	curinst
 	inx
@@ -484,6 +495,18 @@ getlt
 	rts
 _1
 	ldd	#-1
+	rts
+
+	.module	mdgetlw
+; fetch lower word from integer variable descriptor
+;  ENTRY: D holds integer variable descriptor
+;  EXIT: D holds lower word of integer variable
+getlw
+	std	tmp1
+	stx	tmp2
+	ldx	tmp1
+	ldd	1,x
+	ldx	tmp2
 	rts
 
 	.module	mdpeek
@@ -627,10 +650,10 @@ _ok
 	addd	2,x
 	jmp	alloc
 
-arrref1_ir1_ix			; numCalls = 1
-	.module	modarrref1_ir1_ix
-	jsr	extend
-	ldd	r1+1
+arrref1_ir1_ix_id			; numCalls = 1
+	.module	modarrref1_ir1_ix_id
+	jsr	extdex
+	jsr	getlw
 	std	0+argv
 	ldd	#33
 	jsr	ref1
@@ -638,10 +661,10 @@ arrref1_ir1_ix			; numCalls = 1
 	std	letptr
 	rts
 
-arrval1_ir1_ix			; numCalls = 1
-	.module	modarrval1_ir1_ix
-	jsr	extend
-	ldd	r1+1
+arrval1_ir1_ix_id			; numCalls = 1
+	.module	modarrval1_ir1_ix_id
+	jsr	extdex
+	jsr	getlw
 	std	0+argv
 	ldd	#33
 	jsr	ref1
@@ -744,16 +767,7 @@ jmpeq_ir1_ix			; numCalls = 1
 _rts
 	rts
 
-ld_ir1_ix			; numCalls = 2
-	.module	modld_ir1_ix
-	jsr	extend
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
-ld_ir1_pb			; numCalls = 2
+ld_ir1_pb			; numCalls = 1
 	.module	modld_ir1_pb
 	jsr	getbyte
 	stab	r1+2
@@ -778,12 +792,12 @@ ld_ix_pw			; numCalls = 1
 	stab	0,x
 	rts
 
-ldlt_ir1_ir1_ix			; numCalls = 1
-	.module	modldlt_ir1_ir1_ix
-	jsr	extend
-	ldd	r1+1
+ldlt_ir1_pb_ix			; numCalls = 1
+	.module	modldlt_ir1_pb_ix
+	jsr	byteext
+	clra
 	subd	1,x
-	ldab	r1
+	ldab	#0
 	sbcb	0,x
 	jsr	getlt
 	std	r1+1

@@ -107,10 +107,8 @@ LINE_20
 
 	; IF X>0 THEN
 
-	.byte	bytecode_ld_ir1_pb
+	.byte	bytecode_ldlt_ir1_pb_ix
 	.byte	0
-
-	.byte	bytecode_ldlt_ir1_ir1_ix
 	.byte	bytecode_INTVAR_X
 
 	.byte	bytecode_jmpeq_ir1_ix
@@ -147,23 +145,21 @@ bytecode_clear	.equ	0
 bytecode_dec_ix_ix	.equ	1
 bytecode_goto_ix	.equ	2
 bytecode_jmpeq_ir1_ix	.equ	3
-bytecode_ld_ir1_pb	.equ	4
-bytecode_ld_ix_pb	.equ	5
-bytecode_ldlt_ir1_ir1_ix	.equ	6
-bytecode_pr_sr1	.equ	7
-bytecode_pr_ss	.equ	8
-bytecode_progbegin	.equ	9
-bytecode_progend	.equ	10
-bytecode_str_sr1_ix	.equ	11
+bytecode_ld_ix_pb	.equ	4
+bytecode_ldlt_ir1_pb_ix	.equ	5
+bytecode_pr_sr1	.equ	6
+bytecode_pr_ss	.equ	7
+bytecode_progbegin	.equ	8
+bytecode_progend	.equ	9
+bytecode_str_sr1_ix	.equ	10
 
 catalog
 	.word	clear
 	.word	dec_ix_ix
 	.word	goto_ix
 	.word	jmpeq_ir1_ix
-	.word	ld_ir1_pb
 	.word	ld_ix_pb
-	.word	ldlt_ir1_ir1_ix
+	.word	ldlt_ir1_pb_ix
 	.word	pr_sr1
 	.word	pr_ss
 	.word	progbegin
@@ -302,6 +298,25 @@ dexext
 	abx
 	ldx	,x
 	pulb
+	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
 	rts
 immstr
 	ldx	curinst
@@ -829,14 +844,6 @@ jmpeq_ir1_ix			; numCalls = 1
 _rts
 	rts
 
-ld_ir1_pb			; numCalls = 1
-	.module	modld_ir1_pb
-	jsr	getbyte
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
 ld_ix_pb			; numCalls = 1
 	.module	modld_ix_pb
 	jsr	extbyte
@@ -845,12 +852,12 @@ ld_ix_pb			; numCalls = 1
 	std	0,x
 	rts
 
-ldlt_ir1_ir1_ix			; numCalls = 1
-	.module	modldlt_ir1_ir1_ix
-	jsr	extend
-	ldd	r1+1
+ldlt_ir1_pb_ix			; numCalls = 1
+	.module	modldlt_ir1_pb_ix
+	jsr	byteext
+	clra
 	subd	1,x
-	ldab	r1
+	ldab	#0
 	sbcb	0,x
 	jsr	getlt
 	std	r1+1

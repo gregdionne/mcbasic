@@ -1,13 +1,13 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#ifndef MCBASIC_OPTIONS_HPP
-#define MCBASIC_OPTIONS_HPP
+#ifndef MCBASIC_MCBASICCLIOPTIONS_HPP
+#define MCBASIC_MCBASICCLIOPTIONS_HPP
 
-#include "utils/binaryoptions.hpp"
+#include "utils/clioptions.hpp"
 
-class CLIOptions : public utils::BinaryOptions {
+class MCBASICCLIOptions : public utils::CLIOptions {
 public:
-  CLIOptions();
+  MCBASICCLIOptions();
   BinaryOption native;
   BinaryOption g;
   BinaryOption v;
@@ -16,6 +16,8 @@ public:
   BinaryOption ul;
   BinaryOption mcode;
   BinaryOption undoc;
+  BinaryOption S;
+  BinaryOption c;
   BinaryOption Wfloat;
   BinaryOption Wduplicate;
   BinaryOption Wunreached;

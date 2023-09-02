@@ -167,11 +167,9 @@ LINE_66
 	.byte	bytecode_ld_ir2_ix
 	.byte	bytecode_INTVAR_J
 
-	.byte	bytecode_ld_ir3_ix
-	.byte	bytecode_INTVAR_K
-
-	.byte	bytecode_arrref3_ir1_ix
+	.byte	bytecode_arrref3_ir1_ix_id
 	.byte	bytecode_INTARR_X
+	.byte	bytecode_INTVAR_K
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_L
@@ -188,11 +186,9 @@ LINE_67
 	.byte	bytecode_ld_ir2_ix
 	.byte	bytecode_INTVAR_J
 
-	.byte	bytecode_ld_ir3_ix
-	.byte	bytecode_INTVAR_K
-
-	.byte	bytecode_arrval3_ir1_ix
+	.byte	bytecode_arrval3_ir1_ix_id
 	.byte	bytecode_INTARR_X
+	.byte	bytecode_INTVAR_K
 
 	.byte	bytecode_add_ix_ix_ir1
 	.byte	bytecode_INTVAR_S
@@ -236,8 +232,8 @@ LLAST
 ; Library Catalog
 bytecode_add_ix_ix_ir1	.equ	0
 bytecode_arrdim3_ir1_ix	.equ	1
-bytecode_arrref3_ir1_ix	.equ	2
-bytecode_arrval3_ir1_ix	.equ	3
+bytecode_arrref3_ir1_ix_id	.equ	2
+bytecode_arrval3_ir1_ix_id	.equ	3
 bytecode_clear	.equ	4
 bytecode_clr_ix	.equ	5
 bytecode_forclr_ix	.equ	6
@@ -247,21 +243,20 @@ bytecode_ld_ir1_ix	.equ	9
 bytecode_ld_ir1_pb	.equ	10
 bytecode_ld_ir2_ix	.equ	11
 bytecode_ld_ir2_pb	.equ	12
-bytecode_ld_ir3_ix	.equ	13
-bytecode_ld_ir3_pb	.equ	14
-bytecode_next	.equ	15
-bytecode_pr_sr1	.equ	16
-bytecode_pr_ss	.equ	17
-bytecode_progbegin	.equ	18
-bytecode_progend	.equ	19
-bytecode_str_sr1_ix	.equ	20
-bytecode_to_ip_pb	.equ	21
+bytecode_ld_ir3_pb	.equ	13
+bytecode_next	.equ	14
+bytecode_pr_sr1	.equ	15
+bytecode_pr_ss	.equ	16
+bytecode_progbegin	.equ	17
+bytecode_progend	.equ	18
+bytecode_str_sr1_ix	.equ	19
+bytecode_to_ip_pb	.equ	20
 
 catalog
 	.word	add_ix_ix_ir1
 	.word	arrdim3_ir1_ix
-	.word	arrref3_ir1_ix
-	.word	arrval3_ir1_ix
+	.word	arrref3_ir1_ix_id
+	.word	arrval3_ir1_ix_id
 	.word	clear
 	.word	clr_ix
 	.word	forclr_ix
@@ -271,7 +266,6 @@ catalog
 	.word	ld_ir1_pb
 	.word	ld_ir2_ix
 	.word	ld_ir2_pb
-	.word	ld_ir3_ix
 	.word	ld_ir3_pb
 	.word	next
 	.word	pr_sr1
@@ -471,6 +465,25 @@ dexext
 	ldx	,x
 	pulb
 	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
+	rts
 immstr
 	ldx	curinst
 	inx
@@ -611,6 +624,18 @@ _shift
 	rol	7,x
 	rol	6,x
 	rol	5,x
+	rts
+
+	.module	mdgetlw
+; fetch lower word from integer variable descriptor
+;  ENTRY: D holds integer variable descriptor
+;  EXIT: D holds lower word of integer variable
+getlw
+	std	tmp1
+	stx	tmp2
+	ldx	tmp1
+	ldd	1,x
+	ldx	tmp2
 	rts
 
 	.module	mdidivb
@@ -1095,29 +1120,29 @@ _ok
 	addd	tmp3
 	jmp	alloc
 
-arrref3_ir1_ix			; numCalls = 1
-	.module	modarrref3_ir1_ix
-	jsr	extend
+arrref3_ir1_ix_id			; numCalls = 1
+	.module	modarrref3_ir1_ix_id
+	jsr	extdex
+	jsr	getlw
+	std	4+argv
 	ldd	r1+1
 	std	0+argv
 	ldd	r1+1+5
 	std	2+argv
-	ldd	r1+1+10
-	std	4+argv
 	jsr	ref3
 	jsr	refint
 	std	letptr
 	rts
 
-arrval3_ir1_ix			; numCalls = 1
-	.module	modarrval3_ir1_ix
-	jsr	extend
+arrval3_ir1_ix_id			; numCalls = 1
+	.module	modarrval3_ir1_ix_id
+	jsr	extdex
+	jsr	getlw
+	std	4+argv
 	ldd	r1+1
 	std	0+argv
 	ldd	r1+1+5
 	std	2+argv
-	ldd	r1+1+10
-	std	4+argv
 	jsr	ref3
 	jsr	refint
 	ldx	tmp1
@@ -1220,15 +1245,6 @@ ld_ir2_pb			; numCalls = 1
 	stab	r2+2
 	ldd	#0
 	std	r2
-	rts
-
-ld_ir3_ix			; numCalls = 2
-	.module	modld_ir3_ix
-	jsr	extend
-	ldd	1,x
-	std	r3+1
-	ldab	0,x
-	stab	r3
 	rts
 
 ld_ir3_pb			; numCalls = 1

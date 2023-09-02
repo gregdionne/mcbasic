@@ -499,6 +499,10 @@ _rts
 	rts
 
 	.module	mdstreqx
+; equality comparison with string release
+; ENTRY:  X holds descriptor of LHS
+;         tmp1+1 and tmp2 are RHS
+; EXIT:  Z CCR flag set
 streqx
 	ldab	0,x
 	cmpb	tmp1+1

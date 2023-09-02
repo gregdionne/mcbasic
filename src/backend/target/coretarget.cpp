@@ -4,11 +4,55 @@
 #include "backend/implementation/library.hpp"
 #include "utils/strescape.hpp"
 
+#include <cstring>
+
 std::string CoreTarget::generateAssembly(Text &text, InstQueue &queue,
-                                         const CLIOptions &options) {
-  return generateDirectPage(queue) + generateCode(queue) +
+                                         const char *progname,
+                                         const char *filename,
+                                         const MCBASICCLIOptions &options) {
+  return generateHeader(progname, filename, options) +
+         generateDirectPage(queue) + generateCode(queue) +
          generateLibrary(queue, options) + generateDataTable(text.dataTable) +
          generateSymbols(text.constTable, text.symbolTable);
+}
+
+std::string CoreTarget::generateHeader(const char *progname,
+                                       const char *filename,
+                                       const MCBASICCLIOptions &options) {
+  Assembler tasm;
+  std::string comment = std::string("Assembly for ") + filename;
+  tasm.comment(comment.c_str());
+
+  comment = "compiled with";
+
+  // trim directory characters from program name
+  std::string pname = progname;
+  std::size_t backs = pname.rfind("\\"); // dos
+  std::size_t slash = pname.rfind("/");  // linux
+  pname =
+      pname.substr(backs == std::string::npos && slash == std::string::npos ? 0
+                   : backs == std::string::npos ? slash + 1
+                   : slash == std::string::npos ? backs + 1
+                   : backs > slash              ? backs + 1
+                                                : slash + 1,
+                   std::string::npos);
+
+  // trim any trailing extension (e.g., ".exe")
+  pname = pname.substr(0, pname.rfind("."));
+  comment += " " + pname;
+
+  // only report switches that affect code generation
+  // (skip the verbose, source, list, and warning flags)
+  for (const auto &option : options.getTable()) {
+    const char *opt = option->c_str();
+    if (option->isEnabled() && strcmp(opt, "v") && strcmp(opt, "S") &&
+        strcmp(opt, "list") && strncmp(opt, "W", 1)) {
+      comment += std::string(" -") + opt;
+    }
+  }
+  tasm.comment(comment);
+  tasm.blank();
+  return tasm.source();
 }
 
 std::string CoreTarget::generateDirectPage(InstQueue &queue) {
@@ -108,7 +152,7 @@ std::string CoreTarget::generateMicroColorConstants() {
 }
 
 std::string CoreTarget::generateLibrary(InstQueue &queue,
-                                        const CLIOptions &options) {
+                                        const MCBASICCLIOptions &options) {
   Library library(queue, options.undoc.isEnabled());
   library.assemble(makeDispatcher().get());
 

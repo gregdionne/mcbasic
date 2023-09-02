@@ -433,17 +433,36 @@ public:
   bool isRegFlt_extInt_dexFlt() const;
   bool isRegInt_extInt_dexInt() const;
   bool isRegInt_extInt_dexFlt() const;
+  bool isRegInt_extFlt_posByte() const;
+  bool isRegInt_extFlt_negByte() const;
+  bool isRegInt_extFlt_posWord() const;
+  bool isRegInt_extFlt_negWord() const;
   bool isRegInt_extFlt_dexFlt() const;
   bool isRegInt_extFlt_dexInt() const;
-  bool isRegInt_extStr_dexStr() const;
   bool isRegInt_extInt_negByte() const;
   bool isRegInt_extInt_negWord() const;
   bool isRegInt_extInt_posByte() const;
   bool isRegInt_extInt_posWord() const;
+  bool isRegInt_extFlt_regInt() const;
+  bool isRegInt_extFlt_regFlt() const;
+  bool isRegInt_extInt_regInt() const;
+  bool isRegInt_extInt_regFlt() const;
+  bool isRegInt_negByte_regInt() const;
+  bool isRegInt_negWord_regInt() const;
+  bool isRegInt_posByte_regInt() const;
+  bool isRegInt_posWord_regInt() const;
   bool isRegInt_negByte_extInt() const;
   bool isRegInt_negWord_extInt() const;
   bool isRegInt_posByte_extInt() const;
   bool isRegInt_posWord_extInt() const;
+  bool isRegInt_negByte_regFlt() const;
+  bool isRegInt_negWord_regFlt() const;
+  bool isRegInt_posByte_regFlt() const;
+  bool isRegInt_posWord_regFlt() const;
+  bool isRegInt_negByte_extFlt() const;
+  bool isRegInt_negWord_extFlt() const;
+  bool isRegInt_posByte_extFlt() const;
+  bool isRegInt_posWord_extFlt() const;
   bool isRegInt_regFlt_extFlt() const;
   bool isRegInt_regFlt_extInt() const;
   bool isRegInt_regFlt_negByte() const;
@@ -463,6 +482,13 @@ public:
   bool isRegInt_regStr_extStr() const;
   bool isRegInt_regStr_immStr() const;
   bool isRegInt_regStr_regStr() const;
+  bool isRegInt_extStr_regStr() const;
+  bool isRegInt_extStr_dexStr() const;
+  bool isRegInt_extStr_immStr() const;
+  bool isRegInt_extStr_regInt() const;
+  bool isRegInt_extStr_dexInt() const;
+  bool isRegInt_immStr_regStr() const;
+  bool isRegInt_immStr_extStr() const;
   bool isRegStr_regStr_extInt() const;
   bool isRegStr_regStr_extStr() const;
   bool isRegStr_regStr_immStr() const;
@@ -537,8 +563,10 @@ public:
 
 class InstArrayRef1 : public OperableInstruction<InstArrayRef1> {
 public:
-  InstArrayRef1(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
-      : OperableInstruction("arrref1", mv(firstArg), mv(arraySymbol)) {
+  InstArrayRef1(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+                up<AddressMode> lastArg)
+      : OperableInstruction("arrref1", mv(firstArg), mv(arraySymbol),
+                            mv(lastArg)) {
     arrayArg();
   }
   void arrayArg();
@@ -546,8 +574,10 @@ public:
 
 class InstArrayVal1 : public OperableInstruction<InstArrayVal1> {
 public:
-  InstArrayVal1(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
-      : OperableInstruction("arrval1", mv(firstArg), mv(arraySymbol)) {
+  InstArrayVal1(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+                up<AddressMode> lastArg)
+      : OperableInstruction("arrval1", mv(firstArg), mv(arraySymbol),
+                            mv(lastArg)) {
     arrayArg();
   }
   void arrayArg();
@@ -561,8 +591,10 @@ public:
 
 class InstArrayRef2 : public OperableInstruction<InstArrayRef2> {
 public:
-  InstArrayRef2(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
-      : OperableInstruction("arrref2", mv(firstArg), mv(arraySymbol)) {
+  InstArrayRef2(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+                up<AddressMode> lastArg)
+      : OperableInstruction("arrref2", mv(firstArg), mv(arraySymbol),
+                            mv(lastArg)) {
     arrayArg();
   }
   void arrayArg();
@@ -570,8 +602,10 @@ public:
 
 class InstArrayVal2 : public OperableInstruction<InstArrayVal2> {
 public:
-  InstArrayVal2(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
-      : OperableInstruction("arrval2", mv(firstArg), mv(arraySymbol)) {
+  InstArrayVal2(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+                up<AddressMode> lastArg)
+      : OperableInstruction("arrval2", mv(firstArg), mv(arraySymbol),
+                            mv(lastArg)) {
     arrayArg();
   }
   void arrayArg();
@@ -585,8 +619,10 @@ public:
 
 class InstArrayRef3 : public OperableInstruction<InstArrayRef3> {
 public:
-  InstArrayRef3(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
-      : OperableInstruction("arrref3", mv(firstArg), mv(arraySymbol)) {
+  InstArrayRef3(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+                up<AddressMode> lastArg)
+      : OperableInstruction("arrref3", mv(firstArg), mv(arraySymbol),
+                            mv(lastArg)) {
     arrayArg();
   }
   void arrayArg();
@@ -594,8 +630,10 @@ public:
 
 class InstArrayVal3 : public OperableInstruction<InstArrayVal3> {
 public:
-  InstArrayVal3(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
-      : OperableInstruction("arrval3", mv(firstArg), mv(arraySymbol)) {
+  InstArrayVal3(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+                up<AddressMode> lastArg)
+      : OperableInstruction("arrval3", mv(firstArg), mv(arraySymbol),
+                            mv(lastArg)) {
     arrayArg();
   }
   void arrayArg();
@@ -609,8 +647,10 @@ public:
 
 class InstArrayRef4 : public OperableInstruction<InstArrayRef4> {
 public:
-  InstArrayRef4(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
-      : OperableInstruction("arrref4", mv(firstArg), mv(arraySymbol)) {
+  InstArrayRef4(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+                up<AddressMode> lastArg)
+      : OperableInstruction("arrref4", mv(firstArg), mv(arraySymbol),
+                            mv(lastArg)) {
     arrayArg();
   }
   void arrayArg();
@@ -618,8 +658,10 @@ public:
 
 class InstArrayVal4 : public OperableInstruction<InstArrayVal4> {
 public:
-  InstArrayVal4(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
-      : OperableInstruction("arrval4", mv(firstArg), mv(arraySymbol)) {
+  InstArrayVal4(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+                up<AddressMode> lastArg)
+      : OperableInstruction("arrval4", mv(firstArg), mv(arraySymbol),
+                            mv(lastArg)) {
     arrayArg();
   }
   void arrayArg();
@@ -633,8 +675,10 @@ public:
 
 class InstArrayRef5 : public OperableInstruction<InstArrayRef5> {
 public:
-  InstArrayRef5(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
-      : OperableInstruction("arrref5", mv(firstArg), mv(arraySymbol)) {
+  InstArrayRef5(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+                up<AddressMode> lastArg)
+      : OperableInstruction("arrref5", mv(firstArg), mv(arraySymbol),
+                            mv(lastArg)) {
     arrayArg();
   }
   void arrayArg();
@@ -642,8 +686,10 @@ public:
 
 class InstArrayVal5 : public OperableInstruction<InstArrayVal5> {
 public:
-  InstArrayVal5(up<AddressMode> firstArg, up<AddressMode> arraySymbol)
-      : OperableInstruction("arrval5", mv(firstArg), mv(arraySymbol)) {
+  InstArrayVal5(up<AddressMode> firstArg, up<AddressMode> arraySymbol,
+                up<AddressMode> lastArg)
+      : OperableInstruction("arrval5", mv(firstArg), mv(arraySymbol),
+                            mv(lastArg)) {
     arrayArg();
   }
   void arrayArg();

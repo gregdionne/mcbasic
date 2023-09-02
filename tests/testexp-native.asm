@@ -547,10 +547,8 @@ LINE_1015
 	; IF Z>0 THEN
 
 	ldab	#0
-	jsr	ld_ir1_pb
-
 	ldx	#INTVAR_Z
-	jsr	ldlt_ir1_ir1_ix
+	jsr	ldlt_ir1_pb_ix
 
 	ldx	#LINE_1030
 	jsr	jmpeq_ir1_ix
@@ -580,10 +578,8 @@ LINE_1030
 	; IF Z<0 THEN
 
 	ldx	#INTVAR_Z
-	jsr	ld_ir1_ix
-
 	ldab	#0
-	jsr	ldlt_ir1_ir1_pb
+	jsr	ldlt_ir1_ix_pb
 
 	ldx	#LINE_1040
 	jsr	jmpeq_ir1_ix
@@ -2073,19 +2069,12 @@ ld_fx_fr1			; numCalls = 8
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 2
+ld_ir1_ix			; numCalls = 1
 	.module	modld_ir1_ix
 	ldd	1,x
 	std	r1+1
 	ldab	0,x
 	stab	r1
-	rts
-
-ld_ir1_pb			; numCalls = 1
-	.module	modld_ir1_pb
-	stab	r1+2
-	ldd	#0
-	std	r1
 	rts
 
 ld_ix_ir1			; numCalls = 1
@@ -2096,25 +2085,25 @@ ld_ix_ir1			; numCalls = 1
 	stab	0,x
 	rts
 
-ldlt_ir1_ir1_ix			; numCalls = 1
-	.module	modldlt_ir1_ir1_ix
-	ldd	r1+1
-	subd	1,x
-	ldab	r1
-	sbcb	0,x
+ldlt_ir1_ix_pb			; numCalls = 1
+	.module	modldlt_ir1_ix_pb
+	clra
+	std	tmp1
+	ldd	1,x
+	subd	tmp1
+	ldab	0,x
+	sbcb	#0
 	jsr	getlt
 	std	r1+1
 	stab	r1
 	rts
 
-ldlt_ir1_ir1_pb			; numCalls = 1
-	.module	modldlt_ir1_ir1_pb
+ldlt_ir1_pb_ix			; numCalls = 1
+	.module	modldlt_ir1_pb_ix
 	clra
-	std	tmp1
-	ldd	r1+1
-	subd	tmp1
-	ldab	r1
-	sbcb	#0
+	subd	1,x
+	ldab	#0
+	sbcb	0,x
 	jsr	getlt
 	std	r1+1
 	stab	r1

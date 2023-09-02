@@ -115,9 +115,7 @@ LINE_105
 	; WHEN A$="" GOTO 100
 
 	ldx	#STRVAR_A
-	jsr	ld_sr1_sx
-
-	jsr	ldeq_ir1_sr1_ss
+	jsr	ldeq_ir1_sx_ss
 	.text	0, ""
 
 	ldx	#LINE_100
@@ -1095,14 +1093,6 @@ ld_sr1_ss			; numCalls = 1
 	abx
 	jmp	,x
 
-ld_sr1_sx			; numCalls = 1
-	.module	modld_sr1_sx
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_sx_sr1			; numCalls = 1
 	.module	modld_sx_sr1
 	ldab	r1
@@ -1111,11 +1101,11 @@ ld_sx_sr1			; numCalls = 1
 	std	1+argv
 	jmp	strprm
 
-ldeq_ir1_sr1_ss			; numCalls = 1
-	.module	modldeq_ir1_sr1_ss
-	ldab	r1
+ldeq_ir1_sx_ss			; numCalls = 1
+	.module	modldeq_ir1_sx_ss
+	ldab	0,x
 	stab	tmp1+1
-	ldd	r1+1
+	ldd	1,x
 	std	tmp2
 	jsr	streqs
 	jsr	geteq

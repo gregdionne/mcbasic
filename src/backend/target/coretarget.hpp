@@ -15,7 +15,8 @@
 class CoreTarget : public Target {
 public:
   std::string generateAssembly(Text &text, InstQueue &queue,
-                               const CLIOptions &options) override;
+                               const char *progname, const char *filename,
+                               const MCBASICCLIOptions &options) override;
 
 protected:
   // generates the core BASIC registers
@@ -29,7 +30,7 @@ protected:
 
   // invokes the dispatcher to create the library
   virtual std::string generateLibrary(InstQueue &queue,
-                                      const CLIOptions &options);
+                                      const MCBASICCLIOptions &options);
 
   // writes the DATA text
   virtual std::string generateDataTable(DataTable &dataTable);
@@ -76,6 +77,9 @@ private:
   // ...or more generally we could eschew calling ROM routines altogether and
   // avoid the need to update this code should Darren release another ROM.
   static std::string generateMicroColorConstants();
+
+  std::string generateHeader(const char *progname, const char *filename,
+                             const MCBASICCLIOptions &options);
 };
 
 #endif

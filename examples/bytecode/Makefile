@@ -5,11 +5,11 @@ C10S := $(SRCS:%.bas=%.c10)
 
 all: $(ASMS) $(C10S)
 
-%.c10: %.asm
-	tasm $<
+%.c10: %.bas $(MCBAIC)
+	$(MCBASIC) $<
 
 %.asm: %.bas $(MCBASIC)
-	$(MCBASIC) $<
+	$(MCBASIC) -S $<
 
 clean:
 	$(RM) -f *.lst *.obj *.c10 *.asm

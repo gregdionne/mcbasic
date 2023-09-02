@@ -4,11 +4,9 @@ A cross-compiler for MICROCOLOR BASIC 1.0 which runs on a stock TRS-80 MC-10 (pr
 ## Requirements
 * A real "stock" TRS-80 MC-10 or an emulator like the "Virtual MC-10"
 * A text file containing a MICROCOLOR BASIC program.
-* A compatible Telemark cross-assembler
 * The 16K Expansion is very helpful except for very small programs
 
 Don't have James' Virtual MC-10?  You really should if you have Microsoft Windows.  Don't have Windows?
-* You'll find a tasm6801 repository [here](https://github.com/gregdionne/tasm6801)
 * You'll find a modified version of Mike Tinnes' JavaScript emulator [here](https://github.com/gregdionne/mc-10)
 * You can also select the MC-10 from Ciaran Anscomb's XRoar emulator [here](https://www.6809.org.uk/xroar/online/)
 
@@ -38,7 +36,7 @@ Requires C++14.  Tested on Apple clang version 12.0.0 (clang-1200.0.32.28).
 The simple makefile should work on most systems.
 
 If you'd rather compile without make, navigate to the "src" directory and enter:
-`c++ -std=c++14 -I. */*.cpp -o ../mcbasic`
+`c++ -std=c++14 -I. */*.cpp */*/*.cpp -o ../mcbasic`
 
 This should compile the program and put the executable in the parent directory.
 
@@ -78,20 +76,17 @@ Option            | Description
 &#8209;el         | allow empty line number specifications in ON, GO, and GOSUB statements.&#8309;
 &#8209;ul         | do not generate compilation errors on unlisted line numbers.&#8310;
 &#8209;mcode      | enable use of machine code (i.e. EXEC).&#8311;
+&#8209;S          | run code generation stage, producing a [Telemark](http://www.s100computers.com/Software%20Folder/6502%20Monitor/The%20Telemark%20Assembler%20Manual.pdf)-style&#8312; assembly file (.asm)
+&#8209;c          | run code generation and assembly stage, producting a raw binary object file.
 &#8209;v          | be verbose when optimizing.
 &#8209;&#8209;    | treat subsequent arguments as file input (so you can compile a file that starts with "-", like "-filename.bas")
 
-It will then generate an assembly file: <yourprogram.asm>.
+It will then generate a .c10 file: <yourprogram.c10>
 
-You can then run your favorite assembler so long as it supports [Telemark](http://www.s100computers.com/Software%20Folder/6502%20Monitor/The%20Telemark%20Assembler%20Manual.pdf)-style syntax.
-
-`tasm6801 <yourprogram.asm>`
-
-If you use [this](https://github.com/gregdionne/tasm6801) version, it will generate a .C10 suitable for loading in an emulator via CLOADM.
-I'll eventually&#8312; bundle the assembler into the compiler as well, so this step may be unnecessary in the future.
+You can load the .c10 file in an emulator via CLOADM.
 
 For playback into a real TRS-80 MC-10 you can try compiling Cirian Anscomb's [cas2wav](https://www.6809.org.uk/dragon/cas2wav-0.8.tar.gz) program to convert a .C10 to .WAV
-I'll eventually&#8312; bundle .WAV creation into the assembler as well, so this step may be also unnecessary in the future.
+I'll eventually&#8313; bundle .WAV creation into MCBASIC as well, so this step may be also unnecessary in the future.
 
 ### Notes
 
@@ -109,5 +104,7 @@ I'll eventually&#8312; bundle .WAV creation into the assembler as well, so this 
 
 &#8311; As a precaution against unexpected behavior, the `-mcode` compiler flag is required for use with EXEC.  EXEC will only work with the compiler if the machine code it invokes does not assume the MICROCOLOR BASIC interpreter is running or modify direct page variables needed by the compiler to function.  Sic hunt dracones!
 
-&#8312; The code in this repository was written in brief spurts over the course of perhaps fifteen years.  It's been largely relegated to a minor side-project as time and interest have permitted.  Originally in K&R C, it was ported to ANSI C, then C++ (98).  I've given it just enough treatment to work in C++14, but alas, C++20 is out as of this writing!  It needs to be upgraded to comply with more modern programming guidelines.  But perhaps, like MICROCOLOR BASIC itself, some of this code may bring you back to a simpler era.  Enjoy!
+&#8312; You can use [this](https://github.com/gregdionne/tasm6801) version to compile the .asm file if you do not have access to the old shareware version bundled with the Virtual MC-10.  Otherwise, you can compile the generated .asm file by passing it as a filename to mcbasic.
+
+&#8313; The code in this repository was written in brief spurts over the course of perhaps twenty years.  It's been largely relegated to a minor side-project as time and interest have permitted.  Originally in K&R C, it was ported to ANSI C, then C++ (98).  I've given it just enough treatment to work in C++14, but alas, C++20 is out as of this writing!  It needs to be upgraded to comply with more modern programming guidelines.  But perhaps, like MICROCOLOR BASIC itself, some of this code may bring you back to a simpler era.  Enjoy!
 

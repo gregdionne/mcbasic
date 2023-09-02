@@ -158,10 +158,8 @@ LINE_90
 	; WHEN (Z=0) OR (RND(7)=3) GOTO 150
 
 	ldx	#INTVAR_Z
-	jsr	ld_ir1_ix
-
 	ldab	#0
-	jsr	ldeq_ir1_ir1_pb
+	jsr	ldeq_ir1_ix_pb
 
 	ldab	#7
 	jsr	irnd_ir2_pb
@@ -552,14 +550,6 @@ _go
 	ins
 	jmp	,x
 
-ld_ir1_ix			; numCalls = 1
-	.module	modld_ir1_ix
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_ix_ir1			; numCalls = 3
 	.module	modld_ix_ir1
 	ldd	r1+1
@@ -568,11 +558,11 @@ ld_ix_ir1			; numCalls = 3
 	stab	0,x
 	rts
 
-ldeq_ir1_ir1_pb			; numCalls = 1
-	.module	modldeq_ir1_ir1_pb
-	cmpb	r1+2
+ldeq_ir1_ix_pb			; numCalls = 1
+	.module	modldeq_ir1_ix_pb
+	cmpb	2,x
 	bne	_done
-	ldd	r1
+	ldd	0,x
 _done
 	jsr	geteq
 	std	r1+1

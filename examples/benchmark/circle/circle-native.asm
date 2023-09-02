@@ -388,10 +388,8 @@ LINE_320
 	; IF B>0 THEN
 
 	ldab	#0
-	jsr	ld_ir1_pb
-
 	ldx	#FLTVAR_B
-	jsr	ldlt_ir1_ir1_fx
+	jsr	ldlt_ir1_pb_fx
 
 	ldx	#LINE_325
 	jsr	jmpeq_ir1_ix
@@ -1629,13 +1627,6 @@ ld_ir1_ix			; numCalls = 1
 	stab	r1
 	rts
 
-ld_ir1_pb			; numCalls = 1
-	.module	modld_ir1_pb
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
 ld_ix_pb			; numCalls = 1
 	.module	modld_ix_pb
 	stab	2,x
@@ -1658,14 +1649,16 @@ ldge_ir1_ix_id			; numCalls = 1
 	stab	r1
 	rts
 
-ldlt_ir1_ir1_fx			; numCalls = 1
-	.module	modldlt_ir1_ir1_fx
-	ldd	#0
+ldlt_ir1_pb_fx			; numCalls = 1
+	.module	modldlt_ir1_pb_fx
+	clra
+	std	tmp1
+	clrb
 	subd	3,x
-	ldd	r1+1
+	ldd	tmp1
 	sbcb	2,x
 	sbca	1,x
-	ldab	r1
+	ldab	#0
 	sbcb	0,x
 	jsr	getlt
 	std	r1+1

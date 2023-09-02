@@ -2,6 +2,9 @@
 // Distributed under MIT License
 #include "assembler.hpp"
 
+#include "tasm/tasm.hpp"
+#include "tasm/tasmclioptions.hpp"
+
 std::string Assembler::source() { return buffer; }
 
 void Assembler::clear() { buffer = ""; }
@@ -323,4 +326,12 @@ void Assembler::subd(std::string const &operand, std::string const &comment) {
 }
 void Assembler::tst(std::string const &operand, std::string const &comment) {
   singlearg("tst", operand, comment);
+}
+
+void Assembler::assemble(const char *progname, const char *filename) {
+  TasmCLIOptions topts;
+  topts.lst.setEnable(lst);
+  topts.obj.setEnable(obj);
+  topts.c10.setEnable(c10);
+  Tasm(Fetcher(progname, filename, buffer), topts).execute();
 }

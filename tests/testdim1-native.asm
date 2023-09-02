@@ -97,7 +97,7 @@ LINE_20
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_X
-	jsr	arrref1_ir1_ix
+	jsr	arrref1_ir1_ix_ir1
 
 	jsr	one_ip
 
@@ -107,7 +107,7 @@ LINE_20
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_X
-	jsr	arrval1_ir1_ix
+	jsr	arrval1_ir1_ix_ir1
 
 	jsr	str_sr1_ir1
 
@@ -124,7 +124,7 @@ LINE_30
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_X
-	jsr	arrref1_ir1_ix
+	jsr	arrref1_ir1_ix_ir1
 
 	ldab	#2
 	jsr	ld_ip_pb
@@ -135,7 +135,7 @@ LINE_30
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_X
-	jsr	arrval1_ir1_ix
+	jsr	arrval1_ir1_ix_ir1
 
 	jsr	str_sr1_ir1
 
@@ -152,7 +152,7 @@ LINE_40
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_X
-	jsr	arrref1_ir1_ix
+	jsr	arrref1_ir1_ix_ir1
 
 	ldab	#3
 	jsr	ld_ip_pb
@@ -163,7 +163,7 @@ LINE_40
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_X
-	jsr	arrval1_ir1_ix
+	jsr	arrval1_ir1_ix_ir1
 
 	jsr	str_sr1_ir1
 
@@ -180,7 +180,7 @@ LINE_50
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_X
-	jsr	arrref1_ir1_ix
+	jsr	arrref1_ir1_ix_ir1
 
 	ldab	#4
 	jsr	ld_ip_pb
@@ -191,7 +191,7 @@ LINE_50
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_X
-	jsr	arrval1_ir1_ix
+	jsr	arrval1_ir1_ix_ir1
 
 	jsr	str_sr1_ir1
 
@@ -208,7 +208,7 @@ LINE_60
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_X
-	jsr	arrval1_ir1_ix
+	jsr	arrval1_ir1_ix_ir1
 
 	jsr	str_sr1_ir1
 
@@ -791,8 +791,8 @@ _ok
 	addd	2,x
 	jmp	alloc
 
-arrref1_ir1_ix			; numCalls = 4
-	.module	modarrref1_ir1_ix
+arrref1_ir1_ix_ir1			; numCalls = 4
+	.module	modarrref1_ir1_ix_ir1
 	ldd	r1+1
 	std	0+argv
 	ldd	#33
@@ -801,8 +801,8 @@ arrref1_ir1_ix			; numCalls = 4
 	std	letptr
 	rts
 
-arrval1_ir1_ix			; numCalls = 5
-	.module	modarrval1_ir1_ix
+arrval1_ir1_ix_ir1			; numCalls = 5
+	.module	modarrval1_ir1_ix_ir1
 	ldd	r1+1
 	std	0+argv
 	ldd	#33

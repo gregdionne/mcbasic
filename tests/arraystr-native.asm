@@ -102,7 +102,7 @@ LINE_5
 	jsr	ld_ir1_pb
 
 	ldx	#STRARR_C
-	jsr	arrref1_ir1_sx
+	jsr	arrref1_ir1_sx_ir1
 
 	jsr	ld_sr1_ss
 	.text	1, " "
@@ -117,7 +117,7 @@ LINE_10
 	jsr	ld_ir1_pb
 
 	ldx	#STRARR_C
-	jsr	arrref1_ir1_sx
+	jsr	arrref1_ir1_sx_ir1
 
 	jsr	ld_sr1_ss
 	.text	1, "A"
@@ -132,7 +132,7 @@ LINE_20
 	jsr	ld_ir1_pb
 
 	ldx	#STRARR_C
-	jsr	arrref1_ir1_sx
+	jsr	arrref1_ir1_sx_ir1
 
 	jsr	ld_sr1_ss
 	.text	1, "B"
@@ -147,7 +147,7 @@ LINE_30
 	jsr	ld_ir1_pb
 
 	ldx	#STRARR_C
-	jsr	arrref1_ir1_sx
+	jsr	arrref1_ir1_sx_ir1
 
 	jsr	ld_sr1_ss
 	.text	1, "C"
@@ -162,7 +162,7 @@ LINE_40
 	jsr	ld_ir1_pb
 
 	ldx	#STRARR_C
-	jsr	arrref1_ir1_sx
+	jsr	arrref1_ir1_sx_ir1
 
 	jsr	ld_sr1_ss
 	.text	1, "D"
@@ -177,7 +177,7 @@ LINE_50
 	jsr	ld_ir1_pb
 
 	ldx	#STRARR_C
-	jsr	arrref1_ir1_sx
+	jsr	arrref1_ir1_sx_ir1
 
 	jsr	ld_sr1_ss
 	.text	1, "E"
@@ -192,7 +192,7 @@ LINE_60
 	jsr	ld_ir1_pb
 
 	ldx	#STRARR_C
-	jsr	arrref1_ir1_sx
+	jsr	arrref1_ir1_sx_ir1
 
 	jsr	ld_sr1_ss
 	.text	1, "F"
@@ -207,7 +207,7 @@ LINE_100
 	jsr	ld_ir1_pb
 
 	ldx	#STRARR_C
-	jsr	arrval1_ir1_sx
+	jsr	arrval1_ir1_sx_ir1
 
 	ldx	#STRVAR_D
 	jsr	ld_sx_sr1
@@ -218,7 +218,7 @@ LINE_100
 	jsr	ld_ir1_pb
 
 	ldx	#STRARR_C
-	jsr	arrval1_ir1_sx
+	jsr	arrval1_ir1_sx_ir1
 
 	ldx	#STRVAR_E
 	jsr	ld_sx_sr1
@@ -229,7 +229,7 @@ LINE_100
 	jsr	ld_ir1_pb
 
 	ldx	#STRARR_C
-	jsr	arrval1_ir1_sx
+	jsr	arrval1_ir1_sx_ir1
 
 	ldx	#STRVAR_F
 	jsr	ld_sx_sr1
@@ -257,7 +257,7 @@ LINE_112
 	jsr	ld_ir2_pb
 
 	ldx	#STRARR_C
-	jsr	arrval1_ir2_sx
+	jsr	arrval1_ir2_sx_ir2
 
 	jsr	strcat_sr1_sr1_sr2
 
@@ -287,7 +287,7 @@ LINE_114
 	jsr	ld_ir2_pb
 
 	ldx	#STRARR_C
-	jsr	arrval1_ir2_sx
+	jsr	arrval1_ir2_sx_ir2
 
 	jsr	strcat_sr1_sr1_sr2
 
@@ -317,7 +317,7 @@ LINE_116
 	jsr	ld_ir2_pb
 
 	ldx	#STRARR_C
-	jsr	arrval1_ir2_sx
+	jsr	arrval1_ir2_sx_ir2
 
 	jsr	strcat_sr1_sr1_sr2
 
@@ -347,7 +347,7 @@ LINE_122
 	jsr	ld_ir2_pb
 
 	ldx	#STRARR_C
-	jsr	arrval1_ir2_sx
+	jsr	arrval1_ir2_sx_ir2
 
 	jsr	strcat_sr1_sr1_sr2
 
@@ -377,7 +377,7 @@ LINE_124
 	jsr	ld_ir2_pb
 
 	ldx	#STRARR_C
-	jsr	arrval1_ir2_sx
+	jsr	arrval1_ir2_sx_ir2
 
 	jsr	strcat_sr1_sr1_sr2
 
@@ -407,7 +407,7 @@ LINE_126
 	jsr	ld_ir2_pb
 
 	ldx	#STRARR_C
-	jsr	arrval1_ir2_sx
+	jsr	arrval1_ir2_sx_ir2
 
 	jsr	strcat_sr1_sr1_sr2
 
@@ -823,8 +823,8 @@ _ok
 	addd	2,x
 	jmp	alloc
 
-arrref1_ir1_sx			; numCalls = 7
-	.module	modarrref1_ir1_sx
+arrref1_ir1_sx_ir1			; numCalls = 7
+	.module	modarrref1_ir1_sx_ir1
 	ldd	r1+1
 	std	0+argv
 	ldd	#33
@@ -833,8 +833,8 @@ arrref1_ir1_sx			; numCalls = 7
 	std	letptr
 	rts
 
-arrval1_ir1_sx			; numCalls = 3
-	.module	modarrval1_ir1_sx
+arrval1_ir1_sx_ir1			; numCalls = 3
+	.module	modarrval1_ir1_sx_ir1
 	ldd	r1+1
 	std	0+argv
 	ldd	#33
@@ -847,8 +847,8 @@ arrval1_ir1_sx			; numCalls = 3
 	std	r1+1
 	rts
 
-arrval1_ir2_sx			; numCalls = 6
-	.module	modarrval1_ir2_sx
+arrval1_ir2_sx_ir2			; numCalls = 6
+	.module	modarrval1_ir2_sx_ir2
 	ldd	r2+1
 	std	0+argv
 	ldd	#33

@@ -551,6 +551,18 @@ bool Instruction::isRegFlt_extInt_dexFlt() const {
 bool Instruction::isRegInt_extInt_dexInt() const {
   return arg1->isRegInt() && arg2->isExtInt() && arg3->isDexInt();
 }
+bool Instruction::isRegInt_extFlt_posByte() const {
+  return arg1->isRegInt() && arg2->isExtFlt() && arg3->isPosByte();
+}
+bool Instruction::isRegInt_extFlt_negByte() const {
+  return arg1->isRegInt() && arg2->isExtFlt() && arg3->isNegByte();
+}
+bool Instruction::isRegInt_extFlt_posWord() const {
+  return arg1->isRegInt() && arg2->isExtFlt() && arg3->isPosWord();
+}
+bool Instruction::isRegInt_extFlt_negWord() const {
+  return arg1->isRegInt() && arg2->isExtFlt() && arg3->isNegWord();
+}
 bool Instruction::isRegInt_extFlt_dexFlt() const {
   return arg1->isRegInt() && arg2->isExtFlt() && arg3->isDexFlt();
 }
@@ -560,8 +572,14 @@ bool Instruction::isRegInt_extFlt_dexInt() const {
 bool Instruction::isRegInt_extInt_dexFlt() const {
   return arg1->isRegInt() && arg2->isExtInt() && arg3->isDexFlt();
 }
+bool Instruction::isRegInt_extStr_immStr() const {
+  return arg1->isRegInt() && arg2->isExtStr() && arg3->isImmStr();
+}
 bool Instruction::isRegInt_extStr_dexStr() const {
   return arg1->isRegInt() && arg2->isExtStr() && arg3->isDexStr();
+}
+bool Instruction::isRegInt_extStr_regInt() const {
+  return arg1->isRegInt() && arg2->isExtStr() && arg3->isRegInt();
 }
 bool Instruction::isRegInt_extInt_negByte() const {
   return arg1->isRegInt() && arg2->isExtInt() && arg3->isNegByte();
@@ -661,4 +679,65 @@ bool Instruction::isRegStr_regStr_regInt() const {
 }
 bool Instruction::isRegStr_regStr_regStr() const {
   return arg1->isRegStr() && arg2->isRegStr() && arg3->isRegStr();
+}
+
+bool Instruction::isRegInt_extFlt_regFlt() const {
+  return arg1->isRegInt() && arg2->isExtFlt() && arg3->isRegFlt();
+}
+bool Instruction::isRegInt_extFlt_regInt() const {
+  return arg1->isRegInt() && arg2->isExtFlt() && arg3->isRegInt();
+}
+bool Instruction::isRegInt_extInt_regFlt() const {
+  return arg1->isRegInt() && arg2->isExtInt() && arg3->isRegFlt();
+}
+bool Instruction::isRegInt_extInt_regInt() const {
+  return arg1->isRegInt() && arg2->isExtInt() && arg3->isRegInt();
+}
+bool Instruction::isRegInt_extStr_regStr() const {
+  return arg1->isRegInt() && arg2->isExtStr() && arg3->isRegStr();
+}
+bool Instruction::isRegInt_extStr_dexInt() const {
+  return arg1->isRegInt() && arg2->isExtStr() && arg3->isDexInt();
+}
+bool Instruction::isRegInt_immStr_extStr() const {
+  return arg1->isRegInt() && arg2->isImmStr() && arg3->isExtStr();
+}
+bool Instruction::isRegInt_immStr_regStr() const {
+  return arg1->isRegInt() && arg2->isImmStr() && arg3->isRegStr();
+}
+bool Instruction::isRegInt_negByte_extFlt() const {
+  return arg1->isRegInt() && arg2->isNegByte() && arg3->isExtFlt();
+}
+bool Instruction::isRegInt_negByte_regFlt() const {
+  return arg1->isRegInt() && arg2->isNegByte() && arg3->isRegFlt();
+}
+bool Instruction::isRegInt_negByte_regInt() const {
+  return arg1->isRegInt() && arg2->isNegByte() && arg3->isRegInt();
+}
+bool Instruction::isRegInt_negWord_extFlt() const {
+  return arg1->isRegInt() && arg2->isNegWord() && arg3->isExtFlt();
+}
+bool Instruction::isRegInt_negWord_regFlt() const {
+  return arg1->isRegInt() && arg2->isNegWord() && arg3->isRegFlt();
+}
+bool Instruction::isRegInt_negWord_regInt() const {
+  return arg1->isRegInt() && arg2->isNegWord() && arg3->isRegInt();
+}
+bool Instruction::isRegInt_posByte_extFlt() const {
+  return arg1->isRegInt() && arg2->isPosByte() && arg3->isExtFlt();
+}
+bool Instruction::isRegInt_posByte_regFlt() const {
+  return arg1->isRegInt() && arg2->isPosByte() && arg3->isRegFlt();
+}
+bool Instruction::isRegInt_posByte_regInt() const {
+  return arg1->isRegInt() && arg2->isPosByte() && arg3->isRegInt();
+}
+bool Instruction::isRegInt_posWord_extFlt() const {
+  return arg1->isRegInt() && arg2->isPosWord() && arg3->isExtFlt();
+}
+bool Instruction::isRegInt_posWord_regFlt() const {
+  return arg1->isRegInt() && arg2->isPosWord() && arg3->isRegFlt();
+}
+bool Instruction::isRegInt_posWord_regInt() const {
+  return arg1->isRegInt() && arg2->isPosWord() && arg3->isRegInt();
 }

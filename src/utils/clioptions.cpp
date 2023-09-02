@@ -1,17 +1,48 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#include "binaryoptions.hpp"
+#include "clioptions.hpp"
 
 #include <algorithm>
 #include <cstddef>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <regex>
 #include <string>
 
 namespace utils {
 
-void BinaryOptions::usage(const char *progname) const {
+void CLIOptions::paragraph(const char *progname, const char *text) const {
+  do {
+    int n = 0;
+    int c = 0;
+    while (text[n] && c < nWrap && text[n] != '\n') {
+      ++n;
+      c += text[n] == '\b' ? strlen(progname) : 1;
+    }
+
+    while (text[n] && text[n] != ' ' && text[n] != '\n') {
+      ++n;
+    }
+
+    auto line = std::string(text, n);
+
+    if (text[n] == '\n') {
+      ++n;
+    }
+
+    fprintf(stderr, " %s\n",
+            std::regex_replace(line, std::regex("\b"), progname).c_str());
+
+    while (text[n] == ' ') {
+      ++n;
+    }
+
+    text = text + n;
+  } while (*text);
+}
+
+void CLIOptions::usage(const char *progname, const char *argUsage) const {
   fprintf(stderr, "usage: %s -help\n", progname);
   fprintf(stderr, "       %s -help <option>\n", progname);
   int n = fprintf(stderr, "       %s", progname);
@@ -26,14 +57,8 @@ void BinaryOptions::usage(const char *progname) const {
     }
     n += fprintf(stderr, " [");
     if (option->onSwitch() && option->offSwitch()) {
-      if (!strncmp(option->onSwitch(), "W", 1) &&
-          !strncmp(option->offSwitch(), "Wno-", 4) &&
-          !strcmp(option->onSwitch() + 1, option->offSwitch() + 4)) {
-        n += fprintf(stderr, "-W[no-]%s", option->onSwitch() + 1);
-      } else {
-        n += fprintf(stderr, "-%s | -%s", option->onSwitch(),
-                     option->offSwitch());
-      }
+      n +=
+          fprintf(stderr, "-%s | -%s", option->onSwitch(), option->offSwitch());
     } else if (option->onSwitch()) {
       n += fprintf(stderr, "-%s", option->onSwitch());
     } else if (option->offSwitch()) {
@@ -46,52 +71,35 @@ void BinaryOptions::usage(const char *progname) const {
   for (size_t i = 0; i < strlen(progname); ++i) {
     fprintf(stderr, " ");
   }
-  fprintf(stderr, " file1 [file2 [file3...]]\n\n");
+  paragraph(progname, argUsage);
 }
 
-void BinaryOptions::helpBinaryOptionSummary(const BinaryOption *option) const {
+void CLIOptions::helpOptionSummary(const BinaryOption *option) {
   if (option->onSwitch()) {
     fprintf(stderr, " -%-12s", option->onSwitch());
   }
   fprintf(stderr, " %s\n", option->summary());
   if (option->offSwitch()) {
-    fprintf(stderr, "  %-12s (default) [-%s to disable]\n", "",
-            option->offSwitch());
+    fprintf(stderr, "  %-12s %s[-%s to disable%s]\n", "",
+            option->isEnabled() ? "(default) " : "", option->offSwitch(),
+            option->isEnabled() ? "" : " (default)");
   }
   fprintf(stderr, "\n");
 }
 
-void BinaryOptions::helpBinaryOptions() const {
+void CLIOptions::helpOptions() const {
   fprintf(stderr, "OPTIONS\n\n");
   for (const auto &option : table) {
-    helpBinaryOptionSummary(option);
+    helpOptionSummary(option);
   }
 }
 
-void BinaryOptions::helpBinaryOptionDetails(const BinaryOption *option) const {
-  const char *text = option->details();
-
-  do {
-    int n = 0;
-    while (text[n] && n < nWrap) {
-      ++n;
-    }
-
-    while (text[n] && text[n] != ' ') {
-      ++n;
-    }
-
-    fprintf(stderr, " %s\n", std::string(text, n).c_str());
-
-    while (text[n] == ' ') {
-      ++n;
-    }
-
-    text = text + n;
-  } while (*text);
+void CLIOptions::helpOptionDetails(const char *progname,
+                                   const BinaryOption *option) const {
+  paragraph(progname, option->details());
 }
 
-void BinaryOptions::helpTopic(const char *progname, const char *target) const {
+void CLIOptions::helpTopic(const char *progname, const char *target) const {
   // skip any leading '-'
   if (target[0] == '-') {
     ++target;
@@ -101,8 +109,8 @@ void BinaryOptions::helpTopic(const char *progname, const char *target) const {
     if (option->onSwitch() &&
         (!strcmp(option->onSwitch(), target) ||
          (option->offSwitch() && !strcmp(option->offSwitch(), target)))) {
-      helpBinaryOptionSummary(option);
-      helpBinaryOptionDetails(option);
+      helpOptionSummary(option);
+      helpOptionDetails(progname, option);
 
       return;
     }
@@ -111,7 +119,7 @@ void BinaryOptions::helpTopic(const char *progname, const char *target) const {
   exit(1);
 }
 
-BinaryOption *BinaryOptions::findBinaryOption(const char *arg) {
+BinaryOption *CLIOptions::findOption(const char *arg) {
   if (auto *opt = findOnSwitch(arg)) {
     return opt;
   }
@@ -121,7 +129,7 @@ BinaryOption *BinaryOptions::findBinaryOption(const char *arg) {
 }
 
 // convert iterator idiom to pointer idiom
-BinaryOption *BinaryOptions::findOnSwitch(const char *arg) {
+BinaryOption *CLIOptions::findOnSwitch(const char *arg) {
   auto op =
       std::find_if(table.begin(), table.end(), [&arg](const BinaryOption *o) {
         return arg && arg[0] && o->onSwitch() &&
@@ -131,7 +139,7 @@ BinaryOption *BinaryOptions::findOnSwitch(const char *arg) {
   return op == table.end() ? nullptr : *op;
 }
 
-BinaryOption *BinaryOptions::findOffSwitch(const char *arg) {
+BinaryOption *CLIOptions::findOffSwitch(const char *arg) {
   auto op =
       std::find_if(table.begin(), table.end(), [&arg](const BinaryOption *o) {
         return arg && arg[0] && o->offSwitch() &&
@@ -141,19 +149,24 @@ BinaryOption *BinaryOptions::findOffSwitch(const char *arg) {
   return op == table.end() ? nullptr : *op;
 }
 
-std::vector<const char *> BinaryOptions::parse(int argc,
-                                               const char *const argv[]) {
+std::vector<const char *> CLIOptions::parse(int argc, const char *const argv[],
+                                            const char *argUsage,
+                                            const char *argDescription,
+                                            const char *helpExample) {
 
   const char *progname = argv[0];
   if (argc == 1) {
-    usage(progname);
-    exit(1);
+    return {};
   }
 
-  if (!strcmp(argv[1], "-help") || !strcmp(argv[1], "--help")) {
+  if (!strcmp(argv[1], "--help") || !strcmp(argv[1], "-help")) {
     if (argc == 2) {
-      usage(progname);
-      helpBinaryOptions();
+      usage(progname, argUsage);
+      fprintf(stderr, "DESCRIPTION\n\n");
+      paragraph(progname, argDescription);
+      helpOptions();
+      fprintf(stderr, "EXAMPLES\n\n");
+      paragraph(progname, helpExample);
       exit(0);
     }
 
@@ -162,7 +175,7 @@ std::vector<const char *> BinaryOptions::parse(int argc,
       exit(0);
     }
 
-    usage(progname);
+    usage(progname, argUsage);
     exit(1);
   }
 
@@ -174,7 +187,7 @@ std::vector<const char *> BinaryOptions::parse(int argc,
       op->setEnable(false);
     } else {
       fprintf(stderr, "%s:  unrecognized option: \"%s\"\n", progname, argv[i]);
-      usage(progname);
+      usage(progname, argUsage);
       exit(1);
     }
 

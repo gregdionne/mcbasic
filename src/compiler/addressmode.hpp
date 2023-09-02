@@ -153,6 +153,7 @@ public:
   bool isNegByte() override { return -word < 256 && isNeg; }
   bool isPosWord() override { return !isNeg; }
   bool isNegWord() override { return isNeg; }
+
 private:
   bool isNeg;
   int word;

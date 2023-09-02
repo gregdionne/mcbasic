@@ -145,7 +145,7 @@ LINE_50
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
 
-	.byte	bytecode_arrref1_ir1_ix
+	.byte	bytecode_arrref1_ir1_ix_ir1
 	.byte	bytecode_INTARR_D
 
 	.byte	bytecode_ld_ip_pb
@@ -158,7 +158,7 @@ LINE_60
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
 
-	.byte	bytecode_arrref1_ir1_ix
+	.byte	bytecode_arrref1_ir1_ix_ir1
 	.byte	bytecode_INTARR_E
 
 	.byte	bytecode_ld_ip_pb
@@ -181,7 +181,7 @@ LINE_80
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
 
-	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_arrval1_ir1_ix_ir1
 	.byte	bytecode_INTARR_D
 
 	.byte	bytecode_str_sr1_ir1
@@ -194,7 +194,7 @@ LINE_80
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
 
-	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_arrval1_ir1_ix_ir1
 	.byte	bytecode_INTARR_E
 
 	.byte	bytecode_str_sr1_ir1
@@ -211,8 +211,8 @@ LLAST
 	.byte	bytecode_progend
 
 ; Library Catalog
-bytecode_arrref1_ir1_ix	.equ	0
-bytecode_arrval1_ir1_ix	.equ	1
+bytecode_arrref1_ir1_ix_ir1	.equ	0
+bytecode_arrval1_ir1_ix_ir1	.equ	1
 bytecode_clear	.equ	2
 bytecode_ld_ip_pb	.equ	3
 bytecode_ld_ir1_pb	.equ	4
@@ -228,8 +228,8 @@ bytecode_strcat_sr1_sr1_sx	.equ	13
 bytecode_strinit_sr1_sx	.equ	14
 
 catalog
-	.word	arrref1_ir1_ix
-	.word	arrval1_ir1_ix
+	.word	arrref1_ir1_ix_ir1
+	.word	arrval1_ir1_ix_ir1
 	.word	clear
 	.word	ld_ip_pb
 	.word	ld_ir1_pb
@@ -433,6 +433,25 @@ dexext
 	abx
 	ldx	,x
 	pulb
+	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
 	rts
 immstr
 	ldx	curinst
@@ -1117,8 +1136,8 @@ _null
 	ldd	strfree
 	rts
 
-arrref1_ir1_ix			; numCalls = 2
-	.module	modarrref1_ir1_ix
+arrref1_ir1_ix_ir1			; numCalls = 2
+	.module	modarrref1_ir1_ix_ir1
 	jsr	extend
 	ldd	r1+1
 	std	0+argv
@@ -1128,8 +1147,8 @@ arrref1_ir1_ix			; numCalls = 2
 	std	letptr
 	rts
 
-arrval1_ir1_ix			; numCalls = 2
-	.module	modarrval1_ir1_ix
+arrval1_ir1_ix_ir1			; numCalls = 2
+	.module	modarrval1_ir1_ix_ir1
 	jsr	extend
 	ldd	r1+1
 	std	0+argv

@@ -69,7 +69,6 @@ tmp5	.block	2
 	.org	$af
 r1	.block	5
 r2	.block	5
-r3	.block	5
 rend
 curinst	.block	2
 nxtinst	.block	2
@@ -171,18 +170,16 @@ LINE_170
 
 	; IF (SQ(X)+SQ(Y))>4 THEN
 
-	.byte	bytecode_ld_ir1_pb
-	.byte	4
-
-	.byte	bytecode_sq_fr2_fx
+	.byte	bytecode_sq_fr1_fx
 	.byte	bytecode_FLTVAR_X
 
-	.byte	bytecode_sq_fr3_fx
+	.byte	bytecode_sq_fr2_fx
 	.byte	bytecode_FLTVAR_Y
 
-	.byte	bytecode_add_fr2_fr2_fr3
+	.byte	bytecode_add_fr1_fr1_fr2
 
-	.byte	bytecode_ldlt_ir1_ir1_fr2
+	.byte	bytecode_ldlt_ir1_pb_fr1
+	.byte	4
 
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_180
@@ -321,8 +318,8 @@ LLAST
 	.byte	bytecode_progend
 
 ; Library Catalog
-bytecode_add_fr1_fr1_fx	.equ	0
-bytecode_add_fr2_fr2_fr3	.equ	1
+bytecode_add_fr1_fr1_fr2	.equ	0
+bytecode_add_fr1_fr1_fx	.equ	1
 bytecode_clear	.equ	2
 bytecode_clr_fx	.equ	3
 bytecode_clsn_pb	.equ	4
@@ -340,28 +337,26 @@ bytecode_ld_fr1_fx	.equ	15
 bytecode_ld_fx_fr1	.equ	16
 bytecode_ld_id_ix	.equ	17
 bytecode_ld_ir1_ix	.equ	18
-bytecode_ld_ir1_pb	.equ	19
-bytecode_ld_ir2_ix	.equ	20
-bytecode_ld_ix_ir1	.equ	21
-bytecode_ld_ix_pb	.equ	22
-bytecode_ldlt_ir1_ir1_fr2	.equ	23
-bytecode_mul_fr1_fr1_fx	.equ	24
-bytecode_mul_fr1_ir1_fx	.equ	25
-bytecode_next	.equ	26
-bytecode_prat_pw	.equ	27
-bytecode_progbegin	.equ	28
-bytecode_progend	.equ	29
-bytecode_setc_ir1_ir2_ix	.equ	30
-bytecode_sq_fr1_fx	.equ	31
-bytecode_sq_fr2_fx	.equ	32
-bytecode_sq_fr3_fx	.equ	33
-bytecode_sub_fr1_fr1_fr2	.equ	34
-bytecode_sub_fr1_fr1_fx	.equ	35
-bytecode_to_ip_pb	.equ	36
+bytecode_ld_ir2_ix	.equ	19
+bytecode_ld_ix_ir1	.equ	20
+bytecode_ld_ix_pb	.equ	21
+bytecode_ldlt_ir1_pb_fr1	.equ	22
+bytecode_mul_fr1_fr1_fx	.equ	23
+bytecode_mul_fr1_ir1_fx	.equ	24
+bytecode_next	.equ	25
+bytecode_prat_pw	.equ	26
+bytecode_progbegin	.equ	27
+bytecode_progend	.equ	28
+bytecode_setc_ir1_ir2_ix	.equ	29
+bytecode_sq_fr1_fx	.equ	30
+bytecode_sq_fr2_fx	.equ	31
+bytecode_sub_fr1_fr1_fr2	.equ	32
+bytecode_sub_fr1_fr1_fx	.equ	33
+bytecode_to_ip_pb	.equ	34
 
 catalog
+	.word	add_fr1_fr1_fr2
 	.word	add_fr1_fr1_fx
-	.word	add_fr2_fr2_fr3
 	.word	clear
 	.word	clr_fx
 	.word	clsn_pb
@@ -379,11 +374,10 @@ catalog
 	.word	ld_fx_fr1
 	.word	ld_id_ix
 	.word	ld_ir1_ix
-	.word	ld_ir1_pb
 	.word	ld_ir2_ix
 	.word	ld_ix_ir1
 	.word	ld_ix_pb
-	.word	ldlt_ir1_ir1_fr2
+	.word	ldlt_ir1_pb_fr1
 	.word	mul_fr1_fr1_fx
 	.word	mul_fr1_ir1_fx
 	.word	next
@@ -393,7 +387,6 @@ catalog
 	.word	setc_ir1_ir2_ix
 	.word	sq_fr1_fx
 	.word	sq_fr2_fx
-	.word	sq_fr3_fx
 	.word	sub_fr1_fr1_fr2
 	.word	sub_fr1_fr1_fx
 	.word	to_ip_pb
@@ -530,6 +523,25 @@ dexext
 	abx
 	ldx	,x
 	pulb
+	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
 	rts
 immstr
 	ldx	curinst
@@ -923,6 +935,21 @@ x2arg
 	std	3+argv
 	rts
 
+add_fr1_fr1_fr2			; numCalls = 1
+	.module	modadd_fr1_fr1_fr2
+	jsr	noargs
+	ldd	r1+3
+	addd	r2+3
+	std	r1+3
+	ldd	r1+1
+	adcb	r2+2
+	adca	r2+1
+	std	r1+1
+	ldab	r1
+	adcb	r2
+	stab	r1
+	rts
+
 add_fr1_fr1_fx			; numCalls = 2
 	.module	modadd_fr1_fr1_fx
 	jsr	extend
@@ -936,21 +963,6 @@ add_fr1_fr1_fx			; numCalls = 2
 	ldab	r1
 	adcb	0,x
 	stab	r1
-	rts
-
-add_fr2_fr2_fr3			; numCalls = 1
-	.module	modadd_fr2_fr2_fr3
-	jsr	noargs
-	ldd	r2+3
-	addd	r3+3
-	std	r2+3
-	ldd	r2+1
-	adcb	r3+2
-	adca	r3+1
-	std	r2+1
-	ldab	r2
-	adcb	r3
-	stab	r2
 	rts
 
 clear			; numCalls = 1
@@ -1149,14 +1161,6 @@ ld_ir1_ix			; numCalls = 2
 	stab	r1
 	rts
 
-ld_ir1_pb			; numCalls = 1
-	.module	modld_ir1_pb
-	jsr	getbyte
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
 ld_ir2_ix			; numCalls = 2
 	.module	modld_ir2_ix
 	jsr	extend
@@ -1183,16 +1187,18 @@ ld_ix_pb			; numCalls = 1
 	std	0,x
 	rts
 
-ldlt_ir1_ir1_fr2			; numCalls = 1
-	.module	modldlt_ir1_ir1_fr2
-	jsr	noargs
-	ldd	#0
-	subd	r2+3
-	ldd	r1+1
-	sbcb	r2+2
-	sbca	r2+1
-	ldab	r1
-	sbcb	r2
+ldlt_ir1_pb_fr1			; numCalls = 1
+	.module	modldlt_ir1_pb_fr1
+	jsr	getbyte
+	clra
+	std	tmp1
+	clrb
+	subd	r1+3
+	ldd	tmp1
+	sbcb	r1+2
+	sbca	r1+1
+	ldab	#0
+	sbcb	r1
 	jsr	getlt
 	std	r1+1
 	stab	r1
@@ -1387,7 +1393,7 @@ setc_ir1_ir2_ix			; numCalls = 2
 	pulb
 	jmp	setc
 
-sq_fr1_fx			; numCalls = 1
+sq_fr1_fx			; numCalls = 2
 	.module	modsq_fr1_fx
 	jsr	extend
 	jsr	x2arg
@@ -1401,14 +1407,6 @@ sq_fr2_fx			; numCalls = 2
 	jsr	x2arg
 	jsr	mulfltt
 	ldx	#r2
-	jmp	tmp2xf
-
-sq_fr3_fx			; numCalls = 1
-	.module	modsq_fr3_fx
-	jsr	extend
-	jsr	x2arg
-	jsr	mulfltt
-	ldx	#r3
 	jmp	tmp2xf
 
 sub_fr1_fr1_fr2			; numCalls = 1

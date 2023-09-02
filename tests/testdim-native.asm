@@ -130,7 +130,7 @@ LINE_50
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_D
-	jsr	arrref1_ir1_ix
+	jsr	arrref1_ir1_ix_ir1
 
 	ldab	#5
 	jsr	ld_ip_pb
@@ -143,7 +143,7 @@ LINE_60
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_E
-	jsr	arrref1_ir1_ix
+	jsr	arrref1_ir1_ix_ir1
 
 	ldab	#5
 	jsr	ld_ip_pb
@@ -166,7 +166,7 @@ LINE_80
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_D
-	jsr	arrval1_ir1_ix
+	jsr	arrval1_ir1_ix_ir1
 
 	jsr	str_sr1_ir1
 
@@ -179,7 +179,7 @@ LINE_80
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_E
-	jsr	arrval1_ir1_ix
+	jsr	arrval1_ir1_ix_ir1
 
 	jsr	str_sr1_ir1
 
@@ -923,8 +923,8 @@ _null
 	ldd	strfree
 	rts
 
-arrref1_ir1_ix			; numCalls = 2
-	.module	modarrref1_ir1_ix
+arrref1_ir1_ix_ir1			; numCalls = 2
+	.module	modarrref1_ir1_ix_ir1
 	ldd	r1+1
 	std	0+argv
 	ldd	#33
@@ -933,8 +933,8 @@ arrref1_ir1_ix			; numCalls = 2
 	std	letptr
 	rts
 
-arrval1_ir1_ix			; numCalls = 2
-	.module	modarrval1_ir1_ix
+arrval1_ir1_ix_ir1			; numCalls = 2
+	.module	modarrval1_ir1_ix_ir1
 	ldd	r1+1
 	std	0+argv
 	ldd	#33

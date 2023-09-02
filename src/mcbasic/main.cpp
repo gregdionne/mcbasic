@@ -1,31 +1,33 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-#include "arguments.hpp"
-#include "backend/target/bytecodetarget.hpp"
-#include "backend/target/nativetarget.hpp"
-#include "compiler/compiler.hpp"
-#include "optimizer/optimizer.hpp"
-#include "parser/parser.hpp"
-#include "utils/writer.hpp"
+#include "backend/assembler/assembler.hpp"
+#include "mcbasic.hpp"
+#include "mcbasicarguments.hpp"
+#include "utils/cstring.hpp"
+#include "utils/fileread.hpp"
+#include "utils/srcwriter.hpp"
 
 int main(int argc, char *argv[]) {
-  const Arguments args(argc, argv);
+  const MCBASICArguments args(argc, argv);
 
   for (const auto &filename : args.filenames) {
-    fprintf(stderr, "Compiling %s...\n", filename);
+    Assembler tasm;
+    tasm.setObjEnable(args.options.c.isEnabled());
+    tasm.setC10Enable(!args.options.S.isEnabled() &&
+                      !args.options.c.isEnabled());
 
-    Program program = Parser(args.progname, filename, args.options).parse();
-
-    Text text = Optimizer(args.options).optimize(program);
-
-    InstQueue queue = Compiler(text, args.options.g).compile(program);
-
-    auto target = args.options.native.isEnabled()
-                      ? up<Target>(makeup<NativeTarget>())
-                      : up<Target>(makeup<ByteCodeTarget>());
-
-    auto assembly = target->generateAssembly(text, queue, args.options);
-
-    Writer(args.progname, filename, args.options).write(assembly);
+    if (utils::ends_with(filename, ".asm")) {
+      fprintf(stderr, "Assembling %s...\n", filename);
+      tasm.load(fileread(args.progname, filename));
+      tasm.assemble(args.progname, filename);
+    } else {
+      fprintf(stderr, "Compiling %s...\n", filename);
+      tasm.load(mcbasic(args.progname, filename, args.options));
+      SrcWriter srcWriter(args.progname, filename, args.options);
+      srcWriter.write(tasm.source());
+      if (!args.options.S.isEnabled()) {
+        tasm.assemble(args.progname, srcWriter.getOutname());
+      }
+    }
   }
 }

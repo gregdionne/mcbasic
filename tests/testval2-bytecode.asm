@@ -130,10 +130,8 @@ LINE_105
 
 	; WHEN A$="" GOTO 100
 
-	.byte	bytecode_ld_sr1_sx
+	.byte	bytecode_ldeq_ir1_sx_ss
 	.byte	bytecode_STRVAR_A
-
-	.byte	bytecode_ldeq_ir1_sr1_ss
 	.text	0, ""
 
 	.byte	bytecode_jmpne_ir1_ix
@@ -175,16 +173,15 @@ bytecode_goto_ix	.equ	1
 bytecode_inkey_sx	.equ	2
 bytecode_jmpne_ir1_ix	.equ	3
 bytecode_ld_sr1_ss	.equ	4
-bytecode_ld_sr1_sx	.equ	5
-bytecode_ld_sx_sr1	.equ	6
-bytecode_ldeq_ir1_sr1_ss	.equ	7
-bytecode_pr_sr1	.equ	8
-bytecode_pr_ss	.equ	9
-bytecode_pr_sx	.equ	10
-bytecode_progbegin	.equ	11
-bytecode_progend	.equ	12
-bytecode_str_sr1_fr1	.equ	13
-bytecode_val_fr1_sx	.equ	14
+bytecode_ld_sx_sr1	.equ	5
+bytecode_ldeq_ir1_sx_ss	.equ	6
+bytecode_pr_sr1	.equ	7
+bytecode_pr_ss	.equ	8
+bytecode_pr_sx	.equ	9
+bytecode_progbegin	.equ	10
+bytecode_progend	.equ	11
+bytecode_str_sr1_fr1	.equ	12
+bytecode_val_fr1_sx	.equ	13
 
 catalog
 	.word	clear
@@ -192,9 +189,8 @@ catalog
 	.word	inkey_sx
 	.word	jmpne_ir1_ix
 	.word	ld_sr1_ss
-	.word	ld_sr1_sx
 	.word	ld_sx_sr1
-	.word	ldeq_ir1_sr1_ss
+	.word	ldeq_ir1_sx_ss
 	.word	pr_sr1
 	.word	pr_ss
 	.word	pr_sx
@@ -392,6 +388,25 @@ dexext
 	abx
 	ldx	,x
 	pulb
+	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
 	rts
 immstr
 	ldx	curinst
@@ -729,19 +744,24 @@ _nxtwrd
 _rts
 	rts
 
-	.module	mdstreqbs
-; compare string against bytecode "stack"
-; ENTRY: tmp1+1 holds length, tmp2 holds compare
-; EXIT:  we return correct Z flag for caller
-streqbs
+	.module	mdstreqx
+; equality comparison with string release
+; ENTRY:  X holds descriptor of LHS
+;         tmp1+1 and tmp2 are RHS
+; EXIT:  Z CCR flag set
+streqx
+	ldab	0,x
+	cmpb	tmp1+1
+	bne	_frts
+	tstb
+	beq	_frts
+	ldx	1,x
+	jsr	strrel
+	pshx
 	ldx	tmp2
 	jsr	strrel
-	jsr	immstr
+	pulx
 	sts	tmp3
-	cmpb	tmp1+1
-	bne	_ne
-	tstb
-	beq	_eq
 	txs
 	ldx	tmp2
 _nxtchr
@@ -751,12 +771,19 @@ _nxtchr
 	inx
 	decb
 	bne	_nxtchr
-_eq
 	lds	tmp3
 	clra
 	rts
 _ne
 	lds	tmp3
+	rts
+_frts
+	tpa
+	ldx	1,x
+	jsr	strrel
+	ldx	tmp2
+	jsr	strrel
+	tap
 	rts
 
 	.module	mdstrflt
@@ -1274,15 +1301,6 @@ ld_sr1_ss			; numCalls = 1
 	stx	nxtinst
 	rts
 
-ld_sr1_sx			; numCalls = 1
-	.module	modld_sr1_sx
-	jsr	extend
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
 ld_sx_sr1			; numCalls = 1
 	.module	modld_sx_sr1
 	jsr	extend
@@ -1292,13 +1310,13 @@ ld_sx_sr1			; numCalls = 1
 	std	1+argv
 	jmp	strprm
 
-ldeq_ir1_sr1_ss			; numCalls = 1
-	.module	modldeq_ir1_sr1_ss
-	ldab	r1
+ldeq_ir1_sx_ss			; numCalls = 1
+	.module	modldeq_ir1_sx_ss
+	jsr	eistr
 	stab	tmp1+1
-	ldd	r1+1
-	std	tmp2
-	jsr	streqbs
+	stx	tmp2
+	ldx	tmp3
+	jsr	streqx
 	jsr	geteq
 	std	r1+1
 	stab	r1

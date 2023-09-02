@@ -5,4 +5,4 @@ rem If the link is stale, try searching the internet for "Walkthrough: Compile a
 rem
 
 if not exist .build\ mkdir .build
-cl /I. /EHsc /Fo.build\ ast\*.cpp backend\assembler\*.cpp backend\coder\*.cpp backend\implementation\*.cpp backend\target\*.cpp compiler\*.cpp consttable\*.cpp datatable\*.cpp mcbasic\*.cpp optimizer\*.cpp parser\*.cpp symboltable\*.cpp utils\*.cpp /link /out:mcbasic.exe
+cl /I. /EHsc /Fo.build\ ast\*.cpp backend\assembler\*.cpp backend\coder\*.cpp backend\implementation\*.cpp backend\target\*.cpp compiler\*.cpp consttable\*.cpp datatable\*.cpp mcbasic\*.cpp optimizer\*.cpp parser\*.cpp tasm\*.cpp symboltable\*.cpp utils\*.cpp /link /out:mcbasic.exe

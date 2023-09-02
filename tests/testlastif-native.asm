@@ -92,10 +92,8 @@ LINE_20
 	; IF X>0 THEN
 
 	ldab	#0
-	jsr	ld_ir1_pb
-
 	ldx	#INTVAR_X
-	jsr	ldlt_ir1_ir1_ix
+	jsr	ldlt_ir1_pb_ix
 
 	ldx	#LLAST
 	jsr	jmpeq_ir1_ix
@@ -640,13 +638,6 @@ jmpeq_ir1_ix			; numCalls = 1
 _rts
 	rts
 
-ld_ir1_pb			; numCalls = 1
-	.module	modld_ir1_pb
-	stab	r1+2
-	ldd	#0
-	std	r1
-	rts
-
 ld_ix_pb			; numCalls = 1
 	.module	modld_ix_pb
 	stab	2,x
@@ -654,11 +645,11 @@ ld_ix_pb			; numCalls = 1
 	std	0,x
 	rts
 
-ldlt_ir1_ir1_ix			; numCalls = 1
-	.module	modldlt_ir1_ir1_ix
-	ldd	r1+1
+ldlt_ir1_pb_ix			; numCalls = 1
+	.module	modldlt_ir1_pb_ix
+	clra
 	subd	1,x
-	ldab	r1
+	ldab	#0
 	sbcb	0,x
 	jsr	getlt
 	std	r1+1

@@ -111,8 +111,8 @@ up<ArrayIndicesExpr> Parser::getArrayIndices() {
 
 up<NumericConstantExpr> Parser::seekNumericConst() {
   in.skipWhitespace();
-  if (in.isBasicFloat()) {
-    return makeup<NumericConstantExpr>(in.getBasicFloat());
+  if (in.isFloat()) {
+    return makeup<NumericConstantExpr>(in.getFloat());
   }
 
   return {};
@@ -1070,8 +1070,7 @@ void Parser::getEndLines(Program &p) {
 
 Program Parser::parse() {
   Program p;
-  in.open();
-  while (in.getFileLine()) {
+  while (in.getLine()) {
     getLine(p);
   }
   getEndLines(p);

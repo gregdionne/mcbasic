@@ -114,11 +114,9 @@ LINE_40
 
 	; C(I)+=1
 
-	ldx	#INTVAR_I
-	jsr	ld_ir1_ix
-
 	ldx	#INTARR_C
-	jsr	arrref1_ir1_ix
+	ldd	#INTVAR_I
+	jsr	arrref1_ir1_ix_id
 
 	jsr	inc_ip_ip
 
@@ -150,11 +148,9 @@ LINE_80
 
 	; C=C(I)
 
-	ldx	#INTVAR_I
-	jsr	ld_ir1_ix
-
 	ldx	#INTARR_C
-	jsr	arrval1_ir1_ix
+	ldd	#INTVAR_I
+	jsr	arrval1_ir1_ix_id
 
 	ldx	#INTVAR_C
 	jsr	ld_ix_ir1
@@ -164,10 +160,8 @@ LINE_90
 	; IF C>0 THEN
 
 	ldab	#0
-	jsr	ld_ir1_pb
-
 	ldx	#INTVAR_C
-	jsr	ldlt_ir1_ir1_ix
+	jsr	ldlt_ir1_pb_ix
 
 	ldx	#LINE_100
 	jsr	jmpeq_ir1_ix
@@ -272,6 +266,18 @@ getlt
 	rts
 _1
 	ldd	#-1
+	rts
+
+	.module	mdgetlw
+; fetch lower word from integer variable descriptor
+;  ENTRY: D holds integer variable descriptor
+;  EXIT: D holds lower word of integer variable
+getlw
+	std	tmp1
+	stx	tmp2
+	ldx	tmp1
+	ldd	1,x
+	ldx	tmp2
 	rts
 
 	.module	mdpeek
@@ -414,9 +420,9 @@ _ok
 	addd	2,x
 	jmp	alloc
 
-arrref1_ir1_ix			; numCalls = 1
-	.module	modarrref1_ir1_ix
-	ldd	r1+1
+arrref1_ir1_ix_id			; numCalls = 1
+	.module	modarrref1_ir1_ix_id
+	jsr	getlw
 	std	0+argv
 	ldd	#33
 	jsr	ref1
@@ -424,9 +430,9 @@ arrref1_ir1_ix			; numCalls = 1
 	std	letptr
 	rts
 
-arrval1_ir1_ix			; numCalls = 1
-	.module	modarrval1_ir1_ix
-	ldd	r1+1
+arrval1_ir1_ix_id			; numCalls = 1
+	.module	modarrval1_ir1_ix_id
+	jsr	getlw
 	std	0+argv
 	ldd	#33
 	jsr	ref1
@@ -524,15 +530,7 @@ jmpeq_ir1_ix			; numCalls = 1
 _rts
 	rts
 
-ld_ir1_ix			; numCalls = 2
-	.module	modld_ir1_ix
-	ldd	1,x
-	std	r1+1
-	ldab	0,x
-	stab	r1
-	rts
-
-ld_ir1_pb			; numCalls = 2
+ld_ir1_pb			; numCalls = 1
 	.module	modld_ir1_pb
 	stab	r1+2
 	ldd	#0
@@ -554,11 +552,11 @@ ld_ix_pw			; numCalls = 1
 	stab	0,x
 	rts
 
-ldlt_ir1_ir1_ix			; numCalls = 1
-	.module	modldlt_ir1_ir1_ix
-	ldd	r1+1
+ldlt_ir1_pb_ix			; numCalls = 1
+	.module	modldlt_ir1_pb_ix
+	clra
 	subd	1,x
-	ldab	r1
+	ldab	#0
 	sbcb	0,x
 	jsr	getlt
 	std	r1+1

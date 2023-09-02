@@ -51,11 +51,19 @@ public:
   std::string regStr_regStr_immStr(InstStrCat &inst) override;
 
   std::string regInt_regStr_immStr(InstLdEq &inst) override;
+  std::string regInt_extStr_immStr(InstLdEq &inst) override;
 
   std::string regInt_regStr_immStr(InstLdNe &inst) override;
+  std::string regInt_extStr_immStr(InstLdNe &inst) override;
 
   std::string regInt_regStr_immStr(InstLdLt &inst) override;
+  std::string regInt_extStr_immStr(InstLdLt &inst) override;
+  std::string regInt_immStr_regStr(InstLdLt &inst) override;
+  std::string regInt_immStr_extStr(InstLdLt &inst) override;
   std::string regInt_regStr_immStr(InstLdGe &inst) override;
+  std::string regInt_extStr_immStr(InstLdGe &inst) override;
+  std::string regInt_immStr_regStr(InstLdGe &inst) override;
+  std::string regInt_immStr_extStr(InstLdGe &inst) override;
 
   std::string ptrInt_posByte(InstTo &inst) override;
   std::string ptrInt_negByte(InstTo &inst) override;

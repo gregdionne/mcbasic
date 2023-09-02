@@ -55,6 +55,7 @@ private:
   void makeFoundation();
   void addDependencies(std::set<std::string> &dependencies);
   static std::string mdAlloc();
+  static std::string mdGetLW();
   static std::string mdArrayRef1();
   static std::string mdArrayRef2();
   static std::string mdArrayRef3();
@@ -73,8 +74,10 @@ private:
   static std::string mdStrEqx();
   static std::string mdStrLo();
   static std::string mdStrLos();
+  static std::string mdStrLosr();
   static std::string mdStrLobs();
   static std::string mdStrLox();
+  static std::string mdStrLoxr();
   static std::string mdRnd();
   std::string mdNegX() const;
   static std::string mdNegTmp2XI();

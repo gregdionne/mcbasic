@@ -196,10 +196,8 @@ LINE_140
 
 	; IF Z<1 THEN
 
-	.byte	bytecode_ld_ir1_ix
+	.byte	bytecode_ldlt_ir1_ix_pb
 	.byte	bytecode_INTVAR_Z
-
-	.byte	bytecode_ldlt_ir1_ir1_pb
 	.byte	1
 
 	.byte	bytecode_jmpeq_ir1_ix
@@ -233,13 +231,11 @@ LINE_170
 
 	; IF PEEK(L)>A THEN
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_A
-
-	.byte	bytecode_peek_ir2_ix
+	.byte	bytecode_peek_ir1_ix
 	.byte	bytecode_INTVAR_L
 
-	.byte	bytecode_ldlt_ir1_ir1_ir2
+	.byte	bytecode_ldlt_ir1_ix_ir1
+	.byte	bytecode_INTVAR_A
 
 	.byte	bytecode_jmpeq_ir1_ix
 	.word	LINE_180
@@ -440,11 +436,9 @@ LINE_300
 
 	; ST(SP)=LP
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_SP
-
-	.byte	bytecode_arrref1_ir1_ix
+	.byte	bytecode_arrref1_ir1_ix_id
 	.byte	bytecode_INTARR_ST
+	.byte	bytecode_INTVAR_SP
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_LP
@@ -456,7 +450,7 @@ LINE_300
 	.byte	bytecode_inc_ir1_ix
 	.byte	bytecode_INTVAR_SP
 
-	.byte	bytecode_arrref1_ir1_ix
+	.byte	bytecode_arrref1_ir1_ix_ir1
 	.byte	bytecode_INTARR_ST
 
 	.byte	bytecode_ld_ir1_ix
@@ -493,11 +487,9 @@ LINE_320
 
 	; L=ST(SP)
 
-	.byte	bytecode_ld_ir1_ix
-	.byte	bytecode_INTVAR_SP
-
-	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_arrval1_ir1_ix_id
 	.byte	bytecode_INTARR_ST
+	.byte	bytecode_INTVAR_SP
 
 	.byte	bytecode_ld_ix_ir1
 	.byte	bytecode_INTVAR_L
@@ -507,7 +499,7 @@ LINE_320
 	.byte	bytecode_inc_ir1_ix
 	.byte	bytecode_INTVAR_SP
 
-	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_arrval1_ir1_ix_ir1
 	.byte	bytecode_INTARR_ST
 
 	.byte	bytecode_ld_ix_ir1
@@ -530,49 +522,52 @@ LLAST
 bytecode_add_ix_ix_ir1	.equ	0
 bytecode_add_ix_ix_pb	.equ	1
 bytecode_arrdim1_ir1_ix	.equ	2
-bytecode_arrref1_ir1_ix	.equ	3
-bytecode_arrval1_ir1_ix	.equ	4
-bytecode_clear	.equ	5
-bytecode_clr_ix	.equ	6
-bytecode_dec_ix_ix	.equ	7
-bytecode_gosub_ix	.equ	8
-bytecode_goto_ix	.equ	9
-bytecode_hlf_fr1_ir1	.equ	10
-bytecode_inc_ir1_ix	.equ	11
-bytecode_inc_ix_ix	.equ	12
-bytecode_jmpeq_ir1_ix	.equ	13
-bytecode_jmpne_ir1_ix	.equ	14
-bytecode_ld_id_ix	.equ	15
-bytecode_ld_ip_ir1	.equ	16
-bytecode_ld_ir1_ix	.equ	17
-bytecode_ld_ir1_pb	.equ	18
-bytecode_ld_ix_ir1	.equ	19
-bytecode_ld_ix_pw	.equ	20
-bytecode_ldeq_ir1_ix_id	.equ	21
-bytecode_ldeq_ir2_ix_id	.equ	22
-bytecode_ldge_ir1_ir1_ix	.equ	23
-bytecode_ldlt_ir1_ir1_ir2	.equ	24
-bytecode_ldlt_ir1_ir1_ix	.equ	25
-bytecode_ldlt_ir1_ir1_pb	.equ	26
+bytecode_arrref1_ir1_ix_id	.equ	3
+bytecode_arrref1_ir1_ix_ir1	.equ	4
+bytecode_arrval1_ir1_ix_id	.equ	5
+bytecode_arrval1_ir1_ix_ir1	.equ	6
+bytecode_clear	.equ	7
+bytecode_clr_ix	.equ	8
+bytecode_dec_ix_ix	.equ	9
+bytecode_gosub_ix	.equ	10
+bytecode_goto_ix	.equ	11
+bytecode_hlf_fr1_ir1	.equ	12
+bytecode_inc_ir1_ix	.equ	13
+bytecode_inc_ix_ix	.equ	14
+bytecode_jmpeq_ir1_ix	.equ	15
+bytecode_jmpne_ir1_ix	.equ	16
+bytecode_ld_id_ix	.equ	17
+bytecode_ld_ip_ir1	.equ	18
+bytecode_ld_ir1_ix	.equ	19
+bytecode_ld_ir1_pb	.equ	20
+bytecode_ld_ix_ir1	.equ	21
+bytecode_ld_ix_pw	.equ	22
+bytecode_ldeq_ir1_ix_id	.equ	23
+bytecode_ldeq_ir2_ix_id	.equ	24
+bytecode_ldge_ir1_ir1_ix	.equ	25
+bytecode_ldlt_ir1_ir1_ix	.equ	26
 bytecode_ldlt_ir1_ix_id	.equ	27
-bytecode_ldne_ir1_ir1_ix	.equ	28
-bytecode_or_ir1_ir1_ir2	.equ	29
-bytecode_peek_ir1_ix	.equ	30
-bytecode_peek_ir2_ix	.equ	31
-bytecode_poke_id_ix	.equ	32
-bytecode_poke_ix_ir1	.equ	33
-bytecode_progbegin	.equ	34
-bytecode_progend	.equ	35
-bytecode_return	.equ	36
-bytecode_sub_ir1_ix_id	.equ	37
-bytecode_sub_ix_ix_pb	.equ	38
+bytecode_ldlt_ir1_ix_ir1	.equ	28
+bytecode_ldlt_ir1_ix_pb	.equ	29
+bytecode_ldne_ir1_ir1_ix	.equ	30
+bytecode_or_ir1_ir1_ir2	.equ	31
+bytecode_peek_ir1_ix	.equ	32
+bytecode_poke_id_ix	.equ	33
+bytecode_poke_ix_ir1	.equ	34
+bytecode_progbegin	.equ	35
+bytecode_progend	.equ	36
+bytecode_return	.equ	37
+bytecode_sub_ir1_ix_id	.equ	38
+bytecode_sub_ix_ix_pb	.equ	39
 
 catalog
 	.word	add_ix_ix_ir1
 	.word	add_ix_ix_pb
 	.word	arrdim1_ir1_ix
-	.word	arrref1_ir1_ix
-	.word	arrval1_ir1_ix
+	.word	arrref1_ir1_ix_id
+	.word	arrref1_ir1_ix_ir1
+	.word	arrval1_ir1_ix_id
+	.word	arrval1_ir1_ix_ir1
 	.word	clear
 	.word	clr_ix
 	.word	dec_ix_ix
@@ -592,14 +587,13 @@ catalog
 	.word	ldeq_ir1_ix_id
 	.word	ldeq_ir2_ix_id
 	.word	ldge_ir1_ir1_ix
-	.word	ldlt_ir1_ir1_ir2
 	.word	ldlt_ir1_ir1_ix
-	.word	ldlt_ir1_ir1_pb
 	.word	ldlt_ir1_ix_id
+	.word	ldlt_ir1_ix_ir1
+	.word	ldlt_ir1_ix_pb
 	.word	ldne_ir1_ir1_ix
 	.word	or_ir1_ir1_ir2
 	.word	peek_ir1_ix
-	.word	peek_ir2_ix
 	.word	poke_id_ix
 	.word	poke_ix_ir1
 	.word	progbegin
@@ -798,6 +792,25 @@ dexext
 	ldx	,x
 	pulb
 	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
+	rts
 immstr
 	ldx	curinst
 	inx
@@ -834,6 +847,18 @@ getlt
 	rts
 _1
 	ldd	#-1
+	rts
+
+	.module	mdgetlw
+; fetch lower word from integer variable descriptor
+;  ENTRY: D holds integer variable descriptor
+;  EXIT: D holds lower word of integer variable
+getlw
+	std	tmp1
+	stx	tmp2
+	ldx	tmp1
+	ldd	1,x
+	ldx	tmp2
 	rts
 
 	.module	mdgetne
@@ -950,8 +975,19 @@ _ok
 	addd	2,x
 	jmp	alloc
 
-arrref1_ir1_ix			; numCalls = 2
-	.module	modarrref1_ir1_ix
+arrref1_ir1_ix_id			; numCalls = 1
+	.module	modarrref1_ir1_ix_id
+	jsr	extdex
+	jsr	getlw
+	std	0+argv
+	ldd	#33
+	jsr	ref1
+	jsr	refint
+	std	letptr
+	rts
+
+arrref1_ir1_ix_ir1			; numCalls = 1
+	.module	modarrref1_ir1_ix_ir1
 	jsr	extend
 	ldd	r1+1
 	std	0+argv
@@ -961,8 +997,23 @@ arrref1_ir1_ix			; numCalls = 2
 	std	letptr
 	rts
 
-arrval1_ir1_ix			; numCalls = 2
-	.module	modarrval1_ir1_ix
+arrval1_ir1_ix_id			; numCalls = 1
+	.module	modarrval1_ir1_ix_id
+	jsr	extdex
+	jsr	getlw
+	std	0+argv
+	ldd	#33
+	jsr	ref1
+	jsr	refint
+	ldx	tmp1
+	ldab	,x
+	stab	r1
+	ldd	1,x
+	std	r1+1
+	rts
+
+arrval1_ir1_ix_ir1			; numCalls = 1
+	.module	modarrval1_ir1_ix_ir1
 	jsr	extend
 	ldd	r1+1
 	std	0+argv
@@ -1115,7 +1166,7 @@ ld_ip_ir1			; numCalls = 2
 	stab	0,x
 	rts
 
-ld_ir1_ix			; numCalls = 7
+ld_ir1_ix			; numCalls = 3
 	.module	modld_ir1_ix
 	jsr	extend
 	ldd	1,x
@@ -1197,18 +1248,6 @@ ldge_ir1_ir1_ix			; numCalls = 1
 	stab	r1
 	rts
 
-ldlt_ir1_ir1_ir2			; numCalls = 1
-	.module	modldlt_ir1_ir1_ir2
-	jsr	noargs
-	ldd	r1+1
-	subd	r2+1
-	ldab	r1
-	sbcb	r2
-	jsr	getlt
-	std	r1+1
-	stab	r1
-	rts
-
 ldlt_ir1_ir1_ix			; numCalls = 2
 	.module	modldlt_ir1_ir1_ix
 	jsr	extend
@@ -1216,20 +1255,6 @@ ldlt_ir1_ir1_ix			; numCalls = 2
 	subd	1,x
 	ldab	r1
 	sbcb	0,x
-	jsr	getlt
-	std	r1+1
-	stab	r1
-	rts
-
-ldlt_ir1_ir1_pb			; numCalls = 1
-	.module	modldlt_ir1_ir1_pb
-	jsr	getbyte
-	clra
-	std	tmp1
-	ldd	r1+1
-	subd	tmp1
-	ldab	r1
-	sbcb	#0
 	jsr	getlt
 	std	r1+1
 	stab	r1
@@ -1246,6 +1271,32 @@ ldlt_ir1_ix_id			; numCalls = 2
 	subd	1,x
 	ldab	r1
 	sbcb	0,x
+	jsr	getlt
+	std	r1+1
+	stab	r1
+	rts
+
+ldlt_ir1_ix_ir1			; numCalls = 1
+	.module	modldlt_ir1_ix_ir1
+	jsr	extend
+	ldd	1,x
+	subd	r1+1
+	ldab	0,x
+	sbcb	r1
+	jsr	getlt
+	std	r1+1
+	stab	r1
+	rts
+
+ldlt_ir1_ix_pb			; numCalls = 1
+	.module	modldlt_ir1_ix_pb
+	jsr	extbyte
+	clra
+	std	tmp1
+	ldd	1,x
+	subd	tmp1
+	ldab	0,x
+	sbcb	#0
 	jsr	getlt
 	std	r1+1
 	stab	r1
@@ -1277,7 +1328,7 @@ or_ir1_ir1_ir2			; numCalls = 1
 	stab	r1
 	rts
 
-peek_ir1_ix			; numCalls = 11
+peek_ir1_ix			; numCalls = 12
 	.module	modpeek_ir1_ix
 	jsr	extend
 	ldx	1,x
@@ -1285,16 +1336,6 @@ peek_ir1_ix			; numCalls = 11
 	stab	r1+2
 	ldd	#0
 	std	r1
-	rts
-
-peek_ir2_ix			; numCalls = 1
-	.module	modpeek_ir2_ix
-	jsr	extend
-	ldx	1,x
-	jsr	peek
-	stab	r2+2
-	ldd	#0
-	std	r2
 	rts
 
 poke_id_ix			; numCalls = 3

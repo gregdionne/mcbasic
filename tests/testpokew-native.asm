@@ -116,7 +116,7 @@ LINE_20
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_X
-	jsr	arrval1_ir1_ix
+	jsr	arrval1_ir1_ix_ir1
 
 	ldab	#34
 	jsr	peekw_ir2_pb
@@ -137,7 +137,7 @@ LINE_30
 	jsr	ld_ir1_pb
 
 	ldx	#INTARR_Y
-	jsr	arrval1_ir1_ix
+	jsr	arrval1_ir1_ix_ir1
 
 	ldx	#INTVAR_X
 	jsr	peekw_ir2_ix
@@ -785,8 +785,8 @@ _ok
 	addd	2,x
 	jmp	alloc
 
-arrval1_ir1_ix			; numCalls = 2
-	.module	modarrval1_ir1_ix
+arrval1_ir1_ix_ir1			; numCalls = 2
+	.module	modarrval1_ir1_ix_ir1
 	ldd	r1+1
 	std	0+argv
 	ldd	#33

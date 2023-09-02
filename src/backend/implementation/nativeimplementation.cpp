@@ -266,7 +266,41 @@ std::string NativeImplementation::regInt_regStr_immStr(InstLdEq &inst) {
   return tasm.source();
 }
 
+std::string NativeImplementation::regInt_extStr_immStr(InstLdEq &inst) {
+  inst.dependencies.insert("mdstreqs");
+  inst.dependencies.insert("mdgeteq");
+
+  Assembler tasm;
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("tmp2");
+  tasm.jsr("streqs");
+  tasm.jsr("geteq");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string NativeImplementation::regInt_regStr_immStr(InstLdNe &inst) {
+  inst.dependencies.insert("mdstreqs");
+  inst.dependencies.insert("mdgetne");
+
+  Assembler tasm;
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("tmp2");
+  tasm.jsr("streqs");
+  tasm.jsr("getne");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string NativeImplementation::regInt_extStr_immStr(InstLdNe &inst) {
   inst.dependencies.insert("mdstreqs");
   inst.dependencies.insert("mdgetne");
 
@@ -300,6 +334,57 @@ std::string NativeImplementation::regInt_regStr_immStr(InstLdLt &inst) {
   return tasm.source();
 }
 
+std::string NativeImplementation::regInt_extStr_immStr(InstLdLt &inst) {
+  inst.dependencies.insert("mdstrlos");
+  inst.dependencies.insert("mdgetlo");
+
+  Assembler tasm;
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("1+argv");
+  tasm.jsr("strlos");
+  tasm.jsr("getlo");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string NativeImplementation::regInt_immStr_regStr(InstLdLt &inst) {
+  inst.dependencies.insert("mdstrlosr");
+  inst.dependencies.insert("mdgetlo");
+
+  Assembler tasm;
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("tmp2");
+  tasm.jsr("strlosr");
+  tasm.jsr("getlo");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string NativeImplementation::regInt_immStr_extStr(InstLdLt &inst) {
+  inst.dependencies.insert("mdstrlosr");
+  inst.dependencies.insert("mdgetlo");
+
+  Assembler tasm;
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("tmp2");
+  tasm.jsr("strlosr");
+  tasm.jsr("getlo");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string NativeImplementation::regInt_regStr_immStr(InstLdGe &inst) {
   inst.dependencies.insert("mdstrlos");
   inst.dependencies.insert("mdgeths");
@@ -310,6 +395,57 @@ std::string NativeImplementation::regInt_regStr_immStr(InstLdGe &inst) {
   tasm.ldd(inst.arg2->lword());
   tasm.std("1+argv");
   tasm.jsr("strlos");
+  tasm.jsr("geths");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string NativeImplementation::regInt_extStr_immStr(InstLdGe &inst) {
+  inst.dependencies.insert("mdstrlos");
+  inst.dependencies.insert("mdgeths");
+
+  Assembler tasm;
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("1+argv");
+  tasm.jsr("strlos");
+  tasm.jsr("geths");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string NativeImplementation::regInt_immStr_regStr(InstLdGe &inst) {
+  inst.dependencies.insert("mdstrlosr");
+  inst.dependencies.insert("mdgeths");
+
+  Assembler tasm;
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("tmp2");
+  tasm.jsr("strlosr");
+  tasm.jsr("geths");
+  tasm.std(inst.arg1->lword());
+  tasm.stab(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string NativeImplementation::regInt_immStr_extStr(InstLdGe &inst) {
+  inst.dependencies.insert("mdstrlosr");
+  inst.dependencies.insert("mdgeths");
+
+  Assembler tasm;
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.stab("tmp1+1");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("tmp2");
+  tasm.jsr("strlosr");
   tasm.jsr("geths");
   tasm.std(inst.arg1->lword());
   tasm.stab(inst.arg1->sbyte());

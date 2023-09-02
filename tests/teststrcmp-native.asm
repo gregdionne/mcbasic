@@ -718,6 +718,10 @@ _rts
 	rts
 
 	.module	mdstreqx
+; equality comparison with string release
+; ENTRY:  X holds descriptor of LHS
+;         tmp1+1 and tmp2 are RHS
+; EXIT:  Z CCR flag set
 streqx
 	ldab	0,x
 	cmpb	tmp1+1
@@ -902,12 +906,16 @@ _fdone
 	rts
 
 	.module	mdstrlo
+; compare A$ < B$ with string release
+; ENTRY:  A$ = 0+argv (len) 1+argv (ptr)
+;         B$ = tmp1+1 (len) tmp2   (ptr)
+; EXIT: C flag set if A$ < B$
 strlo
-	stab	tmp1+1
 	ldx	1+argv
 	jsr	strrel
 	ldx	tmp2
 	jsr	strrel
+	ldab	tmp1+1
 	cmpb	0+argv
 	bls	_ok
 	ldab	0+argv
@@ -938,6 +946,7 @@ _done
 	.module	mdstrlox
 strlox
 	ldab	,x
+	stab	tmp1+1
 	ldx	1,x
 	stx	tmp2
 	bra	strlo

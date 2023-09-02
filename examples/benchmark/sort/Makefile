@@ -1,28 +1,40 @@
 MCBASIC ?= ../../../mcbasic
 
-BSORT ?= bsort-hand.c10 bsort-bytecode.c10 bsort-native.c10
-QSORT ?= qsort-hand.c10 qsort-bytecode.c10 qsort-native.c10
-CSORT ?= csort-hand.c10 csort-bytecode.c10 csort-native.c10
+BC10S ?= bsort-hand.c10 bsort-bytecode.c10 bsort-native.c10
+QC10S ?= qsort-hand.c10 qsort-bytecode.c10 qsort-native.c10
+CC10S ?= csort-hand.c10 csort-bytecode.c10 csort-native.c10
 
-.PRECIOUS: %-native.asm %-bytecode.asm
+BASMS ?= bsort-bytecode.asm bsort-native.asm
+QASMS ?= qsort-bytecode.asm qsort-native.asm
+CASMS ?= csort-bytecode.asm csort-native.asm
 
-all: $(BSORT) $(QSORT) $(CSORT)
+all: $(BC10S) $(QC10S) $(CC10S) $(BASMS) $(QASMS) $(CASMS)
 
-%.c10: %.asm
-	tasm $<
+%-hand.c10: %-hand.asm
+	mcbasic $<
 
-%-native.bas: %.bas
-	cp $< $@
-
-%-native.asm: %-native.bas $(MCBASIC)
-	$(MCBASIC) -native $<
 
 %-bytecode.bas: %.bas
 	cp $< $@
 
+%-native.bas: %.bas
+	cp $< $@
+
+
 %-bytecode.asm: %-bytecode.bas $(MCBASIC)
+	$(MCBASIC) -S $<
+
+%-native.asm: %-native.bas $(MCBASIC)
+	$(MCBASIC) -native -S $<
+
+
+%-bytecode.c10: %-bytecode.bas $(MCBASIC)
 	$(MCBASIC) $<
 
+%-native.c10: %-native.bas $(MCBASIC)
+	$(MCBASIC) -native $<
+
+
 clean:
-	rm -f *.lst *.obj *.c10 qsort.asm bsort.asm *-bytecode.asm *-native.asm *-native.bas *-bytecode.bas
+	rm -f *.lst *.obj *.c10 *-bytecode.asm *-native.asm *-native.bas *-bytecode.bas
 

@@ -131,7 +131,7 @@ LINE_20
 	.byte	bytecode_ld_ir1_pb
 	.byte	3
 
-	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_arrval1_ir1_ix_ir1
 	.byte	bytecode_INTARR_X
 
 	.byte	bytecode_peekw_ir2_pb
@@ -152,7 +152,7 @@ LINE_30
 	.byte	bytecode_ld_ir1_pb
 	.byte	2
 
-	.byte	bytecode_arrval1_ir1_ix
+	.byte	bytecode_arrval1_ir1_ix_ir1
 	.byte	bytecode_INTARR_Y
 
 	.byte	bytecode_peekw_ir2_ix
@@ -221,7 +221,7 @@ LLAST
 bytecode_add_ir1_ir1_ir2	.equ	0
 bytecode_add_ir1_ir1_pb	.equ	1
 bytecode_arrdim1_ir1_ix	.equ	2
-bytecode_arrval1_ir1_ix	.equ	3
+bytecode_arrval1_ir1_ix_ir1	.equ	3
 bytecode_clear	.equ	4
 bytecode_ld_ir1_pb	.equ	5
 bytecode_ld_ix_ir1	.equ	6
@@ -239,7 +239,7 @@ catalog
 	.word	add_ir1_ir1_ir2
 	.word	add_ir1_ir1_pb
 	.word	arrdim1_ir1_ix
-	.word	arrval1_ir1_ix
+	.word	arrval1_ir1_ix_ir1
 	.word	clear
 	.word	ld_ir1_pb
 	.word	ld_ix_ir1
@@ -442,6 +442,25 @@ dexext
 	abx
 	ldx	,x
 	pulb
+	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
 	rts
 immstr
 	ldx	curinst
@@ -984,8 +1003,8 @@ _ok
 	addd	2,x
 	jmp	alloc
 
-arrval1_ir1_ix			; numCalls = 2
-	.module	modarrval1_ir1_ix
+arrval1_ir1_ix_ir1			; numCalls = 2
+	.module	modarrval1_ir1_ix_ir1
 	jsr	extend
 	ldd	r1+1
 	std	0+argv

@@ -136,11 +136,9 @@ LINE_40
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_I
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_J
-
-	.byte	bytecode_arrref2_ir1_ix
+	.byte	bytecode_arrref2_ir1_ix_id
 	.byte	bytecode_INTARR_X
+	.byte	bytecode_INTVAR_J
 
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_J
@@ -186,11 +184,9 @@ LINE_140
 	.byte	bytecode_ld_ir1_ix
 	.byte	bytecode_INTVAR_I
 
-	.byte	bytecode_ld_ir2_ix
-	.byte	bytecode_INTVAR_J
-
-	.byte	bytecode_arrval2_ir1_ix
+	.byte	bytecode_arrval2_ir1_ix_id
 	.byte	bytecode_INTARR_X
+	.byte	bytecode_INTVAR_J
 
 	.byte	bytecode_str_sr1_ir1
 
@@ -226,33 +222,31 @@ LLAST
 
 ; Library Catalog
 bytecode_arrdim2_ir1_ix	.equ	0
-bytecode_arrref2_ir1_ix	.equ	1
-bytecode_arrval2_ir1_ix	.equ	2
+bytecode_arrref2_ir1_ix_id	.equ	1
+bytecode_arrval2_ir1_ix_id	.equ	2
 bytecode_clear	.equ	3
 bytecode_forclr_ix	.equ	4
 bytecode_ld_ip_ir1	.equ	5
 bytecode_ld_ir1_ix	.equ	6
 bytecode_ld_ir1_pb	.equ	7
-bytecode_ld_ir2_ix	.equ	8
-bytecode_ld_ir2_pb	.equ	9
-bytecode_next	.equ	10
-bytecode_pr_sr1	.equ	11
-bytecode_pr_ss	.equ	12
-bytecode_progbegin	.equ	13
-bytecode_progend	.equ	14
-bytecode_str_sr1_ir1	.equ	15
-bytecode_to_ip_pb	.equ	16
+bytecode_ld_ir2_pb	.equ	8
+bytecode_next	.equ	9
+bytecode_pr_sr1	.equ	10
+bytecode_pr_ss	.equ	11
+bytecode_progbegin	.equ	12
+bytecode_progend	.equ	13
+bytecode_str_sr1_ir1	.equ	14
+bytecode_to_ip_pb	.equ	15
 
 catalog
 	.word	arrdim2_ir1_ix
-	.word	arrref2_ir1_ix
-	.word	arrval2_ir1_ix
+	.word	arrref2_ir1_ix_id
+	.word	arrval2_ir1_ix_id
 	.word	clear
 	.word	forclr_ix
 	.word	ld_ip_ir1
 	.word	ld_ir1_ix
 	.word	ld_ir1_pb
-	.word	ld_ir2_ix
 	.word	ld_ir2_pb
 	.word	next
 	.word	pr_sr1
@@ -452,6 +446,25 @@ dexext
 	ldx	,x
 	pulb
 	rts
+eistr
+	ldx	curinst
+	inx
+	pshx
+	ldab	0,x
+	ldx	#symtbl
+	abx
+	abx
+	ldd	,x
+	std	tmp3
+	pulx
+	inx
+	ldab	,x
+	inx
+	pshx
+	abx
+	stx	nxtinst
+	pulx
+	rts
 immstr
 	ldx	curinst
 	inx
@@ -592,6 +605,18 @@ _shift
 	rol	7,x
 	rol	6,x
 	rol	5,x
+	rts
+
+	.module	mdgetlw
+; fetch lower word from integer variable descriptor
+;  ENTRY: D holds integer variable descriptor
+;  EXIT: D holds lower word of integer variable
+getlw
+	std	tmp1
+	stx	tmp2
+	ldx	tmp1
+	ldd	1,x
+	ldx	tmp2
 	rts
 
 	.module	mdidivb
@@ -1052,25 +1077,25 @@ _ok
 	addd	tmp3
 	jmp	alloc
 
-arrref2_ir1_ix			; numCalls = 1
-	.module	modarrref2_ir1_ix
-	jsr	extend
+arrref2_ir1_ix_id			; numCalls = 1
+	.module	modarrref2_ir1_ix_id
+	jsr	extdex
+	jsr	getlw
+	std	2+argv
 	ldd	r1+1
 	std	0+argv
-	ldd	r1+1+5
-	std	2+argv
 	jsr	ref2
 	jsr	refint
 	std	letptr
 	rts
 
-arrval2_ir1_ix			; numCalls = 1
-	.module	modarrval2_ir1_ix
-	jsr	extend
+arrval2_ir1_ix_id			; numCalls = 1
+	.module	modarrval2_ir1_ix_id
+	jsr	extdex
+	jsr	getlw
+	std	2+argv
 	ldd	r1+1
 	std	0+argv
-	ldd	r1+1+5
-	std	2+argv
 	jsr	ref2
 	jsr	refint
 	ldx	tmp1
@@ -1137,15 +1162,6 @@ ld_ir1_pb			; numCalls = 1
 	stab	r1+2
 	ldd	#0
 	std	r1
-	rts
-
-ld_ir2_ix			; numCalls = 2
-	.module	modld_ir2_ix
-	jsr	extend
-	ldd	1,x
-	std	r2+1
-	ldab	0,x
-	stab	r2
 	rts
 
 ld_ir2_pb			; numCalls = 1
