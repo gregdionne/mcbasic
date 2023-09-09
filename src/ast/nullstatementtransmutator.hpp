@@ -39,6 +39,9 @@ public:
   up<Statement> mutate(Stop & /*s*/) override { return {}; }
   up<Statement> mutate(Poke & /*s*/) override { return {}; }
   up<Statement> mutate(Clear & /*s*/) override { return {}; }
+  up<Statement> mutate(CLoadM & /*s*/) override { return {}; }
+  up<Statement> mutate(CLoadStar & /*s*/) override { return {}; }
+  up<Statement> mutate(CSaveStar & /*s*/) override { return {}; }
   up<Statement> mutate(Set & /*s*/) override { return {}; }
   up<Statement> mutate(Reset & /*s*/) override { return {}; }
   up<Statement> mutate(Cls & /*s*/) override { return {}; }

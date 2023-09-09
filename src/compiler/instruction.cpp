@@ -143,10 +143,22 @@ std::string Instruction::callLabel() const {
   return lbl;
 }
 
-bool Instruction::isIndFlt() const { return arg1->isIndFlt(); }
-bool Instruction::isIndInt() const { return arg1->isIndInt(); }
-bool Instruction::isExtFlt() const { return arg1->isExtFlt(); }
-bool Instruction::isExtInt() const { return arg1->isExtInt(); }
+bool Instruction::isInherent() const { return arg1->isInherent(); }
+bool Instruction::isIndFlt() const {
+  return arg1->isIndFlt() && arg2->isInherent();
+}
+bool Instruction::isIndInt() const {
+  return arg1->isIndInt() && arg2->isInherent();
+}
+bool Instruction::isExtFlt() const {
+  return arg1->isExtFlt() && arg2->isInherent();
+}
+bool Instruction::isExtInt() const {
+  return arg1->isExtInt() && arg2->isInherent();
+}
+bool Instruction::isRegStr() const {
+  return arg1->isRegStr() && arg2->isInherent();
+}
 
 bool Instruction::isExtFlt_extFlt() const {
   return arg1->isExtFlt() && arg2->isExtFlt();
@@ -740,4 +752,10 @@ bool Instruction::isRegInt_posWord_regFlt() const {
 }
 bool Instruction::isRegInt_posWord_regInt() const {
   return arg1->isRegInt() && arg2->isPosWord() && arg3->isRegInt();
+}
+bool Instruction::isExtInt_posByte_regStr() const {
+  return arg1->isExtInt() && arg2->isPosByte() && arg3->isRegStr();
+}
+bool Instruction::isExtFlt_posByte_regStr() const {
+  return arg1->isExtFlt() && arg2->isPosByte() && arg3->isRegStr();
 }

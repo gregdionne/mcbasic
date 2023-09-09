@@ -14,7 +14,8 @@
 
 class ExprSymbolUsageTabulator : public ExprInspector<void, void> {
 public:
-  explicit ExprSymbolUsageTabulator(SymbolTable &st) : symbolTable(st) {}
+  ExprSymbolUsageTabulator(SymbolTable &st, int ln)
+      : symbolTable(st), lineNumber(ln) {}
   ExprSymbolUsageTabulator() = delete;
   ExprSymbolUsageTabulator(const ExprSymbolUsageTabulator &) = delete;
   ExprSymbolUsageTabulator(ExprSymbolUsageTabulator &&) = delete;
@@ -75,25 +76,30 @@ public:
 
 private:
   SymbolTable &symbolTable;
+  const int lineNumber;
 };
 
 class AssignSymbolUsageInspector : public NullExprInspector {
 public:
-  explicit AssignSymbolUsageInspector(ExprSymbolUsageTabulator &suei)
-      : exprSymbolUsageTabulator(suei) {}
+  AssignSymbolUsageInspector(ExprSymbolUsageTabulator &suei, SymbolTable &st,
+                             int ln)
+      : exprSymbolUsageTabulator(suei), symbolTable(st), lineNumber(ln) {}
   void inspect(const NumericArrayExpr &e) const override;
   void inspect(const StringArrayExpr &e) const override;
 
 private:
   using NullExprInspector::inspect;
   ExprSymbolUsageTabulator &exprSymbolUsageTabulator;
+  SymbolTable &symbolTable;
+  int lineNumber;
 };
 
 class StatementSymbolUsageInspector : public StatementInspector<void> {
 public:
-  explicit StatementSymbolUsageInspector(SymbolTable &st)
-      : exprSymbolUsageTabulator(st),
-        assignSymbolUsageInspector(exprSymbolUsageTabulator) {}
+  StatementSymbolUsageInspector(SymbolTable &st, int ln)
+      : exprSymbolUsageTabulator(st, ln),
+        assignSymbolUsageInspector(exprSymbolUsageTabulator, st, ln),
+        symbolTable(st) {}
   StatementSymbolUsageInspector() = delete;
   StatementSymbolUsageInspector(const StatementSymbolUsageInspector &) = delete;
   StatementSymbolUsageInspector(StatementSymbolUsageInspector &&) = delete;
@@ -127,6 +133,9 @@ public:
   void inspect(const Stop &s) const override;
   void inspect(const Poke &s) const override;
   void inspect(const Clear &s) const override;
+  void inspect(const CLoadM &s) const override;
+  void inspect(const CLoadStar &s) const override;
+  void inspect(const CSaveStar &s) const override;
   void inspect(const Set &s) const override;
   void inspect(const Reset &s) const override;
   void inspect(const Cls &s) const override;
@@ -137,18 +146,17 @@ public:
 private:
   ExprSymbolUsageTabulator exprSymbolUsageTabulator;
   AssignSymbolUsageInspector assignSymbolUsageInspector;
+  SymbolTable &symbolTable;
 };
 
 class SymbolUsageInspector : public ProgramOp {
 public:
-  explicit SymbolUsageInspector(SymbolTable &st)
-      : symbolTable(st), statementSymbolUsageInspector(st) {}
+  explicit SymbolUsageInspector(SymbolTable &st) : symbolTable(st) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 
 private:
   SymbolTable &symbolTable;
-  StatementSymbolUsageInspector statementSymbolUsageInspector;
 };
 
 #endif

@@ -103,11 +103,18 @@ std::string CoreTarget::generateMicroColorConstants() {
   tasm.equ("DP_LTAB", "$E5", "current last tab column");
   tasm.equ("DP_LPOS", "$E6", "current line position on console");
   tasm.equ("DP_LWID", "$E7", "current line width of console");
+  tasm.equ("DP_DEVN", "$E8", "current device number");
   tasm.comment("");
 
   tasm.comment("Memory equates");
   tasm.equ("M_KBUF", "$4231", "keystrobe buffer (8 bytes)");
   tasm.equ("M_PMSK", "$423C", "pixel mask for SET, RESET and POINT");
+  tasm.equ("M_FLEN", "$4256", "filename len");
+  tasm.equ("M_FNAM", "$4257", "filename (8 bytes)");
+  tasm.equ("M_FTYP", "$4267", "cassette filetype");
+  tasm.equ("M_LDSZ", "$426C", "load addr / array size");
+  tasm.equ("M_CBEG", "$426F", "cassette beginning address");
+  tasm.equ("M_CEND", "$4271", "address after cassette ending");
   tasm.equ("M_IKEY", "$427F", "key code for INKEY$");
   tasm.equ("M_CRSR", "$4280", "cursor location");
   tasm.equ("M_LBUF", "$42B2", "line input buffer (130 chars)");
@@ -140,9 +147,15 @@ std::string CoreTarget::generateMicroColorConstants() {
            "get pixel screen location X and mask in R_PMSK");
   tasm.equ("R_CLSN", "$FBC4", "clear screen with color code in ACCB");
   tasm.equ("R_CLS", "$FBD4", "clear screen with space character");
+  tasm.equ("R_WBLKS", "$FC5D", "write blocks M_CBEG up to before M_CEND");
+  tasm.equ("R_WFNAM", "$FC8E", "write filename block + silence + post-leader");
+  tasm.equ("R_RBLKS", "$FDC5", "read data blocks into M_CBEG");
+  tasm.equ("R_RCLDM", "$FE1B", "read machine language blocks offset by X");
+  tasm.equ("R_SFNAM", "$FE37", "search for filename");
   tasm.equ("R_SOUND", "$FFAB",
            "play sound with pitch in ACCA and duration in ACCB");
   tasm.equ("R_MCXID", "$FFDA", "ID location for MCX BASIC");
+  tasm.equ("R_RSLDR", "$FF4E", "read leader preceding data blocks");
   tasm.blank();
 
   tasm.comment("Equate(s) for MCBASIC constants");

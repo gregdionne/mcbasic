@@ -1,16 +1,19 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "symboltabulator.hpp"
+#include "dimensionizer.hpp"
 
 void SymbolTabulator::operate(Program &p) {
   for (auto &line : p.lines) {
     line->operate(this);
   }
   sortSymbolTable(symbolTable);
+  Dimensionizer d(symbolTable);
+  d.operate(p);
 }
 
 void SymbolTabulator::operate(Line &l) {
-  StatementSymbolTabulator st(symbolTable, l.lineNumber);
+  StatementSymbolTabulator st(symbolTable);
   st.delve(l.statements);
 }
 
@@ -61,6 +64,18 @@ void StatementSymbolTabulator::inspect(const Input &s) const {
   }
 }
 
+void StatementSymbolTabulator::inspect(const CLoadStar &s) const {
+  for (Symbol &symbol : symbolTable.numArrTable) {
+    if (symbol.name == s.arrayName) {
+      return;
+    }
+  }
+
+  Symbol sym;
+  sym.name = s.arrayName;
+  symbolTable.numArrTable.push_back(sym);
+}
+
 void StatementSymbolTabulator::delve(
     const std::vector<up<Statement>> &statements) const {
   for (const auto &statement : statements) {
@@ -69,40 +84,30 @@ void StatementSymbolTabulator::delve(
 }
 
 void ExprSymbolTabulator::addEntry(std::vector<Symbol> &table,
-                                   const std::string &symbolName,
-                                   std::size_t numDims) const {
+                                   const std::string &symbolName) const {
   for (Symbol &symbol : table) {
     if (symbol.name == symbolName) {
-      if (symbol.numDims == static_cast<int>(numDims)) {
-        return;
-      }
-      fprintf(stderr,
-              "error: line %i: Dimension mismatch for array variable %s\n",
-              lineNumber, symbol.name.c_str());
-      exit(1);
+      return;
     }
   }
 
-  Symbol s;
-  s.name = symbolName;
-  s.numDims = static_cast<int>(numDims);
-  table.push_back(s);
+  Symbol sym;
+  sym.name = symbolName;
+  table.push_back(sym);
 }
 
 void ExprSymbolTabulator::inspect(const NumericVariableExpr &e) const {
-  addEntry(symbolTable.numVarTable, e.varname, 0);
+  addEntry(symbolTable.numVarTable, e.varname);
 }
 
 void ExprSymbolTabulator::inspect(const StringVariableExpr &e) const {
-  addEntry(symbolTable.strVarTable, e.varname, 0);
+  addEntry(symbolTable.strVarTable, e.varname);
 }
 
 void ExprSymbolTabulator::inspect(const NumericArrayExpr &e) const {
-  addEntry(symbolTable.numArrTable, e.varexp->varname,
-           e.indices->operands.size());
+  addEntry(symbolTable.numArrTable, e.varexp->varname);
 }
 
 void ExprSymbolTabulator::inspect(const StringArrayExpr &e) const {
-  addEntry(symbolTable.strArrTable, e.varexp->varname,
-           e.indices->operands.size());
+  addEntry(symbolTable.strArrTable, e.varexp->varname);
 }

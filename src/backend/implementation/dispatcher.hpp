@@ -116,6 +116,8 @@ public:
   std::string operate(InstPrCR &inst) override;
   std::string operate(InstPrAt &inst) override;
   std::string operate(InstPr &inst) override;
+  std::string operate(InstLPrintOn &inst) override;
+  std::string operate(InstLPrintOff &inst) override;
   std::string operate(InstFor &inst) override;
   std::string operate(InstForOne &inst) override;
   std::string operate(InstForTrue &inst) override;
@@ -139,6 +141,9 @@ public:
   std::string operate(InstRestore &inst) override;
   std::string operate(InstReturn &inst) override;
   std::string operate(InstClear &inst) override;
+  std::string operate(InstCLoadM &inst) override;
+  std::string operate(InstCLoadStar &inst) override;
+  std::string operate(InstCSaveStar &inst) override;
   std::string operate(InstCls &inst) override;
   std::string operate(InstClsN &inst) override;
   std::string operate(InstSet &inst) override;

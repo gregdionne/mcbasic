@@ -103,9 +103,29 @@ std::string CoreImplementation::inherent(InstEnd &inst) {
   tasm.equ("OM_ERROR", "12");
   tasm.equ("BS_ERROR", "16");
   tasm.equ("DD_ERROR", "18");
+  tasm.equ("D0_ERROR", "20");
   tasm.equ("LS_ERROR", "28");
+  tasm.equ("IO_ERROR", "34");
+  tasm.equ("FM_ERROR", "36");
   tasm.label("error");
   tasm.jmp("R_ERROR");
+  return tasm.source();
+}
+
+std::string CoreImplementation::inherent(InstLPrintOn &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab("#-2");
+  tasm.stab("DP_DEVN");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::inherent(InstLPrintOff &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.clr("DP_DEVN");
+  tasm.rts();
   return tasm.source();
 }
 
@@ -1967,6 +1987,164 @@ std::string CoreImplementation::regInt_extStr_dexInt(InstArrayRef5 &inst) {
   tasm.jsr("refint");
   tasm.std("letptr");
   tasm.rts();
+  return tasm.source();
+}
+
+std::string CoreImplementation::inherent(InstCLoadM &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcloadm");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.clrb();
+  tasm.jsr("filename");
+  tasm.ldd("#0");
+  tasm.jmp("cloadm");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regStr(InstCLoadM &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcloadm");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd(inst.arg1->lword());
+  tasm.std("3+argv");
+  tasm.ldab(inst.arg1->sbyte());
+  tasm.jsr("filename");
+  tasm.ldd("#0");
+  tasm.jmp("cloadm");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regStr_regInt(InstCLoadM &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcloadm");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldd(inst.arg1->lword());
+  tasm.std("3+argv");
+  tasm.ldab(inst.arg1->sbyte());
+  tasm.jsr("filename");
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.asrb();
+  tasm.adcb("#0");
+  tasm.bne("_fcerror");
+  tasm.ldd(inst.arg2->lword());
+  tasm.jmp("cloadm");
+  tasm.label("_fcerror");
+  tasm.ldab("FC_ERROR");
+  tasm.jmp("error");
+  return tasm.source();
+}
+
+std::string CoreImplementation::extInt_posByte(InstCLoadStar &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcloadstar");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.clrb();
+  tasm.jsr("filename");
+  tasm.jmp("cloadstari");
+  return tasm.source();
+}
+
+std::string CoreImplementation::extFlt_posByte(InstCLoadStar &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcloadstar");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.clrb();
+  tasm.jsr("filename");
+  tasm.jmp("cloadstarf");
+  return tasm.source();
+}
+
+std::string CoreImplementation::extInt_posByte_regStr(InstCLoadStar &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcloadstar");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("3+argv");
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.jsr("filename");
+  tasm.jmp("cloadstari");
+  return tasm.source();
+}
+
+std::string CoreImplementation::extFlt_posByte_regStr(InstCLoadStar &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcloadstar");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("3+argv");
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.jsr("filename");
+  tasm.jmp("cloadstarf");
+  return tasm.source();
+}
+std::string CoreImplementation::extInt_posByte(InstCSaveStar &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcsavestar");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.clrb();
+  tasm.jsr("filename");
+  tasm.jmp("csavestari");
+  return tasm.source();
+}
+
+std::string CoreImplementation::extFlt_posByte(InstCSaveStar &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcsavestar");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.clrb();
+  tasm.jsr("filename");
+  tasm.jmp("csavestarf");
+  return tasm.source();
+}
+
+std::string CoreImplementation::extInt_posByte_regStr(InstCSaveStar &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcsavestar");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("3+argv");
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.jsr("filename");
+  tasm.jmp("csavestari");
+  return tasm.source();
+}
+
+std::string CoreImplementation::extFlt_posByte_regStr(InstCSaveStar &inst) {
+  inst.dependencies.insert("mdfilename");
+  inst.dependencies.insert("mdcsavestar");
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.stab("0+argv");
+  tasm.stx("1+argv");
+  tasm.ldd(inst.arg3->lword());
+  tasm.std("3+argv");
+  tasm.ldab(inst.arg3->sbyte());
+  tasm.jsr("filename");
+  tasm.jmp("csavestarf");
   return tasm.source();
 }
 

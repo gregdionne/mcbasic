@@ -241,6 +241,33 @@ std::string Dispatcher::operate(InstShift &inst) {
              : implementation->unimplemented(inst);
 }
 
+std::string Dispatcher::operate(InstCLoadM &inst) {
+  return inst.isInherent()        ? implementation->inherent(inst)
+         : inst.isRegStr_regInt() ? implementation->regStr_regInt(inst)
+         : inst.isRegStr()        ? implementation->regStr(inst)
+                                  : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstCLoadStar &inst) {
+  return inst.isExtInt_posByte_regStr()
+             ? implementation->extInt_posByte_regStr(inst)
+         : inst.isExtFlt_posByte_regStr()
+             ? implementation->extFlt_posByte_regStr(inst)
+         : inst.isExtInt_posByte() ? implementation->extInt_posByte(inst)
+         : inst.isExtFlt_posByte() ? implementation->extFlt_posByte(inst)
+                                   : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstCSaveStar &inst) {
+  return inst.isExtInt_posByte_regStr()
+             ? implementation->extInt_posByte_regStr(inst)
+         : inst.isExtFlt_posByte_regStr()
+             ? implementation->extFlt_posByte_regStr(inst)
+         : inst.isExtInt_posByte() ? implementation->extInt_posByte(inst)
+         : inst.isExtFlt_posByte() ? implementation->extFlt_posByte(inst)
+                                   : implementation->unimplemented(inst);
+}
+
 std::string Dispatcher::operate(InstLd &inst) {
   return inst.isRegFlt_posByte()   ? implementation->regFlt_posByte(inst)
          : inst.isRegFlt_negByte() ? implementation->regFlt_negByte(inst)
@@ -1545,6 +1572,14 @@ std::string Dispatcher::operate(InstPrTab &inst) {
          : inst.arg1->isRegInt() ? implementation->regInt(inst)
          : inst.arg1->isExtInt() ? implementation->extInt(inst)
                                  : implementation->unimplemented(inst);
+}
+
+std::string Dispatcher::operate(InstLPrintOn &inst) {
+  return implementation->inherent(inst);
+}
+
+std::string Dispatcher::operate(InstLPrintOff &inst) {
+  return implementation->inherent(inst);
 }
 
 std::string Dispatcher::operate(InstFor &inst) {

@@ -327,7 +327,7 @@ void StatementLister::absorb(const Data &s) {
 }
 
 void StatementLister::absorb(const Print &s) {
-  result = "PRINT";
+  result = s.isLPrint ? "LPRINT" : "PRINT";
   if (s.at) {
     result += " @" + list(s.at) + ",";
   }
@@ -452,6 +452,32 @@ void StatementLister::absorb(const Clear &s) {
   result = "CLEAR";
   if (s.size) {
     result += " " + list(s.size);
+  }
+}
+
+void StatementLister::absorb(const CLoadM &s) {
+  result = "CLOADM";
+  if (s.filename) {
+    result += " " + list(s.filename);
+  }
+  if (s.offset) {
+    result += ", " + list(s.offset);
+  }
+}
+
+void StatementLister::absorb(const CLoadStar &s) {
+  result = "CLOAD*";
+  result += " " + s.arrayName;
+  if (s.filename) {
+    result += ", " + list(s.filename);
+  }
+}
+
+void StatementLister::absorb(const CSaveStar &s) {
+  result = "CSAVE*";
+  result += " " + s.arrayName;
+  if (s.filename) {
+    result += ", " + list(s.filename);
   }
 }
 

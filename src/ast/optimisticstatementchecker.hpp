@@ -39,6 +39,9 @@ public:
   bool inspect(const Stop & /*s*/) const override { return true; }
   bool inspect(const Poke & /*s*/) const override { return true; }
   bool inspect(const Clear & /*s*/) const override { return true; }
+  bool inspect(const CLoadM & /*s*/) const override { return true; }
+  bool inspect(const CLoadStar & /*s*/) const override { return true; }
+  bool inspect(const CSaveStar & /*s*/) const override { return true; }
   bool inspect(const Set & /*s*/) const override { return true; }
   bool inspect(const Reset & /*s*/) const override { return true; }
   bool inspect(const Cls & /*s*/) const override { return true; }

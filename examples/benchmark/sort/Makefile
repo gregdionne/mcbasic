@@ -11,7 +11,7 @@ CASMS ?= csort-bytecode.asm csort-native.asm
 all: $(BC10S) $(QC10S) $(CC10S) $(BASMS) $(QASMS) $(CASMS)
 
 %-hand.c10: %-hand.asm
-	mcbasic $<
+	$(MCBASIC) $<
 
 
 %-bytecode.bas: %.bas

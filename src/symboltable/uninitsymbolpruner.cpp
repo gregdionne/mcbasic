@@ -369,6 +369,27 @@ void StatementUninitSymbolPruner::mutate(Clear &s) {
   }
 }
 
+void StatementUninitSymbolPruner::mutate(CLoadM &s) {
+  if (s.filename) {
+    strPrune(s.filename, that);
+  }
+  if (s.offset) {
+    numPrune(s.offset, that);
+  }
+}
+
+void StatementUninitSymbolPruner::mutate(CLoadStar &s) {
+  if (s.filename) {
+    strPrune(s.filename, that);
+  }
+}
+
+void StatementUninitSymbolPruner::mutate(CSaveStar &s) {
+  if (s.filename) {
+    strPrune(s.filename, that);
+  }
+}
+
 void StatementUninitSymbolPruner::mutate(Set &s) {
   numPrune(s.x, that);
   numPrune(s.y, that);

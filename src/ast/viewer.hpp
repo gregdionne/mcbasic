@@ -97,6 +97,9 @@ public:
   void absorb(const Stop &s) override;
   void absorb(const Poke &s) override;
   void absorb(const Clear &s) override;
+  void absorb(const CLoadM &s) override;
+  void absorb(const CLoadStar &s) override;
+  void absorb(const CSaveStar &s) override;
   void absorb(const Set &s) override;
   void absorb(const Reset &s) override;
   void absorb(const Cls &s) override;

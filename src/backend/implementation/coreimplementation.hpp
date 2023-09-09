@@ -36,6 +36,8 @@ public:
   std::string inherent(InstIgnoreExtra &inst) override;
   std::string inherent(InstRestore &inst) override;
   std::string inherent(InstNext &inst) override;
+  std::string inherent(InstLPrintOn &inst) override;
+  std::string inherent(InstLPrintOff &inst) override;
 
   std::string posByte(InstError &inst) override;
 
@@ -135,6 +137,20 @@ public:
   std::string regInt_extInt_dexInt(InstArrayVal5 &inst) override;
   std::string regInt_extFlt_dexInt(InstArrayVal5 &inst) override;
   std::string regInt_extStr_dexInt(InstArrayVal5 &inst) override;
+
+  std::string inherent(InstCLoadM &inst) override;
+  std::string regStr(InstCLoadM &inst) override;
+  std::string regStr_regInt(InstCLoadM &inst) override;
+
+  std::string extInt_posByte_regStr(InstCLoadStar &inst) override;
+  std::string extFlt_posByte_regStr(InstCLoadStar &inst) override;
+  std::string extInt_posByte(InstCLoadStar &inst) override;
+  std::string extFlt_posByte(InstCLoadStar &inst) override;
+
+  std::string extInt_posByte_regStr(InstCSaveStar &inst) override;
+  std::string extFlt_posByte_regStr(InstCSaveStar &inst) override;
+  std::string extInt_posByte(InstCSaveStar &inst) override;
+  std::string extFlt_posByte(InstCSaveStar &inst) override;
 
   std::string regInt_immLbl(InstJmpIfEqual &inst) override;
   std::string regInt_immLbl(InstJmpIfNotEqual &inst) override;

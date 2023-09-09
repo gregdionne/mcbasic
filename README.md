@@ -21,11 +21,11 @@ Want to write your own program?
 ## Limitations
 * Darren Atkinson's MCX-128 is not yet supported.
 * BREAK interruption is not supported
+* CLOAD* and CSAVE* cassette files are incompatible with non-compiled programs.&#185;
 
 ## Unimplemented keywords
-* CLOAD*, CSAVE*, LIST, CONT
-* LLIST, LPRINT  
-* USR(), VARPTR(), CLOADM
+* Statements:  LIST, LLIST, CONT
+* Functions:  USR(), VARPTR()
 
 
 ## Compilation

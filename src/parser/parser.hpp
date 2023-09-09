@@ -50,6 +50,7 @@ private:
   up<Expr> matchTypes(Expr *lhs, up<Expr> (Parser::*expr)());
 
   up<NumericVariableExpr> getIterationVar();
+  std::string getNumericArrayName();
   up<Expr> getVarOrArray();
   up<Expr> getParenthetical();
   up<Expr> getPrimitive();
@@ -90,7 +91,7 @@ private:
   up<Statement> getRem();
   up<Statement> getIf();
   up<Statement> getData();
-  up<Statement> getPrint();
+  up<Statement> getPrint(bool lprint);
   up<Statement> getOn();
   up<Statement> getInput();
   up<Statement> getEnd();
@@ -104,6 +105,8 @@ private:
   up<Statement> getStop();
   up<Statement> getPoke();
   up<Statement> getClear();
+  up<Statement> getCLoad();
+  up<Statement> getCSave();
   up<Statement> getSet();
   up<Statement> getReset();
   up<Statement> getCls();

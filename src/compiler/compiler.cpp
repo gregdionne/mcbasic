@@ -236,6 +236,10 @@ void StatementCompiler::absorb(const Data & /*statement*/) {
 
 void StatementCompiler::absorb(const Print &s) {
   queue.append(makeup<InstComment>(list(&s)));
+  if (s.isLPrint) {
+    queue.append(makeup<InstLPrintOn>());
+  }
+
   ExprCompiler value(text, queue);
   if (s.at) {
     queue.clearRegisters();
@@ -250,6 +254,9 @@ void StatementCompiler::absorb(const Print &s) {
     if (value.result && value.result->exists()) {
       queue.append(makeup<InstPr>(mv(value.result)));
     }
+  }
+  if (s.isLPrint) {
+    queue.append(makeup<InstLPrintOff>());
   }
 }
 
@@ -541,6 +548,87 @@ void StatementCompiler::absorb(const Clear &s) {
   queue.clearRegisters();
   // arguments are ignored
   queue.append(makeup<InstClear>());
+}
+
+void StatementCompiler::absorb(const CLoadM &s) {
+  queue.append(makeup<InstComment>(list(&s)));
+  queue.clearRegisters();
+
+  if (s.filename) {
+    ExprCompiler f(text, queue);
+    s.filename->soak(&f);
+    f.result = queue.load(mv(f.result));
+    if (s.offset) {
+      ExprCompiler o(text, queue);
+      s.offset->soak(&o);
+      o.result = queue.load(mv(o.result));
+      o.result->castToInt();
+      queue.append(makeup<InstCLoadM>(mv(f.result), mv(o.result)));
+      return;
+    }
+    queue.append(makeup<InstCLoadM>(mv(f.result)));
+    return;
+  }
+  queue.append(makeup<InstCLoadM>());
+}
+
+void StatementCompiler::absorb(const CLoadStar &s) {
+  queue.append(makeup<InstComment>(list(&s)));
+  queue.clearRegisters();
+
+  for (auto &symbol : text.symbolTable.numArrTable) {
+    if (symbol.name == s.arrayName) {
+      auto dataType = symbol.isFloat ? DataType::Flt : DataType::Int;
+      auto varLabel = (symbol.isFloat ? "FLTARR_" : "INTARR_") + s.arrayName;
+      auto numArrName = makeup<AddressModeExt>(dataType, varLabel);
+      int numDims = symbol.numDims ? symbol.numDims : 1;
+      auto nDims = makeup<AddressModeImm>(false, numDims);
+
+      if (s.filename) {
+        ExprCompiler f(text, queue);
+        s.filename->soak(&f);
+        f.result = queue.load(mv(f.result));
+        queue.append(
+            makeup<InstCLoadStar>(mv(numArrName), mv(nDims), mv(f.result)));
+        return;
+      }
+
+      queue.append(makeup<InstCLoadStar>(mv(numArrName), mv(nDims)));
+    }
+  }
+
+  fprintf(stderr, "\"%s\" not found in array table.  Is it ever initialized?\n",
+          s.arrayName.c_str());
+  exit(1);
+}
+
+void StatementCompiler::absorb(const CSaveStar &s) {
+  queue.append(makeup<InstComment>(list(&s)));
+  queue.clearRegisters();
+
+  for (auto &symbol : text.symbolTable.numArrTable) {
+    if (symbol.name == s.arrayName) {
+      auto dataType = symbol.isFloat ? DataType::Flt : DataType::Int;
+      auto varLabel = (symbol.isFloat ? "FLTARR_" : "INTARR_") + s.arrayName;
+      auto numArrName = makeup<AddressModeExt>(dataType, varLabel);
+      int numDims = symbol.numDims ? symbol.numDims : 1;
+      auto nDims = makeup<AddressModeImm>(false, numDims);
+      if (s.filename) {
+        ExprCompiler f(text, queue);
+        s.filename->soak(&f);
+        f.result = queue.load(mv(f.result));
+        queue.append(
+            makeup<InstCSaveStar>(mv(numArrName), mv(nDims), mv(f.result)));
+        return;
+      }
+
+      queue.append(makeup<InstCSaveStar>(mv(numArrName), mv(nDims)));
+    }
+  }
+
+  fprintf(stderr, "\"%s\" not found in array table.  Is it ever initialized?\n",
+          s.arrayName.c_str());
+  exit(1);
 }
 
 void StatementCompiler::absorb(const Set &s) {

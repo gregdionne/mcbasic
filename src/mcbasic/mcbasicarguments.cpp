@@ -2,6 +2,8 @@
 // Distributed under MIT License
 #include "mcbasicarguments.hpp"
 
+#include <cstdlib>
+
 static const char *const argUsage = "file1 [file2 [file3 ...]]\n\n";
 static const char *const argDescription =
     "mcbasic can be used to compile BASIC "

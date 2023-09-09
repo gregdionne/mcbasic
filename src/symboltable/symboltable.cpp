@@ -53,12 +53,3 @@ void clearUsage(SymbolTable &symbolTable) {
   clearUsage(symbolTable.numArrTable);
   clearUsage(symbolTable.strArrTable);
 }
-
-void removeSymbol(std::vector<Symbol> &table, const std::string &name) {
-  auto it =
-      std::find_if(table.begin(), table.end(),
-                   [&name](const Symbol &s) -> bool { return name == s.name; });
-  if (it != table.end()) {
-    table.erase(it);
-  }
-}

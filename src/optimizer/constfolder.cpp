@@ -168,6 +168,27 @@ void StatementConstFolder::mutate(Clear & /* s */) {
   //   cfe.fold(s.size);
 }
 
+void StatementConstFolder::mutate(CLoadM &s) {
+  if (s.filename) {
+    cfe.fold(s.filename);
+  }
+  if (s.offset) {
+    cfe.fold(s.offset);
+  }
+}
+
+void StatementConstFolder::mutate(CLoadStar &s) {
+  if (s.filename) {
+    cfe.fold(s.filename);
+  }
+}
+
+void StatementConstFolder::mutate(CSaveStar &s) {
+  if (s.filename) {
+    cfe.fold(s.filename);
+  }
+}
+
 void StatementConstFolder::mutate(Set &s) {
   cfe.fold(s.x);
   cfe.fold(s.y);

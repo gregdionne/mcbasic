@@ -11,10 +11,17 @@ DP_TABW	.equ	$E4	; current tab width on console
 DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
+DP_DEVN	.equ	$E8	; current device number
 ; 
 ; Memory equates
 M_KBUF	.equ	$4231	; keystrobe buffer (8 bytes)
 M_PMSK	.equ	$423C	; pixel mask for SET, RESET and POINT
+M_FLEN	.equ	$4256	; filename len
+M_FNAM	.equ	$4257	; filename (8 bytes)
+M_FTYP	.equ	$4267	; cassette filetype
+M_LDSZ	.equ	$426C	; load addr / array size
+M_CBEG	.equ	$426F	; cassette beginning address
+M_CEND	.equ	$4271	; address after cassette ending
 M_IKEY	.equ	$427F	; key code for INKEY$
 M_CRSR	.equ	$4280	; cursor location
 M_LBUF	.equ	$42B2	; line input buffer (130 chars)
@@ -43,8 +50,14 @@ R_CLRPX	.equ	$FB59	; clear pixel character in X
 R_MSKPX	.equ	$FB7C	; get pixel screen location X and mask in R_PMSK
 R_CLSN	.equ	$FBC4	; clear screen with color code in ACCB
 R_CLS	.equ	$FBD4	; clear screen with space character
+R_WBLKS	.equ	$FC5D	; write blocks M_CBEG up to before M_CEND
+R_WFNAM	.equ	$FC8E	; write filename block + silence + post-leader
+R_RBLKS	.equ	$FDC5	; read data blocks into M_CBEG
+R_RCLDM	.equ	$FE1B	; read machine language blocks offset by X
+R_SFNAM	.equ	$FE37	; search for filename
 R_SOUND	.equ	$FFAB	; play sound with pitch in ACCA and duration in ACCB
 R_MCXID	.equ	$FFDA	; ID location for MCX BASIC
+R_RSLDR	.equ	$FF4E	; read leader preceding data blocks
 
 ; Equate(s) for MCBASIC constants
 charpage	.equ	$1B00	; single-character string page.
@@ -3871,137 +3884,6 @@ strlink
 _rts
 	rts
 
-	.module	mddivflt
-; divide X by Y
-;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
-;                     scratch in  (5,x 6,x 7,x 8,x 9,x)
-;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
-;   EXIT   X/Y in (0,x 1,x 2,x 3,x 4,x)
-;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
-divflt
-	ldaa	#8*5
-	bsr	divmod
-	tst	tmp4
-	bmi	_add1
-_com
-	ldd	8,x
-	coma
-	comb
-	std	3,x
-	ldd	6,x
-	coma
-	comb
-	std	1,x
-	ldab	5,x
-	comb
-	stab	0,x
-	rts
-_add1
-	ldd	8,x
-	addd	#1
-	std	3,x
-	ldd	6,x
-	adcb	#0
-	adca	#0
-	std	1,x
-	ldab	5,x
-	adcb	#0
-	stab	0,x
-	rts
-divuflt
-	clr	tmp4
-	ldab	#8*5
-	stab	tmp1
-	bsr	divumod
-	bra	_com
-
-	.module	mddivmod
-; divide/modulo X by Y with remainder
-;   ENTRY  X contains dividend in (0,x 1,x 2,x 3,x 4,x)
-;          Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
-;          #shifts in ACCA (24 for modulus, 40 for division
-;   EXIT   for division:
-;            NOT ABS(X)/ABS(Y) in (5,x 6,x 7,x 8,x 9,x)
-;   EXIT   for modulus:
-;            NOT INT(ABS(X)/ABS(Y)) in (7,x 8,x 9,x)
-;            FMOD(X,Y) in (0,x 1,x 2,x 3,x 4,x)
-;          result sign in tmp4.(0 = pos, -1 = neg).
-;          uses tmp1,tmp1+1,tmp2,tmp2+1,tmp3,tmp3+1,tmp4
-divmod
-	staa	tmp1
-	clr	tmp4
-	tst	0,x
-	bpl	_posX
-	com	tmp4
-	jsr	negx
-_posX
-	tst	0+argv
-	bpl	divumod
-	com	tmp4
-	jsr	negargv
-divumod
-	ldd	3,x
-	std	6,x
-	ldd	1,x
-	std	4,x
-	ldab	0,x
-	stab	3,x
-	clra
-	clrb
-	std	8,x
-	std	1,x
-	stab	0,x
-_nxtdiv
-	rol	7,x
-	rol	6,x
-	rol	5,x
-	rol	4,x
-	rol	3,x
-	rol	2,x
-	rol	1,x
-	rol	0,x
-	bcc	_trialsub
-	; force subtraction
-	ldd	3,x
-	subd	3+argv
-	std	3,x
-	ldd	1,x
-	sbcb	2+argv
-	sbca	1+argv
-	std	1,x
-	ldab	0,x
-	sbcb	0+argv
-	stab	0,x
-	clc
-	bra	_shift
-_trialsub
-	ldd	3,x
-	subd	3+argv
-	std	tmp3
-	ldd	1,x
-	sbcb	2+argv
-	sbca	1+argv
-	std	tmp2
-	ldab	0,x
-	sbcb	0+argv
-	stab	tmp1+1
-	blo	_shift
-	ldd	tmp3
-	std	3,x
-	ldd	tmp2
-	std	1,x
-	ldab	tmp1+1
-	stab	0,x
-_shift
-	rol	9,x
-	rol	8,x
-	dec	tmp1
-	bne	_nxtdiv
-	rol	7,x
-	rol	6,x
-	rol	5,x
-	rts
-
 	.module	mdgeteq
 geteq
 	beq	_1
@@ -4146,28 +4028,6 @@ mulintx
 	stab	0,x
 	ldd	tmp2
 	std	1,x
-	rts
-
-	.module	mdnegargv
-negargv
-	neg	4+argv
-	bcs	_com3
-	neg	3+argv
-	bcs	_com2
-	neg	2+argv
-	bcs	_com1
-	neg	1+argv
-	bcs	_com0
-	neg	0+argv
-	rts
-_com3
-	com	3+argv
-_com2
-	com	2+argv
-_com1
-	com	1+argv
-_com0
-	com	0+argv
 	rts
 
 	.module	mdnegtmp
@@ -6107,7 +5967,10 @@ OV_ERROR	.equ	10
 OM_ERROR	.equ	12
 BS_ERROR	.equ	16
 DD_ERROR	.equ	18
+D0_ERROR	.equ	20
 LS_ERROR	.equ	28
+IO_ERROR	.equ	34
+FM_ERROR	.equ	36
 error
 	jmp	R_ERROR
 

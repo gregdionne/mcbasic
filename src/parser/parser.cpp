@@ -307,6 +307,32 @@ up<NumericVariableExpr> Parser::getIterationVar() {
   return {};
 }
 
+std::string Parser::getNumericArrayName() {
+
+  in.skipWhitespace();
+  if (in.peekKeyword(keywords) && !in.isAlpha()) {
+    in.die("array name expected");
+    return {};
+  }
+
+  std::string name;
+  name += in.getChar();
+  if (!in.peekKeyword(keywords) && in.isAlnum()) {
+    name += in.getChar();
+  }
+  while (!in.peekKeyword(keywords) && in.isAlnum()) {
+    in.getChar();
+  }
+
+  in.skipWhitespace();
+
+  if (in.isChar('$')) {
+    in.die("array name must be numeric");
+  }
+
+  return name;
+}
+
 up<Expr> Parser::getVarOrArray() {
   if (auto expr = seekVarOrArray()) {
     return expr;
@@ -715,13 +741,13 @@ up<Statement> Parser::getData() {
   return data;
 }
 
-up<Statement> Parser::getPrint() {
-  auto print = makeup<Print>();
+up<Statement> Parser::getPrint(bool isLPrint) {
+  auto print = makeup<Print>(isLPrint);
 
   bool needsCR = true;
 
   in.skipWhitespace();
-  if (in.skipChar('@')) {
+  if (!isLPrint && in.skipChar('@')) {
     print->at = numeric(&Parser::getOrExpression);
     in.skipWhitespace();
     if (!in.iseol() && !in.isChar(':')) {
@@ -893,6 +919,53 @@ up<Statement> Parser::getClear() {
   return clear;
 }
 
+up<Statement> Parser::getCLoad() {
+  in.skipWhitespace();
+  if (in.skipChar('*')) {
+    auto cloadStar = makeup<CLoadStar>();
+    cloadStar->arrayName = getNumericArrayName();
+    in.skipWhitespace();
+    if (in.skipChar(',')) {
+      in.skipWhitespace();
+      cloadStar->filename = string(&Parser::getOrExpression);
+    }
+    return cloadStar;
+  }
+
+  if (in.skipChar('M')) {
+    in.skipWhitespace();
+    auto cloadM = makeup<CLoadM>();
+    if (!in.iseol() && !in.isChar(':')) {
+      cloadM->filename = string(&Parser::getOrExpression);
+      in.skipWhitespace();
+      if (in.skipChar(',')) {
+        cloadM->offset = numeric(&Parser::getOrExpression);
+      }
+    }
+    return cloadM;
+  }
+
+  unimplementedKeyword();
+  return {};
+}
+
+up<Statement> Parser::getCSave() {
+  auto csaveStar = makeup<CSaveStar>();
+  in.skipWhitespace();
+  if (in.isChar('M')) {
+    in.die("CSAVEM not yet supported");
+  }
+  in.matchChar('*');
+  csaveStar->arrayName = getNumericArrayName();
+  in.skipWhitespace();
+  if (in.skipChar(',')) {
+    in.skipWhitespace();
+    csaveStar->filename = string(&Parser::getOrExpression);
+  }
+
+  return csaveStar;
+}
+
 up<Statement> Parser::getSet() {
   auto set = makeup<Set>();
   in.skipWhitespace();
@@ -1001,7 +1074,7 @@ up<Statement> Parser::getStatement() {
     in.skipWhitespace();
   } while (in.skipChar(':'));
 
-  return in.skipChar('?')            ? getPrint()
+  return in.skipChar('?')            ? getPrint(false)
          : !in.peekKeyword(keywords) ? getLet()
          : skipKeyword("FOR")        ? getFor()
          : skipKeyword("GOTO")       ? getGoto(false)
@@ -1009,7 +1082,7 @@ up<Statement> Parser::getStatement() {
          : skipKeyword("REM")        ? getRem()
          : skipKeyword("IF")         ? getIf()
          : skipKeyword("DATA")       ? getData()
-         : skipKeyword("PRINT")      ? getPrint()
+         : skipKeyword("PRINT")      ? getPrint(false)
          : skipKeyword("ON")         ? getOn()
          : skipKeyword("INPUT")      ? getInput()
          : skipKeyword("END")        ? getEnd()
@@ -1023,6 +1096,9 @@ up<Statement> Parser::getStatement() {
          : skipKeyword("STOP")       ? getStop()
          : skipKeyword("POKE")       ? getPoke()
          : skipKeyword("CLEAR")      ? getClear()
+         : skipKeyword("CLOAD")      ? getCLoad()
+         : skipKeyword("CSAVE")      ? getCSave()
+         : skipKeyword("LPRINT")     ? getPrint(true)
          : skipKeyword("SET")        ? getSet()
          : skipKeyword("RESET")      ? getReset()
          : skipKeyword("CLS")        ? getCls()

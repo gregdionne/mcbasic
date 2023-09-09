@@ -1329,10 +1329,11 @@ bool ByteCodeImplementation::isExtByte(Instruction &inst) {
   auto &arg3 = inst.arg3;
 
   bool in1 = arg1->isExtended() && arg2->isByte() && arg3->isInherent();
-  bool in2 = arg1->isRegister() && arg2->isExtended() && arg3->isByte();
-  bool in3 = arg1->isExtended() && arg2->isExtended() && arg3->isByte();
-  bool in4 = arg1->isIndirect() && arg2->isExtended() && arg3->isByte();
-  return in1 || in2 || in3 || in4;
+  bool in2 = arg1->isExtended() && arg2->isByte() && arg3->isRegister();
+  bool in3 = arg1->isRegister() && arg2->isExtended() && arg3->isByte();
+  bool in4 = arg1->isExtended() && arg2->isExtended() && arg3->isByte();
+  bool in5 = arg1->isIndirect() && arg2->isExtended() && arg3->isByte();
+  return in1 || in2 || in3 || in4 || in5;
 }
 
 bool ByteCodeImplementation::isExtWord(Instruction &inst) {

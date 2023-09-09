@@ -27,6 +27,5 @@ struct SymbolTable {
 void sortSymbolTable(SymbolTable &table);
 bool pruneUnusedSymbols(SymbolTable &table);
 void clearUsage(SymbolTable &table);
-void removeSymbol(std::vector<Symbol> &table, const std::string &name);
 
 #endif

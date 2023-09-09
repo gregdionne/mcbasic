@@ -96,6 +96,8 @@ class InstPrSpace;
 class InstPrCR;
 class InstPrAt;
 class InstPr;
+class InstLPrintOn;
+class InstLPrintOff;
 class InstFor;
 class InstForOne;
 class InstForTrue;
@@ -119,6 +121,9 @@ class InstRead;
 class InstRestore;
 class InstReturn;
 class InstClear;
+class InstCLoadM;
+class InstCLoadStar;
+class InstCSaveStar;
 class InstCls;
 class InstClsN;
 class InstSet;
@@ -227,6 +232,8 @@ public:
   virtual std::string operate(InstPrCR &inst) = 0;
   virtual std::string operate(InstPrAt &inst) = 0;
   virtual std::string operate(InstPr &inst) = 0;
+  virtual std::string operate(InstLPrintOn &inst) = 0;
+  virtual std::string operate(InstLPrintOff &inst) = 0;
   virtual std::string operate(InstFor &inst) = 0;
   virtual std::string operate(InstForOne &inst) = 0;
   virtual std::string operate(InstForTrue &inst) = 0;
@@ -250,6 +257,9 @@ public:
   virtual std::string operate(InstRestore &inst) = 0;
   virtual std::string operate(InstReturn &inst) = 0;
   virtual std::string operate(InstClear &inst) = 0;
+  virtual std::string operate(InstCLoadM &inst) = 0;
+  virtual std::string operate(InstCLoadStar &inst) = 0;
+  virtual std::string operate(InstCSaveStar &inst) = 0;
   virtual std::string operate(InstCls &inst) = 0;
   virtual std::string operate(InstClsN &inst) = 0;
   virtual std::string operate(InstSet &inst) = 0;
@@ -293,10 +303,12 @@ public:
     return "\t!unimplemented\n";
   }
 
+  bool isInherent() const;
   bool isIndFlt() const;
   bool isIndInt() const;
   bool isExtFlt() const;
   bool isExtInt() const;
+  bool isRegStr() const;
   bool isExtFlt_extFlt() const;
   bool isExtFlt_negByte() const;
   bool isExtFlt_negWord() const;
@@ -495,6 +507,9 @@ public:
   bool isRegStr_regStr_posByte() const;
   bool isRegStr_regStr_regInt() const;
   bool isRegStr_regStr_regStr() const;
+
+  bool isExtInt_posByte_regStr() const;
+  bool isExtFlt_posByte_regStr() const;
 
   void resultArg();
   void resultLet();
@@ -1261,6 +1276,16 @@ public:
   explicit InstPr(up<AddressMode> am) : OperableInstruction("pr", mv(am)) {}
 };
 
+class InstLPrintOn : public OperableInstruction<InstLPrintOn> {
+public:
+  InstLPrintOn() : OperableInstruction("lprint_on") {}
+};
+
+class InstLPrintOff : public OperableInstruction<InstLPrintOff> {
+public:
+  InstLPrintOff() : OperableInstruction("lprint_off") {}
+};
+
 class InstFor : public OperableInstruction<InstFor> {
 public:
   InstFor(up<AddressMode> iter, up<AddressMode> start)
@@ -1410,6 +1435,30 @@ public:
 class InstClear : public OperableInstruction<InstClear> {
 public:
   InstClear() : OperableInstruction("clear") {}
+};
+
+class InstCLoadM : public OperableInstruction<InstCLoadM> {
+public:
+  InstCLoadM() : OperableInstruction("cloadm") {}
+  InstCLoadM(up<AddressMode> am) : OperableInstruction("cloadm", mv(am)) {}
+  InstCLoadM(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("cloadm", mv(am1), mv(am2)) {}
+};
+
+class InstCLoadStar : public OperableInstruction<InstCLoadStar> {
+public:
+  InstCLoadStar(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("cloadstar", mv(am1), mv(am2)) {}
+  InstCLoadStar(up<AddressMode> am1, up<AddressMode> am2, up<AddressMode> am3)
+      : OperableInstruction("cloadstar", mv(am1), mv(am2), mv(am3)) {}
+};
+
+class InstCSaveStar : public OperableInstruction<InstCSaveStar> {
+public:
+  InstCSaveStar(up<AddressMode> am1, up<AddressMode> am2)
+      : OperableInstruction("csavestar", mv(am1), mv(am2)) {}
+  InstCSaveStar(up<AddressMode> am1, up<AddressMode> am2, up<AddressMode> am3)
+      : OperableInstruction("csavestar", mv(am1), mv(am2), mv(am3)) {}
 };
 
 class InstCls : public OperableInstruction<InstCls> {

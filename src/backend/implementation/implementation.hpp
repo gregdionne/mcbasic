@@ -32,6 +32,8 @@ public:
   virtual std::string inherent(InstIgnoreExtra &inst) = 0;
   virtual std::string inherent(InstRestore &inst) = 0;
   virtual std::string inherent(InstNext &inst) = 0;
+  virtual std::string inherent(InstLPrintOn &inst) = 0;
+  virtual std::string inherent(InstLPrintOff &inst) = 0;
 
   virtual std::string posByte(InstError &inst) = 0;
 
@@ -131,6 +133,20 @@ public:
   virtual std::string regInt_extInt_dexInt(InstArrayVal5 &inst) = 0;
   virtual std::string regInt_extFlt_dexInt(InstArrayVal5 &inst) = 0;
   virtual std::string regInt_extStr_dexInt(InstArrayVal5 &inst) = 0;
+
+  virtual std::string inherent(InstCLoadM &inst) = 0;
+  virtual std::string regStr(InstCLoadM &inst) = 0;
+  virtual std::string regStr_regInt(InstCLoadM &inst) = 0;
+
+  virtual std::string extInt_posByte_regStr(InstCLoadStar &inst) = 0;
+  virtual std::string extFlt_posByte_regStr(InstCLoadStar &inst) = 0;
+  virtual std::string extInt_posByte(InstCLoadStar &inst) = 0;
+  virtual std::string extFlt_posByte(InstCLoadStar &inst) = 0;
+
+  virtual std::string extInt_posByte_regStr(InstCSaveStar &inst) = 0;
+  virtual std::string extFlt_posByte_regStr(InstCSaveStar &inst) = 0;
+  virtual std::string extInt_posByte(InstCSaveStar &inst) = 0;
+  virtual std::string extFlt_posByte(InstCSaveStar &inst) = 0;
 
   virtual std::string regInt_immLbl(InstJmpIfEqual &inst) = 0;
   virtual std::string regFlt_immLbl(InstJmpIfEqual &inst) = 0;

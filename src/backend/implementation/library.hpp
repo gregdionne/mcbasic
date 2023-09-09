@@ -78,6 +78,11 @@ private:
   static std::string mdStrLobs();
   static std::string mdStrLox();
   static std::string mdStrLoxr();
+  static std::string mdFilename();
+  static std::string mdGetArr();
+  static std::string mdCLoadM();
+  static std::string mdCLoadStar();
+  static std::string mdCSaveStar();
   static std::string mdRnd();
   std::string mdNegX() const;
   static std::string mdNegTmp2XI();

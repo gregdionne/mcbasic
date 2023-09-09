@@ -38,6 +38,9 @@ public:
   void inspect(const Stop & /*s*/) const override {}
   void inspect(const Poke & /*s*/) const override {}
   void inspect(const Clear & /*s*/) const override {}
+  void inspect(const CLoadM & /*s*/) const override {}
+  void inspect(const CLoadStar & /*s*/) const override {}
+  void inspect(const CSaveStar & /*s*/) const override {}
   void inspect(const Set & /*s*/) const override {}
   void inspect(const Reset & /*s*/) const override {}
   void inspect(const Cls & /*s*/) const override {}

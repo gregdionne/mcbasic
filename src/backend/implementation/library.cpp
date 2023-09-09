@@ -47,7 +47,7 @@ void Library::makeFoundation() {
   foundation["mdidiv35"] = Lib{0, mdIDiv35(), {"mdidivb", "mdimodb"}};
   foundation["mdidiv5s"] = Lib{0, mdIDiv5S(), {"mdidiv35"}};
   foundation["mdstrflt"] =
-      Lib{0, mdStrFlt(), {"mddivflt", "mdnegtmp", "mdimodb", "mdidivb"}};
+      Lib{0, mdStrFlt(), {"mdnegtmp", "mdimodb", "mdidivb"}};
   foundation["mdstrprm"] = Lib{0, mdStrPrm(), {"mdstrdel"}};
   foundation["mdstrrel"] = Lib{0, mdStrRel(), {}};
   foundation["mdstrtmp"] = Lib{0, mdStrTmp(), {}};
@@ -63,6 +63,11 @@ void Library::makeFoundation() {
   foundation["mdstrlobs"] = Lib{0, mdStrLobs(), {"mdstrlo"}};
   foundation["mdstrlox"] = Lib{0, mdStrLox(), {"mdstrlo"}};
   foundation["mdstrloxr"] = Lib{0, mdStrLoxr(), {"mdstrlo"}};
+  foundation["mdfilename"] = Lib{0, mdFilename(), {}};
+  foundation["mdgetarr"] = Lib{0, mdGetArr(), {"mdmul12"}};
+  foundation["mdcloadm"] = Lib{0, mdCLoadM(), {}};
+  foundation["mdcloadstar"] = Lib{0, mdCLoadStar(), {"mdgetarr"}};
+  foundation["mdcsavestar"] = Lib{0, mdCSaveStar(), {"mdgetarr"}};
   foundation["mdtmp2xf"] = Lib{0, mdTmp2XF(), {}};
   foundation["mdtmp2xi"] = Lib{0, mdTmp2XI(), {}};
   foundation["mdarg2x"] = Lib{0, mdArg2X(), {}};
@@ -71,7 +76,7 @@ void Library::makeFoundation() {
   foundation["mdexp"] =
       Lib{0, mdExp(), {"mdrmul315", "mdmodflt", "mdshift", "mdarg2x"}};
   foundation["mdlog"] =
-      Lib{0, mdLog(), {"mdx2arg", "mdarg2x", "mdexp", "mdmsbit"}};
+      Lib{0, mdLog(), {"mdx2arg", "mdarg2x", "mdexp", "mdmsbit", "mddivflt"}};
   foundation["mdsin"] =
       Lib{0, mdSin(), {"mdrmul315", "mdmodflt", "mdarg2x", "mdx2arg"}};
   foundation["mdcos"] = Lib{0, mdCos(), {"mdsin"}};
@@ -1555,6 +1560,174 @@ std::string Library::mdStrLoxr() {
   tasm.ldx("1,x");
   tasm.stx("1+argv");
   tasm.bra("strlo");
+  return tasm.source();
+}
+
+std::string Library::mdFilename() {
+  Assembler tasm;
+  tasm.comment("set filename string");
+  tasm.comment(" ENTRY: B holds strlen");
+  tasm.comment("        3+argv holds addr");
+  tasm.comment(" EXIT:  8-byte (padded) string in M_FNAM");
+  tasm.comment("        string length in M_FLEN");
+  tasm.label("filename");
+  tasm.sts("tmp2");
+  tasm.ldx("#M_FNAM");
+  tasm.cmpb("#8");
+  tasm.bls("_ok");
+  tasm.ldab("#8");
+  tasm.label("_ok");
+  tasm.stab("M_FLEN");
+  tasm.beq("_donecopy");
+  tasm.lds("3+argv");
+  tasm.des();
+  tasm.label("_copy");
+  tasm.pula();
+  tasm.staa(",x");
+  tasm.inx();
+  tasm.decb();
+  tasm.bne("_copy");
+  tasm.label("_donecopy");
+  tasm.lds("tmp2");
+  tasm.ldab("M_FLEN");
+  tasm.subb("#8");
+  tasm.bhs("_done");
+  tasm.ldaa("#' '");
+  tasm.label("_pad");
+  tasm.staa(",x");
+  tasm.inx();
+  tasm.incb();
+  tasm.bne("_pad");
+  tasm.label("_done");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdGetArr() {
+  Assembler tasm;
+  tasm.comment("get size of an array");
+  tasm.comment(" ENTRY: 0+argv: numDims");
+  tasm.comment("        1+argv: array descriptor");
+  tasm.comment(" EXIT:  X: array beginning");
+  tasm.comment("        D: total num bytes");
+  tasm.comment("        M_FTYP: element size (3 or 5)");
+  tasm.label("getarri");
+  tasm.ldab("#3", "Int Array Data");
+  tasm.stab("M_FTYP");
+  tasm.jsr("_getarrsize");
+  tasm.bra("_load");
+  tasm.label("getarrf");
+  tasm.ldab("#5", "Flt Array Data");
+  tasm.stab("M_FTYP");
+  tasm.jsr("_getarrsize");
+  tasm.lsld();
+  tasm.label("_load");
+  tasm.lsld();
+  tasm.addd("tmp3");
+  tasm.rts();
+
+  tasm.label("_getarrsize");
+  tasm.ldab("0+argv");
+  tasm.stab("tmp4");
+  tasm.ldx("1+argv");
+  tasm.ldd("#1");
+  tasm.label("_loop");
+  tasm.std("tmp1");
+  tasm.inx();
+  tasm.inx();
+  tasm.ldd(",x");
+  tasm.std("tmp2");
+  tasm.jsr("mul12");
+  tasm.ldd("tmp3");
+  tasm.dec("tmp4");
+  tasm.bne("_loop");
+  tasm.ldx("1+argv");
+  tasm.ldx(",x");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdCLoadM() {
+  Assembler tasm;
+  tasm.comment("CLOADM a file");
+  tasm.comment(" ENTRY: ACCD: offset");
+  tasm.comment(" EXIT: file contents written to memory");
+  tasm.label("cloadm");
+  tasm.std("tmp1");
+  tasm.jsr("R_SFNAM");
+  tasm.ldaa("M_FTYP");
+  tasm.cmpa("#2");
+  tasm.bne("_fmerror");
+  tasm.jsr("R_RSLDR");
+  tasm.ldx("tmp1");
+  tasm.jmp("R_RCLDM");
+  tasm.label("_fmerror");
+  tasm.ldab("#FM_ERROR");
+  tasm.jmp("error");
+  tasm.rts();
+  return tasm.source();
+}
+
+std::string Library::mdCLoadStar() {
+  Assembler tasm;
+  tasm.comment("CLOAD* a file");
+  tasm.comment(" ENTRY: 0+argv: numDims");
+  tasm.comment("        1+argv: array descriptor");
+  tasm.comment("        M_FNAM: initialized by filename routine");
+  tasm.comment("        M_FLEN: length of FNAM.  Matches any file if 0");
+  tasm.comment(" EXIT: file contents written to array");
+  tasm.label("cloadstari");
+  tasm.jsr("getarri");
+  tasm.bra("_load");
+  tasm.label("cloadstarf");
+  tasm.jsr("getarrf");
+  tasm.label("_load");
+  tasm.stx("M_CBEG");
+  tasm.std("tmp2");
+  tasm.ldaa("DP_LNUM");
+  tasm.inca();
+  tasm.bne("_gotlnum");
+  tasm.tab();
+  tasm.std("DP_LNUM");
+  tasm.label("_gotlnum");
+  tasm.ldaa("M_FTYP");
+  tasm.psha();
+  tasm.jsr("R_SFNAM");
+  tasm.pula();
+  tasm.bne("_ioerr");
+  tasm.cmpa("M_FTYP");
+  tasm.bne("_fmerr");
+  tasm.jsr("R_RSLDR");
+  tasm.ldx("M_LDSZ");
+  tasm.cpx("tmp2");
+  tasm.blo("_omerr");
+  tasm.jmp("R_RBLKS");
+  tasm.label("_ioerr");
+  tasm.ldab("#IO_ERROR");
+  tasm.bra("_error");
+  tasm.label("_fmerr");
+  tasm.ldab("#FM_ERROR");
+  tasm.bra("_error");
+  tasm.label("_omerr");
+  tasm.ldab("#OM_ERROR");
+  tasm.label("_error");
+  tasm.jmp("error");
+  return tasm.source();
+}
+std::string Library::mdCSaveStar() {
+  Assembler tasm;
+  tasm.label("csavestari");
+  tasm.jsr("getarri");
+  tasm.bra("_save");
+  tasm.label("csavestarf");
+  tasm.jsr("getarrf");
+  tasm.label("_save");
+  tasm.stx("M_CBEG");
+  tasm.std("M_LDSZ");
+  tasm.addd("M_CBEG");
+  tasm.std("M_CEND");
+  tasm.jsr("R_WFNAM");
+  tasm.jmp("R_WBLKS");
   return tasm.source();
 }
 

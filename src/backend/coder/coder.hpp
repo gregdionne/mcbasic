@@ -276,6 +276,12 @@ public:
   std::string operate(InstPr &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
+  std::string operate(InstLPrintOn &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstLPrintOff &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
   std::string operate(InstFor &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
@@ -343,6 +349,15 @@ public:
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstClear &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstCLoadM &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstCLoadStar &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
+  std::string operate(InstCSaveStar &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
   std::string operate(InstCls &inst) override {

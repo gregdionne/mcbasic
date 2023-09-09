@@ -314,7 +314,7 @@ void StatementViewer::absorb(const Data &s) {
 }
 
 void StatementViewer::absorb(const Print &s) {
-  printtab(n, "PRINT");
+  printtab(n, s.isLPrint ? "LPRINT" : "PRINT");
   if (s.at) {
     ++n;
     printtab(n, "@");
@@ -427,6 +427,32 @@ void StatementViewer::absorb(const Clear &s) {
   printtab(n, "CLEAR");
   if (s.size) {
     indentOp(s.size, that);
+  }
+}
+
+void StatementViewer::absorb(const CLoadM &s) {
+  printtab(n, "CLOADM");
+  if (s.filename) {
+    indentOp(s.filename, that);
+  }
+  if (s.offset) {
+    indentOp(s.offset, that);
+  }
+}
+
+void StatementViewer::absorb(const CLoadStar &s) {
+  printtab(n, "CLOAD*");
+  printtab(n + 1, "%s", s.arrayName.c_str());
+  if (s.filename) {
+    indentOp(s.filename, that);
+  }
+}
+
+void StatementViewer::absorb(const CSaveStar &s) {
+  printtab(n, "CSAVE*");
+  printtab(n + 1, "%s", s.arrayName.c_str());
+  if (s.filename) {
+    indentOp(s.filename, that);
   }
 }
 

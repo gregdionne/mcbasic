@@ -1,6 +1,25 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
 #include "symbolusagetabulator.hpp"
+#include "ast/lister.hpp"
+
+static void checkNumDimMismatch(const Expr *e, int actualNumDims,
+                                int lineNumber, const Symbol &symbol) {
+  int expectedNumDims = symbol.numDims == 0 ? 1 : symbol.numDims;
+
+  if (actualNumDims != expectedNumDims) {
+    fprintf(stderr, "line %i: ", lineNumber);
+    fprintf(stderr, "dimension mismatch.\n");
+    ExprLister exprLister;
+    e->soak(&exprLister);
+    fprintf(stderr, "%s ", exprLister.result.c_str());
+    fprintf(stderr,
+            "has %i dimensions, but was %s dimensioned with %i dimensions.\n",
+            actualNumDims, symbol.numDims ? "explicitly" : "implicitly",
+            expectedNumDims);
+    exit(1);
+  }
+}
 
 void SymbolUsageInspector::operate(Program &p) {
 
@@ -12,7 +31,7 @@ void SymbolUsageInspector::operate(Program &p) {
 }
 
 void SymbolUsageInspector::operate(Line &l) {
-  StatementSymbolUsageInspector ss(symbolTable);
+  StatementSymbolUsageInspector ss(symbolTable, l.lineNumber);
   for (auto &statement : l.statements) {
     statement->inspect(&ss);
   }
@@ -54,6 +73,8 @@ void ExprSymbolUsageTabulator::inspect(const NumericArrayExpr &e) const {
   for (auto &symbol : symbolTable.numArrTable) {
     if (symbol.name == e.varexp->varname) {
       symbol.isUsed = true;
+      checkNumDimMismatch(&e, static_cast<int>(e.indices->operands.size()),
+                          lineNumber, symbol);
       return;
     }
   }
@@ -65,6 +86,8 @@ void ExprSymbolUsageTabulator::inspect(const StringArrayExpr &e) const {
   for (auto &symbol : symbolTable.strArrTable) {
     if (symbol.name == e.varexp->varname) {
       symbol.isUsed = true;
+      checkNumDimMismatch(&e, static_cast<int>(e.indices->operands.size()),
+                          lineNumber, symbol);
       return;
     }
   }
@@ -245,10 +268,24 @@ void StatementSymbolUsageInspector::inspect(const Rem & /*s*/) const {}
 
 void AssignSymbolUsageInspector::inspect(const NumericArrayExpr &e) const {
   e.indices->inspect(&exprSymbolUsageTabulator);
+  for (auto &symbol : symbolTable.numArrTable) {
+    if (symbol.name == e.varexp->varname) {
+      checkNumDimMismatch(&e, static_cast<int>(e.indices->operands.size()),
+                          lineNumber, symbol);
+      return;
+    }
+  }
 }
 
 void AssignSymbolUsageInspector::inspect(const StringArrayExpr &e) const {
   e.indices->inspect(&exprSymbolUsageTabulator);
+  for (auto &symbol : symbolTable.strArrTable) {
+    if (symbol.name == e.varexp->varname) {
+      checkNumDimMismatch(&e, static_cast<int>(e.indices->operands.size()),
+                          lineNumber, symbol);
+      return;
+    }
+  }
 }
 
 void StatementSymbolUsageInspector::inspect(const For &s) const {
@@ -372,6 +409,33 @@ void StatementSymbolUsageInspector::inspect(const Stop & /*s*/) const {}
 void StatementSymbolUsageInspector::inspect(const Clear &s) const {
   if (s.size) {
     s.size->inspect(&exprSymbolUsageTabulator);
+  }
+}
+
+void StatementSymbolUsageInspector::inspect(const CLoadM &s) const {
+  if (s.filename) {
+    s.filename->inspect(&exprSymbolUsageTabulator);
+  }
+  if (s.offset) {
+    s.offset->inspect(&exprSymbolUsageTabulator);
+  }
+}
+
+void StatementSymbolUsageInspector::inspect(const CLoadStar &s) const {
+  if (s.filename) {
+    s.filename->inspect(&exprSymbolUsageTabulator);
+  }
+}
+
+void StatementSymbolUsageInspector::inspect(const CSaveStar &s) const {
+  if (s.filename) {
+    s.filename->inspect(&exprSymbolUsageTabulator);
+  }
+  for (auto &symbol : symbolTable.numArrTable) {
+    if (symbol.name == s.arrayName) {
+      symbol.isUsed = true;
+      return;
+    }
   }
 }
 

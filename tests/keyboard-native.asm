@@ -11,10 +11,17 @@ DP_TABW	.equ	$E4	; current tab width on console
 DP_LTAB	.equ	$E5	; current last tab column
 DP_LPOS	.equ	$E6	; current line position on console
 DP_LWID	.equ	$E7	; current line width of console
+DP_DEVN	.equ	$E8	; current device number
 ; 
 ; Memory equates
 M_KBUF	.equ	$4231	; keystrobe buffer (8 bytes)
 M_PMSK	.equ	$423C	; pixel mask for SET, RESET and POINT
+M_FLEN	.equ	$4256	; filename len
+M_FNAM	.equ	$4257	; filename (8 bytes)
+M_FTYP	.equ	$4267	; cassette filetype
+M_LDSZ	.equ	$426C	; load addr / array size
+M_CBEG	.equ	$426F	; cassette beginning address
+M_CEND	.equ	$4271	; address after cassette ending
 M_IKEY	.equ	$427F	; key code for INKEY$
 M_CRSR	.equ	$4280	; cursor location
 M_LBUF	.equ	$42B2	; line input buffer (130 chars)
@@ -43,8 +50,14 @@ R_CLRPX	.equ	$FB59	; clear pixel character in X
 R_MSKPX	.equ	$FB7C	; get pixel screen location X and mask in R_PMSK
 R_CLSN	.equ	$FBC4	; clear screen with color code in ACCB
 R_CLS	.equ	$FBD4	; clear screen with space character
+R_WBLKS	.equ	$FC5D	; write blocks M_CBEG up to before M_CEND
+R_WFNAM	.equ	$FC8E	; write filename block + silence + post-leader
+R_RBLKS	.equ	$FDC5	; read data blocks into M_CBEG
+R_RCLDM	.equ	$FE1B	; read machine language blocks offset by X
+R_SFNAM	.equ	$FE37	; search for filename
 R_SOUND	.equ	$FFAB	; play sound with pitch in ACCA and duration in ACCB
 R_MCXID	.equ	$FFDA	; ID location for MCX BASIC
+R_RSLDR	.equ	$FF4E	; read leader preceding data blocks
 
 ; Equate(s) for MCBASIC constants
 charpage	.equ	$1B00	; single-character string page.
@@ -289,7 +302,10 @@ OV_ERROR	.equ	10
 OM_ERROR	.equ	12
 BS_ERROR	.equ	16
 DD_ERROR	.equ	18
+D0_ERROR	.equ	20
 LS_ERROR	.equ	28
+IO_ERROR	.equ	34
+FM_ERROR	.equ	36
 error
 	jmp	R_ERROR
 

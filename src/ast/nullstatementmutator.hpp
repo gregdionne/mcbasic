@@ -38,6 +38,9 @@ public:
   void mutate(Stop & /*s*/) override {}
   void mutate(Poke & /*s*/) override {}
   void mutate(Clear & /*s*/) override {}
+  void mutate(CLoadM & /*s*/) override {}
+  void mutate(CLoadStar & /*s*/) override {}
+  void mutate(CSaveStar & /*s*/) override {}
   void mutate(Set & /*s*/) override {}
   void mutate(Reset & /*s*/) override {}
   void mutate(Cls & /*s*/) override {}

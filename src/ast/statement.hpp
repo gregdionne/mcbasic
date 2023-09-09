@@ -31,6 +31,9 @@ class Return;
 class Stop;
 class Poke;
 class Clear;
+class CLoadM;
+class CLoadStar;
+class CSaveStar;
 class Set;
 class Reset;
 class Cls;
@@ -103,6 +106,9 @@ public:
   virtual T mutate(Stop & /*s*/) = 0;
   virtual T mutate(Poke & /*s*/) = 0;
   virtual T mutate(Clear & /*s*/) = 0;
+  virtual T mutate(CLoadM & /*s*/) = 0;
+  virtual T mutate(CLoadStar & /*s*/) = 0;
+  virtual T mutate(CSaveStar & /*s*/) = 0;
   virtual T mutate(Set & /*s*/) = 0;
   virtual T mutate(Reset & /*s*/) = 0;
   virtual T mutate(Cls & /*s*/) = 0;
@@ -147,6 +153,9 @@ public:
   virtual T inspect(const Stop & /*s*/) const = 0;
   virtual T inspect(const Poke & /*s*/) const = 0;
   virtual T inspect(const Clear & /*s*/) const = 0;
+  virtual T inspect(const CLoadM & /*s*/) const = 0;
+  virtual T inspect(const CLoadStar & /*s*/) const = 0;
+  virtual T inspect(const CSaveStar & /*s*/) const = 0;
   virtual T inspect(const Set & /*s*/) const = 0;
   virtual T inspect(const Reset & /*s*/) const = 0;
   virtual T inspect(const Cls & /*s*/) const = 0;
@@ -191,6 +200,9 @@ public:
   virtual T absorb(const Stop & /*s*/) = 0;
   virtual T absorb(const Poke & /*s*/) = 0;
   virtual T absorb(const Clear & /*s*/) = 0;
+  virtual T absorb(const CLoadM & /*s*/) = 0;
+  virtual T absorb(const CLoadStar & /*s*/) = 0;
+  virtual T absorb(const CSaveStar & /*s*/) = 0;
   virtual T absorb(const Set & /*s*/) = 0;
   virtual T absorb(const Reset & /*s*/) = 0;
   virtual T absorb(const Cls & /*s*/) = 0;
@@ -287,9 +299,13 @@ public:
 
 class Print : public OperableStatement<Print> {
 public:
+  bool isLPrint = false;
+  Print(bool lprint) : isLPrint(lprint) {}
   up<NumericExpr> at;
   std::vector<up<StringExpr>> printExpr;
-  std::string statementName() const override { return "PRINT"; }
+  std::string statementName() const override {
+    return isLPrint ? "LPRINT" : "PRINT";
+  }
 };
 
 class Input : public OperableStatement<Input> {
@@ -403,6 +419,27 @@ class Clear : public OperableStatement<Clear> {
 public:
   up<NumericExpr> size;
   std::string statementName() const override { return "CLEAR"; }
+};
+
+class CLoadM : public OperableStatement<CLoadM> {
+public:
+  up<StringExpr> filename;
+  up<NumericExpr> offset;
+  std::string statementName() const override { return "CLOADM"; }
+};
+
+class CLoadStar : public OperableStatement<CLoadStar> {
+public:
+  std::string arrayName;
+  up<StringExpr> filename;
+  std::string statementName() const override { return "CLOAD*"; }
+};
+
+class CSaveStar : public OperableStatement<CSaveStar> {
+public:
+  std::string arrayName;
+  up<StringExpr> filename;
+  std::string statementName() const override { return "CSAVE*"; }
 };
 
 class Set : public OperableStatement<Set> {

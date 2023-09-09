@@ -20,24 +20,22 @@
 
 class ExprSymbolTabulator : public NullExprInspector {
 public:
-  ExprSymbolTabulator(SymbolTable &st, int linenum)
-      : symbolTable(st), lineNumber(linenum) {}
+  ExprSymbolTabulator(SymbolTable &st) : symbolTable(st) {}
   void inspect(const NumericVariableExpr &e) const override;
   void inspect(const StringVariableExpr &e) const override;
   void inspect(const NumericArrayExpr &e) const override;
   void inspect(const StringArrayExpr &e) const override;
-  void addEntry(std::vector<Symbol> &table, const std::string &symbolName,
-                std::size_t numDims) const;
+  void addEntry(std::vector<Symbol> &table,
+                const std::string &symbolName) const;
 
 private:
   SymbolTable &symbolTable;
-  int lineNumber;
 };
 
 class StatementSymbolTabulator : public NullStatementInspector {
 public:
-  StatementSymbolTabulator(SymbolTable &st, int linenum)
-      : symbolTable(st), exprSymbolTabulator(st, linenum) {}
+  StatementSymbolTabulator(SymbolTable &st)
+      : symbolTable(st), exprSymbolTabulator(st) {}
   void inspect(const If &s) const override;
   void inspect(const Dim &s) const override;
   void inspect(const Read &s) const override;
@@ -45,6 +43,7 @@ public:
   void inspect(const Accum &s) const override;
   void inspect(const Decum &s) const override;
   void inspect(const Necum &s) const override;
+  void inspect(const CLoadStar &s) const override;
   void inspect(const For &s) const override;
   void inspect(const Input &s) const override;
 
