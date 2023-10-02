@@ -851,7 +851,6 @@ std::string Library::mdIModByte() {
   tasm.sba();
   tasm.bhs("_dec");
   tasm.aba();
-  tasm.tst("tmp1+1");
   tasm.rts();
 
   return tasm.source();

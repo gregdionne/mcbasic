@@ -5,7 +5,7 @@ C10S := $(SRCS:%.bas=%.c10)
 
 all: $(ASMS) $(C10S)
 
-%.c10: %.bas
+%.c10: %.bas $(MCBASIC)
 	$(MCBASIC) -native $<
 
 %.asm: %.bas $(MCBASIC)

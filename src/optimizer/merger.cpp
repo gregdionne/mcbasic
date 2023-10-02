@@ -304,13 +304,13 @@ void ExprMerger::reduceSquarePower(up<NumericExpr> &expr) {
 bool ExprMerger::reduceProperFraction(std::vector<up<NumericExpr>> &ops1,
                                       std::vector<up<NumericExpr>> &ops2) {
   for (auto iOp2 = ops2.begin(); iOp2 != ops2.end(); ++iOp2) {
-    if (auto iexpr = dynamic_cast<IntExpr *>(iOp2->get())) {
+    if (auto *iexpr = dynamic_cast<IntExpr *>(iOp2->get())) {
       IsEqual isEqual(iexpr->expr.get());
-      for (auto iOp1 = ops1.begin(); iOp1 != ops1.end(); ++iOp1) {
-        if ((*iOp1)->check(&isEqual)) {
+      for (auto &op1 : ops1) {
+        if (op1->check(&isEqual)) {
           auto fract = makeup<FractExpr>();
-          fract->expr = mv(*iOp1);
-          *iOp1 = mv(fract);
+          fract->expr = mv(op1);
+          op1 = mv(fract);
           iOp2 = ops2.erase(iOp2);
           return true;
         }

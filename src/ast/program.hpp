@@ -19,8 +19,8 @@ public:
   ProgramOp &operator=(ProgramOp &&) = delete;
   virtual ~ProgramOp() = default;
 
-  virtual void operate(Line & /*l*/){};
-  virtual void operate(Program & /*p*/){};
+  virtual void operate(Line & /*l*/) = 0;
+  virtual void operate(Program & /*p*/) = 0;
 };
 
 class Line {

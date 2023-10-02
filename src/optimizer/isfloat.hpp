@@ -9,7 +9,7 @@
 
 class IsFloat : public PessimisticExprChecker {
 public:
-  explicit IsFloat(SymbolTable &st) : symbolTable(st) {}
+  explicit IsFloat(const SymbolTable &st) : symbolTable(st) {}
   bool inspect(const ValExpr &e) const override;
   bool inspect(const AbsExpr &e) const override;
   bool inspect(const ShiftExpr &e) const override;
@@ -30,7 +30,7 @@ public:
   bool inspect(const FractExpr &e) const override;
 
 private:
-  SymbolTable &symbolTable;
+  const SymbolTable &symbolTable;
 };
 
 #endif

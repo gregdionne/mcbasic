@@ -8,7 +8,7 @@
 
 class IsDecimalFree : public PessimisticExprChecker {
 public:
-  explicit IsDecimalFree(SymbolTable &st) : symbolTable(st) {}
+  explicit IsDecimalFree(const SymbolTable &st) : symbolTable(st) {}
   bool inspect(const StringConstantExpr &e) const override;
   bool inspect(const StringConcatenationExpr &e) const override;
   bool inspect(const LeftExpr &e) const override;
@@ -17,7 +17,7 @@ public:
   bool inspect(const StrExpr &e) const override;
 
 private:
-  SymbolTable &symbolTable;
+  const SymbolTable &symbolTable;
 };
 
 #endif

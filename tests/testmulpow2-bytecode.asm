@@ -417,7 +417,6 @@ _dec
 	sba
 	bhs	_dec
 	aba
-	tst	tmp1+1
 	rts
 
 	.module	mdnegtmp

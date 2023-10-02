@@ -71,7 +71,7 @@ bool IsFloat::inspect(const TanExpr & /*e*/) const { return true; }
 bool IsFloat::inspect(const RndExpr &e) const {
   ConstInspector constInspector;
   auto value = e.expr->constify(&constInspector);
-  return !(value && *value >= 1);
+  return !value || *value < 1;
 }
 
 bool IsFloat::inspect(const NumericConstantExpr &e) const {
@@ -79,7 +79,7 @@ bool IsFloat::inspect(const NumericConstantExpr &e) const {
 }
 
 bool IsFloat::inspect(const NumericVariableExpr &e) const {
-  for (Symbol &symbol : symbolTable.numVarTable) {
+  for (const auto &symbol : symbolTable.numVarTable) {
     if (symbol.name == e.varname) {
       return symbol.isFloat;
     }
@@ -88,7 +88,7 @@ bool IsFloat::inspect(const NumericVariableExpr &e) const {
 }
 
 bool IsFloat::inspect(const NumericArrayExpr &e) const {
-  for (Symbol &symbol : symbolTable.numArrTable) {
+  for (const auto &symbol : symbolTable.numArrTable) {
     if (symbol.name == e.varexp->varname) {
       return symbol.isFloat;
     }
