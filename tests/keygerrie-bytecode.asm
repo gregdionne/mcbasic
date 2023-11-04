@@ -125,8 +125,7 @@ LINE_10
 
 	; POKE 16385,PEEK(2)
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_poke_pw_ir1
 	.word	16385
@@ -136,8 +135,7 @@ LINE_10
 	.byte	bytecode_peek_ir1_pw
 	.word	17023
 
-	.byte	bytecode_peek_ir2_pb
-	.byte	2
+	.byte	bytecode_peek2_ir2
 
 	.byte	bytecode_and_ir1_ir1_ir2
 
@@ -162,9 +160,9 @@ bytecode_and_ir1_ir1_ir2	.equ	0
 bytecode_clear	.equ	1
 bytecode_goto_ix	.equ	2
 bytecode_inkey_sr1	.equ	3
-bytecode_peek_ir1_pb	.equ	4
-bytecode_peek_ir1_pw	.equ	5
-bytecode_peek_ir2_pb	.equ	6
+bytecode_peek2_ir1	.equ	4
+bytecode_peek2_ir2	.equ	5
+bytecode_peek_ir1_pw	.equ	6
 bytecode_poke_pw_ir1	.equ	7
 bytecode_progbegin	.equ	8
 bytecode_progend	.equ	9
@@ -174,9 +172,9 @@ catalog
 	.word	clear
 	.word	goto_ix
 	.word	inkey_sr1
-	.word	peek_ir1_pb
+	.word	peek2_ir1
+	.word	peek2_ir2
 	.word	peek_ir1_pw
-	.word	peek_ir2_pb
 	.word	poke_pw_ir1
 	.word	progbegin
 	.word	progend
@@ -431,16 +429,24 @@ _gotkey
 _rts
 	rts
 
-peek_ir1_pb			; numCalls = 1
-	.module	modpeek_ir1_pb
-	jsr	getbyte
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
+peek2_ir1			; numCalls = 1
+	.module	modpeek2_ir1
+	jsr	noargs
+	jsr	R_KPOLL
+	ldab	2
 	stab	r1+2
 	ldd	#0
 	std	r1
+	rts
+
+peek2_ir2			; numCalls = 1
+	.module	modpeek2_ir2
+	jsr	noargs
+	jsr	R_KPOLL
+	ldab	2
+	stab	r2+2
+	ldd	#0
+	std	r2
 	rts
 
 peek_ir1_pw			; numCalls = 2
@@ -452,18 +458,6 @@ peek_ir1_pw			; numCalls = 2
 	stab	r1+2
 	ldd	#0
 	std	r1
-	rts
-
-peek_ir2_pb			; numCalls = 1
-	.module	modpeek_ir2_pb
-	jsr	getbyte
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
-	stab	r2+2
-	ldd	#0
-	std	r2
 	rts
 
 poke_pw_ir1			; numCalls = 3

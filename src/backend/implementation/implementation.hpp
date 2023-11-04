@@ -570,6 +570,8 @@ public:
   virtual std::string regInt_posWord(InstPeek &inst) = 0;
   virtual std::string regInt_posByte(InstPeek &inst) = 0;
 
+  virtual std::string regInt(InstPeek2 &inst) = 0;
+
   virtual std::string regInt_regInt(InstPeekWord &inst) = 0;
   virtual std::string regInt_extInt(InstPeekWord &inst) = 0;
   virtual std::string regInt_posWord(InstPeekWord &inst) = 0;

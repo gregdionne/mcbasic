@@ -1079,7 +1079,12 @@ void ExprCompiler::absorb(const PeekExpr &e) {
   result->castToInt();
 
   auto dest = queue.alloc(result->clone());
-  result = queue.append(makeup<InstPeek>(mv(dest), mv(result)));
+
+  // special MC-10 keypoll routine
+  ConstInspector constInspector;
+  result = queue.append(constInspector.isEqual(e.expr.get(), 2)
+                            ? makeupInst<InstPeek2>(mv(dest))
+                            : makeupInst<InstPeek>(mv(dest), mv(result)));
 }
 
 void ExprCompiler::absorb(const LenExpr &e) {

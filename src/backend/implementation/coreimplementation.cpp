@@ -8058,6 +8058,18 @@ std::string CoreImplementation::regInt_posWord(InstPeek &inst) {
   return tasm.source();
 }
 
+std::string CoreImplementation::regInt(InstPeek2 &inst) {
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.jsr("R_KPOLL");
+  tasm.ldab("2");
+  tasm.stab(inst.arg1->lbyte());
+  tasm.ldd("#0");
+  tasm.std(inst.arg1->sbyte());
+  tasm.rts();
+  return tasm.source();
+}
+
 std::string CoreImplementation::regInt_posByte(InstPeek &inst) {
   Assembler tasm;
   preamble(tasm, inst);

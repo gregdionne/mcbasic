@@ -16626,15 +16626,15 @@ STRVAR_B	.block	3
 STRVAR_CC	.block	3
 ; Numeric Arrays
 INTARR_BL	.block	4	; dims=1
-INTARR_C1	.block	2	; dims=0
-INTARR_M	.block	2	; dims=0
+INTARR_C1	.block	4	; dims=0
+INTARR_M	.block	4	; dims=0
 INTARR_Q1	.block	4	; dims=1
 INTARR_Q3	.block	8	; dims=3
 INTARR_QQ	.block	8	; dims=3
 ; String Arrays
-STRARR_A	.block	2	; dims=0
+STRARR_A	.block	4	; dims=0
 STRARR_A1	.block	8	; dims=3
-STRARR_A2	.block	2	; dims=0
+STRARR_A2	.block	4	; dims=0
 
 ; block ended by symbol
 bes

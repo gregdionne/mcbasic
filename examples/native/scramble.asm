@@ -4455,8 +4455,7 @@ LINE_183
 
 	; IF PEEK(2) AND NOT PEEK(16946) AND 1 THEN
 
-	ldab	#2
-	jsr	peek_ir1_pb
+	jsr	peek2_ir1
 
 	ldd	#16946
 	jsr	peek_ir2_pw
@@ -4490,8 +4489,7 @@ LINE_185
 
 	; IF PEEK(2) AND NOT PEEK(16947) AND 8 THEN
 
-	ldab	#2
-	jsr	peek_ir1_pb
+	jsr	peek2_ir1
 
 	ldd	#16947
 	jsr	peek_ir2_pw
@@ -4525,8 +4523,7 @@ LINE_186
 
 	; IF PEEK(2) AND NOT PEEK(16947) AND 1 THEN
 
-	ldab	#2
-	jsr	peek_ir1_pb
+	jsr	peek2_ir1
 
 	ldd	#16947
 	jsr	peek_ir2_pw
@@ -4560,8 +4557,7 @@ LINE_187
 
 	; IF PEEK(2) AND NOT PEEK(16952) AND 8 THEN
 
-	ldab	#2
-	jsr	peek_ir1_pb
+	jsr	peek2_ir1
 
 	ldd	#16952
 	jsr	peek_ir2_pw
@@ -4595,8 +4591,7 @@ LINE_188
 
 	; IF PEEK(2) AND NOT PEEK(16946) AND 4 THEN
 
-	ldab	#2
-	jsr	peek_ir1_pb
+	jsr	peek2_ir1
 
 	ldd	#16946
 	jsr	peek_ir2_pw
@@ -7203,6 +7198,15 @@ or_ir1_ir1_ir2			; numCalls = 1
 	stab	r1
 	rts
 
+peek2_ir1			; numCalls = 5
+	.module	modpeek2_ir1
+	jsr	R_KPOLL
+	ldab	2
+	stab	r1+2
+	ldd	#0
+	std	r1
+	rts
+
 peek_ir1_ir1			; numCalls = 2
 	.module	modpeek_ir1_ir1
 	ldx	r1+1
@@ -7221,7 +7225,7 @@ peek_ir1_ix			; numCalls = 12
 	std	r1
 	rts
 
-peek_ir1_pb			; numCalls = 7
+peek_ir1_pb			; numCalls = 2
 	.module	modpeek_ir1_pb
 	clra
 	std	tmp1

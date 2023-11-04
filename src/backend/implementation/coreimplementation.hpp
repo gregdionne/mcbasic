@@ -570,6 +570,8 @@ public:
   std::string regInt_posWord(InstPeek &inst) override;
   std::string regInt_posByte(InstPeek &inst) override;
 
+  std::string regInt(InstPeek2 &inst) override;
+
   std::string regInt_regInt(InstPeekWord &inst) override;
   std::string regInt_extInt(InstPeekWord &inst) override;
   std::string regInt_posWord(InstPeekWord &inst) override;

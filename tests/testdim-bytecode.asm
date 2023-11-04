@@ -1226,8 +1226,8 @@ STRVAR_A	.block	3
 STRVAR_B	.block	3
 STRVAR_C	.block	3
 ; Numeric Arrays
-INTARR_D	.block	2	; dims=0
-INTARR_E	.block	2	; dims=0
+INTARR_D	.block	4	; dims=0
+INTARR_E	.block	4	; dims=0
 ; String Arrays
 
 ; block ended by symbol

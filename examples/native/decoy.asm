@@ -751,8 +751,7 @@ LINE_22
 
 	; K=PEEK(2) AND PEEK(Q)
 
-	ldab	#2
-	jsr	peek_ir1_pb
+	jsr	peek2_ir1
 
 	ldx	#INTVAR_Q
 	jsr	peek_ir2_ix
@@ -4197,21 +4196,19 @@ or_ir1_ir1_ir2			; numCalls = 2
 	stab	r1
 	rts
 
-peek_ir1_ix			; numCalls = 3
-	.module	modpeek_ir1_ix
-	ldx	1,x
-	jsr	peek
+peek2_ir1			; numCalls = 1
+	.module	modpeek2_ir1
+	jsr	R_KPOLL
+	ldab	2
 	stab	r1+2
 	ldd	#0
 	std	r1
 	rts
 
-peek_ir1_pb			; numCalls = 1
-	.module	modpeek_ir1_pb
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
+peek_ir1_ix			; numCalls = 3
+	.module	modpeek_ir1_ix
+	ldx	1,x
+	jsr	peek
 	stab	r1+2
 	ldd	#0
 	std	r1

@@ -2694,8 +2694,7 @@ LINE_83
 
 	; IF PEEK(2) AND NOT PEEK(16949) AND 1 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16949
@@ -2729,8 +2728,7 @@ LINE_84
 
 	; IF PEEK(2) AND NOT PEEK(16946) AND 1 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16946
@@ -2764,8 +2762,7 @@ LINE_85
 
 	; IF PEEK(2) AND NOT PEEK(16948) AND 4 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16948
@@ -2799,8 +2796,7 @@ LINE_86
 
 	; IF PEEK(2) AND NOT PEEK(16952) AND 4 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16952
@@ -2834,8 +2830,7 @@ LINE_87
 
 	; IF PEEK(2) AND NOT PEEK(16949) AND 32 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16949
@@ -2869,8 +2864,7 @@ LINE_88
 
 	; IF PEEK(2) AND NOT PEEK(16951) AND 32 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16951
@@ -7835,8 +7829,8 @@ bytecode_one_ix	.equ	87
 bytecode_ongosub_ir1_is	.equ	88
 bytecode_ongoto_ir1_is	.equ	89
 bytecode_or_ir1_ir1_ir2	.equ	90
-bytecode_peek_ir1_ir1	.equ	91
-bytecode_peek_ir1_pb	.equ	92
+bytecode_peek2_ir1	.equ	91
+bytecode_peek_ir1_ir1	.equ	92
 bytecode_peek_ir2_pw	.equ	93
 bytecode_poke_id_ix	.equ	94
 bytecode_poke_ir1_ix	.equ	95
@@ -7960,8 +7954,8 @@ catalog
 	.word	ongosub_ir1_is
 	.word	ongoto_ir1_is
 	.word	or_ir1_ir1_ir2
+	.word	peek2_ir1
 	.word	peek_ir1_ir1
-	.word	peek_ir1_pb
 	.word	peek_ir2_pw
 	.word	poke_id_ix
 	.word	poke_ir1_ix
@@ -10652,23 +10646,21 @@ or_ir1_ir1_ir2			; numCalls = 3
 	stab	r1
 	rts
 
-peek_ir1_ir1			; numCalls = 16
-	.module	modpeek_ir1_ir1
+peek2_ir1			; numCalls = 6
+	.module	modpeek2_ir1
 	jsr	noargs
-	ldx	r1+1
-	jsr	peek
+	jsr	R_KPOLL
+	ldab	2
 	stab	r1+2
 	ldd	#0
 	std	r1
 	rts
 
-peek_ir1_pb			; numCalls = 6
-	.module	modpeek_ir1_pb
-	jsr	getbyte
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
+peek_ir1_ir1			; numCalls = 16
+	.module	modpeek_ir1_ir1
+	jsr	noargs
+	ldx	r1+1
+	jsr	peek
 	stab	r1+2
 	ldd	#0
 	std	r1
@@ -11220,7 +11212,7 @@ INTARR_A	.block	4	; dims=1
 INTARR_B	.block	4	; dims=1
 INTARR_C	.block	4	; dims=1
 INTARR_D	.block	6	; dims=2
-INTARR_E	.block	2	; dims=0
+INTARR_E	.block	4	; dims=0
 INTARR_F	.block	4	; dims=1
 INTARR_G	.block	4	; dims=1
 INTARR_H	.block	4	; dims=1

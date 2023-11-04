@@ -6852,8 +6852,7 @@ LINE_300
 
 	; IF PEEK(2) AND NOT PEEK(16952) AND 8 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16952
@@ -6887,8 +6886,7 @@ LINE_310
 
 	; IF PEEK(2) AND NOT PEEK(16946) AND 2 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16946
@@ -6922,8 +6920,7 @@ LINE_320
 
 	; IF PEEK(2) AND NOT PEEK(16947) AND 2 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16947
@@ -6957,8 +6954,7 @@ LINE_330
 
 	; IF PEEK(2) AND NOT PEEK(16948) AND 2 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16948
@@ -6992,8 +6988,7 @@ LINE_340
 
 	; IF PEEK(2) AND NOT PEEK(16949) AND 2 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16949
@@ -7027,8 +7022,7 @@ LINE_350
 
 	; IF PEEK(2) AND NOT PEEK(16946) AND 1 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16946
@@ -7062,8 +7056,7 @@ LINE_360
 
 	; IF PEEK(2) AND NOT PEEK(16948) AND 4 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16948
@@ -7097,8 +7090,7 @@ LINE_370
 
 	; IF PEEK(2) AND NOT PEEK(16947) AND 8 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16947
@@ -7132,8 +7124,7 @@ LINE_380
 
 	; IF PEEK(2) AND NOT PEEK(16945) AND 8 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16945
@@ -7337,7 +7328,7 @@ bytecode_one_ix	.equ	105
 bytecode_ongosub_ir1_is	.equ	106
 bytecode_ongoto_ir1_is	.equ	107
 bytecode_or_ir1_ir1_ir2	.equ	108
-bytecode_peek_ir1_pb	.equ	109
+bytecode_peek2_ir1	.equ	109
 bytecode_peek_ir1_pw	.equ	110
 bytecode_peek_ir2_pw	.equ	111
 bytecode_point_ir1_ir1_ir2	.equ	112
@@ -7492,7 +7483,7 @@ catalog
 	.word	ongosub_ir1_is
 	.word	ongoto_ir1_is
 	.word	or_ir1_ir1_ir2
-	.word	peek_ir1_pb
+	.word	peek2_ir1
 	.word	peek_ir1_pw
 	.word	peek_ir2_pw
 	.word	point_ir1_ir1_ir2
@@ -10586,13 +10577,11 @@ or_ir1_ir1_ir2			; numCalls = 4
 	stab	r1
 	rts
 
-peek_ir1_pb			; numCalls = 9
-	.module	modpeek_ir1_pb
-	jsr	getbyte
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
+peek2_ir1			; numCalls = 9
+	.module	modpeek2_ir1
+	jsr	noargs
+	jsr	R_KPOLL
+	ldab	2
 	stab	r1+2
 	ldd	#0
 	std	r1

@@ -109,8 +109,7 @@ LINE_10
 
 	; POKE 16385,PEEK(2)
 
-	ldab	#2
-	jsr	peek_ir1_pb
+	jsr	peek2_ir1
 
 	ldd	#16385
 	jsr	poke_pw_ir1
@@ -120,8 +119,7 @@ LINE_10
 	ldd	#17023
 	jsr	peek_ir1_pw
 
-	ldab	#2
-	jsr	peek_ir2_pb
+	jsr	peek2_ir2
 
 	jsr	and_ir1_ir1_ir2
 
@@ -225,15 +223,22 @@ _gotkey
 _rts
 	rts
 
-peek_ir1_pb			; numCalls = 1
-	.module	modpeek_ir1_pb
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
+peek2_ir1			; numCalls = 1
+	.module	modpeek2_ir1
+	jsr	R_KPOLL
+	ldab	2
 	stab	r1+2
 	ldd	#0
 	std	r1
+	rts
+
+peek2_ir2			; numCalls = 1
+	.module	modpeek2_ir2
+	jsr	R_KPOLL
+	ldab	2
+	stab	r2+2
+	ldd	#0
+	std	r2
 	rts
 
 peek_ir1_pw			; numCalls = 2
@@ -244,17 +249,6 @@ peek_ir1_pw			; numCalls = 2
 	stab	r1+2
 	ldd	#0
 	std	r1
-	rts
-
-peek_ir2_pb			; numCalls = 1
-	.module	modpeek_ir2_pb
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
-	stab	r2+2
-	ldd	#0
-	std	r2
 	rts
 
 poke_pw_ir1			; numCalls = 3

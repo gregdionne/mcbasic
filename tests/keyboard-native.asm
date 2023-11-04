@@ -103,8 +103,7 @@ LINE_20
 
 	; A=PEEK(2) AND PEEK(1023)
 
-	ldab	#2
-	jsr	peek_ir1_pb
+	jsr	peek2_ir1
 
 	ldd	#1023
 	jsr	peek_ir2_pw
@@ -227,12 +226,10 @@ ld_ix_ir1			; numCalls = 1
 	stab	0,x
 	rts
 
-peek_ir1_pb			; numCalls = 1
-	.module	modpeek_ir1_pb
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
+peek2_ir1			; numCalls = 1
+	.module	modpeek2_ir1
+	jsr	R_KPOLL
+	ldab	2
 	stab	r1+2
 	ldd	#0
 	std	r1

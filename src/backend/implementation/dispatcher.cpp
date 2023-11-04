@@ -429,6 +429,11 @@ std::string Dispatcher::operate(InstPeek &inst) {
                                    : implementation->unimplemented(inst);
 }
 
+std::string Dispatcher::operate(InstPeek2 &inst) {
+  return inst.arg1->isRegInt() ? implementation->regInt(inst)
+                               : implementation->unimplemented(inst);
+}
+
 std::string Dispatcher::operate(InstPeekWord &inst) {
   return inst.isRegInt_regInt()    ? implementation->regInt_regInt(inst)
          : inst.isRegInt_extInt()  ? implementation->regInt_extInt(inst)

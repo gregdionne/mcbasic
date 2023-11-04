@@ -764,8 +764,7 @@ LINE_240
 	ldd	#17023
 	jsr	peek_ir1_pw
 
-	ldab	#2
-	jsr	peek_ir2_pb
+	jsr	peek2_ir2
 
 	jsr	and_ir1_ir1_ir2
 
@@ -4381,6 +4380,15 @@ or_ir1_ir1_ir2			; numCalls = 8
 	stab	r1
 	rts
 
+peek2_ir2			; numCalls = 1
+	.module	modpeek2_ir2
+	jsr	R_KPOLL
+	ldab	2
+	stab	r2+2
+	ldd	#0
+	std	r2
+	rts
+
 peek_ir1_ir1			; numCalls = 1
 	.module	modpeek_ir1_ir1
 	ldx	r1+1
@@ -4404,17 +4412,6 @@ peek_ir2_ir2			; numCalls = 2
 	.module	modpeek_ir2_ir2
 	ldx	r2+1
 	jsr	peek
-	stab	r2+2
-	ldd	#0
-	std	r2
-	rts
-
-peek_ir2_pb			; numCalls = 1
-	.module	modpeek_ir2_pb
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
 	stab	r2+2
 	ldd	#0
 	std	r2

@@ -775,8 +775,7 @@ LINE_20
 
 	; ON K(PEEK(2) AND PEEK(R)) GOTO 2,3,70,4,87
 
-	ldab	#2
-	jsr	peek_ir1_pb
+	jsr	peek2_ir1
 
 	ldx	#INTVAR_R
 	jsr	peek_ir2_ix
@@ -1399,8 +1398,7 @@ LINE_51
 
 	; ON K(PEEK(2) AND PEEK(R)) GOTO 64,65,60,55
 
-	ldab	#2
-	jsr	peek_ir1_pb
+	jsr	peek2_ir1
 
 	ldx	#INTVAR_R
 	jsr	peek_ir2_ix
@@ -8256,21 +8254,19 @@ or_ir1_ir1_ir2			; numCalls = 1
 	stab	r1
 	rts
 
-peek_ir1_ir1			; numCalls = 6
-	.module	modpeek_ir1_ir1
-	ldx	r1+1
-	jsr	peek
+peek2_ir1			; numCalls = 2
+	.module	modpeek2_ir1
+	jsr	R_KPOLL
+	ldab	2
 	stab	r1+2
 	ldd	#0
 	std	r1
 	rts
 
-peek_ir1_pb			; numCalls = 2
-	.module	modpeek_ir1_pb
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
+peek_ir1_ir1			; numCalls = 6
+	.module	modpeek_ir1_ir1
+	ldx	r1+1
+	jsr	peek
 	stab	r1+2
 	ldd	#0
 	std	r1

@@ -5558,8 +5558,8 @@ FLTVAR_WY	.block	5
 STRVAR_A	.block	3
 ; Numeric Arrays
 INTARR_A	.block	6	; dims=2
-INTARR_X	.block	2	; dims=0
-INTARR_Y	.block	2	; dims=0
+INTARR_X	.block	4	; dims=0
+INTARR_Y	.block	4	; dims=0
 ; String Arrays
 
 ; block ended by symbol

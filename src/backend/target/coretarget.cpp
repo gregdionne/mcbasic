@@ -4,6 +4,7 @@
 #include "backend/implementation/library.hpp"
 #include "utils/strescape.hpp"
 
+#include <algorithm>
 #include <cstring>
 
 std::string CoreTarget::generateAssembly(Text &text, InstQueue &queue,
@@ -312,13 +313,14 @@ std::string CoreTarget::generateSymbols(ConstTable &constTable,
   tasm.comment("Numeric Arrays");
   for (const auto &symbol : symbolTable.numArrTable) {
     tasm.block((symbol.isFloat ? "FLTARR_" : "INTARR_") + symbol.name,
-               std::to_string(2 + 2 * symbol.numDims),
+               std::to_string(2 + 2 * std::max(symbol.numDims, 1)),
                "dims=" + std::to_string(symbol.numDims));
   }
 
   tasm.comment("String Arrays");
   for (const auto &symbol : symbolTable.strArrTable) {
-    tasm.block("STRARR_" + symbol.name, std::to_string(2 + 2 * symbol.numDims),
+    tasm.block("STRARR_" + symbol.name,
+               std::to_string(2 + 2 * std::max(symbol.numDims, 1)),
                "dims=" + std::to_string(symbol.numDims));
   }
 

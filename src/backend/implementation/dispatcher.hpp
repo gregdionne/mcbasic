@@ -67,6 +67,7 @@ public:
   std::string operate(InstCom &inst) override;
   std::string operate(InstSgn &inst) override;
   std::string operate(InstPeek &inst) override;
+  std::string operate(InstPeek2 &inst) override;
   std::string operate(InstPeekWord &inst) override;
   std::string operate(InstInv &inst) override;
   std::string operate(InstSqr &inst) override;

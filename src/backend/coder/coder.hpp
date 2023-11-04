@@ -132,6 +132,9 @@ public:
   std::string operate(InstPeek &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }
+  std::string operate(InstPeek2 &inst) override {
+    return defaultCode(static_cast<Instruction *>(&inst));
+  }
   std::string operate(InstPeekWord &inst) override {
     return defaultCode(static_cast<Instruction *>(&inst));
   }

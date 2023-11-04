@@ -129,8 +129,7 @@ LINE_20
 
 	; IF PEEK(2) AND NOT PEEK(16952) AND 4 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16952
@@ -167,8 +166,7 @@ LINE_40
 
 	; IF PEEK(2) AND NOT PEEK(16946) AND 1 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16946
@@ -205,8 +203,7 @@ LINE_60
 
 	; IF PEEK(2) AND NOT PEEK(16948) AND 4 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16948
@@ -243,8 +240,7 @@ LINE_80
 
 	; IF PEEK(2) AND NOT PEEK(16949) AND 1 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16949
@@ -281,8 +277,7 @@ LINE_100
 
 	; IF PEEK(2) AND NOT PEEK(16949) AND 32 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16949
@@ -319,8 +314,7 @@ LINE_120
 
 	; IF PEEK(2) AND NOT PEEK(16951) AND 32 THEN
 
-	.byte	bytecode_peek_ir1_pb
-	.byte	2
+	.byte	bytecode_peek2_ir1
 
 	.byte	bytecode_peek_ir2_pw
 	.word	16951
@@ -364,7 +358,7 @@ bytecode_cls	.equ	3
 bytecode_com_ir2_ir2	.equ	4
 bytecode_goto_ix	.equ	5
 bytecode_jmpeq_ir1_ix	.equ	6
-bytecode_peek_ir1_pb	.equ	7
+bytecode_peek2_ir1	.equ	7
 bytecode_peek_ir2_pw	.equ	8
 bytecode_pr_ss	.equ	9
 bytecode_prat_pb	.equ	10
@@ -379,7 +373,7 @@ catalog
 	.word	com_ir2_ir2
 	.word	goto_ix
 	.word	jmpeq_ir1_ix
-	.word	peek_ir1_pb
+	.word	peek2_ir1
 	.word	peek_ir2_pw
 	.word	pr_ss
 	.word	prat_pb
@@ -686,13 +680,11 @@ jmpeq_ir1_ix			; numCalls = 6
 _rts
 	rts
 
-peek_ir1_pb			; numCalls = 6
-	.module	modpeek_ir1_pb
-	jsr	getbyte
-	clra
-	std	tmp1
-	ldx	tmp1
-	ldab	,x
+peek2_ir1			; numCalls = 6
+	.module	modpeek2_ir1
+	jsr	noargs
+	jsr	R_KPOLL
+	ldab	2
 	stab	r1+2
 	ldd	#0
 	std	r1

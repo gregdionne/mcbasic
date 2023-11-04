@@ -45,6 +45,7 @@ class InstNeg;
 class InstCom;
 class InstSgn;
 class InstPeek;
+class InstPeek2;
 class InstPeekWord;
 class InstSqr;
 class InstInv;
@@ -183,6 +184,7 @@ public:
   virtual std::string operate(InstCom &inst) = 0;
   virtual std::string operate(InstSgn &inst) = 0;
   virtual std::string operate(InstPeek &inst) = 0;
+  virtual std::string operate(InstPeek2 &inst) = 0;
   virtual std::string operate(InstPeekWord &inst) = 0;
   virtual std::string operate(InstSqr &inst) = 0;
   virtual std::string operate(InstInv &inst) = 0;
@@ -868,6 +870,13 @@ class InstPeek : public OperableInstruction<InstPeek> {
 public:
   InstPeek(up<AddressMode> dest, up<AddressMode> am)
       : OperableInstruction("peek", mv(dest), mv(am)) {
+    resultInt();
+  }
+};
+
+class InstPeek2 : public OperableInstruction<InstPeek2> {
+public:
+  InstPeek2(up<AddressMode> dest) : OperableInstruction("peek2", mv(dest)) {
     resultInt();
   }
 };
