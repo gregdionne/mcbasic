@@ -1963,11 +1963,6 @@ LINE_48
 
 	.byte	bytecode_stop
 
-	; GOTO 44
-
-	.byte	bytecode_goto_ix
-	.word	LINE_44
-
 LINE_49
 
 	; C=1
@@ -2333,11 +2328,6 @@ LINE_58
 	; STOP
 
 	.byte	bytecode_stop
-
-	; GOTO 54
-
-	.byte	bytecode_goto_ix
-	.word	LINE_54
 
 LINE_59
 
@@ -2729,11 +2719,6 @@ LINE_68
 
 	.byte	bytecode_stop
 
-	; GOTO 64
-
-	.byte	bytecode_goto_ix
-	.word	LINE_64
-
 LINE_69
 
 	; C=1
@@ -3117,11 +3102,6 @@ LINE_78
 	; STOP
 
 	.byte	bytecode_stop
-
-	; GOTO 74
-
-	.byte	bytecode_goto_ix
-	.word	LINE_74
 
 LINE_79
 
@@ -9591,7 +9571,7 @@ gosub_ix			; numCalls = 46
 	stx	nxtinst
 	jmp	mainloop
 
-goto_ix			; numCalls = 70
+goto_ix			; numCalls = 66
 	.module	modgoto_ix
 	jsr	getaddr
 	stx	nxtinst

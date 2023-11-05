@@ -16,9 +16,9 @@
 #include "iffolder.hpp"
 #include "merger.hpp"
 #include "onfolder.hpp"
-#include "reachchecker.hpp"
 #include "symboltable/symboltabulator.hpp"
 #include "symboltable/uninitsymbolpruner.hpp"
+#include "unreachedstatementpruner.hpp"
 #include "unusedassignmentpruner.hpp"
 #include "whenfolder.hpp"
 #include "whenifier.hpp"
@@ -90,10 +90,8 @@ Text Optimizer::optimize(Program &p) {
   // fold any WHEN with constant predicate
   WhenFolder(options.Wbranch).operate(p);
 
-  // inform user if there are unreachable statements
-  if (options.Wunreached.isEnabled()) {
-    ReachChecker(options.Wunreached).operate(p);
-  }
+  // remove unreached executable statements
+  UnreachedStatementPruner(options.Wunreached).operate(p);
 
   // use Accum, Decum, and Necum statements
   Accumulizer(options.v).operate(p);
