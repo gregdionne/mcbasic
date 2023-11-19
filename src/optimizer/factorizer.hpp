@@ -4,6 +4,7 @@
 #define OPTIMIZER_FACTORIZER_HPP
 
 #include "ast/nullexprmutator.hpp"
+#include "utils/announcer.hpp"
 
 // factorizes expressions of form
 //   F*X + F*Y
@@ -12,12 +13,8 @@
 
 class Factorizer : public NullExprMutator {
 public:
-  Factorizer() = default;
-  Factorizer(const Factorizer &) = delete;
-  Factorizer(Factorizer &&) = delete;
-  Factorizer &operator=(const Factorizer &) = delete;
-  Factorizer &operator=(Factorizer &&) = delete;
-  ~Factorizer() override = default;
+  Factorizer(int lineNum, const BinaryOption &opt)
+      : lineNumber(lineNum), announcer(opt) {}
 
   void mutate(AdditiveExpr &expr) override;
   void mutate(AndExpr &expr) override;
@@ -35,6 +32,8 @@ private:
             std::vector<up<NumericExpr>> &(*rhsops)(NaryNumericExpr *));
 
   bool factorized{false};
+  int lineNumber;
+  Announcer announcer;
 };
 
 #endif

@@ -49,7 +49,7 @@ Text Optimizer::optimize(Program &p) {
   Whenifier(options.v).operate(p);
 
   // do a quick pass on constant folding
-  ConstFolder().operate(p);
+  ConstFolder(options.v).operate(p);
 
   // fetch the symbol table
   SymbolTabulator(t.symbolTable).operate(p);
@@ -76,10 +76,10 @@ Text Optimizer::optimize(Program &p) {
   FloatPromoter(t.dataTable, t.symbolTable, options.Wfloat).operate(p);
 
   // simplify expressions once float promotion is complete
-  Merger(t.symbolTable).operate(p);
+  Merger(t.symbolTable, options.v).operate(p);
 
   // fold any new constants
-  ConstFolder().operate(p);
+  ConstFolder(options.v).operate(p);
 
   // fold any ON with a constant branch index
   OnFolder(options.Wbranch).operate(p);
@@ -97,7 +97,7 @@ Text Optimizer::optimize(Program &p) {
   Accumulizer(options.v).operate(p);
 
   // one more pass at expression optimization
-  Merger(t.symbolTable).operate(p);
+  Merger(t.symbolTable, options.v).operate(p);
 
   // fetch (large/floating point) numeric constant text segment
   ConstTabulator(t.constTable).operate(p);

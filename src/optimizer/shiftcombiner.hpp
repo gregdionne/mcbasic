@@ -4,6 +4,7 @@
 #define OPTIMIZER_SHIFTCOMBINER_HPP
 
 #include "ast/nullexprmutator.hpp"
+#include "utils/announcer.hpp"
 
 // combines expressions of form
 //   SHIFT(A,N)  +  SHIFT(B,N)
@@ -12,12 +13,8 @@
 
 class ShiftCombiner : public NullExprMutator {
 public:
-  ShiftCombiner() = default;
-  ShiftCombiner(const ShiftCombiner &) = delete;
-  ShiftCombiner(ShiftCombiner &&) = delete;
-  ShiftCombiner &operator=(const ShiftCombiner &) = delete;
-  ShiftCombiner &operator=(ShiftCombiner &&) = delete;
-  ~ShiftCombiner() override = default;
+  ShiftCombiner(int linenum, const BinaryOption &option)
+      : lineNumber(linenum), announcer(option) {}
 
   void mutate(AdditiveExpr &expr) override;
   void mutate(AndExpr &expr) override;
@@ -35,6 +32,8 @@ private:
           std::vector<up<NumericExpr>> &(*rhsops)(NaryNumericExpr *));
 
   bool combined{false};
+  int lineNumber;
+  Announcer announcer;
 };
 
 #endif

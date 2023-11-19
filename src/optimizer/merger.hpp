@@ -13,11 +13,13 @@
 
 class Merger : public ProgramOp {
 public:
-  explicit Merger(SymbolTable &st) : symbolTable(st) {}
+  Merger(SymbolTable &st, const BinaryOption &opt)
+      : option(opt), symbolTable(st) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 
 private:
+  const BinaryOption &option;
   SymbolTable &symbolTable;
 };
 
@@ -27,7 +29,8 @@ private:
 
 class ExprMerger : public ExprMutator<void, void> {
 public:
-  explicit ExprMerger(SymbolTable &st) : isFloat(st) {}
+  ExprMerger(SymbolTable &st, const BinaryOption &opt)
+      : isFloat(st), option(opt), exprConstFolder(opt), announcer(opt) {}
   void mutate(StringConcatenationExpr &e) override;
   void mutate(StringArrayExpr &e) override;
   void mutate(LeftExpr &e) override;
@@ -84,21 +87,22 @@ public:
   void merge(up<Expr> &expr);
   void merge(NaryNumericExpr &e);
 
+  void setLineNumber(int n) { lineNumber = n; }
+
 private:
   // remove identity elements from N-ary argument list
-  static void pruneIdentity(std::vector<up<NumericExpr>> &operands,
-                            double identity);
+  void pruneIdentity(std::vector<up<NumericExpr>> &operands, double identity);
 
   // remove multiplication if only one argument
   // remove addition if only one argument
   //
-  static void reduceNaryExpr(up<NumericExpr> &expr);
+  void reduceNaryExpr(up<NumericExpr> &expr);
 
   // replace
   //   - ( - <expr1> * <expr2> ) with <expr1> * <expr2>
   //   - (   <expr1> / -<expr2>) with <expr1> * <expr2>
   //
-  static void mergeNegatedMultiplication(up<NumericExpr> &expr);
+  void mergeNegatedMultiplication(up<NumericExpr> &expr);
 
   // replace
   //    <integer> *   <boolean> with <boolean> AND - <integer>
@@ -140,7 +144,7 @@ private:
 
   // replace <expr>*-1 or <expr>/-1 with -<expr>
   //
-  static void reduceMultiplyByNegativeOne(up<NumericExpr> &expr);
+  void reduceMultiplyByNegativeOne(up<NumericExpr> &expr);
 
   // replace SHIFT(SHIFT(<expr>, m), n) with SHIFT(<expr>, m+n)
   //
@@ -149,21 +153,19 @@ private:
   // replace expressions involving consecutive PEEKS
   //
   void mergeDoublePeek(up<NumericExpr> &expr);
-  static bool mergeDoublePeek(std::vector<up<NumericExpr>> &ops);
+  bool mergeDoublePeek(std::vector<up<NumericExpr>> &ops);
 
   // replace PEEK(9)*256+PEEK(10) with TIMER
   //
-  static bool mergeWithTimer(PeekExpr *peek1,
-                             std::vector<up<NumericExpr>> &ops);
+  bool mergeWithTimer(PeekExpr *peek1, std::vector<up<NumericExpr>> &ops);
 
   // replace (PEEK(17024)AND1)*256+PEEK(17025) with POS
   //
-  static bool mergeWithPos(PeekExpr *peek1, std::vector<up<NumericExpr>> &ops);
+  bool mergeWithPos(PeekExpr *peek1, std::vector<up<NumericExpr>> &ops);
 
   // replace PEEK(<expr>)*256+PEEK(<expr>+1) with PEEK(<expr>)
   //   for <expr> either constant or a variable name
-  static bool mergeWithPeekWord(PeekExpr *peek1,
-                                std::vector<up<NumericExpr>> &ops);
+  bool mergeWithPeekWord(PeekExpr *peek1, std::vector<up<NumericExpr>> &ops);
 
   // move relational operators earlier in expression
   //   (delays promoting bool to integer)
@@ -173,12 +175,16 @@ private:
   static void knead(std::vector<up<NumericExpr>> &operands);
 
   IsFloat isFloat;
+  const BinaryOption &option;
   ExprConstFolder exprConstFolder;
+  Announcer announcer;
+  int lineNumber = -1;
 };
 
 class StatementMerger : public NullStatementMutator {
 public:
-  explicit StatementMerger(SymbolTable &st) : merger(st) {}
+  StatementMerger(SymbolTable &st, const BinaryOption &option)
+      : announcer(option), merger(st, option) {}
   void mutate(For &s) override;
   void mutate(When &s) override;
   void mutate(If &s) override;
@@ -198,8 +204,11 @@ public:
   void mutate(Sound &s) override;
   void mutate(Exec &s) override;
 
+  void setLineNumber(int lineNumber) { merger.setLineNumber(lineNumber); }
+
 private:
   using NullStatementMutator::mutate;
+  Announcer announcer;
   ExprMerger merger;
 };
 

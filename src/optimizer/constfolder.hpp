@@ -6,12 +6,14 @@
 #include "ast/nullstatementmutator.hpp"
 #include "ast/program.hpp"
 #include "constinspector.hpp"
+#include "utils/announcer.hpp"
 
 // combines operations on immediately resolvable constants
 
 class ExprConstFolder : public ExprMutator<utils::optional<double>,
                                            utils::optional<std::string>> {
 public:
+  explicit ExprConstFolder(const BinaryOption &option) : announcer(option) {}
   utils::optional<std::string> mutate(StringConstantExpr &e) override;
   utils::optional<std::string> mutate(StringVariableExpr &e) override;
   utils::optional<std::string> mutate(StringConcatenationExpr &e) override;
@@ -67,15 +69,20 @@ public:
   utils::optional<double> fold(up<NumericExpr> &expr);
   utils::optional<std::string> fold(up<StringExpr> &expr);
 
+  void setLineNumber(int n) { lineNumber = n; }
+
 private:
   void fold(std::vector<up<NumericExpr>> &operands, bool &enableFold,
             bool &folded, int &iOffset, double &value,
             void (*op)(double &value, double v));
   ConstInspector constInspector;
+  Announcer announcer;
+  int lineNumber = -1;
 };
 
 class StatementConstFolder : public StatementMutator<void> {
 public:
+  explicit StatementConstFolder(const BinaryOption &option) : cfe(option) {}
   void mutate(For &s) override;
   void mutate(When &s) override;
   void mutate(If &s) override;
@@ -111,6 +118,8 @@ public:
   void mutate(Stop & /*s*/) override {}
   void mutate(Error & /*s*/) override {}
 
+  void setLineNumber(int n) { cfe.setLineNumber(n); }
+
 private:
   ExprConstFolder cfe;
   ConstInspector constInspector;
@@ -118,7 +127,7 @@ private:
 
 class ConstFolder : public ProgramOp {
 public:
-  ConstFolder() : that(&cfs) {}
+  explicit ConstFolder(const BinaryOption &option) : cfs(option), that(&cfs) {}
   void operate(Program &p) override;
   void operate(Line &l) override;
 

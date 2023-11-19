@@ -22,9 +22,13 @@ up<NumericExpr> ShiftCombiner::combine(
     IsEqual isEqual(lexp->count.get());
     if (rexp->count->check(&isEqual)) {
       auto innerExpr = makeup<OuterExpr>();
+      auto funcName = innerExpr->funcName;
       lhsops(innerExpr.get()).emplace_back(mv(lexp->expr));
       rhsops(innerExpr.get()).emplace_back(mv(rexp->expr));
       combined = true;
+      announcer.start(lineNumber);
+      announcer.finish("factored SHIFT operation out of %s expression",
+                       funcName.c_str());
       return makeup<ShiftExpr>(mv(innerExpr), mv(lexp->count));
     }
   }

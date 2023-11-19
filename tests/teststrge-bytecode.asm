@@ -587,15 +587,6 @@ _1
 	ldd	#-1
 	rts
 
-	.module	mdgetlo
-getlo
-	blo	_1
-	ldd	#0
-	rts
-_1
-	ldd	#-1
-	rts
-
 	.module	mdprint
 print
 _loop

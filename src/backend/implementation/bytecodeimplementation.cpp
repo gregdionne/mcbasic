@@ -441,7 +441,7 @@ std::string ByteCodeImplementation::regInt_regStr_immStr(InstLdGe &inst) {
 
 std::string ByteCodeImplementation::regInt_extStr_immStr(InstLdGe &inst) {
   inst.dependencies.insert("mdstrloxr");
-  inst.dependencies.insert("mdgetlo");
+  inst.dependencies.insert("mdgeths");
 
   Assembler tasm;
   tasm.jsr("eistr");
@@ -458,7 +458,7 @@ std::string ByteCodeImplementation::regInt_extStr_immStr(InstLdGe &inst) {
 
 std::string ByteCodeImplementation::regInt_immStr_regStr(InstLdGe &inst) {
   inst.dependencies.insert("mdstrlo");
-  inst.dependencies.insert("mdgetlo");
+  inst.dependencies.insert("mdgeths");
 
   Assembler tasm;
   tasm.jsr("immstr");
@@ -478,7 +478,7 @@ std::string ByteCodeImplementation::regInt_immStr_regStr(InstLdGe &inst) {
 
 std::string ByteCodeImplementation::regInt_immStr_extStr(InstLdGe &inst) {
   inst.dependencies.insert("mdstrlox");
-  inst.dependencies.insert("mdgetlo");
+  inst.dependencies.insert("mdgeths");
 
   Assembler tasm;
   tasm.jsr("eistr");

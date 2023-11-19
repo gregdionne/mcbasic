@@ -5,7 +5,8 @@
 
 #include "ast/nullexprselector.hpp"
 
-// complements a boolean expression
+// checks to see if expression is a relational comparison against zero
+// returns non-zero portion if true
 
 class NonZeroBranchSelector : public NullExprSelector {
 public:

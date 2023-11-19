@@ -1,7 +1,14 @@
 // Copyright (C) 2022 Greg Dionne
 // Distributed under MIT License
 #include "factorizer.hpp"
+#include "ast/lister.hpp"
 #include "isequal.hpp"
+
+static std::string list(const Expr *e) {
+  ExprLister el;
+  e->soak(&el);
+  return el.result;
+}
 
 static std::vector<up<NumericExpr>> &operands(NaryNumericExpr *expr) {
   return expr->operands;
@@ -25,14 +32,19 @@ up<NumericExpr> Factorizer::factorize(
       auto itRexp = rexp->operands.begin();
       while (itRexp != rexp->operands.end()) {
         if ((*itRexp)->check(&isEqual)) {
+          auto factor = list(itLexp->get());
           auto outerExpr = makeup<InnerExpr>(mv(*itLexp));
           auto innerExpr = makeup<OuterExpr>();
+          auto funcName = innerExpr->funcName;
           itLexp = lexp->operands.erase(itLexp);
           itRexp = rexp->operands.erase(itRexp);
           lhsops(innerExpr.get()).emplace_back(mv(lhs));
           rhsops(innerExpr.get()).emplace_back(mv(rhs));
           outerExpr->operands.emplace_back(mv(innerExpr));
           factorized = true;
+          announcer.start(lineNumber);
+          announcer.finish("factored %s out of %s expression", factor.c_str(),
+                           funcName.c_str());
           return mv(outerExpr);
         }
         ++itRexp;

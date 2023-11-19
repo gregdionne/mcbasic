@@ -11,12 +11,22 @@
 #include "ast/lister.hpp"
 
 utils::optional<double> ExprConstFolder::fold(up<NumericExpr> &expr) {
+  ExprLister el;
+  expr->soak(&el);
+
   if (auto num = expr->constify(&constInspector)) {
     return num;
   }
 
   if (auto num = expr->constify(this)) {
+    auto oldResult = el.result;
     expr = makeup<NumericConstantExpr>(*num);
+    expr->soak(&el);
+    if (oldResult.length() && oldResult != el.result) {
+      announcer.start(lineNumber);
+      announcer.finish("replaced %s with %s", oldResult.c_str(),
+                       el.result.c_str());
+    }
     return num;
   }
 
@@ -24,12 +34,22 @@ utils::optional<double> ExprConstFolder::fold(up<NumericExpr> &expr) {
 }
 
 utils::optional<std::string> ExprConstFolder::fold(up<StringExpr> &expr) {
+  ExprLister el;
+  expr->soak(&el);
+
   if (auto str = expr->constify(&constInspector)) {
     return str;
   }
 
   if (auto str = expr->constify(this)) {
+    auto oldResult = el.result;
     expr = makeup<StringConstantExpr>(*str);
+    expr->soak(&el);
+    if (oldResult.length() && oldResult != " " && oldResult != el.result) {
+      announcer.start(lineNumber);
+      announcer.finish("replaced %s with %s", oldResult.c_str(),
+                       el.result.c_str());
+    }
     return str;
   }
 
@@ -61,6 +81,7 @@ void ConstFolder::operate(Program &p) {
 }
 
 void ConstFolder::operate(Line &l) {
+  cfs.setLineNumber(l.lineNumber);
   for (auto &statement : l.statements) {
     statement->mutate(that);
   }
