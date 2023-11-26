@@ -326,6 +326,8 @@ public:
 
   virtual std::string regFlt_regInt(InstInv &inst) = 0;
   virtual std::string regFlt_regFlt(InstInv &inst) = 0;
+  virtual std::string regFlt_extInt(InstInv &inst) = 0;
+  virtual std::string regFlt_extFlt(InstInv &inst) = 0;
 
   virtual std::string regFlt_regFlt(InstHlf &inst) = 0;
   virtual std::string regFlt_regInt(InstHlf &inst) = 0;

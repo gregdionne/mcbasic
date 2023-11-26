@@ -103,11 +103,16 @@ void Library::makeFoundation() {
   foundation["mdrpnumbr"] = Lib{0, mdRdPNumbr(), {}};
   foundation["mdrpstrng"] = Lib{0, mdRdPStrng(), {}};
   foundation["mdrnstrng"] = Lib{0, mdRdNStrng(), {"mdrpstrng", "mdstrval"}};
-  foundation["mdrsubyte"] = Lib{0, mdRdSUByte(), {"mdrpubyte"}};
-  foundation["mdrssbyte"] = Lib{0, mdRdSSByte(), {"mdrpsbyte"}};
-  foundation["mdrsuword"] = Lib{0, mdRdSUWord(), {"mdrpuword"}};
-  foundation["mdrssword"] = Lib{0, mdRdSSWord(), {"mdrpsword"}};
-  foundation["mdrsnumbr"] = Lib{0, mdRdSNumbr(), {"mdrpnumbr"}};
+  foundation["mdrsubyte"] =
+      Lib{0, mdRdSUByte(), {"mdrpubyte", "mdstrdel", "mdstrflt", "mdstrprm"}};
+  foundation["mdrssbyte"] =
+      Lib{0, mdRdSSByte(), {"mdrpsbyte", "mdstrdel", "mdstrflt", "mdstrprm"}};
+  foundation["mdrsuword"] =
+      Lib{0, mdRdSUWord(), {"mdrpuword", "mdstrdel", "mdstrflt", "mdstrprm"}};
+  foundation["mdrssword"] =
+      Lib{0, mdRdSSWord(), {"mdrpsword", "mdstrdel", "mdstrflt", "mdstrprm"}};
+  foundation["mdrsnumbr"] =
+      Lib{0, mdRdSNumbr(), {"mdrpnumbr", "mdstrdel", "mdstrflt", "mdstrprm"}};
   foundation["mdrsstrng"] = Lib{0, mdRdSStrng(), {"mdrpstrng", "mdstrdel"}};
   foundation["mdtonat"] = Lib{0, mdToNative(), {}};
   foundation["mdtonatgl"] = Lib{0, mdToNativeGenLines(), {}};
@@ -3902,7 +3907,7 @@ std::string Library::mdRdSUByte() {
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rsubyte");
   tasm.jsr("strdel");
-  tasm.jsr("rnubyte");
+  tasm.jsr("rpubyte");
   tasm.ldd("#0");
   tasm.std("tmp3");
   tasm.jsr("strflt");
@@ -3920,7 +3925,7 @@ std::string Library::mdRdSSByte() {
   tasm.comment("EXIT:  data table read, and perm string created in X");
   tasm.label("rssbyte");
   tasm.jsr("strdel");
-  tasm.jsr("rnsbyte");
+  tasm.jsr("rpsbyte");
   tasm.ldd("#0");
   tasm.std("tmp3");
   tasm.jsr("strflt");

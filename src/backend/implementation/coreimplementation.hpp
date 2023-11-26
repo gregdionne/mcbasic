@@ -326,6 +326,8 @@ public:
 
   std::string regFlt_regInt(InstInv &inst) override;
   std::string regFlt_regFlt(InstInv &inst) override;
+  std::string regFlt_extInt(InstInv &inst) override;
+  std::string regFlt_extFlt(InstInv &inst) override;
 
   std::string regFlt_regInt(InstHlf &inst) override;
   std::string regFlt_regFlt(InstHlf &inst) override;

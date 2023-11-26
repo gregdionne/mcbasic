@@ -1,6 +1,5 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-
 #ifndef AST_NULLEXPRSELECTOR_HPP
 #define AST_NULLEXPRSELECTOR_HPP
 

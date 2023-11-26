@@ -453,6 +453,9 @@ void StatementLister::absorb(const Clear &s) {
   if (s.size) {
     result += " " + list(s.size);
   }
+  if (s.address) {
+    result += "," + list(s.address);
+  }
 }
 
 void StatementLister::absorb(const CLoadM &s) {

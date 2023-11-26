@@ -62,7 +62,7 @@ std::string ByteCodeTarget::generateLibraryCatalog(Library &library) {
             "indexed using a single byte.\n",
             entries.size() - 256, entries.size() > 257 ? "s" : "");
     fprintf(stderr, "Try reducing the size of the BASIC program; or, if "
-                    "you have lots of memroy, use the -native compilation "
+                    "you have lots of memory, use the -native compilation "
                     "switch.\n");
     exit(1);
   }

@@ -1,6 +1,5 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-
 #ifndef AST_PESSIMISTICEXPRCHECKER_HPP
 #define AST_PESSIMISTICEXPRCHECKER_HPP
 

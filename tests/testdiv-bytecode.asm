@@ -127,6 +127,14 @@ LINE_20
 
 LINE_30
 
+	; C=11.111111
+
+	.byte	bytecode_ld_fd_fx
+	.byte	bytecode_FLTVAR_C
+	.byte	bytecode_FLT_11p11111
+
+LINE_40
+
 	; PRINT STR$(A/B);" \r";
 
 	.byte	bytecode_ld_ir1_ix
@@ -134,6 +142,34 @@ LINE_30
 
 	.byte	bytecode_div_fr1_ir1_ix
 	.byte	bytecode_INTVAR_B
+
+	.byte	bytecode_str_sr1_fr1
+
+	.byte	bytecode_pr_sr1
+
+	.byte	bytecode_pr_ss
+	.text	2, " \r"
+
+LINE_50
+
+	; PRINT STR$(1/B);" \r";
+
+	.byte	bytecode_inv_fr1_ix
+	.byte	bytecode_INTVAR_B
+
+	.byte	bytecode_str_sr1_fr1
+
+	.byte	bytecode_pr_sr1
+
+	.byte	bytecode_pr_ss
+	.text	2, " \r"
+
+LINE_60
+
+	; PRINT STR$(1/C);" \r";
+
+	.byte	bytecode_inv_fr1_fx
+	.byte	bytecode_FLTVAR_C
 
 	.byte	bytecode_str_sr1_fr1
 
@@ -151,18 +187,24 @@ LLAST
 ; Library Catalog
 bytecode_clear	.equ	0
 bytecode_div_fr1_ir1_ix	.equ	1
-bytecode_ld_id_ix	.equ	2
-bytecode_ld_ir1_ix	.equ	3
-bytecode_ld_ix_pb	.equ	4
-bytecode_pr_sr1	.equ	5
-bytecode_pr_ss	.equ	6
-bytecode_progbegin	.equ	7
-bytecode_progend	.equ	8
-bytecode_str_sr1_fr1	.equ	9
+bytecode_inv_fr1_fx	.equ	2
+bytecode_inv_fr1_ix	.equ	3
+bytecode_ld_fd_fx	.equ	4
+bytecode_ld_id_ix	.equ	5
+bytecode_ld_ir1_ix	.equ	6
+bytecode_ld_ix_pb	.equ	7
+bytecode_pr_sr1	.equ	8
+bytecode_pr_ss	.equ	9
+bytecode_progbegin	.equ	10
+bytecode_progend	.equ	11
+bytecode_str_sr1_fr1	.equ	12
 
 catalog
 	.word	clear
 	.word	div_fr1_ir1_ix
+	.word	inv_fr1_fx
+	.word	inv_fr1_ix
+	.word	ld_fd_fx
 	.word	ld_id_ix
 	.word	ld_ir1_ix
 	.word	ld_ix_pb
@@ -533,6 +575,20 @@ _dec
 	aba
 	rts
 
+	.module	mdinvflt
+; X = 1/Y
+;   ENTRY  Y in 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+;   EXIT   1/Y in (0,x 1,x 2,x 3,x 4,x)
+;          uses (5,x 6,x 7,x 8,x 9,x)
+;          uses argv and tmp1-tmp4 (tmp4+1 unused)
+invflt
+	ldd	#0
+	std	0,x
+	std	3,x
+	incb
+	stab	2,x
+	jmp	divflt
+
 	.module	mdnegargv
 negargv
 	neg	4+argv
@@ -789,6 +845,20 @@ _panic
 	ldab	#1
 	jmp	error
 
+	.module	mdx2arg
+; copy [X] to argv
+;   ENTRY  Y in 0,x 1,x 2,x 3,x 4,x
+;   EXIT   Y copied to 0+argv, 1+argv, 2+argv, 3+argv, 4+argv
+	; copy x to argv
+x2arg
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	std	3+argv
+	rts
+
 clear			; numCalls = 1
 	.module	modclear
 	jsr	noargs
@@ -825,6 +895,43 @@ div_fr1_ir1_ix			; numCalls = 1
 	ldx	#r1
 	jmp	divflt
 
+inv_fr1_fx			; numCalls = 1
+	.module	modinv_fr1_fx
+	jsr	extend
+	jsr	x2arg
+	ldx	#r1
+	jmp	invflt
+
+inv_fr1_ix			; numCalls = 1
+	.module	modinv_fr1_ix
+	jsr	extend
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	#0
+	std	3+argv
+	std	r1+3
+	ldx	#r1
+	jmp	invflt
+
+ld_fd_fx			; numCalls = 1
+	.module	modld_fd_fx
+	jsr	dexext
+	std	tmp1
+	ldab	0,x
+	stab	0+argv
+	ldd	1,x
+	std	1+argv
+	ldd	3,x
+	ldx	tmp1
+	std	3,x
+	ldd	1+argv
+	std	1,x
+	ldab	0+argv
+	stab	0,x
+	rts
+
 ld_id_ix			; numCalls = 1
 	.module	modld_id_ix
 	jsr	dexext
@@ -855,7 +962,7 @@ ld_ix_pb			; numCalls = 1
 	std	0,x
 	rts
 
-pr_sr1			; numCalls = 1
+pr_sr1			; numCalls = 3
 	.module	modpr_sr1
 	jsr	noargs
 	ldab	r1
@@ -867,7 +974,7 @@ pr_sr1			; numCalls = 1
 _rts
 	rts
 
-pr_ss			; numCalls = 1
+pr_ss			; numCalls = 3
 	.module	modpr_ss
 	ldx	curinst
 	inx
@@ -937,7 +1044,7 @@ FM_ERROR	.equ	36
 error
 	jmp	R_ERROR
 
-str_sr1_fr1			; numCalls = 1
+str_sr1_fr1			; numCalls = 3
 	.module	modstr_sr1_fr1
 	jsr	noargs
 	ldd	r1+1
@@ -959,19 +1066,26 @@ enddata
 ; Bytecode symbol lookup table
 
 bytecode_INT_100000	.equ	0
+bytecode_FLT_11p11111	.equ	1
 
-bytecode_INTVAR_A	.equ	1
-bytecode_INTVAR_B	.equ	2
+bytecode_INTVAR_A	.equ	2
+bytecode_INTVAR_B	.equ	3
+bytecode_FLTVAR_C	.equ	4
 
 symtbl
 	.word	INT_100000
+	.word	FLT_11p11111
 
 	.word	INTVAR_A
 	.word	INTVAR_B
+	.word	FLTVAR_C
 
 
 ; large integer constants
 INT_100000	.byte	$01, $86, $a0
+
+; fixed-point constants
+FLT_11p11111	.byte	$00, $00, $0b, $1c, $72
 
 ; block started by symbol
 bss
@@ -979,6 +1093,7 @@ bss
 ; Numeric Variables
 INTVAR_A	.block	3
 INTVAR_B	.block	3
+FLTVAR_C	.block	5
 ; String Variables
 ; Numeric Arrays
 ; String Arrays

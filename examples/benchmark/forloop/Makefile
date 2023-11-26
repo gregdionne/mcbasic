@@ -10,6 +10,7 @@ BC10S := $(SRCS:%.bas=%-bytecode.c10)
 NC10S := $(SRCS:%.bas=%-native.c10)
 C10S := $(BC10S) $(NC10S)
 
+MCBASICFLAGS ?=
 
 all: $(ASMS) $(C10S)
 
@@ -28,10 +29,10 @@ all: $(ASMS) $(C10S)
 
 
 %-bytecode.c10: %-bytecode.bas $(MCBASIC)
-	$(MCBASIC) $<
+	$(MCBASIC) $(MCBASICFLAGS) $<
 
 %-native.c10: %-native.bas $(MCBASIC)
-	$(MCBASIC) -native $<
+	$(MCBASIC) -native $(MCBASICFLAGS) $<
 
 
 clean:

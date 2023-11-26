@@ -428,6 +428,9 @@ void StatementViewer::absorb(const Clear &s) {
   if (s.size) {
     indentOp(s.size, that);
   }
+  if (s.address) {
+    indentOp(s.size, that);
+  }
 }
 
 void StatementViewer::absorb(const CLoadM &s) {

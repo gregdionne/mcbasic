@@ -12,7 +12,7 @@ bytecode:      4.5 seconds
 native:        4.0 seconds
 
 There's not much difference between the bytecode and native versions due to the numeric-intensive SIN and COS computations.
-Most of the difference between the interpreted and the compiled version is due to the choice of using fixed-point compuations
+Most of the difference between the interpreted and the compiled version is due to the choice of using fixed-point computations
 for the compiled version instead of floating point.
 
 ## Angle Addition Formulae
@@ -25,7 +25,7 @@ native:        1 seconds
 Most of the time is occupied with the floating point multiply.
 
 ## Brensenham's Circle Algorithm
-The last method uses Brensenham's method. It should run fast since it uses only integers and requires no multiplicatin.
+The last method uses Brensenham's method. It should run fast since it uses only integers and requires no multiplication.
 
 interpreted:   2.0 seconds
 bytecode:     << 1 seconds

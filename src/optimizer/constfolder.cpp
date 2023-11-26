@@ -305,13 +305,20 @@ utils::optional<std::string> ExprConstFolder::mutate(LeftExpr &e) {
   auto len = fold(e.len);
 
   if (str && len) {
-    try {
-      auto svalue = str->substr(0, static_cast<std::size_t>(*len));
-      return utils::optional<std::string>(svalue);
-    } catch (...) {
-      fprintf(stderr, "couldn't get LEFT$(\"%s\",%f.0)\n", str->c_str(), *len);
+    if (*len < 0) {
+      fprintf(stderr,
+              "line %i: negative length specified in LEFT$(\"%s\",%.0f)\n",
+              lineNumber, str->c_str(), *len);
       exit(1);
     }
+
+    auto slen = static_cast<std::size_t>(*len);
+    if (str->length() <= slen) {
+      return str;
+    }
+
+    auto svalue = str->substr(0, slen);
+    return utils::optional<std::string>(svalue);
   }
 
   return {};
@@ -322,13 +329,20 @@ utils::optional<std::string> ExprConstFolder::mutate(RightExpr &e) {
   auto len = fold(e.len);
 
   if (str && len) {
-    try {
-      auto svalue = str->substr(static_cast<std::size_t>(str->length() - *len));
-      return utils::optional<std::string>(svalue);
-    } catch (...) {
-      fprintf(stderr, "couldn't get RIGHT$(\"%s\",%f.0)\n", str->c_str(), *len);
+    if (*len < 0) {
+      fprintf(stderr,
+              "line %i: negative length specified in RIGHT$(\"%s\",%.0f)\n",
+              lineNumber, str->c_str(), *len);
       exit(1);
     }
+
+    auto slen = static_cast<std::size_t>(*len);
+    if (str->length() <= slen) {
+      return str;
+    }
+
+    auto svalue = str->substr(str->length() - slen);
+    return utils::optional<std::string>(svalue);
   }
 
   return {};

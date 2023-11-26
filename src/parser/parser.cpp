@@ -512,8 +512,13 @@ up<Expr> Parser::getMidFunction() {
   return mid;
 }
 
-up<Expr> Parser::unimplementedKeywordExpression() {
+up<Expr> Parser::unimplementedExpressionKeyword() {
   in.die("unimplemented keyword: \"%s\"", keywords[in.lastKeyID()]);
+  return nullptr;
+}
+
+up<Expr> Parser::unexpectedExpressionKeyword() {
+  in.die("unexpected keyword: \"%s\"", keywords[in.lastKeyID()]);
   return nullptr;
 }
 
@@ -541,7 +546,9 @@ up<Expr> Parser::getFunction() {
          : skipKeyword("POINT")    ? getPointFunction()
          : skipKeyword("MEM")      ? (makeup<MemExpr>())
          : skipKeyword("INKEY$")   ? (makeup<InkeyExpr>())
-                                   : unimplementedKeywordExpression();
+         : skipKeyword("USR")      ? unimplementedExpressionKeyword()
+         : skipKeyword("VARPTR")   ? unimplementedExpressionKeyword()
+                                   : unexpectedExpressionKeyword();
 }
 
 up<Expr> Parser::getPowerExpression() {
@@ -706,7 +713,9 @@ up<Statement> Parser::getIf() {
     ifthen->consequent.emplace_back(getGoto(false));
   } else if (skipKeyword("THEN")) {
     in.skipWhitespace();
-    if (in.isDecimalWord()) {
+    if (in.iseol()) {
+      return ifthen;
+    } else if (in.isDecimalWord()) {
       ifthen->consequent.emplace_back(getGoto(false));
     } else {
       ifthen->consequent.emplace_back(getStatement());
@@ -915,6 +924,10 @@ up<Statement> Parser::getClear() {
   in.skipWhitespace();
   if (!in.iseol() && !in.isChar(':')) {
     clear->size = numeric(&Parser::getOrExpression);
+    in.skipWhitespace();
+    if (!in.iseol() && in.skipChar(',')) {
+      clear->address = numeric(&Parser::getOrExpression);
+    }
   }
   return clear;
 }
@@ -1051,7 +1064,7 @@ up<Statement> Parser::getExec() {
             "Should you still wish to traverse these treacherous waters...\n");
     fprintf(stderr, "you can enable machine code by adding the '-mcode' "
                     "command line option.\n\n");
-    exit(0);
+    exit(1);
   }
 
   auto exec = makeup<Exec>();
@@ -1062,6 +1075,11 @@ up<Statement> Parser::getExec() {
 
   exec->address = numeric(&Parser::getOrExpression);
   return exec;
+}
+
+up<Statement> Parser::unexpectedKeyword() {
+  in.die("unexpected keyword: \"%s\"", keywords[in.lastKeyID()]);
+  return {};
 }
 
 up<Statement> Parser::unimplementedKeyword() {
@@ -1104,11 +1122,15 @@ up<Statement> Parser::getStatement() {
          : skipKeyword("CLS")        ? getCls()
          : skipKeyword("SOUND")      ? getSound()
          : skipKeyword("EXEC")       ? getExec()
-                                     : unimplementedKeyword();
+         : isKeyword("NEW")          ? unimplementedKeyword()
+         : isKeyword("LLIST")        ? unimplementedKeyword()
+         : isKeyword("LIST")         ? unimplementedKeyword()
+                                     : unexpectedKeyword();
 }
 
 void Parser::getLine(Program &p) {
   in.skipWhitespace();
+
   if (in.iseol()) {
     return;
   }
@@ -1119,6 +1141,10 @@ void Parser::getLine(Program &p) {
 
   auto line = makeup<Line>();
   line->lineNumber = getLineNumber();
+
+  do {
+    in.skipWhitespace();
+  } while (in.skipChar(':'));
 
   while (!in.iseol()) {
     line->statements.emplace_back(getStatement());

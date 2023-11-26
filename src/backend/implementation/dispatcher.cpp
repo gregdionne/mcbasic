@@ -445,6 +445,8 @@ std::string Dispatcher::operate(InstPeekWord &inst) {
 std::string Dispatcher::operate(InstInv &inst) {
   return inst.isRegFlt_regInt()   ? implementation->regFlt_regInt(inst)
          : inst.isRegFlt_regFlt() ? implementation->regFlt_regFlt(inst)
+         : inst.isRegFlt_extInt() ? implementation->regFlt_extInt(inst)
+         : inst.isRegFlt_extFlt() ? implementation->regFlt_extFlt(inst)
                                   : implementation->unimplemented(inst);
 }
 

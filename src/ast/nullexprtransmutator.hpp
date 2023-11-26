@@ -1,6 +1,5 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-
 #ifndef AST_NULLEXPRTRANSMUTATOR_HPP
 #define AST_NULLEXPRTRANSMUTATOR_HPP
 

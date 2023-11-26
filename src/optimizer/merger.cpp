@@ -779,7 +779,6 @@ void ExprMerger::merge(NaryNumericExpr &e) {
   for (std::size_t i = 0; i < e.invoperands.size(); ++i) {
     auto *subExp = dynamic_cast<NaryNumericExpr *>(e.invoperands[i].get());
     if (subExp && e.funcName == subExp->funcName) {
-      announcer.start(lineNumber);
       e.invoperands.insert(e.invoperands.end(),
                            std::make_move_iterator(subExp->operands.begin()),
                            std::make_move_iterator(subExp->operands.end()));

@@ -14,7 +14,6 @@ FixedPoint::FixedPoint(double entry) {
   wholenum = static_cast<int>(quantized >> 16);
   if (wholenum > 0x7fffff || wholenum < -0x0800000) {
     fprintf(stderr, "constant %f is out of range\n", entry);
-    fprintf(stderr, "wholenum %08x is out of range\n", wholenum);
     exit(1);
   }
 }

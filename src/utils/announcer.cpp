@@ -1,6 +1,5 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-
 #include "announcer.hpp"
 
 #include <cstdarg>

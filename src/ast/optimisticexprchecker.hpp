@@ -1,6 +1,5 @@
 // Copyright (C) 2021 Greg Dionne
 // Distributed under MIT License
-
 #ifndef AST_OPTIMISTICEXPRCHECKER_HPP
 #define AST_OPTIMISTICEXPRCHECKER_HPP
 

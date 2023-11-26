@@ -8,6 +8,8 @@ BASMS ?= bsort-bytecode.asm bsort-native.asm
 QASMS ?= qsort-bytecode.asm qsort-native.asm
 CASMS ?= csort-bytecode.asm csort-native.asm
 
+MCBASICFLAGS ?=
+
 all: $(BC10S) $(QC10S) $(CC10S) $(BASMS) $(QASMS) $(CASMS)
 
 %-hand.c10: %-hand.asm
@@ -29,10 +31,10 @@ all: $(BC10S) $(QC10S) $(CC10S) $(BASMS) $(QASMS) $(CASMS)
 
 
 %-bytecode.c10: %-bytecode.bas $(MCBASIC)
-	$(MCBASIC) $<
+	$(MCBASIC) $(MCBASICFLAGS) $<
 
 %-native.c10: %-native.bas $(MCBASIC)
-	$(MCBASIC) -native $<
+	$(MCBASIC) -native $(MCBASICFLAGS) $<
 
 
 clean:

@@ -3,50 +3,7 @@
 #ifndef AST_STATEMENT_HPP
 #define AST_STATEMENT_HPP
 
-#include <string>
-#include <vector>
-
 #include "expression.hpp"
-#include "utils/memutils.hpp" // up<T>, makeup<T>, mv()
-
-// forward declarations for visitors
-
-class Statement;
-class Rem;
-class For;
-class Go;
-class If;
-class Data;
-class Print;
-class Input;
-class End;
-class On;
-class Next;
-class Dim;
-class Read;
-class Let;
-class Run;
-class Restore;
-class Return;
-class Stop;
-class Poke;
-class Clear;
-class CLoadM;
-class CLoadStar;
-class CSaveStar;
-class Set;
-class Reset;
-class Cls;
-class Sound;
-class Exec;
-
-// extensions
-class When;
-class Accum;
-class Decum;
-class Necum;
-class Eval;
-class Error;
 
 // Statement Visitors
 //
@@ -70,146 +27,13 @@ class Error;
 //   mutate()      - calls a mutator with no (void) return
 //   transmutate() - calls a mutator that returns a new branch of the AST.
 
-// StatementMutater
-//   change a statement in-place
+#include "statementabsorber.hpp"
+#include "statementinspector.hpp"
+#include "statementmutator.hpp"
 
-template <typename T> class StatementMutator {
-public:
-  StatementMutator() = default;
-  StatementMutator(const StatementMutator &) = delete;
-  StatementMutator(StatementMutator &&) = delete;
-  StatementMutator &operator=(const StatementMutator &) = delete;
-  StatementMutator &operator=(StatementMutator &&) = delete;
-  virtual ~StatementMutator() = default;
-
-  virtual T mutate(Rem & /*s*/) = 0;
-  virtual T mutate(For & /*s*/) = 0;
-  virtual T mutate(Go & /*s*/) = 0;
-  virtual T mutate(When & /*s*/) = 0;
-  virtual T mutate(If & /*s*/) = 0;
-  virtual T mutate(Data & /*s*/) = 0;
-  virtual T mutate(Print & /*s*/) = 0;
-  virtual T mutate(Input & /*s*/) = 0;
-  virtual T mutate(End & /*s*/) = 0;
-  virtual T mutate(On & /*s*/) = 0;
-  virtual T mutate(Next & /*s*/) = 0;
-  virtual T mutate(Dim & /*s*/) = 0;
-  virtual T mutate(Read & /*s*/) = 0;
-  virtual T mutate(Let & /*s*/) = 0;
-  virtual T mutate(Accum & /*s*/) = 0;
-  virtual T mutate(Decum & /*s*/) = 0;
-  virtual T mutate(Necum & /*s*/) = 0;
-  virtual T mutate(Eval & /*s*/) = 0;
-  virtual T mutate(Run & /*s*/) = 0;
-  virtual T mutate(Restore & /*s*/) = 0;
-  virtual T mutate(Return & /*s*/) = 0;
-  virtual T mutate(Stop & /*s*/) = 0;
-  virtual T mutate(Poke & /*s*/) = 0;
-  virtual T mutate(Clear & /*s*/) = 0;
-  virtual T mutate(CLoadM & /*s*/) = 0;
-  virtual T mutate(CLoadStar & /*s*/) = 0;
-  virtual T mutate(CSaveStar & /*s*/) = 0;
-  virtual T mutate(Set & /*s*/) = 0;
-  virtual T mutate(Reset & /*s*/) = 0;
-  virtual T mutate(Cls & /*s*/) = 0;
-  virtual T mutate(Sound & /*s*/) = 0;
-  virtual T mutate(Exec & /*s*/) = 0;
-  virtual T mutate(Error & /*s*/) = 0;
-};
-
-// StatementInspector
-//   provide a result of examination
-
-template <typename T> class StatementInspector {
-public:
-  StatementInspector() = default;
-  StatementInspector(const StatementInspector &) = delete;
-  StatementInspector(StatementInspector &&) = delete;
-  StatementInspector &operator=(const StatementInspector &) = delete;
-  StatementInspector &operator=(StatementInspector &&) = delete;
-  virtual ~StatementInspector() = default;
-
-  virtual T inspect(const Rem & /*s*/) const = 0;
-  virtual T inspect(const For & /*s*/) const = 0;
-  virtual T inspect(const Go & /*s*/) const = 0;
-  virtual T inspect(const When & /*s*/) const = 0;
-  virtual T inspect(const If & /*s*/) const = 0;
-  virtual T inspect(const Data & /*s*/) const = 0;
-  virtual T inspect(const Print & /*s*/) const = 0;
-  virtual T inspect(const Input & /*s*/) const = 0;
-  virtual T inspect(const End & /*s*/) const = 0;
-  virtual T inspect(const On & /*s*/) const = 0;
-  virtual T inspect(const Next & /*s*/) const = 0;
-  virtual T inspect(const Dim & /*s*/) const = 0;
-  virtual T inspect(const Read & /*s*/) const = 0;
-  virtual T inspect(const Let & /*s*/) const = 0;
-  virtual T inspect(const Accum & /*s*/) const = 0;
-  virtual T inspect(const Decum & /*s*/) const = 0;
-  virtual T inspect(const Necum & /*s*/) const = 0;
-  virtual T inspect(const Eval & /*s*/) const = 0;
-  virtual T inspect(const Run & /*s*/) const = 0;
-  virtual T inspect(const Restore & /*s*/) const = 0;
-  virtual T inspect(const Return & /*s*/) const = 0;
-  virtual T inspect(const Stop & /*s*/) const = 0;
-  virtual T inspect(const Poke & /*s*/) const = 0;
-  virtual T inspect(const Clear & /*s*/) const = 0;
-  virtual T inspect(const CLoadM & /*s*/) const = 0;
-  virtual T inspect(const CLoadStar & /*s*/) const = 0;
-  virtual T inspect(const CSaveStar & /*s*/) const = 0;
-  virtual T inspect(const Set & /*s*/) const = 0;
-  virtual T inspect(const Reset & /*s*/) const = 0;
-  virtual T inspect(const Cls & /*s*/) const = 0;
-  virtual T inspect(const Sound & /*s*/) const = 0;
-  virtual T inspect(const Exec & /*s*/) const = 0;
-  virtual T inspect(const Error & /*s*/) const = 0;
-};
-
-// StatementAbsorber
-//   changes state as a result of examination
-
-template <typename T> class StatementAbsorber {
-public:
-  StatementAbsorber() = default;
-  StatementAbsorber(const StatementAbsorber &) = delete;
-  StatementAbsorber(StatementAbsorber &&) = delete;
-  StatementAbsorber &operator=(const StatementAbsorber &) = delete;
-  StatementAbsorber &operator=(StatementAbsorber &&) = delete;
-  virtual ~StatementAbsorber() = default;
-
-  virtual T absorb(const Rem & /*s*/) = 0;
-  virtual T absorb(const For & /*s*/) = 0;
-  virtual T absorb(const Go & /*s*/) = 0;
-  virtual T absorb(const When & /*s*/) = 0;
-  virtual T absorb(const If & /*s*/) = 0;
-  virtual T absorb(const Data & /*s*/) = 0;
-  virtual T absorb(const Print & /*s*/) = 0;
-  virtual T absorb(const Input & /*s*/) = 0;
-  virtual T absorb(const End & /*s*/) = 0;
-  virtual T absorb(const On & /*s*/) = 0;
-  virtual T absorb(const Next & /*s*/) = 0;
-  virtual T absorb(const Dim & /*s*/) = 0;
-  virtual T absorb(const Read & /*s*/) = 0;
-  virtual T absorb(const Let & /*s*/) = 0;
-  virtual T absorb(const Accum & /*s*/) = 0;
-  virtual T absorb(const Decum & /*s*/) = 0;
-  virtual T absorb(const Necum & /*s*/) = 0;
-  virtual T absorb(const Eval & /*s*/) = 0;
-  virtual T absorb(const Run & /*s*/) = 0;
-  virtual T absorb(const Restore & /*s*/) = 0;
-  virtual T absorb(const Return & /*s*/) = 0;
-  virtual T absorb(const Stop & /*s*/) = 0;
-  virtual T absorb(const Poke & /*s*/) = 0;
-  virtual T absorb(const Clear & /*s*/) = 0;
-  virtual T absorb(const CLoadM & /*s*/) = 0;
-  virtual T absorb(const CLoadStar & /*s*/) = 0;
-  virtual T absorb(const CSaveStar & /*s*/) = 0;
-  virtual T absorb(const Set & /*s*/) = 0;
-  virtual T absorb(const Reset & /*s*/) = 0;
-  virtual T absorb(const Cls & /*s*/) = 0;
-  virtual T absorb(const Sound & /*s*/) = 0;
-  virtual T absorb(const Exec & /*s*/) = 0;
-  virtual T absorb(const Error & /*s*/) = 0;
-};
+#include "utils/memutils.hpp" // up<T>, makeup<T>, mv()
+#include <string>
+#include <vector>
 
 // AST structure for statements
 class Statement {
@@ -300,7 +124,7 @@ public:
 class Print : public OperableStatement<Print> {
 public:
   bool isLPrint = false;
-  Print(bool lprint) : isLPrint(lprint) {}
+  explicit Print(bool lprint) : isLPrint(lprint) {}
   up<NumericExpr> at;
   std::vector<up<StringExpr>> printExpr;
   std::string statementName() const override {
@@ -418,6 +242,7 @@ public:
 class Clear : public OperableStatement<Clear> {
 public:
   up<NumericExpr> size;
+  up<NumericExpr> address;
   std::string statementName() const override { return "CLEAR"; }
 };
 

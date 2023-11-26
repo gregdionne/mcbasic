@@ -4065,6 +4065,35 @@ std::string CoreImplementation::regFlt_regFlt(InstInv &inst) {
   return tasm.source();
 }
 
+std::string CoreImplementation::regFlt_extInt(InstInv &inst) {
+  inst.dependencies.insert("mdinvflt");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.ldab(inst.arg2->sbyte());
+  tasm.stab("0+argv");
+  tasm.ldd(inst.arg2->lword());
+  tasm.std("1+argv");
+  tasm.ldd("#0");
+  tasm.std("3+argv");
+  tasm.std(inst.arg1->fract());
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("invflt");
+  return tasm.source();
+}
+
+std::string CoreImplementation::regFlt_extFlt(InstInv &inst) {
+  inst.dependencies.insert("mdinvflt");
+  inst.dependencies.insert("mdx2arg");
+
+  Assembler tasm;
+  preamble(tasm, inst);
+  tasm.jsr("x2arg");
+  tasm.ldx("#" + inst.arg1->sbyte());
+  tasm.jmp("invflt");
+  return tasm.source();
+}
+
 std::string CoreImplementation::regFlt_regFlt(InstHlf &inst) {
   Assembler tasm;
   preamble(tasm, inst);

@@ -85,7 +85,8 @@ private:
   up<Expr> getOrExpression();
   up<Expr> getNumericArgument();
   up<Expr> getStringArgument();
-  up<Expr> unimplementedKeywordExpression();
+  up<Expr> unimplementedExpressionKeyword();
+  up<Expr> unexpectedExpressionKeyword();
   up<Statement> getFor();
   up<Statement> getGoto(bool isSub);
   up<Statement> getRem();
@@ -112,6 +113,7 @@ private:
   up<Statement> getCls();
   up<Statement> getSound();
   up<Statement> getExec();
+  up<Statement> unexpectedKeyword();
   up<Statement> unimplementedKeyword();
   up<Statement> getStatement();
 
