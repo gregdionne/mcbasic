@@ -12,6 +12,7 @@ public:
   bool inspect(const InkeyExpr &e) const override;
   bool inspect(const MidExpr &e) const override;
   bool inspect(const LeftExpr &e) const override;
+  bool inspect(const RightExpr &e) const override;
 };
 
 #endif

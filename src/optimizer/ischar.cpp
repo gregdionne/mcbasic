@@ -39,3 +39,16 @@ bool IsChar::inspect(const LeftExpr &e) const {
   // otherwise see if string itself passes
   return e.str->check(this);
 }
+
+bool IsChar::inspect(const RightExpr &e) const {
+  // if length is known...
+  ConstInspector constInspector;
+  if (auto value = e.len->constify(&constInspector)) {
+    if (*value < 2) {
+      return true;
+    }
+  }
+
+  // otherwise see if string itself passes
+  return e.str->check(this);
+}
