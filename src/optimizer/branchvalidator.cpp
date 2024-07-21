@@ -51,6 +51,9 @@ void StatementBranchValidator::validate(const std::string &statementName,
                                         int &lineNumber) const {
   if (lineNumbers.find(lineNumber) == lineNumbers.end()) {
     if (allowUnlisted.isEnabled()) {
+      announcer.start(currentLineNumber);
+      announcer.finish("branch destination \"%i\" not found in %s statement.",
+                       lineNumber, statementName.c_str());
       lineNumber = constants::unlistedLineNumber;
     } else {
       ulError(statementName, lineNumber);

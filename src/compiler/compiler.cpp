@@ -1455,13 +1455,15 @@ void ExprCompiler::absorb(const IntegerDivisionExpr &e) {
   // get numerator
   e.dividend->soak(this);
 
+  IsFloat isFloat(text.symbolTable);
   ConstInspector constInspector;
   auto c = e.divisor->constify(&constInspector);
   if (!result->isFloat() && c && (*c == 5 || *c == 3)) {
     auto dest = queue.alloc(result->clone());
     result = queue.append(*c == 3 ? makeupInstMv<InstIDiv3>(dest, result)
                                   : makeupInstMv<InstIDiv5>(dest, result));
-  } else if (!result->isFloat() && c && *c < 256 && is5Smooth(*c)) {
+  } else if (!result->isFloat() && !e.divisor->check(&isFloat) && c &&
+             *c < 256 && is5Smooth(*c)) {
     auto reg = queue.load(mv(result));
     e.divisor->soak(this);
     result = queue.append(

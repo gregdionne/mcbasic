@@ -12,16 +12,16 @@
 
 class Compiler {
 public:
-  Compiler(Text &text_in, const BinaryOption &g)
+  Compiler(const Text &text_in, const BinaryOption &g)
       : text(text_in), generateLines(g) {}
   InstQueue compile(Program &p);
-  Text &text;
+  const Text &text;
   const BinaryOption &generateLines;
 };
 
 class StatementCompiler : public StatementAbsorber<void> {
 public:
-  StatementCompiler(Text &text_in, InstQueue &queue_in, int firstLine_in,
+  StatementCompiler(const Text &text_in, InstQueue &queue_in, int firstLine_in,
                     std::vector<up<Line>>::iterator &itCurLine, bool g_in)
       : text(text_in), queue(queue_in), firstLine(firstLine_in),
         itCurrentLine(itCurLine), generateLines(g_in) {}
@@ -58,7 +58,7 @@ public:
   void absorb(const Sound &s) override;
   void absorb(const Exec &s) override;
   void absorb(const Error &s) override;
-  Text &text;
+  const Text &text;
   InstQueue &queue;
   int firstLine;
   std::vector<up<Line>>::iterator &itCurrentLine;
@@ -67,7 +67,7 @@ public:
 
 class ExprCompiler : public ExprAbsorber<void, void> {
 public:
-  ExprCompiler(Text &text_in, InstQueue &queue_in)
+  ExprCompiler(const Text &text_in, InstQueue &queue_in)
       : text(text_in), queue(queue_in), arrayRef(false), arrayDim(false){};
   explicit ExprCompiler(ExprCompiler *a)
       : text(a->text), queue(a->queue), arrayRef(false), arrayDim(false){};
@@ -120,7 +120,7 @@ public:
   void absorb(const PosExpr &e) override;
   void absorb(const PeekWordExpr &e) override;
 
-  Text &text;
+  const Text &text;
   InstQueue &queue;
   up<AddressMode> result;
   bool arrayRef;

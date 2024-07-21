@@ -111,7 +111,7 @@ MCBASICCLIOptions::MCBASICCLIOptions()
       Wbranch{true, "Wbranch", "Wno-branch",
               "Warn when conditional branches are pruned.",
               "The compiler may optimize ON..GOTO, ON..GOSUB, and IF..THEN "
-              "statements if their respective predicates evaluates to a "
+              "statements if their respective predicates evaluate to a "
               "constant.  Since programmers rarely intend for that to happen "
               "in practice, this warning gets thrown."},
       dash{false, "-", nullptr, "Stop processing flag options.",
