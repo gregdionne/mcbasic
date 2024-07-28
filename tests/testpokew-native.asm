@@ -625,7 +625,7 @@ arrval1_ir1_ix_ir1			; numCalls = 2
 	.module	modarrval1_ir1_ix_ir1
 	ldd	r1+1
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	ldx	tmp1

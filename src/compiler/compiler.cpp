@@ -581,7 +581,11 @@ void StatementCompiler::absorb(const CLoadStar &s) {
       auto dataType = symbol.isFloat ? DataType::Flt : DataType::Int;
       auto varLabel = (symbol.isFloat ? "FLTARR_" : "INTARR_") + s.arrayName;
       auto numArrName = makeup<AddressModeExt>(dataType, varLabel);
-      int numDims = symbol.numDims ? symbol.numDims : 1;
+      int numDims = symbol.numDims;
+      if (!numDims) {
+        fprintf(stderr, "\%s\" could not be dimensioned.",s.arrayName.c_str());
+        exit(1);
+      }
       auto nDims = makeup<AddressModeImm>(false, numDims);
 
       if (s.filename) {
@@ -611,7 +615,11 @@ void StatementCompiler::absorb(const CSaveStar &s) {
       auto dataType = symbol.isFloat ? DataType::Flt : DataType::Int;
       auto varLabel = (symbol.isFloat ? "FLTARR_" : "INTARR_") + s.arrayName;
       auto numArrName = makeup<AddressModeExt>(dataType, varLabel);
-      int numDims = symbol.numDims ? symbol.numDims : 1;
+      int numDims = symbol.numDims;
+      if (!numDims) {
+        fprintf(stderr, "\%s\" could not be dimensioned.",s.arrayName.c_str());
+        exit(1);
+      }
       auto nDims = makeup<AddressModeImm>(false, numDims);
       if (s.filename) {
         ExprCompiler f(text, queue);

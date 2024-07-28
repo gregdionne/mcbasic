@@ -4,19 +4,29 @@
 #include "ast/lister.hpp"
 
 static void checkNumDimMismatch(const Expr *e, int actualNumDims,
-                                int lineNumber, const Symbol &symbol) {
-  int expectedNumDims = symbol.numDims == 0 ? 1 : symbol.numDims;
+                                int lineNumber, Symbol &symbol) {
+  int expectedNumDims = symbol.numDims;
+  
+  if (!expectedNumDims && actualNumDims < 4) {
+    // no explicit Dim statement.  Lock on first invocation
+    expectedNumDims = symbol.numDims = actualNumDims;
+  }
 
   if (actualNumDims != expectedNumDims) {
     fprintf(stderr, "line %i: ", lineNumber);
+    if (expectedNumDims == 0) {
+      fprintf(stderr, "could not implicitly dimension array.");
+      fprintf(stderr, "arrays with greater than 3 dimensions "
+              "require an explicit DIM statement.");
+      exit(1);
+    }
     fprintf(stderr, "dimension mismatch.\n");
     ExprLister exprLister;
     e->soak(&exprLister);
     fprintf(stderr, "%s ", exprLister.result.c_str());
     fprintf(stderr,
-            "has %i dimensions, but was %s dimensioned with %i dimensions.\n",
-            actualNumDims, symbol.numDims ? "explicitly" : "implicitly",
-            expectedNumDims);
+            "has %i dimensions, but appeared elsewhere with %i dimensions.\n",
+            actualNumDims, expectedNumDims);
     exit(1);
   }
 }

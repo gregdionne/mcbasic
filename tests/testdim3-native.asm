@@ -416,11 +416,25 @@ _loop
 	rts
 
 	.module	mdref3
-; get offset from 3D descriptor X and argv.
+; validate offset from 3D descriptor X and argv.
+; if empty desc, then alloc D bytes in array memory
+; and 11 elements in each dimension (1331 total elements).
 ; return word offset in D and byte offset in tmp1
 ref3
+	std	tmp1
 	ldd	,x
-	beq	_err
+	bne	_preexist
+	ldd	strbuf
+	std	,x
+	ldd	#11
+	std	2,x
+	std	4,x
+	std	6,x
+	ldd	tmp1
+	pshx
+	jsr	alloc
+	pulx
+_preexist
 	ldd	4+argv
 	std	tmp1
 	subd	6,x
@@ -737,6 +751,7 @@ arrref3_ir1_ix_id			; numCalls = 1
 	std	0+argv
 	ldd	r1+1+5
 	std	2+argv
+	ldd	#3*11*11*11
 	jsr	ref3
 	jsr	refint
 	std	letptr
@@ -750,6 +765,7 @@ arrval3_ir1_ix_id			; numCalls = 1
 	std	0+argv
 	ldd	r1+1+5
 	std	2+argv
+	ldd	#3*11*11*11
 	jsr	ref3
 	jsr	refint
 	ldx	tmp1

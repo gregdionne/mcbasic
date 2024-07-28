@@ -668,7 +668,7 @@ arrref1_ir1_ix_id			; numCalls = 1
 	jsr	extdex
 	jsr	getlw
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	std	letptr
@@ -679,7 +679,7 @@ arrval1_ir1_ix_id			; numCalls = 1
 	jsr	extdex
 	jsr	getlw
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	ldx	tmp1

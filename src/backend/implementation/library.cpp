@@ -234,11 +234,24 @@ std::string Library::mdArrayRef1() {
 
 std::string Library::mdArrayRef2() {
   Assembler tasm;
-  tasm.comment("get offset from 2D descriptor X and argv.");
+  tasm.comment("validate offset from 2D descriptor X and argv.");
+  tasm.comment("if empty desc, then alloc D bytes in array memory");
+  tasm.comment("and 11 elements in each dimension (121 total elements).");
   tasm.comment("return word offset in D and byte offset in tmp1");
   tasm.label("ref2");
+  tasm.std("tmp1");
   tasm.ldd(",x");
-  tasm.beq("_err");
+  tasm.bne("_preexist");
+  tasm.ldd("strbuf");
+  tasm.std(",x");
+  tasm.ldd("#11");
+  tasm.std("2,x");
+  tasm.std("4,x");
+  tasm.ldd("tmp1");
+  tasm.pshx();
+  tasm.jsr("alloc");
+  tasm.pulx();
+  tasm.label("_preexist");
 
   tasm.ldd("2+argv");
   tasm.std("tmp1");
@@ -263,11 +276,25 @@ std::string Library::mdArrayRef2() {
 
 std::string Library::mdArrayRef3() {
   Assembler tasm;
-  tasm.comment("get offset from 3D descriptor X and argv.");
+  tasm.comment("validate offset from 3D descriptor X and argv.");
+  tasm.comment("if empty desc, then alloc D bytes in array memory");
+  tasm.comment("and 11 elements in each dimension (1331 total elements).");
   tasm.comment("return word offset in D and byte offset in tmp1");
   tasm.label("ref3");
+  tasm.std("tmp1");
   tasm.ldd(",x");
-  tasm.beq("_err");
+  tasm.bne("_preexist");
+  tasm.ldd("strbuf");
+  tasm.std(",x");
+  tasm.ldd("#11");
+  tasm.std("2,x");
+  tasm.std("4,x");
+  tasm.std("6,x");
+  tasm.ldd("tmp1");
+  tasm.pshx();
+  tasm.jsr("alloc");
+  tasm.pulx();
+  tasm.label("_preexist");
 
   tasm.ldd("4+argv");
   tasm.std("tmp1");

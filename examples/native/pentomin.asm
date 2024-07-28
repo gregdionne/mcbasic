@@ -1849,11 +1849,24 @@ _err
 	jmp	error
 
 	.module	mdref2
-; get offset from 2D descriptor X and argv.
+; validate offset from 2D descriptor X and argv.
+; if empty desc, then alloc D bytes in array memory
+; and 11 elements in each dimension (121 total elements).
 ; return word offset in D and byte offset in tmp1
 ref2
+	std	tmp1
 	ldd	,x
-	beq	_err
+	bne	_preexist
+	ldd	strbuf
+	std	,x
+	ldd	#11
+	std	2,x
+	std	4,x
+	ldd	tmp1
+	pshx
+	jsr	alloc
+	pulx
+_preexist
 	ldd	2+argv
 	std	tmp1
 	subd	4,x
@@ -2590,7 +2603,7 @@ arrref1_ir1_ix_id			; numCalls = 13
 	.module	modarrref1_ir1_ix_id
 	jsr	getlw
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	std	letptr
@@ -2600,7 +2613,7 @@ arrref1_ir1_ix_ir1			; numCalls = 2
 	.module	modarrref1_ir1_ix_ir1
 	ldd	r1+1
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	std	letptr
@@ -2610,7 +2623,7 @@ arrref1_ir1_sx_id			; numCalls = 1
 	.module	modarrref1_ir1_sx_id
 	jsr	getlw
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	std	letptr
@@ -2622,6 +2635,7 @@ arrref2_ir1_ix_id			; numCalls = 3
 	std	2+argv
 	ldd	r1+1
 	std	0+argv
+	ldd	#3*11*11
 	jsr	ref2
 	jsr	refint
 	std	letptr
@@ -2631,7 +2645,7 @@ arrval1_ir1_ix_id			; numCalls = 13
 	.module	modarrval1_ir1_ix_id
 	jsr	getlw
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	ldx	tmp1
@@ -2645,7 +2659,7 @@ arrval1_ir1_ix_ir1			; numCalls = 1
 	.module	modarrval1_ir1_ix_ir1
 	ldd	r1+1
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	ldx	tmp1
@@ -2659,7 +2673,7 @@ arrval1_ir1_sx_id			; numCalls = 2
 	.module	modarrval1_ir1_sx_id
 	jsr	getlw
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	ldx	tmp1
@@ -2675,6 +2689,7 @@ arrval2_ir1_ix_id			; numCalls = 2
 	std	2+argv
 	ldd	r1+1
 	std	0+argv
+	ldd	#3*11*11
 	jsr	ref2
 	jsr	refint
 	ldx	tmp1
@@ -2690,6 +2705,7 @@ arrval2_ir1_ix_ir2			; numCalls = 4
 	std	0+argv
 	ldd	r1+1+5
 	std	2+argv
+	ldd	#3*11*11
 	jsr	ref2
 	jsr	refint
 	ldx	tmp1

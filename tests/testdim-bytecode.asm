@@ -977,7 +977,7 @@ arrref1_ir1_ix_ir1			; numCalls = 2
 	jsr	extend
 	ldd	r1+1
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	std	letptr
@@ -988,7 +988,7 @@ arrval1_ir1_ix_ir1			; numCalls = 2
 	jsr	extend
 	ldd	r1+1
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	ldx	tmp1
@@ -1226,8 +1226,8 @@ STRVAR_A	.block	3
 STRVAR_B	.block	3
 STRVAR_C	.block	3
 ; Numeric Arrays
-INTARR_D	.block	4	; dims=0
-INTARR_E	.block	4	; dims=0
+INTARR_D	.block	4	; dims=1
+INTARR_E	.block	4	; dims=1
 ; String Arrays
 
 ; block ended by symbol

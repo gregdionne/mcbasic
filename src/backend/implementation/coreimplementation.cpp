@@ -676,7 +676,7 @@ std::string CoreImplementation::regInt_extInt_regInt(InstArrayVal1 &inst) {
   preamble(tasm, inst);
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
-  tasm.ldd("#33");
+  tasm.ldd("#3*11");
   tasm.jsr("ref1");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -697,7 +697,7 @@ std::string CoreImplementation::regInt_extInt_dexInt(InstArrayVal1 &inst) {
   preamble(tasm, inst);
   tasm.jsr("getlw");
   tasm.std("0+argv");
-  tasm.ldd("#33");
+  tasm.ldd("#3*11");
   tasm.jsr("ref1");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -717,7 +717,7 @@ std::string CoreImplementation::regInt_extFlt_regInt(InstArrayVal1 &inst) {
   preamble(tasm, inst);
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
-  tasm.ldd("#55");
+  tasm.ldd("#5*11");
   tasm.jsr("ref1");
   tasm.jsr("refflt");
   tasm.ldx("tmp1");
@@ -740,7 +740,7 @@ std::string CoreImplementation::regInt_extFlt_dexInt(InstArrayVal1 &inst) {
   preamble(tasm, inst);
   tasm.jsr("getlw");
   tasm.std("0+argv");
-  tasm.ldd("#55");
+  tasm.ldd("#5*11");
   tasm.jsr("ref1");
   tasm.jsr("refflt");
   tasm.ldx("tmp1");
@@ -762,7 +762,7 @@ std::string CoreImplementation::regInt_extStr_regInt(InstArrayVal1 &inst) {
   preamble(tasm, inst);
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
-  tasm.ldd("#33");
+  tasm.ldd("#3*11");
   tasm.jsr("ref1");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -783,7 +783,7 @@ std::string CoreImplementation::regInt_extStr_dexInt(InstArrayVal1 &inst) {
   preamble(tasm, inst);
   tasm.jsr("getlw");
   tasm.std("0+argv");
-  tasm.ldd("#33");
+  tasm.ldd("#3*11");
   tasm.jsr("ref1");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -805,6 +805,7 @@ std::string CoreImplementation::regInt_extInt_regInt(InstArrayVal2 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#3*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -827,6 +828,7 @@ std::string CoreImplementation::regInt_extInt_dexInt(InstArrayVal2 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
+  tasm.ldd("#3*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -848,6 +850,7 @@ std::string CoreImplementation::regInt_extFlt_regInt(InstArrayVal2 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#5*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refflt");
   tasm.ldx("tmp1");
@@ -872,6 +875,7 @@ std::string CoreImplementation::regInt_extFlt_dexInt(InstArrayVal2 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
+  tasm.ldd("#5*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refflt");
   tasm.ldx("tmp1");
@@ -895,6 +899,7 @@ std::string CoreImplementation::regInt_extStr_regInt(InstArrayVal2 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#3*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -917,6 +922,7 @@ std::string CoreImplementation::regInt_extStr_dexInt(InstArrayVal2 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
+  tasm.ldd("#3*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -940,6 +946,7 @@ std::string CoreImplementation::regInt_extInt_regInt(InstArrayVal3 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword() + "+10");
   tasm.std("4+argv");
+  tasm.ldd("#3*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -964,6 +971,7 @@ std::string CoreImplementation::regInt_extInt_dexInt(InstArrayVal3 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#3*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -987,6 +995,7 @@ std::string CoreImplementation::regInt_extFlt_regInt(InstArrayVal3 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword() + "+10");
   tasm.std("4+argv");
+  tasm.ldd("#5*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refflt");
   tasm.ldx("tmp1");
@@ -1013,6 +1022,7 @@ std::string CoreImplementation::regInt_extFlt_dexInt(InstArrayVal3 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#5*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refflt");
   tasm.ldx("tmp1");
@@ -1038,6 +1048,7 @@ std::string CoreImplementation::regInt_extStr_regInt(InstArrayVal3 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword() + "+10");
   tasm.std("4+argv");
+  tasm.ldd("#3*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -1062,6 +1073,7 @@ std::string CoreImplementation::regInt_extStr_dexInt(InstArrayVal3 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#3*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refint");
   tasm.ldx("tmp1");
@@ -1407,7 +1419,7 @@ std::string CoreImplementation::regInt_extInt_regInt(InstArrayRef1 &inst) {
   preamble(tasm, inst);
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
-  tasm.ldd("#33");
+  tasm.ldd("#3*11");
   tasm.jsr("ref1");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1423,7 +1435,7 @@ std::string CoreImplementation::regInt_extFlt_regInt(InstArrayRef1 &inst) {
   preamble(tasm, inst);
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
-  tasm.ldd("#55");
+  tasm.ldd("#5*11");
   tasm.jsr("ref1");
   tasm.jsr("refflt");
   tasm.std("letptr");
@@ -1439,7 +1451,7 @@ std::string CoreImplementation::regInt_extStr_regInt(InstArrayRef1 &inst) {
   preamble(tasm, inst);
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
-  tasm.ldd("#33");
+  tasm.ldd("#3*11");
   tasm.jsr("ref1");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1457,6 +1469,7 @@ std::string CoreImplementation::regInt_extInt_regInt(InstArrayRef2 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#3*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1474,6 +1487,7 @@ std::string CoreImplementation::regInt_extFlt_regInt(InstArrayRef2 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#5*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refflt");
   tasm.std("letptr");
@@ -1491,6 +1505,7 @@ std::string CoreImplementation::regInt_extStr_regInt(InstArrayRef2 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#3*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1510,6 +1525,7 @@ std::string CoreImplementation::regInt_extInt_regInt(InstArrayRef3 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword() + "+10");
   tasm.std("4+argv");
+  tasm.ldd("#3*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1529,6 +1545,7 @@ std::string CoreImplementation::regInt_extFlt_regInt(InstArrayRef3 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword() + "+10");
   tasm.std("4+argv");
+  tasm.ldd("#5*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refflt");
   tasm.std("letptr");
@@ -1548,6 +1565,7 @@ std::string CoreImplementation::regInt_extStr_regInt(InstArrayRef3 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword() + "+10");
   tasm.std("4+argv");
+  tasm.ldd("#3*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1696,7 +1714,7 @@ std::string CoreImplementation::regInt_extInt_dexInt(InstArrayRef1 &inst) {
   preamble(tasm, inst);
   tasm.jsr("getlw");
   tasm.std("0+argv");
-  tasm.ldd("#33");
+  tasm.ldd("#3*11");
   tasm.jsr("ref1");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1713,7 +1731,7 @@ std::string CoreImplementation::regInt_extFlt_dexInt(InstArrayRef1 &inst) {
   preamble(tasm, inst);
   tasm.jsr("getlw");
   tasm.std("0+argv");
-  tasm.ldd("#55");
+  tasm.ldd("#5*11");
   tasm.jsr("ref1");
   tasm.jsr("refflt");
   tasm.std("letptr");
@@ -1730,7 +1748,7 @@ std::string CoreImplementation::regInt_extStr_dexInt(InstArrayRef1 &inst) {
   preamble(tasm, inst);
   tasm.jsr("getlw");
   tasm.std("0+argv");
-  tasm.ldd("#33");
+  tasm.ldd("#3*11");
   tasm.jsr("ref1");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1749,6 +1767,7 @@ std::string CoreImplementation::regInt_extInt_dexInt(InstArrayRef2 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
+  tasm.ldd("#3*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1767,6 +1786,7 @@ std::string CoreImplementation::regInt_extFlt_dexInt(InstArrayRef2 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
+  tasm.ldd("#5*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refflt");
   tasm.std("letptr");
@@ -1785,6 +1805,7 @@ std::string CoreImplementation::regInt_extStr_dexInt(InstArrayRef2 &inst) {
   tasm.std("2+argv");
   tasm.ldd(inst.arg1->lword());
   tasm.std("0+argv");
+  tasm.ldd("#3*11*11");
   tasm.jsr("ref2");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1805,6 +1826,7 @@ std::string CoreImplementation::regInt_extInt_dexInt(InstArrayRef3 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#3*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refint");
   tasm.std("letptr");
@@ -1825,6 +1847,7 @@ std::string CoreImplementation::regInt_extFlt_dexInt(InstArrayRef3 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#5*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refflt");
   tasm.std("letptr");
@@ -1845,6 +1868,7 @@ std::string CoreImplementation::regInt_extStr_dexInt(InstArrayRef3 &inst) {
   tasm.std("0+argv");
   tasm.ldd(inst.arg1->lword() + "+5");
   tasm.std("2+argv");
+  tasm.ldd("#3*11*11*11");
   tasm.jsr("ref3");
   tasm.jsr("refint");
   tasm.std("letptr");

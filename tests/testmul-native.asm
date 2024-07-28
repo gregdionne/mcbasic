@@ -1392,7 +1392,7 @@ arrref1_ir1_ix_id			; numCalls = 6
 	.module	modarrref1_ir1_ix_id
 	jsr	getlw
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	std	letptr
@@ -1402,7 +1402,7 @@ arrval1_ir1_ix_id			; numCalls = 3
 	.module	modarrval1_ir1_ix_id
 	jsr	getlw
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	ldx	tmp1
@@ -1416,7 +1416,7 @@ arrval1_ir2_ix_id			; numCalls = 7
 	.module	modarrval1_ir2_ix_id
 	jsr	getlw
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	ldx	tmp1
@@ -1430,7 +1430,7 @@ arrval1_ir3_ix_id			; numCalls = 4
 	.module	modarrval1_ir3_ix_id
 	jsr	getlw
 	std	0+argv
-	ldd	#33
+	ldd	#3*11
 	jsr	ref1
 	jsr	refint
 	ldx	tmp1
